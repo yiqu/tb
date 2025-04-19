@@ -1,0 +1,178 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "next",
+    "plugin:@next/next/recommended",
+    "prettier",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
+    "plugin:readable-tailwind/warning",
+    "plugin:readable-tailwind/error"
+  ],
+  "plugins": [
+    "perfectionist",
+    "prettier",
+    "react-refresh",
+    "unused-imports",
+    "eslint-plugin-react-compiler",
+    "unicorn",
+    "readable-tailwind",
+    "@tanstack/query",
+    "mui-path-imports"
+  ],
+  "rules": {
+    "@next/next/no-img-element": 1,
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "no-unused-vars": "warn",
+    "computed-property-spacing": [1, "never"],
+    "import/no-cycle": 1,
+    "import/no-duplicates": "off",
+    "import/no-empty-named-blocks": 2,
+    "jsx-quotes": [1, "prefer-double"],
+    "mui-path-imports/mui-path-imports": "error",
+    "no-confusing-arrow": ["error"],
+    "no-console": [
+      "warn",
+      {
+        "allow": ["error"]
+      }
+    ],
+    "no-const-assign": [2],
+    "no-empty": "warn",
+    "no-empty-function": "off",
+    "no-extra-semi": 1,
+    "no-multi-spaces": 1,
+    "no-param-reassign": "warn",
+    "no-use-before-define": [
+      0,
+      {
+        "functions": false
+      }
+    ],
+    "perfectionist/sort-exports": [
+      1,
+      {
+        "order": "asc",
+        "type": "line-length"
+      }
+    ],
+    "perfectionist/sort-imports": [
+      1,
+      {
+        "custom-groups": {
+          "value": {
+            "custom-components": "src/components/**",
+            "custom-hooks": "src/hooks/**",
+            "custom-mui": "@mui/**",
+            "custom-ui-components": "@/components/**",
+            "custom-routes": "src/routes/**",
+            "custom-sections": "src/sections/**",
+            "custom-types": "src/types/**",
+            "custom-utils": "src/utils/**"
+          }
+        },
+        "groups": [
+          "custom-mui",
+          ["builtin"],
+          "external",
+          [
+            "custom-routes",
+            "custom-hooks",
+            "custom-utils",
+            "internal",
+            "custom-components",
+            "custom-sections",
+            "custom-types"
+          ],
+          "type",
+          ["parent", "sibling", "index"],
+          "object",
+          "unknown"
+        ],
+        "internal-pattern": ["@/**"],
+        "newlines-between": "always",
+        "order": "asc",
+        "type": "line-length"
+      }
+    ],
+    "perfectionist/sort-named-exports": [
+      1,
+      {
+        "order": "asc",
+        "type": "line-length"
+      }
+    ],
+    // perfectionist
+    // https://eslint-plugin-perfectionist.azat.io/
+    "perfectionist/sort-named-imports": [
+      1,
+      {
+        "order": "asc",
+        "type": "line-length"
+      }
+    ],
+    "prefer-destructuring": [
+      1,
+      {
+        "array": false,
+        "object": true
+      }
+    ],
+    "quote-props": [1, "as-needed"],
+    "react/destructuring-assignment": [1, "always"],
+    "react/jsx-child-element-spacing": 1,
+    "react/jsx-curly-spacing": [
+      1,
+      {
+        "children": true,
+        "when": "always"
+      },
+      {
+        "spacing": {
+          "objectLiterals": "never"
+        }
+      }
+    ],
+    "react/jsx-equals-spacing": [1, "never"],
+    "react/jsx-indent": [1, 2],
+    "react/jsx-no-leaked-render": 1,
+    "react/jsx-no-script-url": 1,
+    "react/jsx-no-useless-fragment": 0,
+    "react/jsx-pascal-case": 1,
+    "react/jsx-props-no-multi-spaces": 1,
+    "react/jsx-tag-spacing": [
+      1,
+      {
+        "afterOpening": "never",
+        "beforeSelfClosing": "always",
+        "closingSlash": "never"
+      }
+    ],
+    "react/no-array-index-key": 1,
+    "react/no-children-prop": 1,
+    "react/react-in-jsx-scope": "off",
+    "semi": [1, "always"],
+    "semi-spacing": [
+      1,
+      {
+        "after": true,
+        "before": false
+      }
+    ],
+    "space-in-parens": [1, "never"],
+    "unicorn/explicit-length-check": 1,
+    "unicorn/no-useless-spread": 1,
+    "unicorn/no-useless-undefined": 1,
+    "unicorn/prefer-date-now": 1,
+    "unicorn/prefer-number-properties": 1,
+    "readable-tailwind/multiline": 1,
+    "readable-tailwind/no-unnecessary-whitespace": 1,
+    "readable-tailwind/sort-classes": "off",
+    "readable-tailwind/no-duplicate-classes": 2
+  },
+  "settings": {
+    "readable-tailwind": {
+      "entryPoint": ["./app/tailwind-config.css"]
+    }
+  }
+}

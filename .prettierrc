@@ -1,0 +1,8 @@
+{
+  "bracketSpacing": true,
+  "singleQuote": true,
+  "experimentalTernaries": true,
+  "printWidth": 120,
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "tailwindStylesheet": "./app/tailwind-config.css"
+}
