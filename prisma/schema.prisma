@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// Prisma Steps and commands to run
+// 2. npx prisma generate
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Subscription {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  name              String    @unique
+  description       String?
+  url               String?
+  approved          Boolean   @default(false)
+  signed            Boolean   @default(false)
+  dateAdded         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
+  cost              Float     @default(0)
+  billCycleInDays   Int?      @default(0)
+  billCycleDuration String    @default("yearly") // yearly, monthly
+  billStartDate     String    @default("2024-01-01")
+  billDues          BillDue[]
+}
+
+model BillDue {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String       @db.ObjectId
+  dueDate        String
+  paid           Boolean      @default(false)
+  reimbursed     Boolean      @default(false)
+  dateAdded      DateTime     @default(now())
+  updatedAt      DateTime?    @updatedAt
+}
