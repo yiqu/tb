@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
+import { geistFont } from '@/lib/fonts-config';
 import theme from '@/components/ui-mui/mui/theme';
 import AppLayout from '@/components/layout/AppLayout';
 import ReactScan from '@/components/react-scan/ReactScan';
@@ -45,8 +46,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <ReactScan />
       <body className={ `
-        ${geistSans.variable}
-        ${geistMono.variable}
+        ${geistFont.className}
         antialiased
       ` }>
         <AgGridRegister />

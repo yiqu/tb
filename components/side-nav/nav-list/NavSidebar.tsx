@@ -35,7 +35,7 @@ export async function NavSidebar({ ...props }: React.ComponentProps<typeof Sideb
       <SidebarFooter>
         <NavFooter />
       </SidebarFooter>
-      <SidebarRail />
+      { /* <SidebarRail /> */ }
     </Sidebar>
   );
 }
