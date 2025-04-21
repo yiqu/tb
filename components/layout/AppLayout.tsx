@@ -1,0 +1,37 @@
+import { ReactNode } from 'react';
+
+import { isTrue } from '@/lib/utils';
+import { getCookieByName } from '@/lib/cookies';
+import { SIDE_NAV_STATE_COOKIE_NAME } from '@/constants/constants';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+
+import TopNav from '../top-nav/TopNav';
+import TopNavWrapper from '../top-nav/TopNavWrapper';
+import { NavSidebar } from '../side-nav/nav-list/NavSidebar';
+
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  const sideNavState = await getCookieByName(SIDE_NAV_STATE_COOKIE_NAME);
+  const isSideNavOpen = isTrue(sideNavState?.value);
+
+  return (
+    <SidebarProvider defaultOpen={ isSideNavOpen }>
+      <NavSidebar />
+      <SidebarInset>
+        <TopNavWrapper>
+          <TopNav />
+        </TopNavWrapper>
+        <main className="flex w-full flex-1 flex-col gap-4 p-4" id="main-content">
+          { children }
+        </main>
+        { /* <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className={ `
+              flex flex-col gap-4 py-4
+              md:gap-6 md:py-6
+            ` }>{ children }</div>
+          </div>
+        </div> */ }
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}

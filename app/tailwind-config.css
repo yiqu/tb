@@ -154,6 +154,15 @@
   }
 }
 
+@layer app-top-loader {
+  :root {
+    --app-top-loader-color: #000;
+  }
+  .dark {
+    --app-top-loader-color: #fff;
+  }
+}
+
 @layer text-colors {
   .light0 {
     
