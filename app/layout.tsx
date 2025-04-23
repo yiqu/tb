@@ -3,14 +3,14 @@ import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 import { Suspense } from 'react';
-import { Geist, Geist_Mono } from 'next/font/google';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { Geist, Caveat, Geist_Mono } from 'next/font/google';
 
-import { geistFont } from '@/lib/fonts-config';
 import theme from '@/components/ui-mui/mui/theme';
 import AppLayout from '@/components/layout/AppLayout';
 import ReactScan from '@/components/react-scan/ReactScan';
 import { TooltipProvider } from '@/components/ui/tooltip';
+//import { geistFont, geistMonoFont } from '@/lib/fonts-config';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
 import AgGridRegister from '@/components/ag-grid/AgGridRegister';
@@ -21,6 +21,7 @@ import type { Metadata } from 'next';
 
 import './globals.css';
 import './tailwind-config.css';
+import './scrollbar.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,6 +30,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
+
+const caveat = Caveat({
+  variable: '--font-caveat',
   subsets: ['latin'],
 });
 
@@ -46,8 +52,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <ReactScan />
       <body className={ `
-        ${geistFont.className}
-        antialiased
+        ${geistSans.variable}
+        ${geistMono.variable}
+        ${caveat.variable}
+        font-sans antialiased
       ` }>
         <AgGridRegister />
         <AppTopLoader />
@@ -61,7 +69,7 @@ export default function RootLayout({
                   defaultTheme="light"
                   enableSystem={ false }
                   disableTransitionOnChange
-                  storageKey="theme"
+                  storageKey="app-theme"
                 >
                   { /* <CssBaseline /> */ }
                   <TooltipProvider delayDuration={ 0 }>

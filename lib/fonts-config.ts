@@ -1,6 +1,6 @@
 import localFont from 'next/font/local';
-import { Caveat, Pacifico, Luckiest_Guy } from 'next/font/google';
 import { NextFontWithVariable } from 'next/dist/compiled/@next/font';
+import { Caveat, Pacifico, Luckiest_Guy, Indie_Flower } from 'next/font/google';
 
 export const geistFont: NextFontWithVariable = localFont({
   src: [
@@ -146,9 +146,17 @@ export const caveatFont = Caveat({
   style: 'normal',
   subsets: ['latin'],
   preload: true,
+  variable: '--caveat-font',
 });
 
 export const luckiestGuyFont = Luckiest_Guy({
+  weight: '400',
+  style: 'normal',
+  subsets: ['latin'],
+  preload: true,
+});
+
+export const indieFlowerFont = Indie_Flower({
   weight: '400',
   style: 'normal',
   subsets: ['latin'],

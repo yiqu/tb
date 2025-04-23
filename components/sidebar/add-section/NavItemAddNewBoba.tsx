@@ -22,7 +22,6 @@ import {
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 
-import MenuButton from '../MenuButton';
 import CollapsedMenuButton from '../CollapsedMenuButton';
 
 const BOBA_TEA_CATEGORIES: LinkItem[] = [
@@ -126,7 +125,6 @@ export default function NavItemAddNewBoba() {
       <SidebarGroupLabel>Add</SidebarGroupLabel>
       <SidebarMenu>
         <SidebarMenuItem onMouseEnter={ handleMouseEnter } onMouseLeave={ handleMouseLeave }>
-          <MenuButton item={ NEW_ITEM } />
           <DropdownMenu onOpenChange={ handleOnMenuOpenChange }>
             <DropdownMenuTrigger asChild>
               <SidebarMenuAction className="cursor-pointer">

@@ -9,7 +9,9 @@ import { SidebarMenuButton, sidebarMenuButtonVariants } from '@/components/ui/si
 
 import { SideBarLucideIcon } from './utils/SidebarUtils';
 
-export default function MenuButton({ item }: { item: LeftNavItem } & VariantProps<typeof sidebarMenuButtonVariants>) {
+export default function SidebarMenuButtonWithActive({
+  item,
+}: { item: LeftNavItem } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const pathname = usePathname();
   const firstPath = pathname.split('/')[1] || '';
   const isActive = firstPath.toLowerCase() === item.url.toLowerCase();

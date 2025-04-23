@@ -1,6 +1,10 @@
 import { type LucideIcon } from 'lucide-react';
 
-import { SIDEBAR_COLLAPSABLE_HISTORY, SIDEBAR_COLLAPSABLE_FAVORITES } from '@/constants/constants';
+import {
+  SIDEBAR_COLLAPSABLE_HISTORY,
+  SIDEBAR_COLLAPSABLE_ADD_NEW,
+  SIDEBAR_COLLAPSABLE_FAVORITES,
+} from '@/constants/constants';
 
 export interface LeftNavItem {
   name: string;
@@ -15,11 +19,13 @@ export interface NestNavListItem {
   icon?: LucideIcon;
   isActive?: boolean;
   items?: LinkItem[];
-  collapsableStateCookieKey?: typeof SIDEBAR_COLLAPSABLE_FAVORITES | typeof SIDEBAR_COLLAPSABLE_HISTORY;
+  collapsableStateCookieKey?:
+    | typeof SIDEBAR_COLLAPSABLE_FAVORITES
+    | typeof SIDEBAR_COLLAPSABLE_HISTORY
+    | typeof SIDEBAR_COLLAPSABLE_ADD_NEW;
 }
 
 export interface LinkItem {
   name: string;
   url: string;
 }
-
