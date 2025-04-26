@@ -9,8 +9,8 @@ import type { GridProps } from '@mui/material/Grid';
 
 export interface LayoutGutterProps {
   children: ReactNode;
-  size?: 'full' | 'widest' | 'wider' | 'wide' | 'large' | 'med' | 'narrow' | 'narrower' | 'small' | 'skinny';
-  //       12,      11.5       11        10,      9         7,        6,          5.5         5,      4
+  size?: 'full' | 'widest' | 'wider' | 'wide' | 'large' | 'medplus' | 'med' | 'narrow' | 'narrower' | 'small' | 'skinny';
+  //       12,      11.5       11        10,      9          8           7,        6,          5.5         5,      4
   gridProps?: GridProps;
 }
 
@@ -27,6 +27,7 @@ function LayoutWithGutter({ children, size = 'full', gridProps }: LayoutGutterPr
             : size === 'wider' ? 11
             : size === 'wide' ? 10
             : size === 'large' ? 9
+            : size === 'medplus' ? 8
             : size === 'med' ? 7
             : size === 'narrow' ? 6
             : size === 'narrower' ? 5.5
@@ -42,6 +43,7 @@ function LayoutWithGutter({ children, size = 'full', gridProps }: LayoutGutterPr
             : size === 'wider' ? 0.5
             : size === 'wide' ? 1
             : size === 'large' ? 1.5
+            : size === 'medplus' ? 2
             : size === 'med' ? 2.5
             : size === 'narrow' ? 3
             : size === 'narrower' ? 3.25

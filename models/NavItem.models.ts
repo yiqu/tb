@@ -29,3 +29,9 @@ export interface LinkItem {
   name: string;
   url: string;
 }
+
+export type TabListItem = {
+  id: string;
+  displayText: string;
+  url: string;
+}

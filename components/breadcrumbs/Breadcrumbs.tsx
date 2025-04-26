@@ -12,10 +12,10 @@ export default function Breadcrumbs() {
     <BreadcrumbsList>
       <HomeSegment />
       <BreadcrumbSeparator />
+      <BreadcrumbSegments />
       <Suspense>
         <BreadcrumbCopyUrl />
       </Suspense>
-      <BreadcrumbSegments />
     </BreadcrumbsList>
   );
 }

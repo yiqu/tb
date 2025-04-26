@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { Params } from 'next/dist/server/request/params';
 
-import { BreadcrumbItem, BreadcrumbPage, BreadcrumbLink } from '../ui/breadcrumb';
 import { BreadcrumbSegmentIcon, BreadcrumbSegmentTitle } from './BreadCrumbsUtils';
+import { BreadcrumbItem, BreadcrumbPage, BreadcrumbLink, BreadcrumbSeparator } from '../ui/breadcrumb';
 
 export default function BreadcrumbSegments() {
   const pathname = usePathname();
@@ -42,6 +42,7 @@ export default function BreadcrumbSegments() {
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
+              <BreadcrumbSeparator />
             </>
             }
           </React.Fragment>

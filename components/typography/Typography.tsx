@@ -13,7 +13,7 @@ const typographyVariants = cva('scroll-m-20 tracking-tight', {
       h5: 'text-lg font-semibold tracking-normal',
       h6: 'text-md font-semibold tracking-normal',
       p: `
-        text-[0.875rem] leading-7 tracking-normal
+        text-[0.875rem] leading-5 tracking-normal
         [&:not(:first-child)]:mt-6
       `,
       caption0: `
