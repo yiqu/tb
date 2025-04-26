@@ -6,13 +6,15 @@ import { safeParseJson } from '@/lib/utils';
 import { SidebarCollapsableState } from '@/models/Sidebar.models';
 import {
   SIDEBAR_COLLAPSABLE_HISTORY,
+  SIDEBAR_COLLAPSABLE_ADD_NEW,
   SIDEBAR_COLLAPSABLE_FAVORITES,
   SIDEBAR_COLLAPSABLE_STATE_KEY,
 } from '@/constants/constants';
 
 const SIDEBAR_COLLAPSABLE_STATE_DEFAULT: SidebarCollapsableState = {
-  [SIDEBAR_COLLAPSABLE_FAVORITES]: false,
-  [SIDEBAR_COLLAPSABLE_HISTORY]: false,
+  [SIDEBAR_COLLAPSABLE_FAVORITES]: true,
+  [SIDEBAR_COLLAPSABLE_HISTORY]: true,
+  [SIDEBAR_COLLAPSABLE_ADD_NEW]: true,
 };
 
 export async function setSidebarCollapsableStateAction(stateKey: string, stateValue: boolean) {
