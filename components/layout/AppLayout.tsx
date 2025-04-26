@@ -11,7 +11,7 @@ import { NavSidebar } from '../side-nav/nav-list/NavSidebar';
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const sideNavState = await getCookieByName(SIDE_NAV_STATE_COOKIE_NAME);
-  const isSideNavOpen = isTrue(sideNavState?.value);
+  const isSideNavOpen = isTrue(sideNavState?.value ?? 'true');
 
   return (
     <SidebarProvider defaultOpen={ isSideNavOpen }>

@@ -5,13 +5,15 @@ import { SidebarCollapsableState } from '@/models/Sidebar.models';
 import { setCookie, deleteCookie, getCookieByName } from '@/lib/cookies';
 import {
   SIDEBAR_COLLAPSABLE_HISTORY,
+  SIDEBAR_COLLAPSABLE_ADD_NEW,
   SIDEBAR_COLLAPSABLE_FAVORITES,
   SIDEBAR_COLLAPSABLE_STATE_KEY,
 } from '@/constants/constants';
 
 export const SIDEBAR_COLLAPSABLE_STATE_DEFAULT: SidebarCollapsableState = {
-  [SIDEBAR_COLLAPSABLE_FAVORITES]: false,
-  [SIDEBAR_COLLAPSABLE_HISTORY]: false,
+  [SIDEBAR_COLLAPSABLE_FAVORITES]: true,
+  [SIDEBAR_COLLAPSABLE_HISTORY]: true,
+  [SIDEBAR_COLLAPSABLE_ADD_NEW]: true,
 };
 
 export async function getSidebarCollapsableState(): Promise<SidebarCollapsableState> {
