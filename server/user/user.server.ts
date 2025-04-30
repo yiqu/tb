@@ -1,18 +1,22 @@
 'use server';
 
+import { unstable_cacheTag as cacheTag } from 'next/cache';
+import { unstable_cacheLife as cacheLife } from 'next/cache';
+
 import prisma from '@/lib/prisma';
 import { displayNameSchema } from '@/validators/settings/account/PersonalInfo';
-import { UserProfileAddable, UserProfileEditable } from '@/models/user/user.model';
+import { UserProfile, UserProfileAddable, UserProfileEditable } from '@/models/user/user.model';
 import { SettingsPersonalInfoDisplayNameActionState } from '@/models/settings/SettingsPersonalInfo';
 
 // eslint-disable-next-line no-unused-vars
 import type { Prisma } from '@prisma/client';
 
-export async function addNewUser(user: UserProfileAddable) {
+export async function addNewUser(user: UserProfileAddable): Promise<UserProfile> {
   try {
-    const newUser = await prisma.userProfile.create({
+    const newUser: UserProfile = await prisma.userProfile.create({
       data: user,
     });
+
     return newUser;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at addNewUser(): ', JSON.stringify(error));
@@ -23,7 +27,7 @@ export async function addNewUser(user: UserProfileAddable) {
   }
 }
 
-export async function getUser(id: string) {
+export async function getUserById(id: string) {
   try {
     const user = await prisma.userProfile.findUnique({
       where: { id },
@@ -35,13 +39,18 @@ export async function getUser(id: string) {
   }
 }
 
-export async function getAllUsers() {
+export async function getUser(): Promise<UserProfile | null> {
+  'use cache';
+  cacheLife('hours');
+  cacheTag('get-user');
+
   await new Promise((resolve) => setTimeout(resolve, 1000));
   try {
-    const users = await prisma.userProfile.findMany();
+    const users = await prisma.userProfile.findFirst();
+    console.log('Fetched user.');
     return users;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-    console.error('Server error at getAllUsers(): ', JSON.stringify(error));
+    console.error('Server error at getUser(): ', JSON.stringify(error));
     throw new Error(`Users could not be found. Code: ${error.code}`);
   }
 }
@@ -51,13 +60,14 @@ export async function updateUserAction(
   formData: FormData,
 ): Promise<SettingsPersonalInfoDisplayNameActionState> {
   const displayName = formData.get('displayName') || '';
-  const zodError = displayNameSchema.safeParse({ displayName });
+  const userId = formData.get('userId') || '';
+  const zodError = displayNameSchema.safeParse({ name: displayName });
 
   if (!zodError.success) {
     return {
       ...prevState,
       result: {
-        displayName: displayName as string,
+        name: displayName as string,
       },
       zodErrorIssues: zodError.error?.issues,
       isSuccess: false,
@@ -65,12 +75,27 @@ export async function updateUserAction(
     };
   }
 
-  //const res = await
+  if (userId) {
+  } else {
+    const newUser = await addNewUser({
+      name: displayName as string,
+      email: '',
+      isAdmin: false,
+    });
+
+    return {
+      isSuccess: true,
+      result: newUser,
+      statusCode: 200,
+      zodErrorIssues: undefined,
+      updatedAt: newUser.updatedAt,
+    };
+  }
 
   return {
     ...prevState,
     isSuccess: true,
-    result: { displayName: displayName as string },
+    result: { name: displayName as string },
     statusCode: 200,
     zodErrorIssues: undefined,
   };

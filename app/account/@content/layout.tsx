@@ -1,6 +1,5 @@
 import Grid from '@mui/material/Grid';
 
-import { getAllUsers } from '@/server/user/user.server';
 import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
 
 import AccountContentTabsParent from '../_components/AccountContentTabsParent';
@@ -11,8 +10,6 @@ interface AccountContentLayoutProps {
 }
 
 export default async function AccountContentLayout({ children }: AccountContentLayoutProps) {
-  const users = await getAllUsers();
-  console.log('users', users);
   return (
     <LayoutWithGutter size="med">
       <div className="h-full w-full">

@@ -7,4 +7,5 @@ export type SettingsPersonalInfoDisplayNameActionState = {
   statusCode?: number;
   zodErrorIssues?: z.ZodIssue[];
   result: z.infer<typeof displayNameSchema>;
+  updatedAt?: string | Date | null;
 };

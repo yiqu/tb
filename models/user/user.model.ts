@@ -2,14 +2,14 @@ export type UserProfile = {
   id: string;
   name: string;
   email: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
-  country?: string;
-  dateAdded: string;
-  updatedAt?: string;
+  phone?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip?: string | null;
+  country?: string | null;
+  dateAdded: string | Date | undefined;
+  updatedAt?: string | Date | null;
   isAdmin: boolean;
 };
 
