@@ -4,18 +4,16 @@ import Typography from '@/components/typography/Typography';
 
 import DisplayCard from './DisplayCard';
 import InputFallback from './InputFallback';
-import DisplayNameWrapper from './DisplayNameWrapper';
+import AdminModeWrapper from './AdminModeWrapper';
 
-export default function DisplayName() {
+export default function AdminMode() {
   return (
     <DisplayCard>
       <section className="flex flex-col gap-y-2">
-        <Typography variant="h5">Display Name</Typography>
-        <Typography variant="body1">
-          Please enter your full name, or a display name you are comfortable with.
-        </Typography>
+        <Typography variant="h5">Admin</Typography>
+        <Typography variant="body1">Toggle admin mode.</Typography>
         <Suspense fallback={ <InputFallback /> }>
-          <DisplayNameWrapper />
+          <AdminModeWrapper />
         </Suspense>
       </section>
     </DisplayCard>

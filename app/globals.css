@@ -11,3 +11,25 @@ html.dark [data-hide-on-theme='dark'],
 html:not(.dark) [data-hide-on-theme='light'] {
   display: none;
 }
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 1.5s linear infinite; /* 50% slower than standard spin animation */
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

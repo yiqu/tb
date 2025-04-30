@@ -2,11 +2,12 @@
 'use client';
 
 import { z } from 'zod';
-import { User } from 'lucide-react';
 import { useFormStatus } from 'react-dom';
+import { User, ShieldCheck } from 'lucide-react';
 import { useActionState, InputHTMLAttributes } from 'react';
 
 import { Input } from '@/components/ui/input';
+import useDuration from '@/hooks/useDuration';
 import { Button } from '@/components/ui/button';
 import { UserProfile } from '@/models/user/user.model';
 import Typography from '@/components/typography/Typography';
@@ -19,27 +20,21 @@ interface DisplayNameFormProps {
 
 export default function DisplayNameForm({ user }: DisplayNameFormProps) {
   const isNewUser: boolean = !user;
-
-  const [state, formAction, isPending] = useActionState<SettingsPersonalInfoDisplayNameActionState, FormData>(
-    updateUserAction,
-    {
-      isSuccess: false,
-      statusCode: undefined,
-      zodErrorIssues: undefined,
-      updatedAt: user?.updatedAt ?? null,
-      result: {
-        name: user?.name || '',
-      },
+  const [state, formAction] = useActionState<SettingsPersonalInfoDisplayNameActionState, FormData>(updateUserAction, {
+    isSuccess: false,
+    statusCode: undefined,
+    zodErrorIssues: undefined,
+    updatedAt: user?.updatedAt ?? null,
+    result: {
+      name: user?.name || '',
     },
-  );
-
-  console.log(state, isPending, isNewUser);
+  });
 
   return (
     <form action={ formAction }>
       <div className="flex flex-col gap-y-2">
-        <DisplayNameFormInput defaultValue={ state.result.name } />
-        <DisplayNameFormSubmit isNewUser={ isNewUser } updatedAt={ state.updatedAt } />
+        <DisplayNameFormInput defaultValue={ user?.name || '' } isAdmin={ user?.isAdmin || false } />
+        <DisplayNameFormSubmit isNewUser={ isNewUser } updatedAt={ user?.updatedAt } />
         <DisplayNameFormError zodError={ state.zodErrorIssues } />
         <input type="hidden" name="userId" value={ user?.id } />
       </div>
@@ -47,13 +42,15 @@ export default function DisplayNameForm({ user }: DisplayNameFormProps) {
   );
 }
 
-function DisplayNameFormInput(props: InputHTMLAttributes<HTMLInputElement>) {
+function DisplayNameFormInput({ isAdmin, ...rest }: { isAdmin: boolean } & InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div className="relative">
       <div className={ `pointer-events-none absolute top-0 left-0 flex h-full items-center pl-3` }>
-        { <User size={ 16 } /> }
+        { isAdmin ?
+          <ShieldCheck size={ 16 } />
+        : <User size={ 16 } /> }
       </div>
-      <Input className="pl-10" name="displayName" placeholder="Please use 32 characters at maximum." { ...props } />
+      <Input className="pl-10" name="displayName" placeholder="Please use 32 characters at maximum." { ...rest } />
     </div>
   );
 }
@@ -66,10 +63,9 @@ function DisplayNameFormSubmit({
   updatedAt: string | Date | null | undefined;
 }) {
   const { pending } = useFormStatus();
-
   return (
     <section className="flex flex-row items-center justify-between">
-      <DisplayNameFormUpdatedAt updatedAt={ updatedAt } />
+      <DisplayNameFormUpdatedAt updatedAt={ updatedAt } key={ `${updatedAt}` } />
       <Button size="default" type="submit">
         { pending ?
           'Saving...'
@@ -100,8 +96,13 @@ function DisplayNameFormError({ zodError }: { zodError: z.ZodIssue[] | undefined
 }
 
 function DisplayNameFormUpdatedAt({ updatedAt }: { updatedAt: string | Date | null | undefined }) {
+  const { duration } = useDuration(new Date(updatedAt ?? 0).getTime());
   if (updatedAt) {
-    return <Typography variant="body1">{ `Updated: ${updatedAt}` }</Typography>;
+    return (
+      <Typography variant="body1" title={ updatedAt.toString() }>
+        Last updated: { duration } ago.
+      </Typography>
+    );
   }
 
   return <div></div>;
