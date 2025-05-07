@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 
 import Typography from '@/components/typography/Typography';
 
@@ -6,7 +7,10 @@ import DisplayCard from './DisplayCard';
 import InputFallback from './InputFallback';
 import DisplayNameWrapper from './DisplayNameWrapper';
 
-export default function DisplayName() {
+export default async function DisplayName() {
+  'use cache';
+  cacheLife('weeks');
+
   return (
     <DisplayCard>
       <section className="flex flex-col gap-y-2">

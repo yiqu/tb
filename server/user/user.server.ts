@@ -45,13 +45,13 @@ export async function getUserById(id: string) {
 
 export async function getUser(): Promise<UserProfile | null> {
   'use cache';
-  cacheLife('hours');
+  cacheLife('weeks');
   cacheTag('get-user');
 
   await new Promise((resolve) => setTimeout(resolve, 1000));
   try {
     const users = await prisma.userProfile.findFirst();
-    console.log('Getting user...', users);
+    console.log('Getting user...');
     return users;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getUser(): ', JSON.stringify(error));
