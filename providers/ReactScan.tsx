@@ -5,12 +5,18 @@
 import { scan } from 'react-scan';
 import { JSX, useEffect } from 'react';
 
+import useIsClient from '@/hooks/useIsClient';
+
 export function ReactScan(): JSX.Element {
+  const isClient = useIsClient();
+
   useEffect(() => {
-    scan({
-      enabled: process.env.NODE_ENV === 'development',
-    });
-  }, []);
+    if (isClient) {
+      scan({
+        enabled: process.env.NODE_ENV === 'development',
+      });
+    }
+  }, [isClient]);
 
   return <></>;
 }
