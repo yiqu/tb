@@ -14,10 +14,10 @@ export default function DisplayName() {
         <Typography variant="body1">
           Please enter your full name, or a display name you are comfortable with.
         </Typography>
-        <Suspense fallback={ <InputFallback /> }>
-          <DisplayNameWrapper />
-        </Suspense>
       </section>
+      <Suspense fallback={ <InputFallback /> }>
+        <DisplayNameWrapper />
+      </Suspense>
     </DisplayCard>
   );
 }

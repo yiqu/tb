@@ -16,3 +16,13 @@ export const displayNameSchema = z
       });
     }
   });
+
+export const PersonalInfoAddressSchema = z.object({
+  streetAddress: z.string().min(1, { message: 'Street address can not be empty' }),
+  city: z.string().min(1, { message: 'City can not be empty' }),
+  state: z.string({ message: 'State can not be empty' }).min(2, { message: 'State must be at least 2 characters' }),
+  zip: z.string({ message: 'Zip can not be empty' }).min(5, { message: 'Zip must be at least 5 characters' }),
+  country: z
+    .string({ message: 'Country can not be empty' })
+    .min(2, { message: 'Country must be at least 2 characters' }),
+});

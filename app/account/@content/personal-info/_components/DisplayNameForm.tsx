@@ -3,12 +3,13 @@
 
 import { z } from 'zod';
 import { useFormStatus } from 'react-dom';
-import { User, ShieldCheck } from 'lucide-react';
+import { User, Save, ShieldCheck } from 'lucide-react';
 import { useActionState, InputHTMLAttributes } from 'react';
 
 import { Input } from '@/components/ui/input';
 import useDuration from '@/hooks/useDuration';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { UserProfile } from '@/models/user/user.model';
 import Typography from '@/components/typography/Typography';
 import { updateUserAction } from '@/server/user/user.server';
@@ -34,6 +35,7 @@ export default function DisplayNameForm({ user }: DisplayNameFormProps) {
     <form action={ formAction }>
       <div className="flex flex-col gap-y-2">
         <DisplayNameFormInput defaultValue={ user?.name || '' } isAdmin={ user?.isAdmin || false } />
+        <Separator orientation="horizontal" className="my-2" />
         <DisplayNameFormSubmit isNewUser={ isNewUser } updatedAt={ user?.updatedAt } />
         <DisplayNameFormError zodError={ state.zodErrorIssues } />
         <input type="hidden" name="userId" value={ user?.id } />
@@ -67,11 +69,12 @@ function DisplayNameFormSubmit({
     <section className="flex flex-row items-center justify-between">
       <DisplayNameFormUpdatedAt updatedAt={ updatedAt } key={ `${updatedAt}` } />
       <Button size="default" type="submit">
+        <Save size={ 16 } />
         { pending ?
           'Saving...'
         : isNewUser ?
           'Create'
-        : 'Save' }
+        : 'Save name' }
       </Button>
     </section>
   );

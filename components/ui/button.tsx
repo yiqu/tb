@@ -61,6 +61,10 @@ const buttonVariants = cva(
           h-8 rounded-md gap-1.5 px-3
           has-[>svg]:px-2.5
         `,
+        med: `
+          h-9 rounded-md gap-1.5 px-4.5
+          has-[>svg]:px-3.25
+        `,
         lg: `
           h-10 rounded-md px-6
           has-[>svg]:px-4

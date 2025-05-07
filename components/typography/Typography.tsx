@@ -1,3 +1,4 @@
+/* eslint-disable readable-tailwind/multiline */
 import { ReactNode } from 'react';
 import { cva, VariantProps } from 'class-variance-authority';
 
@@ -12,10 +13,12 @@ const typographyVariants = cva('scroll-m-20 tracking-tight', {
       h4: 'text-xl font-semibold tracking-normal',
       h5: 'text-lg font-semibold tracking-normal',
       h6: 'text-md font-semibold tracking-normal',
+
       p: `
-        text-[0.875rem] leading-5 tracking-normal
+        text-[0.875rem] leading-6 tracking-normal
         [&:not(:first-child)]:mt-6
       `,
+      
       caption0: `
         text-[0.65rem] tracking-normal text-gray-500
         dark:text-gray-300

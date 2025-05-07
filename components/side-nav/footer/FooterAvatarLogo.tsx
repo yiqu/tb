@@ -17,8 +17,8 @@ async function FooterAvatarLogo() {
     <Avatar className="h-8 w-8 rounded-lg">
       <AvatarImage src={ user.avatarUrl } alt={ 'avatar' } />
       <AvatarFallback className="rounded-lg">
-        { user.firstName.charAt(0) }
-        { user.lastName.charAt(0) }
+        { user.firstName?.charAt(0) }
+        { user.lastName?.charAt(0) }
       </AvatarFallback>
     </Avatar>
   );

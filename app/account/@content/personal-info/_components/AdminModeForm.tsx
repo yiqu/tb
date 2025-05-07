@@ -1,24 +1,16 @@
 /* eslint-disable readable-tailwind/multiline */
 'use client';
 
-import { z } from 'zod';
-import { useFormStatus } from 'react-dom';
-import { User, Loader, LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 import * as SwitchPrimitive from '@radix-ui/react-switch';
-import { useTransition, useOptimistic, useActionState, InputHTMLAttributes } from 'react';
+import { useTransition, useOptimistic, useActionState } from 'react';
 
-import { Input } from '@/components/ui/input';
-import useDuration from '@/hooks/useDuration';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { UserProfile } from '@/models/user/user.model';
 import Typography from '@/components/typography/Typography';
-import { toggleAdminMode, updateUserAction, toggleAdminModeAction } from '@/server/user/user.server';
-import {
-  SettingsPersonalInfoAdminModeActionState,
-  SettingsPersonalInfoDisplayNameActionState,
-} from '@/models/settings/SettingsPersonalInfo';
+import { toggleAdminModeAction } from '@/server/user/user.server';
+import { SettingsPersonalInfoAdminModeActionState } from '@/models/settings/SettingsPersonalInfo';
 
 interface AdminModeFormProps {
   user: UserProfile | null;
@@ -83,17 +75,4 @@ function AdminModeFormSwitch(props: React.ComponentProps<typeof SwitchPrimitive.
       <Label htmlFor="admin-mode">Admin Mode</Label>
     </div>
   );
-}
-
-function DisplayNameFormUpdatedAt({ updatedAt }: { updatedAt: string | Date | null | undefined }) {
-  const { duration } = useDuration(new Date(updatedAt ?? 0).getTime());
-  if (updatedAt) {
-    return (
-      <Typography variant="body1" title={ updatedAt.toString() }>
-        Last updated: { duration } ago.
-      </Typography>
-    );
-  }
-
-  return <div></div>;
 }
