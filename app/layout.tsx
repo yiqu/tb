@@ -51,42 +51,35 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ViewTransition>
-        <ReactScan />
-        <body className={ `
-          ${geistSans.variable}
-          ${geistMono.variable}
-          ${caveat.variable}
-          font-sans antialiased
-        ` }>
-          <AgGridRegister />
-          <AppTopLoader />
-          <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
-          <AppRouterCacheProvider options={ { enableCssLayer: true } }>
-            <MuiThemeProvider theme={ theme } defaultMode="light">
-              <NuqsAdapter>
-                <TanstackQueryClientProvider>
-                  <ThemeProvider
-                    attribute="class"
-                    defaultTheme="light"
-                    enableSystem={ false }
-                    disableTransitionOnChange
-                    storageKey="app-theme"
-                  >
-                    { /* <CssBaseline /> */ }
-                    <TooltipProvider delayDuration={ 0 }>
-                      <Suspense>
-                        <AppLayout>{ children }</AppLayout>
-                      </Suspense>
-                      <CustomToaster />
-                    </TooltipProvider>
-                  </ThemeProvider>
-                </TanstackQueryClientProvider>
-              </NuqsAdapter>
-            </MuiThemeProvider>
-          </AppRouterCacheProvider>
-        </body>
-      </ViewTransition>
+      <ReactScan />
+      <body className={` ${geistSans.variable} ${geistMono.variable} ${caveat.variable} font-sans antialiased`}>
+        <AgGridRegister />
+        <AppTopLoader />
+        <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
+        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+          <MuiThemeProvider theme={theme} defaultMode="light">
+            <NuqsAdapter>
+              <TanstackQueryClientProvider>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="light"
+                  enableSystem={false}
+                  disableTransitionOnChange
+                  storageKey="app-theme"
+                >
+                  {/* <CssBaseline /> */}
+                  <TooltipProvider delayDuration={0}>
+                    <Suspense>
+                      <AppLayout>{children}</AppLayout>
+                    </Suspense>
+                    <CustomToaster />
+                  </TooltipProvider>
+                </ThemeProvider>
+              </TanstackQueryClientProvider>
+            </NuqsAdapter>
+          </MuiThemeProvider>
+        </AppRouterCacheProvider>
+      </body>
     </html>
   );
 }

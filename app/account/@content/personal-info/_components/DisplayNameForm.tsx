@@ -8,7 +8,9 @@ import { useActionState, InputHTMLAttributes } from 'react';
 
 import { Input } from '@/components/ui/input';
 import useDuration from '@/hooks/useDuration';
+import useIsClient from '@/hooks/useIsClient';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { UserProfile } from '@/models/user/user.model';
 import Typography from '@/components/typography/Typography';
@@ -99,7 +101,13 @@ function DisplayNameFormError({ zodError }: { zodError: z.ZodIssue[] | undefined
 }
 
 function DisplayNameFormUpdatedAt({ updatedAt }: { updatedAt: string | Date | null | undefined }) {
+  const isClient = useIsClient();
   const { duration } = useDuration(new Date(updatedAt ?? 0).getTime());
+
+  if (!isClient) {
+    return <Skeleton className="h-6 w-[10rem]" />;
+  }
+
   if (updatedAt) {
     return (
       <Typography variant="body1" title={ updatedAt.toString() }>

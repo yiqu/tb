@@ -51,6 +51,7 @@ export async function getUser(): Promise<UserProfile | null> {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   try {
     const users = await prisma.userProfile.findFirst();
+    console.log('Getting user...', users);
     return users;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getUser(): ', JSON.stringify(error));
