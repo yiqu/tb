@@ -4,45 +4,71 @@
 import { z } from 'zod';
 import startCase from 'lodash/startCase';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Save, MapPin, RotateCcw } from 'lucide-react';
 import { useForm, useFormContext } from 'react-hook-form';
+import { useState, useActionState, startTransition } from 'react';
+import { Map, Save, MapPin, Building, RotateCcw, NotebookTabs } from 'lucide-react';
 
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { UserProfile } from '@/models/user/user.model';
-import HFSelect from '@/components/hook-form/HFSelect';
-import { Country } from '@/models/country/country.model';
 import Typography from '@/components/typography/Typography';
 import { Separator } from '@/components/ui-pre-19/separator';
 import { HFInputField } from '@/components/hook-form/HFInput';
+import { updateUserLocationAction } from '@/server/user/user.server';
+import { UserProfile, UserLocationEditableWithUserId } from '@/models/user/user.model';
 import { PersonalInfoAddressSchema } from '@/validators/settings/account/PersonalInfo';
+import { SettingsPersonalInfoLocationActionState } from '@/models/settings/SettingsPersonalInfo';
 
-import CountryInput from './CountryListInput';
-import CountryListWrapper from './CountryListWrapper';
 import { getDefaultPersonalInfoAddress } from './utils';
 
 interface LocationInfoFormProps {
   user: UserProfile | null;
+  children: React.ReactNode;
 }
 
-export default function LocationInfoForm({ user }: LocationInfoFormProps) {
+export default function LocationInfoForm({ user, children }: LocationInfoFormProps) {
   const methods = useForm<z.infer<typeof PersonalInfoAddressSchema>>({
     defaultValues: {
-      ...getDefaultPersonalInfoAddress(),
+      ...getDefaultPersonalInfoAddress(user),
     },
     resolver: zodResolver(PersonalInfoAddressSchema),
     mode: 'onSubmit',
     reValidateMode: 'onBlur',
   });
 
+  const [state, formAction] = useActionState<SettingsPersonalInfoLocationActionState, UserLocationEditableWithUserId>(
+    updateUserLocationAction,
+    {
+      isSuccess: false,
+      statusCode: undefined,
+      zodErrorIssues: undefined,
+      updatedAt: user?.updatedAt ?? null,
+      result: {
+        address: user?.address || '',
+        city: user?.city || '',
+        state: user?.state || '',
+        zip: user?.zip || '',
+        country: user?.country || '',
+      },
+    },
+  );
+
   const onSubmitLocationInfo = (data: z.infer<typeof PersonalInfoAddressSchema>) => {
-    console.log('submut');
-    console.log(data);
+    if (user?.id) {
+      startTransition(() => {
+        formAction({
+          ...data,
+          userId: user.id,
+        });
+      });
+    } else {
+      window.alert('User has not been created');
+    }
   };
 
   return (
     <Form { ...methods }>
       <form onSubmit={ methods.handleSubmit(onSubmitLocationInfo) } className={ `` }>
+        <input type="hidden" name="userId" value={ user?.id } />
         <div className="flex flex-col gap-y-2">
           <div className="grid grid-cols-4 gap-2">
             <div className="col-span-3">
@@ -56,15 +82,15 @@ export default function LocationInfoForm({ user }: LocationInfoFormProps) {
             <div className="col-span-1">
               <ZipCodeInput />
             </div>
-            <div className="col-span-1">
-            </div>
+            <div className="col-span-1">{ children }</div>
             <div className="col-span-1">
               <StateInput />
             </div>
           </div>
           <Separator orientation="horizontal" className="my-2" />
-          <FormSubmitButton />
+          <FormSubmitButton key={ `${state.updatedAt}` } />
           <FormErrorMessage />
+          <FormActionErrorMessage state={ state } />
         </div>
       </form>
     </Form>
@@ -73,9 +99,23 @@ export default function LocationInfoForm({ user }: LocationInfoFormProps) {
 
 function FormSubmitButton() {
   const { formState, reset } = useFormContext();
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
   const handleOnReset = () => {
     reset();
+  };
+
+  const handleOnSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!formState.isValid) {
+      return;
+    }
+
+    setIsDisabled(true);
+
+    const form = e.currentTarget.closest('form');
+    if (form) {
+      form.requestSubmit(); // Modern approach, manually trigger form submission
+    }
   };
 
   return (
@@ -86,12 +126,30 @@ function FormSubmitButton() {
           Reset
         </Button>
       : <div></div> }
-      <Button size="default" type="submit">
+      <Button size="default" type="submit" disabled={ isDisabled } onClick={ handleOnSubmit }>
         <Save size={ 16 } />
-        Save address
+        { isDisabled ? 'Saving...' : 'Save address' }
       </Button>
     </section>
   );
+}
+
+function FormActionErrorMessage({ state }: { state: SettingsPersonalInfoLocationActionState }) {
+  if ((state.statusCode ?? 0) > 200 && !state.isSuccess) {
+    return (
+      <div className="rounded-xs border-l-2 border-destructive pl-6">
+        <Typography variant="body1" className="font-semibold text-destructive">
+          Server error:
+        </Typography>
+        <div>
+          <Typography variant="body1" className="text-destructive">
+            { state.message }
+          </Typography>
+        </div>
+      </div>
+    );
+  }
+  return null;
 }
 
 function FormErrorMessage() {
@@ -130,10 +188,10 @@ function StreetAddressInput() {
   return (
     <HFInputField
       control={ control }
-      name="streetAddress"
+      name="address"
       label="Street Address"
       placeholder="123 Main St"
-      startAdornment={ <MapPin size={ 16 } /> }
+      startAdornment={ <MapPin size={ 16 } className="text-muted-foreground/90" /> }
     />
   );
 }
@@ -147,7 +205,7 @@ function CityInput() {
       name="city"
       label="City"
       placeholder="Fairfax"
-      startAdornment={ <MapPin size={ 16 } /> }
+      startAdornment={ <Building size={ 16 } className="text-muted-foreground/90" /> }
     />
   );
 }
@@ -156,7 +214,13 @@ function StateInput() {
   const { control } = useFormContext();
 
   return (
-    <HFInputField control={ control } name="state" label="State" placeholder="VA" startAdornment={ <MapPin size={ 16 } /> } />
+    <HFInputField
+      control={ control }
+      name="state"
+      label="State"
+      placeholder="VA"
+      startAdornment={ <Map size={ 16 } className="text-muted-foreground/90" /> }
+    />
   );
 }
 
@@ -166,10 +230,10 @@ function ZipCodeInput() {
   return (
     <HFInputField
       control={ control }
-      name="zipCode"
+      name="zip"
       label="Zip Code"
       placeholder="22192"
-      startAdornment={ <MapPin size={ 16 } /> }
+      startAdornment={ <NotebookTabs size={ 16 } className="text-muted-foreground/90" /> }
     />
   );
 }

@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
-import { cacheLife } from 'next/dist/server/use-cache/cache-life';
+import { unstable_cacheLife as cacheLife } from 'next/cache';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
 
 import DisplayCard from './DisplayCard';
-import InputFallback from './InputFallback';
 import DisplayNameWrapper from './DisplayNameWrapper';
 
 export default async function DisplayName() {
@@ -19,9 +19,13 @@ export default async function DisplayName() {
           Please enter your full name, or a display name you are comfortable with.
         </Typography>
       </section>
-      <Suspense fallback={ <InputFallback /> }>
+      <Suspense fallback={ <FallBack /> }>
         <DisplayNameWrapper />
       </Suspense>
     </DisplayCard>
   );
+}
+
+function FallBack() {
+  return <Skeleton className="h-[113px] w-full" />;
 }

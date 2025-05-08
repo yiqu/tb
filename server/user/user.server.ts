@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 'use server';
 
 import { revalidateTag } from 'next/cache';
@@ -6,14 +7,19 @@ import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
 import { displayNameSchema } from '@/validators/settings/account/PersonalInfo';
-import { UserProfile, UserProfileAddable, UserProfileEditable } from '@/models/user/user.model';
+import { UserProfile, UserProfileAddable, UserProfileEditable, UserLocationEditable } from '@/models/user/user.model';
 import {
+  SettingsPersonalInfoLocationActionState,
   SettingsPersonalInfoAdminModeActionState,
   SettingsPersonalInfoDisplayNameActionState,
 } from '@/models/settings/SettingsPersonalInfo';
 
 // eslint-disable-next-line no-unused-vars
 import type { Prisma } from '@prisma/client';
+
+export async function revalidateUser() {
+  revalidateTag('get-user');
+}
 
 export async function addNewUser(user: UserProfileAddable): Promise<UserProfile> {
   try {
@@ -51,7 +57,7 @@ export async function getUser(): Promise<UserProfile | null> {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   try {
     const users = await prisma.userProfile.findFirst();
-    console.log('Getting user...');
+    console.log('getUser() function called');
     return users;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getUser(): ', JSON.stringify(error));
@@ -85,7 +91,7 @@ export async function updateUserAction(
         name: displayName as string,
       });
 
-      revalidateTag('get-user');
+      revalidateUser();
 
       return {
         isSuccess: true,
@@ -142,7 +148,7 @@ export async function toggleAdminMode(userId: string, isAdmin: boolean) {
       data: { isAdmin },
     });
 
-    revalidateTag('get-user');
+    revalidateUser();
 
     return updatedUser;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -183,5 +189,72 @@ export async function toggleAdminModeAction(
     statusCode: 400,
     updatedAt: prevState.updatedAt,
     zodErrorIssues: undefined,
+    message: 'User is required',
   };
+}
+
+export async function updateUserLocationAction(
+  prevState: SettingsPersonalInfoLocationActionState,
+  formData: any,
+): Promise<SettingsPersonalInfoLocationActionState> {
+  const locationData: UserLocationEditable = {
+    address: (formData.address as string) || '',
+    city: (formData.city as string) || '',
+    state: (formData.state as string) || '',
+    zip: (formData.zip as string) || '',
+    country: (formData.country as string) || '',
+  };
+
+  const userId: string = (formData.userId as string) || '';
+
+  if (userId) {
+    try {
+      const updatedUser = await updateUserLocation(userId, locationData);
+
+      return {
+        isSuccess: true,
+        result: {
+          address: updatedUser.address || '',
+          city: updatedUser.city || '',
+          state: updatedUser.state || '',
+          zip: updatedUser.zip || '',
+          country: updatedUser.country || '',
+        },
+        statusCode: 200,
+        zodErrorIssues: undefined,
+        updatedAt: updatedUser.updatedAt,
+      };
+    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+      console.error('Server error at updateUserLocationAction(): ', JSON.stringify(error));
+      throw new Error(`User '${userId}' could not be updated. Code: ${error.code}`);
+    }
+  }
+
+  return {
+    isSuccess: false,
+    result: prevState.result,
+    statusCode: 400,
+    updatedAt: prevState.updatedAt,
+    zodErrorIssues: undefined,
+    message: 'User has not been created',
+  };
+}
+
+export async function updateUserLocation(userId: string, location: UserLocationEditable) {
+  // delay
+  // await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  try {
+    const updatedUser = await prisma.userProfile.update({
+      where: { id: userId },
+      data: location,
+    });
+
+    revalidateUser();
+
+    return updatedUser;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at updateUserLocation(): ', JSON.stringify(error));
+    throw new Error(`User '${userId}' could not be updated. Code: ${error.code}`);
+  }
 }

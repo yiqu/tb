@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 
+import { Skeleton } from '@/components/ui-pre-19/skeleton';
 import Typography from '@/components/typography/Typography';
 
 import DisplayCard from './DisplayCard';
-import InputFallback from './InputFallback';
 import AdminModeWrapper from './AdminModeWrapper';
 
 export default function AdminMode() {
@@ -13,9 +13,13 @@ export default function AdminMode() {
         <Typography variant="h5">Admin</Typography>
         <Typography variant="body1">Toggle admin mode.</Typography>
       </section>
-      <Suspense fallback={ <InputFallback /> }>
+      <Suspense fallback={ <FallBack /> }>
         <AdminModeWrapper />
       </Suspense>
     </DisplayCard>
   );
+}
+
+function FallBack() {
+  return <Skeleton className="h-[19px] w-full" />;
 }

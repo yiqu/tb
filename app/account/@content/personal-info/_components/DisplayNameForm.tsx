@@ -70,7 +70,7 @@ function DisplayNameFormSubmit({
   return (
     <section className="flex flex-row items-center justify-between">
       <DisplayNameFormUpdatedAt updatedAt={ updatedAt } key={ `${updatedAt}` } />
-      <Button size="default" type="submit">
+      <Button size="default" type="submit" disabled={ pending }>
         <Save size={ 16 } />
         { pending ?
           'Saving...'
@@ -111,7 +111,7 @@ function DisplayNameFormUpdatedAt({ updatedAt }: { updatedAt: string | Date | nu
   if (updatedAt) {
     return (
       <Typography variant="body1" title={ updatedAt.toString() }>
-        Last updated: { duration } ago.
+        Last updated: { duration } ago
       </Typography>
     );
   }

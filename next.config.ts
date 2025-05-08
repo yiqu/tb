@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   experimental: {
     dynamicIO: true,
     viewTransition: true,
+    useCache: true,
+    ppr: 'incremental'
   },
 };
 

@@ -15,3 +15,5 @@ export type UserProfile = {
 
 export type UserProfileAddable = Pick<UserProfile, 'name' | 'email' | 'isAdmin'>;
 export type UserProfileEditable = Partial<UserProfileAddable>;
+export type UserLocationEditable = Required<Pick<UserProfile, 'address' | 'city' | 'state' | 'zip' | 'country'>>;
+export type UserLocationEditableWithUserId = UserLocationEditable & { userId: string };

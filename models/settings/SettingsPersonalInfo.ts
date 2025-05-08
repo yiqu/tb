@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { displayNameSchema } from '@/validators/settings/account/PersonalInfo';
+import { displayNameSchema, PersonalInfoAddressSchema } from '@/validators/settings/account/PersonalInfo';
 
 export type SettingsPersonalInfoDisplayNameActionState = {
   isSuccess: boolean;
@@ -16,5 +16,14 @@ export type SettingsPersonalInfoAdminModeActionState = {
   zodErrorIssues?: z.ZodIssue[];
   result: boolean;
   updatedAt?: string | Date | null;
+  message?: string;
 };
 
+export type SettingsPersonalInfoLocationActionState = {
+  isSuccess: boolean;
+  statusCode?: number;
+  zodErrorIssues?: z.ZodIssue[];
+  result: z.infer<typeof PersonalInfoAddressSchema>;
+  updatedAt?: string | Date | null;
+  message?: string;
+};

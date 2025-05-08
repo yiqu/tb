@@ -2,6 +2,8 @@
 import { X } from 'lucide-react';
 import { Control } from 'react-hook-form';
 
+import { cn } from '@/lib/utils';
+
 import { Button } from '../ui/button';
 import { Select, SelectItem, SelectValue, SelectContent, SelectTrigger } from '../ui/select';
 import { FormItem, FormField, FormLabel, FormControl, FormMessage, FormDescription } from '../ui/form';
@@ -20,6 +22,7 @@ interface HFSelectProps {
   helperText?: string;
   disabled?: boolean;
   isLoading?: boolean;
+  startAdornment?: React.ReactNode;
 }
 
 export default function HFSelect({
@@ -31,6 +34,7 @@ export default function HFSelect({
   isLoading,
   label,
   placeholder,
+  startAdornment,
 }: HFSelectProps) {
   return (
     <FormField
@@ -42,11 +46,22 @@ export default function HFSelect({
             { label ?
               <FormLabel>{ label }</FormLabel>
             : null }
+
             <div className="relative">
+              { startAdornment ?
+                <div className={ `pointer-events-none absolute top-0 left-0 flex h-full items-center pl-3` }>
+                  { startAdornment }
+                </div>
+              : null }
               <Select onValueChange={ field.onChange } defaultValue={ field.value } value={ field.value } disabled={ disabled }>
                 <FormControl className="w-full">
-                  <SelectTrigger className={ field.value ? 'pr-8' : '' }>
-                    <SelectValue placeholder={ placeholder || 'Select' } />
+                  <SelectTrigger
+                    className={ cn({
+                      'pr-10': field.value,
+                      'pl-10': startAdornment,
+                    }) }
+                  >
+                    <SelectValue placeholder={ placeholder || 'Select an option' } />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -67,8 +82,8 @@ export default function HFSelect({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className={ `absolute top-0 right-0 h-full px-4 py-0 hover:bg-transparent` }
-                  onChange={ (e) => {
+                  className={ `absolute top-0 right-0 h-full px-3 py-0 hover:bg-transparent` }
+                  onClick={ (e) => {
                     e.stopPropagation();
                     field.onChange('');
                   } }
