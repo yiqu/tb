@@ -17,7 +17,6 @@ interface HFInputFieldProps extends React.ComponentProps<'input'> {
   name: string;
   label?: string;
   placeholder?: string;
-  // helperText?: string;
   type?: string;
   description?: string;
   startAdornment?: ReactNode;
@@ -26,6 +25,7 @@ interface HFInputFieldProps extends React.ComponentProps<'input'> {
   maxLines?: number;
   disabled?: boolean;
   ref?: any;
+  formItemClassName?: string;
 }
 
 export function HFInputField({
@@ -40,8 +40,8 @@ export function HFInputField({
   name,
   label,
   placeholder,
-  //helperText,
   disabled,
+  formItemClassName,
   ...inputProps
 }: HFInputFieldProps) {
   const lineHeight = 3;
@@ -53,7 +53,7 @@ export function HFInputField({
       control={ control }
       name={ name }
       render={ ({ field }: { field: ControllerRenderProps<FieldValues, string> }) => (
-        <FormItem>
+        <FormItem className={ cn(formItemClassName) }>
           { label ?
             <FormLabel>{ label }</FormLabel>
           : null }

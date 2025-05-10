@@ -12,7 +12,19 @@ function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGr
   `, className) } { ...props } />;
 }
 
-function RadioGroupItem({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
+/**
+ * Updated RadioGroupItem component to use the new circleIconClassName prop
+ * Date updated: 05/09/2025
+ * 
+ * 
+ * @param param0 
+ * @returns 
+ */
+function RadioGroupItem({
+  className,
+  circleIconClassName,
+  ...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Item> & { circleIconClassName?: string }) {
   return (
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"
@@ -34,10 +46,15 @@ function RadioGroupItem({ className, ...props }: React.ComponentProps<typeof Rad
         data-slot="radio-group-indicator"
         className="relative flex items-center justify-center"
       >
-        <CircleIcon className={ `
-          absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2
-          fill-primary
-        ` } />
+        <CircleIcon
+          className={ cn(
+            `
+              absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2
+              fill-primary
+            `,
+            circleIconClassName,
+          ) }
+        />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   );

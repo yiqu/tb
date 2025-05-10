@@ -10,7 +10,7 @@ import HFSelect, { HFSelectOption } from '@/components/hook-form/HFSelect';
 export default function CountryInput({ countryListPromise }: { countryListPromise: Promise<Country[]> }) {
   const { control } = useFormContext();
   const countryList = use(countryListPromise);
-  
+
   const selectOptions: HFSelectOption[] = countryList.map((country) => ({
     label: country.name,
     value: country.code,

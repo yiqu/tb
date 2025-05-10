@@ -1,5 +1,5 @@
+import AccountGeneral from '../_components/AccountGeneral';
+
 export default function AccountContentPage() {
-  return <div>
-    General
-  </div>;
+  return <AccountGeneral />;
 }

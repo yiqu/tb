@@ -51,8 +51,6 @@
   --font-serif: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-caveat: var(--font-caveat);
-
-  --color-kq-shadow: rgba(0, 0, 0, 0.1);
 }
 
 .dark {
@@ -97,8 +95,6 @@
   --shadow-lg: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 4px 6px -1px hsl(28 13% 20% / 0.02);
   --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 8px 10px -1px hsl(28 13% 20% / 0.02);
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.05);
-
-  --color-kq-shadow: rgb(89, 89, 89);
 }
 
 @theme inline {
@@ -185,17 +181,71 @@
   }
 }
 
-@layer app-top-loader {
+@layer other-colors {
   :root {
-    --app-top-loader-color: #000;
+    --color-kq-shadow: rgba(0, 0, 0, 0.1);
   }
   .dark {
-    --app-top-loader-color: #fff;
+    --color-kq-shadow: rgb(89, 89, 89);
   }
 }
 
-@layer text-colors {
-  .light0 {
+@layer app-top-loader {
+  :root {
+    --app-top-loader-color: #cc9900;
+  }
+  .dark {
+    --app-top-loader-color: #b38600;
+  }
+}
+
+@layer link-color-utils {
+  :root {
+    --link-internal: #2c58a8;
+    --link-external-foreground: #2c58a8;
+  }
+  .dark {
+    --link-internal: #2c58a8;
+    --link-external-foreground: #2c58a8;
+  }
+}
+
+@layer text-color-utils {
+  :root {
+    a.external {
+      color: var(--link-external-foreground);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-thickness: 1px;
+    }
+
+    a:not([role='menuitem']):not([data-slot='sidebar-menu-button']):not([data-slot='sidebar-menu-sub-button']):not(
+        [role='tab']
+      ):not([data-slot='popover-trigger']) {
+      color: var(--link-internal);
+      font-weight: 500;
+    }
+
+    .text-lightish {
+      color: #202124;
+    }
+    .text-light {
+      color: #484a51;
+    }
+    .text-lighter {
+      color: #6c6f7a;
+    }
+  }
+  .dark {
+    .text-lightish {
+      color: #d6d7db;
+    }
+    .text-light {
+      color: #aeb0b7;
+    }
+    .text-lighter {
+      color: #858893;
+    }
   }
 }
 

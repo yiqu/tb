@@ -1,10 +1,9 @@
 /* eslint-disable readable-tailwind/multiline */
 'use client';
 
-import * as React from 'react';
-import { useRef, useEffect, useCallback } from 'react';
 import { X, Check, ChevronsUpDown } from 'lucide-react';
 import { type Control, useController } from 'react-hook-form';
+import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -33,6 +32,7 @@ interface AutocompleteInputProps {
   rules?: Record<string, any>;
   multi?: boolean;
   isLoading?: boolean;
+  formItemClassName?: string;
 }
 
 export function AutocompleteInput({
@@ -48,9 +48,10 @@ export function AutocompleteInput({
   rules,
   isLoading = false,
   multi = true,
+  formItemClassName,
 }: AutocompleteInputProps) {
-  const [open, setOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState('');
+  const [open, setOpen] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>('');
   const listRef = useRef<HTMLDivElement>(null);
   const wasOpenRef = useRef<boolean>(false);
 
@@ -61,7 +62,7 @@ export function AutocompleteInput({
     : [];
 
   // For uncontrolled mode
-  const [selectedValues, setSelectedValues] = React.useState<string[]>(initialValue);
+  const [selectedValues, setSelectedValues] = useState<string[]>(initialValue);
 
   // Use react-hook-form controller if control is provided
   const isControlled = !!control;
@@ -75,7 +76,7 @@ export function AutocompleteInput({
   });
 
   // Get the current value (either from form control or local state)
-  const currentValues: any[] = React.useMemo(() => {
+  const currentValues: any[] = useMemo(() => {
     return (
       isControlled ?
         Array.isArray(field.value) ? field.value
@@ -104,7 +105,7 @@ export function AutocompleteInput({
     wasOpenRef.current = open;
   }, [open, currentValues, isLoading]);
 
-  const handleSelect = React.useCallback(
+  const handleSelect = useCallback(
     (value: string) => {
       let newValues: string[] = [];
 
@@ -140,7 +141,7 @@ export function AutocompleteInput({
     [currentValues, field, isControlled, onChange, multi],
   );
 
-  const handleRemove = React.useCallback(
+  const handleRemove = useCallback(
     (value: string) => {
       const newValues = currentValues.filter((item) => item !== value);
 
@@ -173,7 +174,7 @@ export function AutocompleteInput({
     onChange?.(multi ? [] : '');
   }, [field, isControlled, multi, onChange]);
 
-  const getSingleSelectedLabel = () => {
+  const getSingleSelectedLabel = useCallback(() => {
     if (currentValues.length === 0) {
       return null;
     }
@@ -181,7 +182,7 @@ export function AutocompleteInput({
       return opt.value === currentValues[0];
     });
     return option?.label;
-  };
+  }, [currentValues, options]);
 
   return (
     <FormField
@@ -189,7 +190,7 @@ export function AutocompleteInput({
       name={ name }
       render={ ({ field }) => {
         return (
-          <FormItem>
+          <FormItem className={ cn(formItemClassName) }>
             { label ?
               <FormLabel>{ label }</FormLabel>
             : null }
