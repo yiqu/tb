@@ -54,7 +54,6 @@ export async function getUser(): Promise<UserProfile | null> {
   cacheLife('weeks');
   cacheTag('get-user');
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
   try {
     const users = await prisma.userProfile.findFirst();
     console.log('getUser() function called');
@@ -141,7 +140,7 @@ export async function updateUser(id: string, user: UserProfileEditable) {
 
 export async function toggleAdminMode(userId: string, isAdmin: boolean) {
   //sleep
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  //await new Promise((resolve) => setTimeout(resolve, 2000));
   try {
     const updatedUser = await prisma.userProfile.update({
       where: { id: userId },
