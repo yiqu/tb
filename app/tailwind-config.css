@@ -51,6 +51,9 @@
   --font-serif: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-caveat: var(--font-caveat);
+  --font-lilita-one: var(--font-lilita-one);
+  --font-cherry-bomb-one: var(--font-cherry-bomb-one);
+  --font-borel: var(--font-borel);
 }
 
 .dark {
@@ -135,6 +138,9 @@
   --font-serif: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-caveat: var(--font-caveat);
+  --font-lilita-one: var(--font-lilita-one);
+  --font-cherry-bomb-one: var(--font-cherry-bomb-one);
+  --font-borel: var(--font-borel);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -251,11 +257,11 @@
 
 @layer app-colors {
   .logo-text-color {
-    @apply text-amber-700;
+    @apply text-amber-900;
   }
   .dark {
     .logo-text-color {
-      @apply text-amber-500;
+      color: #c35009;
     }
   }
 }

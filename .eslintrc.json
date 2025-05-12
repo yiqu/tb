@@ -165,7 +165,7 @@
     "unicorn/no-useless-undefined": 1,
     "unicorn/prefer-date-now": 1,
     "unicorn/prefer-number-properties": 1,
-    "readable-tailwind/multiline": 1,
+    "readable-tailwind/multiline": ["warn", { "lineBreakStyle": "unix" }],
     "readable-tailwind/no-unnecessary-whitespace": 1,
     "readable-tailwind/sort-classes": "off",
     "readable-tailwind/no-duplicate-classes": 2

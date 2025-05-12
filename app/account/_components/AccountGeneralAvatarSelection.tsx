@@ -1,4 +1,3 @@
-/* eslint-disable readable-tailwind/multiline */
 'use client';
 
 import Image from 'next/image';
@@ -51,15 +50,20 @@ export default function AccountGeneralAvatarSelection({ avatarId }: AccountGener
   return (
     <section className="w-full">
       <RadioGroup onValueChange={ onAvatarChange } value={ `${avatarIdOptimistic}` }>
-        <div className="grid grid-cols-10 gap-2">
+        <div className="grid grid-cols-8 gap-2">
           { avatarOptions.map((option) => {
             const isSelected = avatarIdOptimistic === option.id;
 
             return (
               <div key={ option.id } className="col-span-4">
-                <div className={ `flex w-full flex-col items-center justify-start gap-y-4` }>
+                <div className={ `
+                  flex w-full flex-col items-center justify-start gap-y-4
+                ` }>
                   <Typography
-                    className="text-center font-caveat text-amber-800 underline underline-offset-8"
+                    className={ `
+                      text-center font-caveat text-amber-800 underline
+                      underline-offset-8
+                    ` }
                     variant="h3"
                   >
                     { option.name }
@@ -75,7 +79,10 @@ export default function AccountGeneralAvatarSelection({ avatarId }: AccountGener
 
                   <RadioGroupItem
                     value={ option.id }
-                    className={ cn('size-8 cursor-pointer transition-all duration-300 hover:scale-120', {
+                    className={ cn(`
+                      size-8 cursor-pointer transition-all duration-300
+                      hover:scale-120
+                    `, {
                       'hover:scale-100': isSelected,
                     }) }
                     circleIconClassName={ cn('size-5', {

@@ -4,8 +4,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 import { Suspense } from 'react';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import { Geist, Caveat, Geist_Mono } from 'next/font/google';
-import { unstable_ViewTransition as ViewTransition } from 'react';
+import { Geist, Borel, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One } from 'next/font/google';
 
 import theme from '@/components/ui-mui/mui/theme';
 import AppLayout from '@/components/layout/AppLayout';
@@ -27,16 +26,36 @@ import './tailwind-config.css';
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  preload: true,
 });
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+  preload: true,
 });
 
 const caveat = Caveat({
   variable: '--font-caveat',
   subsets: ['latin'],
+});
+
+const lilitaOne = Lilita_One({
+  variable: '--font-lilita-one',
+  subsets: ['latin'],
+  weight: '400',
+});
+
+const borel = Borel({
+  variable: '--font-borel',
+  subsets: ['latin'],
+  weight: '400',
+});
+
+const cherryBombOne = Cherry_Bomb_One({
+  variable: '--font-cherry-bomb-one',
+  subsets: ['latin'],
+  weight: '400',
 });
 
 export const metadata: Metadata = {
@@ -52,25 +71,35 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <ReactScan />
-      <body className={` ${geistSans.variable} ${geistMono.variable} ${caveat.variable} font-sans antialiased`}>
+      <body
+        className={ `
+          ${geistSans.variable}
+          ${geistMono.variable}
+          ${caveat.variable}
+          ${lilitaOne.variable}
+          ${borel.variable}
+          ${cherryBombOne.variable}
+          font-sans antialiased
+        ` }
+      >
         <AgGridRegister />
         <AppTopLoader />
         <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
-        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-          <MuiThemeProvider theme={theme} defaultMode="light">
+        <AppRouterCacheProvider options={ { enableCssLayer: true } }>
+          <MuiThemeProvider theme={ theme } defaultMode="light">
             <NuqsAdapter>
               <TanstackQueryClientProvider>
                 <ThemeProvider
                   attribute="class"
                   defaultTheme="light"
-                  enableSystem={false}
+                  enableSystem={ false }
                   disableTransitionOnChange
                   storageKey="app-theme"
                 >
-                  {/* <CssBaseline /> */}
-                  <TooltipProvider delayDuration={0}>
+                  { /* <CssBaseline /> */ }
+                  <TooltipProvider delayDuration={ 0 }>
                     <Suspense>
-                      <AppLayout>{children}</AppLayout>
+                      <AppLayout>{ children }</AppLayout>
                     </Suspense>
                     <CustomToaster />
                   </TooltipProvider>

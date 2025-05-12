@@ -30,3 +30,16 @@ export function safeParseJson<T>(jsonString: string, defaultValue: T = {} as T):
     return defaultValue;
   }
 }
+
+/**
+ * Avatar
+ */
+
+export function getAvatarImgUrlById(id: string) {
+  if (id === '1') {
+    return '/pfp/dishy.png';
+  } else if (id === '2') {
+    return '/pfp/deer.png';
+  }
+  return '/pfp/dishy.png';
+}
