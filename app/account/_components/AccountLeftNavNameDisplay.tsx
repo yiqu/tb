@@ -1,9 +1,9 @@
-import { getUser } from '@/server/user/user.server';
 import { UserProfile } from '@/models/user/user.model';
+import { getUserCached } from '@/server/user/user.server';
 import Typography from '@/components/typography/Typography';
 
 export default async function AccountLeftNavNameDisplay() {
-  const userProfile: UserProfile | null = await getUser();
+  const userProfile: UserProfile | null = await getUserCached();
 
   if (!userProfile) {
     return (

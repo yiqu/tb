@@ -80,7 +80,8 @@ export default function AccountGeneralAvatarSelection({ avatarId }: AccountGener
                   <RadioGroupItem
                     value={ option.id }
                     className={ cn(`
-                      size-8 cursor-pointer transition-all duration-300
+                      size-8 cursor-pointer border-ring transition-all
+                      duration-300
                       hover:scale-120
                     `, {
                       'hover:scale-100': isSelected,

@@ -3,9 +3,10 @@
 /* eslint-disable readable-tailwind/multiline */
 import { z } from 'zod';
 import startCase from 'lodash/startCase';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useFormContext } from 'react-hook-form';
 import { useState, useActionState, startTransition } from 'react';
+import { useForm, useFormState, useFormContext } from 'react-hook-form';
 import { Map, Save, MapPin, Building, RotateCcw, NotebookTabs } from 'lucide-react';
 
 import { Form } from '@/components/ui/form';
@@ -13,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import Typography from '@/components/typography/Typography';
 import { Separator } from '@/components/ui-pre-19/separator';
 import { HFInputField } from '@/components/hook-form/HFInput';
+import DurationDisplay from '@/shared/components/DurationDisplay';
 import { updateUserLocationAction } from '@/server/user/user.server';
 import { UserProfile, UserLocationEditableWithUserId } from '@/models/user/user.model';
 import { PersonalInfoAddressSchema } from '@/validators/settings/account/PersonalInfo';
@@ -33,6 +35,12 @@ export default function LocationInfoForm({ user, children }: LocationInfoFormPro
     resolver: zodResolver(PersonalInfoAddressSchema),
     mode: 'onSubmit',
     reValidateMode: 'onBlur',
+  });
+
+  useHotkeys<any>('shift+enter', () => {
+    if (methods.formState.isDirty) {
+      methods.handleSubmit(onSubmitLocationInfo)();
+    }
   });
 
   const [state, formAction] = useActionState<SettingsPersonalInfoLocationActionState, UserLocationEditableWithUserId>(
@@ -59,6 +67,10 @@ export default function LocationInfoForm({ user, children }: LocationInfoFormPro
           ...data,
           userId: user.id,
         });
+      });
+
+      methods.reset(undefined, {
+        keepDirty: false,
       });
     } else {
       window.alert('User has not been created');
@@ -88,7 +100,7 @@ export default function LocationInfoForm({ user, children }: LocationInfoFormPro
             </div>
           </div>
           <Separator orientation="horizontal" className="my-2" />
-          <FormSubmitButton key={ `${state.updatedAt}` } />
+          <FormSubmitButton key={ `${state.updatedAt}` } lastUpdated={ state.updatedAt as string | null } />
           <FormErrorMessage />
           <FormActionErrorMessage state={ state } />
         </div>
@@ -97,16 +109,19 @@ export default function LocationInfoForm({ user, children }: LocationInfoFormPro
   );
 }
 
-function FormSubmitButton() {
-  const { formState, reset } = useFormContext();
+function FormSubmitButton({ lastUpdated }: { lastUpdated: string | null }) {
+  const { reset, control } = useFormContext();
+  const { isDirty, isValid } = useFormState({ control });
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
   const handleOnReset = () => {
-    reset();
+    reset(undefined, {
+      keepDirty: false,
+    });
   };
 
   const handleOnSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!formState.isValid) {
+    if (!isValid) {
       return;
     }
 
@@ -120,13 +135,13 @@ function FormSubmitButton() {
 
   return (
     <section className="flex flex-row items-center justify-between">
-      { formState.isDirty ?
+      { isDirty ?
         <Button size="default" variant="outline" type="button" onClick={ handleOnReset }>
           <RotateCcw size={ 16 } className="text-orange-800 dark:text-orange-400" />
           Reset
         </Button>
-      : <div></div> }
-      <Button size="default" type="submit" disabled={ isDisabled } onClick={ handleOnSubmit }>
+      : <DurationDisplay updatedAt={ lastUpdated } /> }
+      <Button size="default" disabled={ isDisabled } onClick={ handleOnSubmit } type="button">
         <Save size={ 16 } />
         { isDisabled ? 'Saving...' : 'Save address' }
       </Button>

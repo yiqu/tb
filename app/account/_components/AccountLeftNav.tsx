@@ -1,4 +1,5 @@
 import AccountLeftNavAvatar from './AccountLeftNavAvatar';
+import AccountLocalstorageSizeInfo from './AccountLocalstorageSizeInfo';
 import AccountLeftNavNameDisplayWrapper from './AccountLeftNavNameDisplayWrapper';
 import AccountLeftNavIsAdminDisplayWrapper from './AccountLeftNavIsAdminDisplayWrapper';
 
@@ -10,6 +11,7 @@ export default function AccountLeftNav() {
         <AccountLeftNavNameDisplayWrapper />
         <AccountLeftNavIsAdminDisplayWrapper />
       </div>
+      <AccountLocalstorageSizeInfo />
     </div>
   );
 }

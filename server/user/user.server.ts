@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 'use server';
-
+import 'server-only';
+import { cache } from 'react';
 import { revalidateTag } from 'next/cache';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
@@ -63,6 +64,8 @@ export async function getUser(): Promise<UserProfile | null> {
     throw new Error(`Users could not be found. Code: ${error.code}`);
   }
 }
+
+export const getUserCached = cache(getUser);
 
 export async function updateUserAction(
   prevState: SettingsPersonalInfoDisplayNameActionState,
