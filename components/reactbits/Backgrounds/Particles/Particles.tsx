@@ -118,7 +118,7 @@ const Particles: React.FC<ParticlesProps> = ({
     if (!container) return;
 
     const renderer = new Renderer({ depth: false, alpha: true });
-    const {gl} = renderer;
+    const { gl } = renderer;
     container.appendChild(gl.canvas);
     gl.clearColor(0, 0, 0, 0);
 
@@ -242,10 +242,7 @@ const Particles: React.FC<ParticlesProps> = ({
     disableRotation,
   ]);
 
-  return <div ref={ containerRef } className={ `
-    relative h-full w-full
-    ${className}
-  ` } />;
+  return <div ref={ containerRef } className={ `relative h-full w-full ${className}` } />;
 };
 
 export default Particles;

@@ -2,8 +2,8 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import React, { useEffect, useRef } from 'react';
-import { Renderer, Program, Mesh, Triangle, Transform, Vec3, Camera } from 'ogl';
+import React, { useRef, useEffect } from 'react';
+import { Mesh, Vec3, Camera, Program, Renderer, Triangle, Transform } from 'ogl';
 
 type MetaBallsProps = {
   color?: string;
@@ -20,9 +20,9 @@ type MetaBallsProps = {
 
 function parseHexColor(hex: string): [number, number, number] {
   const c = hex.replace('#', '');
-  const r = parseInt(c.substring(0, 2), 16) / 255;
-  const g = parseInt(c.substring(2, 4), 16) / 255;
-  const b = parseInt(c.substring(4, 6), 16) / 255;
+  const r = Number.parseInt(c.substring(0, 2), 16) / 255;
+  const g = Number.parseInt(c.substring(2, 4), 16) / 255;
+  const b = Number.parseInt(c.substring(4, 6), 16) / 255;
   return [r, g, b];
 }
 
@@ -142,7 +142,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       alpha: true,
       premultipliedAlpha: false,
     });
-    const gl = renderer.gl;
+    const {gl} = renderer;
     gl.clearColor(0, 0, 0, enableTransparency ? 0 : 1);
     container.appendChild(gl.canvas);
 
@@ -299,7 +299,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     enableTransparency,
   ]);
 
-  return <div ref={containerRef} className="relative h-full w-full" />;
+  return <div ref={ containerRef } className="relative h-full w-full" />;
 };
 
 export default MetaBalls;
