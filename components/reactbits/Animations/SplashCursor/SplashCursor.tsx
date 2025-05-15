@@ -1,9 +1,10 @@
+/* eslint-disable no-console */
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 interface ColorRGB {
   r: number;
@@ -134,7 +135,7 @@ export default function SplashCursor({
       const isWebGL2 = 'drawBuffers' in gl;
 
       let supportLinearFiltering = false;
-      let halfFloat = null;
+      let halfFloat: any = null;
 
       if (isWebGL2) {
         // For WebGL2
@@ -237,7 +238,7 @@ export default function SplashCursor({
     }
 
     function hashCode(s: string) {
-      if (!s.length) return 0;
+      if (s.length === 0) return 0;
       let hash = 0;
       for (let i = 0; i < s.length; i++) {
         hash = (hash << 5) - hash + s.charCodeAt(i);
@@ -1241,7 +1242,7 @@ export default function SplashCursor({
       const pointer = pointers[0];
       const posX = scaleByPixelRatio(e.clientX);
       const posY = scaleByPixelRatio(e.clientY);
-      const color = pointer.color;
+      const { color } = pointer;
       updatePointerMoveData(pointer, posX, posY, color);
     });
 
@@ -1314,7 +1315,7 @@ export default function SplashCursor({
 
   return (
     <div className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full">
-      <canvas ref={canvasRef} id="fluid" className="block h-screen w-screen"></canvas>
+      <canvas ref={ canvasRef } id="fluid" className="block h-screen w-screen"></canvas>
     </div>
   );
 }
