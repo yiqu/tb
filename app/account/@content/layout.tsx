@@ -14,7 +14,7 @@ export default async function AccountContentLayout({ children }: AccountContentL
   return (
     <LayoutWithGutter size="med">
       <div className="h-full w-full">
-        <Grid container width="100%">
+        <Grid container width="100%" spacing={ 4 }>
           <Grid size={ { xs: 1, sm: 3 } }>
             <AccountLeftNav />
           </Grid>

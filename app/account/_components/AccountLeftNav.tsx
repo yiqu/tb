@@ -5,7 +5,7 @@ import AccountLeftNavIsAdminDisplayWrapper from './AccountLeftNavIsAdminDisplayW
 
 export default function AccountLeftNav() {
   return (
-    <div className="flex w-full flex-col items-center justify-start gap-y-4">
+    <div className="flex w-full flex-col items-center justify-start gap-y-6">
       <AccountLeftNavAvatar />
       <div className="flex w-full flex-col items-center justify-start gap-y-2">
         <AccountLeftNavNameDisplayWrapper />

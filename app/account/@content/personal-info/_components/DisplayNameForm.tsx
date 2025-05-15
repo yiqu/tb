@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { UserProfile } from '@/models/user/user.model';
 import Typography from '@/components/typography/Typography';
 import { updateUserAction } from '@/server/user/user.server';
+import { CardFooter, CardContent } from '@/components/ui/card';
 import { SettingsPersonalInfoDisplayNameActionState } from '@/models/settings/SettingsPersonalInfo';
 
 interface DisplayNameFormProps {
@@ -35,13 +36,15 @@ export default function DisplayNameForm({ user }: DisplayNameFormProps) {
 
   return (
     <form action={ formAction }>
-      <div className="flex flex-col gap-y-2">
+      <CardContent>
+        <input type="hidden" name="userId" value={ user?.id } />
         <DisplayNameFormInput defaultValue={ user?.name || '' } isAdmin={ user?.isAdmin || false } />
-        <Separator orientation="horizontal" className="my-2" />
+      </CardContent>
+      <Separator orientation="horizontal" className="my-6" />
+      <CardFooter className="flex w-full flex-col items-start justify-start">
         <DisplayNameFormSubmit isNewUser={ isNewUser } updatedAt={ user?.updatedAt } />
         <DisplayNameFormError zodError={ state.zodErrorIssues } />
-        <input type="hidden" name="userId" value={ user?.id } />
-      </div>
+      </CardFooter>
     </form>
   );
 }
@@ -68,7 +71,7 @@ function DisplayNameFormSubmit({
 }) {
   const { pending } = useFormStatus();
   return (
-    <section className="flex flex-row items-center justify-between">
+    <section className="flex w-full flex-row items-center justify-between">
       <DisplayNameFormUpdatedAt updatedAt={ updatedAt } key={ `${updatedAt}` } />
       <Button size="default" type="submit" disabled={ pending }>
         <Save size={ 16 } />

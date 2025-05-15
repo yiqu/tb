@@ -161,6 +161,8 @@
 
   --animate-shine: shine var(--duration) infinite linear;
   --animate-aurora: aurora 8s ease-in-out infinite alternate;
+  --animate-meteor: meteor 5s linear infinite;
+
 
 }
 

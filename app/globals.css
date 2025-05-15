@@ -90,6 +90,20 @@ html:not(.dark) [data-hide-on-theme='light'] {
   }
 }
 
+@keyframes meteor {
+  0% {
+    transform: rotate(var(--angle)) translateX(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--angle)) translateX(-500px);
+    opacity: 0;
+  }
+}
+
 .avatar-tilted-card-text-overlay {
   position: absolute;
   top: 0;

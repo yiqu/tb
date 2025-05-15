@@ -8,6 +8,7 @@ import Typography from '@/components/typography/Typography';
 import { AvatarOption } from '@/models/settings/Avatar.models';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { setSettingsUpdateAvatarImage } from '@/server/settings/user-avatar';
+import SplitText from '@/components/reactbits/TextAnimations/SplitText/SplitText';
 
 const avatarOptions: AvatarOption[] = [
   {
@@ -56,17 +57,18 @@ export default function AccountGeneralAvatarSelection({ avatarId }: AccountGener
 
             return (
               <div key={ option.id } className="col-span-4">
-                <div className={ `
-                  flex w-full flex-col items-center justify-start gap-y-4
-                ` }>
-                  <Typography
-                    className={ `
-                      text-center font-caveat text-amber-800 underline
-                      underline-offset-8
-                    ` }
-                    variant="h3"
-                  >
-                    { option.name }
+                <div className={ `flex w-full flex-col items-center justify-start gap-y-4` }>
+                  <Typography className={ `logo-text-color text-center font-cherry-bomb-one` } variant="h3">
+                    <SplitText
+                      text={ option.name }
+                      className=""
+                      delay={ 160 }
+                      animationFrom={ { opacity: 0, transform: 'translate3d(0,50px,0)' } }
+                      animationTo={ { opacity: 1, transform: 'translate3d(0,0,0)' } }
+                      easing={ 'easeOutCubic' as any }
+                      threshold={ 0.2 }
+                      rootMargin="-50px"
+                    />
                   </Typography>
                   <Image
                     key={ option.id }
@@ -79,11 +81,7 @@ export default function AccountGeneralAvatarSelection({ avatarId }: AccountGener
 
                   <RadioGroupItem
                     value={ option.id }
-                    className={ cn(`
-                      size-8 cursor-pointer border-ring transition-all
-                      duration-300
-                      hover:scale-120
-                    `, {
+                    className={ cn(`size-8 cursor-pointer border-ring transition-all duration-300 hover:scale-120`, {
                       'hover:scale-100': isSelected,
                     }) }
                     circleIconClassName={ cn('size-5', {

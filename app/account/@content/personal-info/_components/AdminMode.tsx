@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui-pre-19/skeleton';
 import Typography from '@/components/typography/Typography';
+import { CardHeader, CardContent } from '@/components/ui/card';
+import { CardTitle, CardDescription } from '@/components/ui/card';
 
 import DisplayCard from './DisplayCard';
 import AdminModeWrapper from './AdminModeWrapper';
@@ -9,12 +11,18 @@ import AdminModeWrapper from './AdminModeWrapper';
 export default function AdminMode() {
   return (
     <DisplayCard>
-      <section className="flex flex-col gap-y-2">
-        <Typography variant="h5">Admin</Typography>
-        <Typography variant="body1">Toggle admin mode.</Typography>
-      </section>
+      <CardHeader>
+        <CardTitle>
+          <Typography variant="h5">Admin</Typography>
+        </CardTitle>
+        <CardDescription>
+          <Typography variant="body1">Toggle admin mode.</Typography>
+        </CardDescription>
+      </CardHeader>
       <Suspense fallback={ <FallBack /> }>
-        <AdminModeWrapper />
+        <CardContent>
+          <AdminModeWrapper />
+        </CardContent>
       </Suspense>
     </DisplayCard>
   );

@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
+import { CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
 import DisplayCard from '../@content/personal-info/_components/DisplayCard';
 import AccountGeneralAvatarSelectionWrapper from './AccountGeneralAvatarSelectionWrapper';
@@ -9,12 +10,18 @@ import AccountGeneralAvatarSelectionWrapper from './AccountGeneralAvatarSelectio
 export default function AccountGeneralAvatar() {
   return (
     <DisplayCard>
-      <section className="flex flex-col gap-y-2">
-        <Typography variant="h5">Avatar</Typography>
-        <Typography variant="body1">Select an avatar for your account.</Typography>
-      </section>
+      <CardHeader>
+        <CardTitle>
+          <Typography variant="h5">Avatar</Typography>
+        </CardTitle>
+        <CardDescription>
+          <Typography variant="body1">Select an avatar for your account.</Typography>
+        </CardDescription>
+      </CardHeader>
       <Suspense fallback={ <AvatarSelectionSkeleton /> }>
-        <AccountGeneralAvatarSelectionWrapper />
+        <CardContent>
+          <AccountGeneralAvatarSelectionWrapper />
+        </CardContent>
       </Suspense>
     </DisplayCard>
   );

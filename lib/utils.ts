@@ -101,5 +101,6 @@ export function manageLocalStorage(clearStorage = false) {
     items,
     percentUsed: `${((totalSize / (5 * 1024 * 1024)) * 100).toFixed(2)}%`, // 5MB limit in most browsers
     isEmpty: itemCount === 0,
+    percentNumber: (totalSize / (5 * 1024 * 1024)),
   };
 }

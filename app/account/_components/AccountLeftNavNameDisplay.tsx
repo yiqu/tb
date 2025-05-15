@@ -2,6 +2,8 @@ import { UserProfile } from '@/models/user/user.model';
 import { getUserCached } from '@/server/user/user.server';
 import Typography from '@/components/typography/Typography';
 
+import NameDisplay from './AccountLeftNavNameTextDisplay';
+
 export default async function AccountLeftNavNameDisplay() {
   const userProfile: UserProfile | null = await getUserCached();
 
@@ -14,8 +16,8 @@ export default async function AccountLeftNavNameDisplay() {
   }
 
   return (
-    <div>
-      <Typography variant="h4">{ userProfile.name }</Typography>
+    <div key={ userProfile.name }>
+      <NameDisplay name={ userProfile.name } />
     </div>
   );
 }

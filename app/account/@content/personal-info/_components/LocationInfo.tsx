@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
+import { CardHeader, CardContent } from '@/components/ui/card';
+import { CardTitle, CardDescription } from '@/components/ui/card';
 
 import DisplayCard from './DisplayCard';
 import LocationInfoWrapper from './LocationInfoWrapper';
@@ -9,12 +11,18 @@ import LocationInfoWrapper from './LocationInfoWrapper';
 export default function LocationInfo() {
   return (
     <DisplayCard>
-      <section className="flex flex-col gap-y-2">
-        <Typography variant="h5">Address</Typography>
-        <Typography variant="body1">Please enter your address, this is not shared with anyone.</Typography>
-      </section>
+      <CardHeader>
+        <CardTitle>
+          <Typography variant="h5">Address</Typography>
+        </CardTitle>
+        <CardDescription>
+          <Typography variant="body1">Please enter your address, this is not shared with anyone.</Typography>
+        </CardDescription>
+      </CardHeader>
       <Suspense fallback={ <FallBack /> }>
-        <LocationInfoWrapper />
+        <CardContent>
+          <LocationInfoWrapper />
+        </CardContent>
       </Suspense>
     </DisplayCard>
   );
