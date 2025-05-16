@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 
+import { CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
-import { CardHeader, CardContent } from '@/components/ui/card';
 import { CardTitle, CardDescription } from '@/components/ui/card';
 
 import DisplayCard from './DisplayCard';
@@ -20,9 +20,7 @@ export default function LocationInfo() {
         </CardDescription>
       </CardHeader>
       <Suspense fallback={ <FallBack /> }>
-        <CardContent>
-          <LocationInfoWrapper />
-        </CardContent>
+        <LocationInfoWrapper />
       </Suspense>
     </DisplayCard>
   );

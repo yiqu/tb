@@ -34,9 +34,9 @@ const TAB_OPTIONS: TabListItem[] = [
     url: '/personal-info',
   },
   {
-    id: 'privacy',
-    displayText: 'Privacy',
-    url: '/privacy',
+    id: 'settings',
+    displayText: 'Settings',
+    url: '/settings',
   },
   {
     id: 'security',

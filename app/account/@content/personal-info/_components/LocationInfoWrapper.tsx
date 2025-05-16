@@ -1,5 +1,5 @@
 import { UserProfile } from '@/models/user/user.model';
-import { getUser, getUserCached } from '@/server/user/user.server';
+import { getUserCached } from '@/server/user/user.server';
 
 import LocationInfoForm from './LocationInfoForm';
 import CountryListWrapper from './CountryListWrapper';

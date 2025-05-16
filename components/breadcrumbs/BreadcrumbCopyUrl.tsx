@@ -18,7 +18,7 @@ export default function BreadcrumbCopyUrl() {
     return <Skeleton className="h-4 w-4 rounded-full" />;
   }
 
-  const url = `${window.location.protocol}//${window.location.host}${pathName}?${searchParams.toString()}`;
+  const url = `${window.location.protocol}//${window.location.host}${pathName}${searchParams.size > 0 ? `?${searchParams.toString()}` : ''}`;
 
   return <CopyToClipBoard text={ url } title="Copy shareable link" className={ `size-6` } />;
 }

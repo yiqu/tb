@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import Typography from '@/components/typography/Typography';
 import { Separator } from '@/components/ui-pre-19/separator';
 import { HFInputField } from '@/components/hook-form/HFInput';
+import { CardFooter, CardContent } from '@/components/ui/card';
 import DurationDisplay from '@/shared/components/DurationDisplay';
 import { updateUserLocationAction } from '@/server/user/user.server';
 import { UserProfile, UserLocationEditableWithUserId } from '@/models/user/user.model';
@@ -82,27 +83,33 @@ export default function LocationInfoForm({ user, children }: LocationInfoFormPro
       <form onSubmit={ methods.handleSubmit(onSubmitLocationInfo) } className={ `` }>
         <input type="hidden" name="userId" value={ user?.id } />
         <div className="flex flex-col gap-y-2">
-          <div className="grid grid-cols-4 gap-2">
-            <div className="col-span-3">
-              <StreetAddressInput />
+          <CardContent className="flex flex-col gap-y-4">
+            <div className="grid grid-cols-4 gap-2">
+              <div className="col-span-3">
+                <StreetAddressInput />
+              </div>
+              <div className="">
+                <CityInput />
+              </div>
             </div>
-            <div className="">
-              <CityInput />
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-1">
+                <ZipCodeInput />
+              </div>
+              <div className="col-span-1">{ children }</div>
+              <div className="col-span-1">
+                <StateInput />
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <div className="col-span-1">
-              <ZipCodeInput />
-            </div>
-            <div className="col-span-1">{ children }</div>
-            <div className="col-span-1">
-              <StateInput />
-            </div>
-          </div>
-          <Separator orientation="horizontal" className="my-2" />
-          <FormSubmitButton key={ `${state.updatedAt}` } lastUpdated={ state.updatedAt as string | null } />
-          <FormErrorMessage />
-          <FormActionErrorMessage state={ state } />
+          </CardContent>
+          <Separator orientation="horizontal" className="my-4" />
+          <CardFooter>
+            <section className="w-full">
+              <FormSubmitButton key={ `${state.updatedAt}` } lastUpdated={ state.updatedAt as string | null } />
+            </section>
+            <FormErrorMessage />
+            <FormActionErrorMessage state={ state } />
+          </CardFooter>
         </div>
       </form>
     </Form>
@@ -150,7 +157,7 @@ function FormSubmitButton({ lastUpdated }: { lastUpdated: string | null }) {
 }
 
 function FormActionErrorMessage({ state }: { state: SettingsPersonalInfoLocationActionState }) {
-  if ((state.statusCode ?? 0) > 200 && !state.isSuccess) {
+  if ((state.statusCode ?? 0) >= 300 && !state.isSuccess) {
     return (
       <div className="rounded-xs border-l-2 border-destructive pl-6">
         <Typography variant="body1" className="font-semibold text-destructive">

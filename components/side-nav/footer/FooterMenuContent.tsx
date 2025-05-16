@@ -1,4 +1,5 @@
-import { Sparkles, Settings, UserRound } from 'lucide-react';
+import Link from 'next/link';
+import { Settings, UserRound, ScrollText } from 'lucide-react';
 
 import {
   DropdownMenuItem,
@@ -24,18 +25,24 @@ export default function FooterMenuContent() {
       <DropdownMenuSeparator />
 
       <DropdownMenuGroup>
-        <DropdownMenuItem>
-          <Settings />
-          Settings
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href={ `/account/settings` } prefetch={ true }>
+            <Settings />
+            Settings
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <UserRound />
-          Account
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href={ `/account` } prefetch={ true }>
+            <UserRound />
+            Account
+          </Link>
         </DropdownMenuItem>
 
-        <DropdownMenuItem>
-          <Sparkles />
-          Changelog
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href={ `/changelog` } prefetch={ true }>
+            <ScrollText />
+            Changelog
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuGroup>
 

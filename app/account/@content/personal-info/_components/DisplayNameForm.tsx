@@ -40,7 +40,7 @@ export default function DisplayNameForm({ user }: DisplayNameFormProps) {
         <input type="hidden" name="userId" value={ user?.id } />
         <DisplayNameFormInput defaultValue={ user?.name || '' } isAdmin={ user?.isAdmin || false } />
       </CardContent>
-      <Separator orientation="horizontal" className="my-6" />
+      <Separator orientation="horizontal" className="my-4" />
       <CardFooter className="flex w-full flex-col items-start justify-start">
         <DisplayNameFormSubmit isNewUser={ isNewUser } updatedAt={ user?.updatedAt } />
         <DisplayNameFormError zodError={ state.zodErrorIssues } />

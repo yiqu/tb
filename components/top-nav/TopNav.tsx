@@ -9,10 +9,7 @@ export default function TopNav() {
     <>
       <div className="flex items-center gap-2 px-4">
         <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className={ `
-          mr-2
-          data-[orientation=vertical]:h-4
-        ` } />
+        <Separator orientation="vertical" className={ `mr-2 data-[orientation=vertical]:h-4` } />
         <Breadcrumbs />
       </div>
       <div className="flex flex-row items-center justify-end gap-x-2 px-4">
