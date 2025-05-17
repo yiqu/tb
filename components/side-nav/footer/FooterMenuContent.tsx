@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Settings, UserRound, ScrollText } from 'lucide-react';
+import { Shield, Settings, UserRound, ScrollText } from 'lucide-react';
 
 import {
   DropdownMenuItem,
@@ -22,6 +22,7 @@ export default function FooterMenuContent() {
           <FooterAvatarText />
         </div>
       </DropdownMenuLabel>
+
       <DropdownMenuSeparator />
 
       <DropdownMenuGroup>
@@ -42,6 +43,13 @@ export default function FooterMenuContent() {
           <Link href={ `/changelog` } prefetch={ true }>
             <ScrollText />
             Changelog
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href={ `/admin` } prefetch={ true }>
+            <Shield />
+            Admin Panel
           </Link>
         </DropdownMenuItem>
       </DropdownMenuGroup>

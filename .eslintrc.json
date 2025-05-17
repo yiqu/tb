@@ -17,7 +17,8 @@
     "unicorn",
     "readable-tailwind",
     "@tanstack/query",
-    "mui-path-imports"
+    "mui-path-imports",
+    "react-you-might-not-need-an-effect"
   ],
   "rules": {
     "@next/next/no-img-element": 1,
@@ -168,7 +169,8 @@
     "readable-tailwind/multiline": ["warn", { "lineBreakStyle": "unix", "printWidth": 160, "preferSingleLine": true }],
     "readable-tailwind/no-unnecessary-whitespace": 1,
     "readable-tailwind/sort-classes": "off",
-    "readable-tailwind/no-duplicate-classes": 2
+    "readable-tailwind/no-duplicate-classes": 2,
+    "react-you-might-not-need-an-effect/you-might-not-need-an-effect": "warn"
   },
   "settings": {
     "readable-tailwind": {
