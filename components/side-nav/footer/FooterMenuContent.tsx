@@ -47,7 +47,7 @@ export default function FooterMenuContent() {
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/admin` } prefetch={ true }>
+          <Link href={ `/login` } prefetch={ true }>
             <Shield />
             Admin Panel
           </Link>

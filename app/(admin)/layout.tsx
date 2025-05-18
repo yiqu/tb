@@ -1,0 +1,99 @@
+/* eslint-disable readable-tailwind/no-unnecessary-whitespace */
+/* eslint-disable readable-tailwind/multiline */
+import CssBaseline from '@mui/material/CssBaseline';
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+
+import { Suspense } from 'react';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import {
+  Geist,
+  Borel,
+  Caveat,
+  Geist_Mono,
+  Lilita_One,
+  Merriweather,
+  JetBrains_Mono,
+  Cherry_Bomb_One,
+  Merriweather_Sans,
+} from 'next/font/google';
+
+import theme from '@/components/ui-mui/mui/theme';
+import AppLayout from '@/components/layout/AppLayout';
+import ReactScan from '@/components/react-scan/ReactScan';
+//import { geistFont, geistMonoFont } from '@/lib/fonts-config';
+import CustomToaster from '@/components/toaster/CustomToaster';
+import AppTopLoader from '@/components/top-loader/AppTopLoader';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider';
+
+import type { Metadata } from 'next';
+
+import './globals.css';
+import './scrollbar.css';
+import './tailwind-config.css';
+
+const merriweather = Merriweather({
+  variable: '--font-merriweather',
+  subsets: ['latin'],
+  weight: '400',
+  preload: true,
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  variable: '--font-jet-brains-mono',
+  subsets: ['latin'],
+  preload: true,
+});
+
+const cherryBombOne = Cherry_Bomb_One({
+  variable: '--font-cherry-bomb-one',
+  subsets: ['latin'],
+  weight: '400',
+});
+
+export const metadata: Metadata = {
+  title: 'Education Budget',
+  description: 'Education Budget',
+};
+
+export default function AdminRootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <ReactScan />
+      <body
+        className={ `${merriweather.variable} ${jetBrainsMono.variable} ${cherryBombOne.variable} font-sans antialiased` }
+      >
+        <AppTopLoader />
+        <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
+        <AppRouterCacheProvider options={ { enableCssLayer: true } }>
+          <MuiThemeProvider theme={ theme } defaultMode="light">
+            <NuqsAdapter>
+              <TanstackQueryClientProvider>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="light"
+                  enableSystem={ false }
+                  disableTransitionOnChange
+                  storageKey="app-theme"
+                >
+                  <CssBaseline />
+                  <Suspense>
+                    <AppLayout>{ children }</AppLayout>
+                  </Suspense>
+
+                  <CustomToaster />
+                </ThemeProvider>
+              </TanstackQueryClientProvider>
+            </NuqsAdapter>
+          </MuiThemeProvider>
+        </AppRouterCacheProvider>
+      </body>
+    </html>
+  );
+}

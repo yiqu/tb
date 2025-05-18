@@ -1,6 +1,9 @@
+import { connection } from 'next/server';
+
 import LetterGlitch from '@/components/reactbits/Backgrounds/LetterGlitch/LetterGlitch';
 
-export default function MatrixBackground() {
+export default async function MatrixBackground() {
+  await connection();
   return (
     <LetterGlitch
       glitchSpeed={ 50 }

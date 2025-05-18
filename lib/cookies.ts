@@ -1,9 +1,11 @@
+'use server';
+
 import { cookies } from 'next/headers';
 import { RequestCookie, ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 
-export const COOKIE_PATH_HOME = '/';
-export const COOKIE_MAX_AGE_1_YEAR = 31536000;
+const COOKIE_PATH_HOME = '/';
+const COOKIE_MAX_AGE_1_YEAR = 31536000;
 
 export async function getAllCookies(): Promise<RequestCookie[]> {
   const cookieStore: ReadonlyRequestCookies = await cookies();

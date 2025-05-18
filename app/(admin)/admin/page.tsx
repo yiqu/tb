@@ -10,16 +10,5 @@ interface SearchPageProps {
 }
 
 export default async function AdminPage({}: SearchPageProps) {
-  const isAdminPasswordCorrect = await getAdminPasswordCorrect();
-
-  if (isAdminPasswordCorrect) {
-    return <AdminPanel />;
-  }
-
-  return (
-    <div className="flex h-full w-full flex-col">
-      <AdminPasswordInput />
-      <MatrixBackground />
-    </div>
-  );
+  return <AdminPanel />;
 }
