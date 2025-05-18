@@ -52,7 +52,7 @@
   --font-mono: var(--font-geist-mono);
   --font-caveat: var(--font-caveat);
   --font-lilita-one: var(--font-lilita-one);
-  --font-cherry-bomb-one: var(--font-cherry-bomb-one);
+  --font-fun: var(--font-cherry-bomb-one);
   --font-borel: var(--font-borel);
 }
 
@@ -139,7 +139,7 @@
   --font-mono: var(--font-geist-mono);
   --font-caveat: var(--font-caveat);
   --font-lilita-one: var(--font-lilita-one);
-  --font-cherry-bomb-one: var(--font-cherry-bomb-one);
+  --font-fun: var(--font-cherry-bomb-one);
   --font-borel: var(--font-borel);
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -162,8 +162,6 @@
   --animate-shine: shine var(--duration) infinite linear;
   --animate-aurora: aurora 8s ease-in-out infinite alternate;
   --animate-meteor: meteor 5s linear infinite;
-
-
 }
 
 @layer base {

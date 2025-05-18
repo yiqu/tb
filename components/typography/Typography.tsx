@@ -13,23 +13,11 @@ const typographyVariants = cva('scroll-m-20 tracking-tight', {
       h5: 'text-lg font-semibold tracking-normal',
       h6: 'text-md font-semibold tracking-normal',
 
-      p: `
-        text-[0.875rem] leading-6 tracking-normal
-        [&:not(:first-child)]:mt-6
-      `,
+      p: `text-[0.875rem] leading-6 tracking-normal [&:not(:first-child)]:mt-6`,
 
-      caption0: `
-        text-[0.65rem] tracking-normal text-gray-500
-        dark:text-gray-300
-      `,
-      caption1: `
-        text-[0.75rem] tracking-normal text-gray-500
-        dark:text-gray-300
-      `,
-      caption2: `
-        text-[0.85rem] tracking-normal text-gray-500
-        dark:text-gray-300
-      `,
+      caption0: `text-[0.65rem] tracking-normal text-gray-500 dark:text-gray-300`,
+      caption1: `text-[0.75rem] tracking-normal text-gray-500 dark:text-gray-300`,
+      caption2: `text-[0.85rem] tracking-normal text-gray-500 dark:text-gray-300`,
 
       body0: `text-[0.75rem] leading-5 tracking-normal`,
       body1: `text-[0.875rem] leading-6 tracking-normal`,
@@ -43,18 +31,9 @@ const typographyVariants = cva('scroll-m-20 tracking-tight', {
       nodata1: `text-[0.875rem] leading-6 tracking-normal text-gray-600 italic`,
       nodata2: `text-[1rem] leading-6.5 tracking-normal text-gray-600 italic`,
 
-      label0: `
-        text-[0.75rem] leading-5 tracking-normal text-gray-600
-        dark:text-gray-300
-      `,
-      label1: `
-        text-[0.875rem] leading-6 tracking-normal text-gray-600
-        dark:text-gray-300
-      `,
-      label2: `
-        text-[1rem] leading-6.5 tracking-normal text-gray-600
-        dark:text-gray-300
-      `,
+      label0: `text-[0.75rem] leading-5 tracking-normal text-gray-600 dark:text-gray-300`,
+      label1: `text-[0.875rem] leading-6 tracking-normal text-gray-600 dark:text-gray-300`,
+      label2: `text-[1rem] leading-6.5 tracking-normal text-gray-600 dark:text-gray-300`,
 
       labelvalue0: `text-[0.75rem] leading-5 tracking-normal`,
       labelvalue1: `text-[0.875rem] leading-6 tracking-normal`,

@@ -49,10 +49,10 @@
   --shadow-xl: 3px 3px 2px 0px hsl(88 22% 35% / 0.06), 3px 8px 10px -1px hsl(88 22% 35% / 0.06);
   --shadow-2xl: 3px 3px 2px 0px hsl(88 22% 35% / 0.15);
 
-  --font-sans: var(--font-merriweather);
-  --font-serif: var(--font-merriweather);
+  --font-sans: var(--font-outfit);
+  --font-serif: var(--font-outfit);
   --font-mono: var(--font-jet-brains-mono);
-  --font-cherry-bomb-one: var(--font-cherry-bomb-one);
+  --font-fun: var(--font-outfit);
 }
 
 .dark {
@@ -99,10 +99,10 @@
   --shadow-xl: 3px 3px 2px 0px hsl(88 22% 35% / 0.06), 3px 8px 10px -1px hsl(88 22% 35% / 0.06);
   --shadow-2xl: 3px 3px 2px 0px hsl(88 22% 35% / 0.15);
 
-  --font-sans: var(--font-merriweather);
-  --font-serif: var(--font-merriweather);
+  --font-sans: var(--font-outfit);
+  --font-serif: var(--font-outfit);
   --font-mono: var(--font-jet-brains-mono);
-  --font-cherry-bomb-one: var(--font-cherry-bomb-one);
+  --font-fun: var(--font-outfit);
 }
 
 @theme inline {
@@ -153,10 +153,10 @@
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
 
-  --font-sans: var(--font-merriweather);
-  --font-serif: var(--font-merriweather);
+  --font-sans: var(--font-outfit);
+  --font-serif: var(--font-outfit);
   --font-mono: var(--font-jet-brains-mono);
-  --font-cherry-bomb-one: var(--font-cherry-bomb-one);
+  --font-fun: var(--font-outfit);
 }
 
 @layer base {

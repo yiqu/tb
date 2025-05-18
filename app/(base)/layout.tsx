@@ -1,3 +1,5 @@
+/* eslint-disable readable-tailwind/no-unnecessary-whitespace */
+/* eslint-disable readable-tailwind/multiline */
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
@@ -73,15 +75,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <ReactScan />
       <body
-        className={ `
-          ${geistSans.variable}
-          ${geistMono.variable}
-          ${caveat.variable}
-          ${lilitaOne.variable}
-          ${borel.variable}
-          ${cherryBombOne.variable}
-          font-sans antialiased
-        ` }
+        className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} font-sans antialiased` }
       >
         <AgGridRegister />
         <AppTopLoader />
@@ -97,7 +91,6 @@ export default function RootLayout({
                   disableTransitionOnChange
                   storageKey="app-theme"
                 >
-                  { /* <CssBaseline /> */ }
                   <TooltipProvider delayDuration={ 0 }>
                     <Suspense>
                       <AppLayout>{ children }</AppLayout>

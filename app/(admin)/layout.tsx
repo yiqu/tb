@@ -1,23 +1,12 @@
 /* eslint-disable readable-tailwind/no-unnecessary-whitespace */
 /* eslint-disable readable-tailwind/multiline */
-import CssBaseline from '@mui/material/CssBaseline';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 import { Suspense } from 'react';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import {
-  Geist,
-  Borel,
-  Caveat,
-  Geist_Mono,
-  Lilita_One,
-  Merriweather,
-  JetBrains_Mono,
-  Cherry_Bomb_One,
-  Merriweather_Sans,
-} from 'next/font/google';
+import { Outfit, Merriweather, JetBrains_Mono, Cherry_Bomb_One } from 'next/font/google';
 
 import theme from '@/components/ui-mui/mui/theme';
 import AppLayout from '@/components/layout/AppLayout';
@@ -33,6 +22,12 @@ import type { Metadata } from 'next';
 import './globals.css';
 import './scrollbar.css';
 import './tailwind-config.css';
+
+const outfit = Outfit({
+  variable: '--font-outfit',
+  subsets: ['latin'],
+  preload: true,
+});
 
 const merriweather = Merriweather({
   variable: '--font-merriweather',
@@ -67,7 +62,7 @@ export default function AdminRootLayout({
     <html lang="en" suppressHydrationWarning>
       <ReactScan />
       <body
-        className={ `${merriweather.variable} ${jetBrainsMono.variable} ${cherryBombOne.variable} font-sans antialiased` }
+        className={ `${merriweather.variable} ${jetBrainsMono.variable} ${cherryBombOne.variable} ${outfit.variable} font-sans antialiased` }
       >
         <AppTopLoader />
         <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
@@ -82,7 +77,6 @@ export default function AdminRootLayout({
                   disableTransitionOnChange
                   storageKey="app-theme"
                 >
-                  <CssBaseline />
                   <Suspense>
                     <AppLayout>{ children }</AppLayout>
                   </Suspense>

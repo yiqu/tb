@@ -96,7 +96,6 @@ export default function RootLayout({
                   disableTransitionOnChange
                   storageKey="app-theme"
                 >
-                  { /* <CssBaseline /> */ }
                   <TooltipProvider delayDuration={ 0 }>
                     <Suspense>
                       <AppLayout>{ children }</AppLayout>

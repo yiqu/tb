@@ -14,7 +14,6 @@ const theme = createTheme({
     colorSchemeSelector: 'data-mui-color-scheme',
   },
   typography: {
-    fontFamily: geistFont.style.fontFamily,
   },
 
   // MUI Components overrides

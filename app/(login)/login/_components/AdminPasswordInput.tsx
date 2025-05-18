@@ -64,7 +64,7 @@ export default function AdminPasswordInput({ onPasswordEnteredStatus, user }: Ad
         ref={ autoFocusInputRef }
         spellCheck={ false }
       >
-        <InputOTPGroup className="flex w-full flex-row justify-center font-cherry-bomb-one" spellCheck={ false }>
+        <InputOTPGroup className="flex w-full flex-row justify-center font-fun" spellCheck={ false }>
           <InputSlot index={ 0 } />
           <InputSlot index={ 1 } />
           <InputSlot index={ 2 } />
@@ -92,7 +92,7 @@ function PasswordStatusMessage({
       return (
         <Typography
           variant="h5"
-          className="flex flex-row items-center gap-2 font-cherry-bomb-one text-2xl tracking-wider text-green-400"
+          className="flex flex-row items-center gap-2 font-fun text-2xl tracking-wider text-green-400"
         >
           Redirecting you to the admin dashboard...
         </Typography>
@@ -101,7 +101,7 @@ function PasswordStatusMessage({
       return (
         <Typography
           variant="h5"
-          className="flex flex-row items-center gap-2 font-cherry-bomb-one text-2xl tracking-wider text-destructive"
+          className="flex flex-row items-center gap-2 font-fun text-2xl tracking-wider text-destructive"
         >
           Try again
         </Typography>
@@ -109,7 +109,7 @@ function PasswordStatusMessage({
     }
   } else {
     return (
-      <Typography variant="h5" className="font-cherry-bomb-one text-2xl tracking-wider text-green-200">
+      <Typography variant="h5" className="font-fun text-2xl tracking-wider text-green-200">
         Please enter admin password
       </Typography>
     );

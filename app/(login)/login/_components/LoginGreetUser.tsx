@@ -12,7 +12,7 @@ export default function LoginGreetUser({
   return (
     <Typography
       variant="h5"
-      className={ cn('font-cherry-bomb-one text-2xl tracking-wider text-green-200', {
+      className={ cn('font-fun text-2xl tracking-wider text-green-200', {
         'text-destructive': !isPasswordCorrect,
         'text-green-200': isPasswordCorrect === null,
       }) }
