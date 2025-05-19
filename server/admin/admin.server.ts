@@ -18,3 +18,9 @@ export async function triggerPasswordCorrect() {
 export async function getAdminPasswordCorrect() {
   return null;
 }
+
+export async function removeIsAdminPasswordCorrect() {
+  const cookieStore: ReadonlyRequestCookies = await cookies();
+  cookieStore.delete(ADMIN_PASSWORD_CORRECT_COOKIE_NAME);
+  redirect('/', RedirectType.replace);
+}
