@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import useIsClient from '@/hooks/useIsClient';
 import { manageLocalStorage } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getPercentFormatter } from '@/lib/number.utils';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { Particles } from '@/components/magicui/particles';
@@ -24,6 +25,9 @@ export default function AccountLocalstorageSizeInfo() {
           <Typography variant="body0" className="font-semibold">
             Local Storage Usage
           </Typography>
+        </section>
+        <section>
+          <Skeleton className="h-15 w-[212px]" />
         </section>
       </DisplayCard>
     );

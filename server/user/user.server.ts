@@ -2,11 +2,12 @@
 'use server';
 import 'server-only';
 import { cache } from 'react';
-import { revalidateTag } from 'next/cache';
+import { revalidateTag, revalidatePath } from 'next/cache';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
+import { UserAchievement } from '@/models/auth/user.model';
 import { displayNameSchema } from '@/validators/settings/account/PersonalInfo';
 import { UserProfile, UserProfileAddable, UserProfileEditable, UserLocationEditable } from '@/models/user/user.model';
 import {
@@ -258,5 +259,41 @@ export async function updateUserLocation(userId: string, location: UserLocationE
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at updateUserLocation(): ', JSON.stringify(error));
     throw new Error(`User '${userId}' could not be updated. Code: ${error.code}`);
+  }
+}
+
+export async function getUserAchievements(): Promise<UserAchievement[]> {
+  'use cache';
+  cacheLife('hours');
+  cacheTag('get-user-achievements');
+
+  const userAchievements: UserAchievement[] = [
+    {
+      achievementId: 'general',
+      level: 1,
+    },
+    {
+      achievementId: 'admin',
+      level: 1,
+    },
+    {
+      achievementId: 'searcher',
+      level: 0,
+    },
+    {
+      achievementId: 'learner',
+      level: 0,
+    },
+    {
+      achievementId: 'explorer',
+      level: 0,
+    },
+  ];
+  try {
+    console.log('getUserAchievements() function called');
+    return userAchievements;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getUserAchievements(): ', JSON.stringify(error));
+    throw new Error(`User achievements could not be retrieved. Code: ${error.code}`);
   }
 }

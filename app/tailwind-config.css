@@ -245,11 +245,11 @@
 
 @layer app-colors {
   .logo-text-color {
-    @apply text-amber-900;
+    color: #3b673f;
   }
   .dark {
     .logo-text-color {
-      color: #c35009;
+      color: #3b673f;
     }
   }
 }

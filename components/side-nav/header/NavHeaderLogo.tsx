@@ -6,7 +6,7 @@ export default function NavHeaderLogo() {
   return (
     <>
       <Image
-        src="/images/logo1.png"
+        src="/images/leaf.png"
         width={ LOGO_SIZE }
         height={ LOGO_SIZE }
         alt="logo"
@@ -16,7 +16,7 @@ export default function NavHeaderLogo() {
       />
 
       <Image
-        src="/images/logo1.png"
+        src="/images/leafnight.png"
         width={ LOGO_SIZE }
         height={ LOGO_SIZE }
         alt="logo"

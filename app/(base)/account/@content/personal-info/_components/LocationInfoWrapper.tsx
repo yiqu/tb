@@ -8,7 +8,7 @@ export default async function LocationInfoWrapper() {
   const user: UserProfile | null = await getUserCached();
 
   return (
-    <LocationInfoForm user={ user }>
+    <LocationInfoForm user={ user } key={ `${user?.updatedAt}` }>
       <CountryListWrapper />
     </LocationInfoForm>
   );

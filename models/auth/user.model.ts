@@ -5,3 +5,11 @@ export interface User {
   avatarUrl?: string;
   id: string;
 }
+
+
+export type UserAchievement = {
+  achievementId: string;
+  level: number;
+  createdAt?: number;
+  updatedAt?: number;
+}

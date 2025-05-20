@@ -184,20 +184,20 @@
 
 @layer app-top-loader {
   :root {
-    --app-top-loader-color: #cc9900;
+    --app-top-loader-color: #3b673f;
   }
   .dark {
-    --app-top-loader-color: #b38600;
+    --app-top-loader-color: #b6c89f;
   }
 }
 
 @layer link-color-utils {
   :root {
-    --link-internal: #2c58a8;
+    --link-internal: #3b673f;
     --link-external-foreground: #2c58a8;
   }
   .dark {
-    --link-internal: #2c58a8;
+    --link-internal: #b6c89f;
     --link-external-foreground: #2c58a8;
   }
 }
@@ -243,14 +243,15 @@
 
 @layer app-colors {
   .logo-text-color {
-    @apply text-amber-900;
+    color: #3b673f;
   }
   .dark {
     .logo-text-color {
-      color: #c35009;
+      color: #b6c89f;
     }
   }
 }
+
 
 @layer app-sidebar-menu {
   .app-sidebar-group {

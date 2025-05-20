@@ -70,9 +70,6 @@ export default function LocationInfoForm({ user, children }: LocationInfoFormPro
         });
       });
 
-      methods.reset(undefined, {
-        keepDirty: false,
-      });
     } else {
       window.alert('User has not been created');
     }
