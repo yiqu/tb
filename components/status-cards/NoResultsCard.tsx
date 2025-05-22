@@ -1,0 +1,91 @@
+import Image from 'next/image';
+import { ReactNode } from 'react';
+
+import { cn } from '@/lib/utils';
+import DisplayCard from '@/shared/components/DisplayCard';
+
+import { Lens } from '../magicui/lens';
+import { Separator } from '../ui/separator';
+import Typography from '../typography/Typography';
+import TrueFocus from '../reactbits/TextAnimations/TrueFocus/TrueFocus';
+
+const IMAGE_WIDTH = 400;
+
+interface NoResultsCardProps {
+  children?: ReactNode;
+  blendBg?: boolean;
+  showTextAreaBorder?: boolean;
+  blendTextAreaBorder?: boolean;
+}
+
+export default function NoResultsCard({
+  children,
+  blendBg,
+  showTextAreaBorder,
+  blendTextAreaBorder,
+}: NoResultsCardProps) {
+  return (
+    <DisplayCard
+      className={ cn('sec:w-[60rem] main:w-[80rem] w-[45rem]', {
+        'border-0 bg-transparent shadow-none': blendBg,
+      }) }
+    >
+      <div className="grid grid-cols-2 gap-x-8">
+        <div className={ `relative flex flex-col items-center justify-center overflow-hidden rounded-2xl` }>
+          <Lens
+            zoomFactor={ 2 }
+            lensSize={ 120 }
+            isStatic={ false }
+            ariaLabel="no results img"
+            defaultPosition={ { x: 210, y: 390 } }
+          >
+            <Image
+              src={ `/search/library-blank-book.png` }
+              alt="error img"
+              width={ IMAGE_WIDTH }
+              height={ IMAGE_WIDTH }
+              priority
+              className="main:w-[80rem] rounded-2xl mask-t-from-90% mask-l-from-93%"
+              data-hide-on-theme="dark"
+            />
+            <Image
+              src={ `/search/library-blank-book-night.png` }
+              alt="error img"
+              width={ IMAGE_WIDTH }
+              height={ IMAGE_WIDTH }
+              priority
+              className="main:w-[80rem] rounded-2xl mask-t-from-90% mask-l-from-93%"
+              data-hide-on-theme="light"
+            />
+          </Lens>
+        </div>
+        <div
+          className={ cn('main:gap-y-6 flex w-full flex-col items-start justify-start gap-y-4', {
+            'rounded-md border bg-card px-6 py-6': showTextAreaBorder,
+            'border-0 bg-transparent': blendTextAreaBorder,
+          }) }
+        >
+          <div className="flex w-full flex-row items-center justify-center pb-2">
+            <TrueFocus
+              sentence="No Results"
+              manualMode={ false }
+              borderColor="oklch(0.62 0.08 65.54)"
+              blurAmount={ 4 }
+              animationDuration={ 1.3 }
+              pauseBetweenAnimations={ 2 }
+              parentClassName={ 'flex flex-row justify-start items-center' }
+              textClassName={ 'text-[36px] tracking-wide' }
+            />
+          </div>
+
+          <Separator />
+
+          <Typography variant="body1" className="text-center">
+            Your search returned no results.
+          </Typography>
+          { children }
+        </div>
+      </div>
+    </DisplayCard>
+  );
+}

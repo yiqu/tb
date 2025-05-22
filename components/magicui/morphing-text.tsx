@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef } from "react";
+import { useRef, useEffect, useCallback } from 'react';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 const morphTime = 1.5;
 const cooldownTime = 0.5;
@@ -25,10 +25,7 @@ const useMorphingText = (texts: string[]) => {
       current2.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`;
 
       const invertedFraction = 1 - fraction;
-      current1.style.filter = `blur(${Math.min(
-        8 / invertedFraction - 8,
-        100,
-      )}px)`;
+      current1.style.filter = `blur(${Math.min(8 / invertedFraction - 8, 100)}px)`;
       current1.style.opacity = `${Math.pow(invertedFraction, 0.4) * 100}%`;
 
       current1.textContent = texts[textIndexRef.current % texts.length];
@@ -59,10 +56,10 @@ const useMorphingText = (texts: string[]) => {
     morphRef.current = 0;
     const [current1, current2] = [text1Ref.current, text2Ref.current];
     if (current1 && current2) {
-      current2.style.filter = "none";
-      current2.style.opacity = "100%";
-      current1.style.filter = "none";
-      current1.style.opacity = "0%";
+      current2.style.filter = 'none';
+      current2.style.opacity = '100%';
+      current1.style.filter = 'none';
+      current1.style.opacity = '0%';
     }
   }, []);
 
@@ -96,28 +93,18 @@ interface MorphingTextProps {
   texts: string[];
 }
 
-const Texts: React.FC<Pick<MorphingTextProps, "texts">> = ({ texts }) => {
+const Texts: React.FC<Pick<MorphingTextProps, 'texts'>> = ({ texts }) => {
   const { text1Ref, text2Ref } = useMorphingText(texts);
   return (
     <>
-      <span
-        className="absolute inset-x-0 top-0 m-auto inline-block w-full"
-        ref={text1Ref}
-      />
-      <span
-        className="absolute inset-x-0 top-0 m-auto inline-block w-full"
-        ref={text2Ref}
-      />
+      <span className="absolute inset-x-0 top-0 m-auto inline-block w-full" ref={ text1Ref } />
+      <span className="absolute inset-x-0 top-0 m-auto inline-block w-full" ref={ text2Ref } />
     </>
   );
 };
 
 const SvgFilters: React.FC = () => (
-  <svg
-    id="filters"
-    className="fixed h-0 w-0"
-    preserveAspectRatio="xMidYMid slice"
-  >
+  <svg id="filters" className="fixed h-0 w-0" preserveAspectRatio="xMidYMid slice">
     <defs>
       <filter id="threshold">
         <feColorMatrix
@@ -133,17 +120,19 @@ const SvgFilters: React.FC = () => (
   </svg>
 );
 
-export const MorphingText: React.FC<MorphingTextProps> = ({
-  texts,
-  className,
-}) => (
+export const MorphingText: React.FC<MorphingTextProps> = ({ texts, className }) => (
   <div
-    className={cn(
-      "relative mx-auto h-16 w-full max-w-screen-md text-center font-sans text-[40pt] font-bold leading-none [filter:url(#threshold)_blur(0.6px)] md:h-24 lg:text-[6rem]",
+    className={ cn(
+      `
+        relative mx-auto h-16 w-full max-w-screen-md text-center font-sans text-[40pt] leading-none font-bold
+        [filter:url(#threshold)_blur(0.6px)]
+        md:h-24
+        lg:text-[6rem]
+      `,
       className,
-    )}
+    ) }
   >
-    <Texts texts={texts} />
+    <Texts texts={ texts } />
     <SvgFilters />
   </div>
 );

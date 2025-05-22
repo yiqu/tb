@@ -15,8 +15,7 @@ const toggleVariants = cva(
     [&_svg]:pointer-events-none
     [&_svg:not([class*='size-'])]:size-4
     [&_svg]:shrink-0
-    focus-visible:border-ring focus-visible:ring-ring/50
-    focus-visible:ring-[3px]
+    focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]
     outline-none transition-[color,box-shadow]
     aria-invalid:ring-destructive/20
     dark:aria-invalid:ring-destructive/40
@@ -27,10 +26,7 @@ const toggleVariants = cva(
     variants: {
       variant: {
         default: 'bg-transparent',
-        outline: `
-          border border-input bg-transparent shadow-xs
-          hover:bg-accent hover:text-accent-foreground
-        `,
+        outline: `border border-input bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground`,
       },
       size: {
         default: 'h-9 px-2 min-w-9',

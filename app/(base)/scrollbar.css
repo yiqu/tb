@@ -5,11 +5,11 @@
   background-color: var(--sidebar); 
 }
 ::-webkit-scrollbar-thumb {
-  background-color: var(--sidebar-border); 
+  background-color: var(--primary); 
   border-radius: 24px; 
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--sidebar-border); 
+  background-color: var(--primary); 
 }
 
 
@@ -22,12 +22,12 @@
 }
 
 #app-sidebar ::-webkit-scrollbar-thumb {
-  background-color: var(--sidebar-border); 
+  background-color: var(--primary); 
   border-radius: 24px; 
 }
 
 #app-sidebar ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--sidebar-border); 
+  background-color: var(--primary); 
 }
 
 div[data-slot="sidebar-content"] {

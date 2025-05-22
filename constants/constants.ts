@@ -16,3 +16,6 @@ export const SETTINGS_USER_AVATAR_COOKIE_NAME = 'settings-user-avatar';
 export const ADMIN_PASSWORD_CORRECT_COOKIE_NAME = 'admin-password-correct';
 
 export const API_TIMEOUT = 30_000;
+
+export const FONT_FAMILY_FUN = 'Cherry Bomb One';
+export const FONT_FAMILY_PRIMARY = 'Geist';

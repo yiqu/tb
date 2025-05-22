@@ -1,4 +1,5 @@
 import AccountLeftNavAvatar from './AccountLeftNavAvatar';
+import KeyboardShortcutsDisplay from './KeyboardShortcutsDisplay';
 import AccountAchievementsParent from './AccountAchievementsParent';
 import AccountLocalstorageSizeInfo from './AccountLocalstorageSizeInfo';
 import AccountLeftNavNameDisplayWrapper from './AccountLeftNavNameDisplayWrapper';
@@ -14,6 +15,7 @@ export default function AccountLeftNav() {
       </div>
       <AccountLocalstorageSizeInfo />
       <AccountAchievementsParent />
+      <KeyboardShortcutsDisplay />
     </div>
   );
 }

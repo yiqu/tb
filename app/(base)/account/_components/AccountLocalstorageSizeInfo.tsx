@@ -11,6 +11,7 @@ import { getPercentFormatter } from '@/lib/number.utils';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { Particles } from '@/components/magicui/particles';
 import Typography from '@/components/typography/Typography';
+import { BorderBeam } from '@/components/magicui/border-beam';
 import ScrambleHover from '@/fancy/components/text/scramble-hover';
 const percentFormatter = getPercentFormatter(2, 2);
 
@@ -29,6 +30,8 @@ export default function AccountLocalstorageSizeInfo() {
         <section>
           <Skeleton className="h-15 w-[212px]" />
         </section>
+        <BorderBeam duration={ 10 } size={ 400 } className="from-transparent via-[#53ff1a] to-transparent" />
+        <BorderBeam duration={ 10 } delay={ 3 } size={ 400 } className="from-transparent via-[#6600ff] to-transparent" />
       </DisplayCard>
     );
   }
@@ -66,6 +69,8 @@ export default function AccountLocalstorageSizeInfo() {
           <Typography variant="body0">{ percentFormatter.format(storageInfo.percentNumber) } used</Typography>
         </section>
       </section>
+      <BorderBeam duration={ 10 } size={ 400 } className="from-transparent via-[#66ffe0] to-transparent" />
+      <BorderBeam duration={ 10 } delay={ 2 } size={ 400 } className="from-transparent via-[#ff751a] to-transparent" />
     </DisplayCard>
   );
 }

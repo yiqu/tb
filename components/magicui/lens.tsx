@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { AnimatePresence, motion, useMotionTemplate } from "motion/react";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useRef, useMemo, useState, useCallback } from 'react';
+import { motion, AnimatePresence, useMotionTemplate } from 'motion/react';
 
 interface Position {
   /** The x coordinate of the lens */
@@ -39,14 +39,14 @@ export function Lens({
   position = { x: 0, y: 0 },
   defaultPosition,
   duration = 0.1,
-  lensColor = "black",
-  ariaLabel = "Zoom Area",
+  lensColor = 'black',
+  ariaLabel = 'Zoom Area',
 }: LensProps) {
   if (zoomFactor < 1) {
-    throw new Error("zoomFactor must be greater than 1");
+    throw new Error('zoomFactor must be greater than 1');
   }
   if (lensSize < 0) {
-    throw new Error("lensSize must be greater than 0");
+    throw new Error('lensSize must be greater than 0');
   }
 
   const [isHovering, setIsHovering] = useState(false);
@@ -68,12 +68,10 @@ export function Lens({
   }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Escape") setIsHovering(false);
+    if (e.key === 'Escape') setIsHovering(false);
   }, []);
 
-  const maskImage = useMotionTemplate`radial-gradient(circle ${
-    lensSize / 2
-  }px at ${currentPosition.x}px ${
+  const maskImage = useMotionTemplate`radial-gradient(circle ${lensSize / 2}px at ${currentPosition.x}px ${
     currentPosition.y
   }px, ${lensColor} 100%, transparent 100%)`;
 
@@ -82,26 +80,26 @@ export function Lens({
 
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.58 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.8 }}
-        transition={{ duration }}
+        initial={ { opacity: 0, scale: 0.58 } }
+        animate={ { opacity: 1, scale: 1 } }
+        exit={ { opacity: 0, scale: 0.8 } }
+        transition={ { duration } }
         className="absolute inset-0 overflow-hidden"
-        style={{
+        style={ {
           maskImage,
           WebkitMaskImage: maskImage,
           transformOrigin: `${x}px ${y}px`,
           zIndex: 50,
-        }}
+        } }
       >
         <div
           className="absolute inset-0"
-          style={{
+          style={ {
             transform: `scale(${zoomFactor})`,
             transformOrigin: `${x}px ${y}px`,
-          }}
+          } }
         >
-          {children}
+          { children }
         </div>
       </motion.div>
     );
@@ -109,24 +107,20 @@ export function Lens({
 
   return (
     <div
-      ref={containerRef}
+      ref={ containerRef }
       className="relative z-20 overflow-hidden rounded-xl"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-      onMouseMove={handleMouseMove}
-      onKeyDown={handleKeyDown}
+      onMouseEnter={ () => setIsHovering(true) }
+      onMouseLeave={ () => setIsHovering(false) }
+      onMouseMove={ handleMouseMove }
+      onKeyDown={ handleKeyDown }
       role="region"
-      aria-label={ariaLabel}
-      tabIndex={0}
+      aria-label={ ariaLabel }
+      tabIndex={ 0 }
     >
-      {children}
-      {isStatic || defaultPosition ? (
+      { children }
+      { isStatic || defaultPosition ?
         LensContent
-      ) : (
-        <AnimatePresence mode="popLayout">
-          {isHovering && LensContent}
-        </AnimatePresence>
-      )}
+      : <AnimatePresence mode="popLayout">{ isHovering ? LensContent : null }</AnimatePresence> }
     </div>
   );
 }

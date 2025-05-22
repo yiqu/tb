@@ -1,6 +1,6 @@
 import startCase from 'lodash/startCase';
 import { Params } from 'next/dist/server/request/params';
-import { Search, Settings, UserRound, UserRoundPen } from 'lucide-react';
+import { Brush, Search, Settings, UserRound, UserRoundPen } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import CenterUnderline from '@/fancy/components/text/underline-center';
@@ -19,6 +19,9 @@ export function BreadcrumbSegmentIcon({ path }: { path: string; params: Params; 
   }
   if (path === 'settings') {
     return <Settings size={ 14 } />;
+  }
+  if (path === 'art') {
+    return <Brush size={ 14 } />;
   }
 
   return null;

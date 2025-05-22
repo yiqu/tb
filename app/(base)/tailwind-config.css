@@ -47,6 +47,15 @@
   --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 8px 10px -1px hsl(28 13% 20% / 0.02);
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.05);
 
+  /* lg: max size of secondary monitor */
+  --breakpoint-lg: 1920px;
+  --breakpoint-sec: 1920px;
+  /* xl: max size of primary monitor */
+  --breakpoint-xl: 2560px;
+  --breakpoint-main: 2560px;
+  /* 2xl: even bigger */
+  --breakpoint-3xl: 3200px;
+
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -98,6 +107,15 @@
   --shadow-lg: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 4px 6px -1px hsl(28 13% 20% / 0.02);
   --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 8px 10px -1px hsl(28 13% 20% / 0.02);
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.05);
+
+  /* lg: max size of secondary monitor */
+  --breakpoint-lg: 1920px;
+  --breakpoint-sec: 1920px;
+  /* xl: max size of primary monitor */
+  --breakpoint-xl: 2560px;
+  --breakpoint-main: 2560px;
+  /* 2xl: even bigger */
+  --breakpoint-3xl: 3200px;
 }
 
 @theme inline {
@@ -155,6 +173,15 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+
+  /* lg: max size of secondary monitor */
+  --breakpoint-lg: 1920px;
+  --breakpoint-sec: 1920px;
+  /* xl: max size of primary monitor */
+  --breakpoint-xl: 2560px;
+  --breakpoint-main: 2560px;
+  /* 2xl: even bigger */
+  --breakpoint-3xl: 3200px;
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
