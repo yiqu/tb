@@ -47,12 +47,21 @@
   --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 8px 10px -1px hsl(28 13% 20% / 0.02);
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.05);
 
+  /* lg: max size of secondary monitor */
+  --breakpoint-lg: 1920px;
+  --breakpoint-sec: 1920px;
+  /* xl: max size of primary monitor */
+  --breakpoint-xl: 2560px;
+  --breakpoint-main: 2560px;
+  /* 2xl: even bigger */
+  --breakpoint-3xl: 3200px;
+
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-caveat: var(--font-caveat);
   --font-lilita-one: var(--font-lilita-one);
-  --font-cherry-bomb-one: var(--font-cherry-bomb-one);
+  --font-fun: var(--font-cherry-bomb-one);
   --font-borel: var(--font-borel);
 }
 
@@ -98,6 +107,15 @@
   --shadow-lg: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 4px 6px -1px hsl(28 13% 20% / 0.02);
   --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 8px 10px -1px hsl(28 13% 20% / 0.02);
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.05);
+
+  /* lg: max size of secondary monitor */
+  --breakpoint-lg: 1920px;
+  --breakpoint-sec: 1920px;
+  /* xl: max size of primary monitor */
+  --breakpoint-xl: 2560px;
+  --breakpoint-main: 2560px;
+  /* 2xl: even bigger */
+  --breakpoint-3xl: 3200px;
 }
 
 @theme inline {
@@ -139,7 +157,7 @@
   --font-mono: var(--font-geist-mono);
   --font-caveat: var(--font-caveat);
   --font-lilita-one: var(--font-lilita-one);
-  --font-cherry-bomb-one: var(--font-cherry-bomb-one);
+  --font-fun: var(--font-cherry-bomb-one);
   --font-borel: var(--font-borel);
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -156,14 +174,21 @@
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
 
+  /* lg: max size of secondary monitor */
+  --breakpoint-lg: 1920px;
+  --breakpoint-sec: 1920px;
+  /* xl: max size of primary monitor */
+  --breakpoint-xl: 2560px;
+  --breakpoint-main: 2560px;
+  /* 2xl: even bigger */
+  --breakpoint-3xl: 3200px;
+
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
 
   --animate-shine: shine var(--duration) infinite linear;
   --animate-aurora: aurora 8s ease-in-out infinite alternate;
   --animate-meteor: meteor 5s linear infinite;
-
-
 }
 
 @layer base {
@@ -186,20 +211,20 @@
 
 @layer app-top-loader {
   :root {
-    --app-top-loader-color: #cc9900;
+    --app-top-loader-color: #3b673f;
   }
   .dark {
-    --app-top-loader-color: #b38600;
+    --app-top-loader-color: #b6c89f;
   }
 }
 
 @layer link-color-utils {
   :root {
-    --link-internal: #2c58a8;
+    --link-internal: #3b673f;
     --link-external-foreground: #2c58a8;
   }
   .dark {
-    --link-internal: #2c58a8;
+    --link-internal: #b6c89f;
     --link-external-foreground: #2c58a8;
   }
 }
@@ -249,7 +274,7 @@
   }
   .dark {
     .logo-text-color {
-      color: #3b673f;
+      color: #b6c89f;
     }
   }
 }

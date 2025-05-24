@@ -19,9 +19,9 @@ import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider
 
 import type { Metadata } from 'next';
 
-import './globals.css';
-import './scrollbar.css';
-import './tailwind-config.css';
+// import './globals.css';
+// import './scrollbar.css';
+// import './tailwind-config.css';
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -59,35 +59,12 @@ export default function AdminRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <ReactScan />
-      <body
-        className={ `${merriweather.variable} ${jetBrainsMono.variable} ${cherryBombOne.variable} ${outfit.variable} font-sans antialiased` }
-      >
-        <AppTopLoader />
-        <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
-        <AppRouterCacheProvider options={ { enableCssLayer: true } }>
-          <MuiThemeProvider theme={ theme } defaultMode="light">
-            <NuqsAdapter>
-              <TanstackQueryClientProvider>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="light"
-                  enableSystem={ false }
-                  disableTransitionOnChange
-                  storageKey="app-theme"
-                >
-                  <Suspense>
-                    <AppLayout>{ children }</AppLayout>
-                  </Suspense>
+    <>
+      <Suspense>
+        <AppLayout>{ children }</AppLayout>
+      </Suspense>
 
-                  <CustomToaster />
-                </ThemeProvider>
-              </TanstackQueryClientProvider>
-            </NuqsAdapter>
-          </MuiThemeProvider>
-        </AppRouterCacheProvider>
-      </body>
-    </html>
+      <CustomToaster />
+    </>
   );
 }

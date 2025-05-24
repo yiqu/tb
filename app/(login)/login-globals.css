@@ -1,0 +1,6 @@
+/* Custom utility classes */
+@layer login-root {
+  html:has(#login-root) {
+    scrollbar-gutter: initial;
+  }
+}

@@ -45,15 +45,17 @@ export default function AdminPasswordInput({ onPasswordEnteredStatus, user }: Ad
   );
 
   return (
-    <div className="fixed z-2 flex flex-col gap-y-4 bg-black/30 text-white">
-      { isPasswordCorrect === true ? null : (
-        <div className="flex flex-row justify-center">
-          <LoginGreetUser user={ user } isPasswordCorrect={ isPasswordCorrect } />
-        </div>
-      ) }
+    <div className="fixed z-2 flex flex-col gap-y-10 bg-black/30 text-white">
+      <div className="flex flex-col gap-y-4">
+        { isPasswordCorrect === true ? null : (
+          <div className="flex flex-row justify-center">
+            <LoginGreetUser user={ user } isPasswordCorrect={ isPasswordCorrect } />
+          </div>
+        ) }
 
-      <div className="flex flex-row justify-center">
-        <PasswordStatusMessage isPasswordCorrect={ isPasswordCorrect } isPasswordFinished={ isPasswordFinished } />
+        <div className="flex flex-row justify-center">
+          <PasswordStatusMessage isPasswordCorrect={ isPasswordCorrect } isPasswordFinished={ isPasswordFinished } />
+        </div>
       </div>
 
       <InputOTP
@@ -72,8 +74,10 @@ export default function AdminPasswordInput({ onPasswordEnteredStatus, user }: Ad
         </InputOTPGroup>
       </InputOTP>
       <div className="flex flex-row justify-center">
-        <Typography variant="body0">
-          <Link href="/">Go back home</Link>
+        <Typography variant="body1">
+          <Link href="/" className="text-white!">
+            Go back home
+          </Link>
         </Typography>
       </div>
     </div>
@@ -92,7 +96,7 @@ function PasswordStatusMessage({
       return (
         <Typography
           variant="h5"
-          className="flex flex-row items-center gap-2 font-fun text-2xl tracking-wider text-green-400"
+          className="flex flex-row items-center gap-2 font-fun text-3xl tracking-wider text-green-400"
         >
           Redirecting you to the admin dashboard...
         </Typography>
@@ -101,7 +105,7 @@ function PasswordStatusMessage({
       return (
         <Typography
           variant="h5"
-          className="flex flex-row items-center gap-2 font-fun text-2xl tracking-wider text-destructive"
+          className="flex flex-row items-center gap-2 font-fun text-3xl tracking-wider text-destructive"
         >
           Try again
         </Typography>
@@ -109,7 +113,7 @@ function PasswordStatusMessage({
     }
   } else {
     return (
-      <Typography variant="h5" className="font-fun text-2xl tracking-wider text-green-200">
+      <Typography variant="h5" className="font-fun text-3xl tracking-wider text-green-200">
         Please enter admin password
       </Typography>
     );

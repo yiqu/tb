@@ -1,3 +1,5 @@
+/* eslint-disable readable-tailwind/no-unnecessary-whitespace */
+/* eslint-disable readable-tailwind/multiline */
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
@@ -56,6 +58,7 @@ const cherryBombOne = Cherry_Bomb_One({
   variable: '--font-cherry-bomb-one',
   subsets: ['latin'],
   weight: '400',
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -72,15 +75,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <ReactScan />
       <body
-        className={ `
-          ${geistSans.variable}
-          ${geistMono.variable}
-          ${caveat.variable}
-          ${lilitaOne.variable}
-          ${borel.variable}
-          ${cherryBombOne.variable}
-          font-sans antialiased
-        ` }
+        className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} font-sans antialiased` }
       >
         <AgGridRegister />
         <AppTopLoader />
@@ -96,12 +91,13 @@ export default function RootLayout({
                   disableTransitionOnChange
                   storageKey="app-theme"
                 >
-                  <TooltipProvider delayDuration={ 0 }>
+                  { /* <TooltipProvider delayDuration={ 0 }>
                     <Suspense>
                       <AppLayout>{ children }</AppLayout>
                     </Suspense>
                     <CustomToaster />
-                  </TooltipProvider>
+                  </TooltipProvider> */ }
+                  { children }
                 </ThemeProvider>
               </TanstackQueryClientProvider>
             </NuqsAdapter>

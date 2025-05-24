@@ -67,24 +67,5 @@ export default function WelcomeRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning className="h-dvh!">
-      <ReactScan />
-      <body
-        className={ `${cherryBombOne.variable} ${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${architectsDaughter.variable} h-full font-sans antialiased` }
-      >
-        <NuqsAdapter>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem={ false }
-            disableTransitionOnChange
-            storageKey="app-theme"
-          >
-            { children }
-          </ThemeProvider>
-        </NuqsAdapter>
-      </body>
-    </html>
-  );
+  return <>{ children }</>;
 }

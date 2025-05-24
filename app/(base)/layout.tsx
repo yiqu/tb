@@ -72,37 +72,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <ReactScan />
-      <body
-        className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} font-sans antialiased` }
-      >
-        <AgGridRegister />
-        <AppTopLoader />
-        <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
-        <AppRouterCacheProvider options={ { enableCssLayer: true } }>
-          <MuiThemeProvider theme={ theme } defaultMode="light">
-            <NuqsAdapter>
-              <TanstackQueryClientProvider>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="light"
-                  enableSystem={ false }
-                  disableTransitionOnChange
-                  storageKey="app-theme"
-                >
-                  <TooltipProvider delayDuration={ 0 }>
-                    <Suspense>
-                      <AppLayout>{ children }</AppLayout>
-                    </Suspense>
-                    <CustomToaster />
-                  </TooltipProvider>
-                </ThemeProvider>
-              </TanstackQueryClientProvider>
-            </NuqsAdapter>
-          </MuiThemeProvider>
-        </AppRouterCacheProvider>
-      </body>
-    </html>
+    <TooltipProvider delayDuration={ 0 }>
+      <Suspense>
+        <AppLayout>{ children }</AppLayout>
+      </Suspense>
+      <CustomToaster />
+    </TooltipProvider>
   );
 }

@@ -24,6 +24,8 @@ interface HyperTextProps extends MotionProps {
   animateOnHover?: boolean;
   /** Custom character set for scramble effect. Defaults to uppercase alphabet */
   characterSet?: CharacterSet;
+  /** Custom class name for each letter */
+  letterClassName?: string;
 }
 
 const DEFAULT_CHARACTER_SET = Object.freeze('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')) as readonly string[];
@@ -39,6 +41,7 @@ export function HyperText({
   startOnView = false,
   animateOnHover = true,
   characterSet = DEFAULT_CHARACTER_SET,
+  letterClassName,
   ...props
 }: HyperTextProps) {
   const MotionComponent = motion.create(Component, {
@@ -101,9 +104,9 @@ export function HyperText({
 
       setDisplayText((currentText) =>
         currentText.map((letter, index) =>
-          (letter === ' ' ? letter
+          letter === ' ' ? letter
           : index <= iterationCount.current ? children[index]
-          : characterSet[getRandomInt(characterSet.length)]),
+          : characterSet[getRandomInt(characterSet.length)],
         ),
       );
 
@@ -121,17 +124,17 @@ export function HyperText({
 
   return (
     <MotionComponent
-      ref={ elementRef }
-      className={ cn('overflow-hidden py-2 text-4xl font-bold', className) }
-      onMouseEnter={ handleAnimationTrigger }
-      { ...props }
+      ref={elementRef}
+      className={cn('overflow-hidden py-2 text-4xl font-bold', className)}
+      onMouseEnter={handleAnimationTrigger}
+      {...props}
     >
       <AnimatePresence>
-        { displayText.map((letter, index) => (
-          <motion.span key={ index } className={ cn('font-mono', letter === ' ' ? 'w-3' : '') }>
-            { letter.toUpperCase() }
+        {displayText.map((letter, index) => (
+          <motion.span key={index} className={cn('font-mono', letter === ' ' ? 'w-4' : '', letterClassName)}>
+            {letter.toUpperCase()}
           </motion.span>
-        )) }
+        ))}
       </AnimatePresence>
     </MotionComponent>
   );
