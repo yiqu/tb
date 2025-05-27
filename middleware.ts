@@ -41,6 +41,11 @@ export async function middleware(request: NextRequest) {
           }
           return NextResponse.next();
         }
+        
+        // consent is already given, proceed
+        if (nextPath === '/consent') {
+          return NextResponse.next();
+        }
       } else {
         // ask for consent
         return NextResponse.redirect(new URL('/consent', request.url));
