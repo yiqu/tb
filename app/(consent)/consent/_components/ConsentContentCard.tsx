@@ -20,13 +20,13 @@ export default function ConsentContentCard() {
       <CardHeader>
         <CardTitle>
           <Typewriter
-            text={ ['Consent'] }
+            text={ ['Consent', 'Agreement', 'Acceptance'] }
             speed={ 100 }
             className=""
             waitTime={ 1500 }
             deleteSpeed={ 40 }
             cursorChar={ '_' }
-            loop={ false }
+            loop={ true }
           />
         </CardTitle>
         <CardDescription>
