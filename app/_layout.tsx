@@ -71,16 +71,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <ReactScan />
-      <body
-        className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} font-sans antialiased` }
-        id="default-root-layout"
-      >
-        <ReactScan />
-        { children }
-      </body>
-    </html>
-  );
+  return <>{ children }</>;
 }

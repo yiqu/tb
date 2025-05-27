@@ -6,6 +6,13 @@ body {
   --animate-aurora: aurora 8s ease-in-out infinite alternate;
 }
 
+@layer login-root {
+  html {
+    scrollbar-gutter: initial;
+  }
+}
+
+
 canvas {
   height: 100% !important;
 }

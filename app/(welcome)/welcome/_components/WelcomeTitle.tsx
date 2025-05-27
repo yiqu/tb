@@ -20,20 +20,6 @@ export default function WelcomeTitle() {
         { appName }
       </VerticalCutReveal>
       <WelcomeTitleLastPart />
-      { /* <VerticalCutReveal
-        splitBy="characters"
-        staggerDuration={ 0.08 }
-        staggerFrom="center"
-        transition={ {
-          type: 'spring',
-          stiffness: 200,
-          damping: 21,
-          delay: 2,
-        } }
-        wordLevelClassName="text-background font-fun tracking-wider text-[4rem]"
-      >
-        We hope you enjoy using it!
-      </VerticalCutReveal> */ }
     </div>
   );
 }
