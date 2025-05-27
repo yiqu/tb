@@ -69,7 +69,7 @@ export default function WelcomeRootLayout({
       <ReactScan />
       <body
         className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} ${architectsDaughter.variable} font-sans antialiased` }
-        id="welcome-root-layout"
+        id="consent-root-layout"
       >
         { children }
       </body>

@@ -2,26 +2,22 @@
 
 import { useColorScheme } from '@mui/material/styles';
 
+import { useState } from 'react';
 import { Sun } from 'lucide-react';
 import { Moon } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { useTheme, UseThemeProps } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
+import { useClientOnly } from '@/hooks/useClientOnly';
 
 import { Skeleton } from '../ui/skeleton';
 
 export default function ThemeToggleButton() {
-  const [mounted, setMounted] = useState(false);
+  const isClient = useClientOnly();
   const [rotationDegree, setRotationDegree] = useState(0);
   const { setTheme, theme }: UseThemeProps = useTheme();
   const [currentIcon, setCurrentIcon] = useState<'light' | 'dark'>(theme as 'light' | 'dark');
   const { setMode } = useColorScheme();
-
-  // useEffect only runs on the client, so now we can safely show the UI 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleOnThemeUpdate = () => {
     // Calculate the next rotation value
@@ -39,7 +35,7 @@ export default function ThemeToggleButton() {
   };
 
   // Prevent hydration mismatch by not rendering theme-dependent content until mounted
-  if (!mounted) {
+  if (!isClient) {
     return (
       <Button variant="outline" size="icon" disabled>
         <Skeleton className="h-4 w-4 rounded-full" />

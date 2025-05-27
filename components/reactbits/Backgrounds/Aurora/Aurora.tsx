@@ -1,9 +1,8 @@
-/*
-	Installed from https://reactbits.dev/ts/tailwind/
-*/
+/* eslint-disable react-hooks/exhaustive-deps */
+'use client';
 
-import { useEffect, useRef } from 'react';
-import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
+import { useRef, useEffect } from 'react';
+import { Mesh, Color, Program, Renderer, Triangle } from 'ogl';
 
 const VERT = `#version 300 es
 in vec2 position;
@@ -135,7 +134,7 @@ export default function Aurora(props: AuroraProps) {
       premultipliedAlpha: true,
       antialias: true,
     });
-    const gl = renderer.gl;
+    const {gl} = renderer;
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -210,5 +209,5 @@ export default function Aurora(props: AuroraProps) {
     };
   }, [amplitude]);
 
-  return <div ref={ctnDom} className="h-full w-full" />;
+  return <div ref={ ctnDom } className="h-full w-full" />;
 }

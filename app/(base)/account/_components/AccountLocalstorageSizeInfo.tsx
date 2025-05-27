@@ -21,7 +21,7 @@ export default function AccountLocalstorageSizeInfo() {
 
   if (!isClient) {
     return (
-      <DisplayCard className="relative h-[141px] overflow-hidden p-4">
+      <DisplayCard className="relative h-[141px] w-full overflow-hidden p-4">
         <section className="flex flex-row items-center justify-between">
           <Typography variant="body0" className="font-semibold">
             Local Storage Usage
@@ -39,7 +39,7 @@ export default function AccountLocalstorageSizeInfo() {
   const storageInfo = manageLocalStorage();
 
   return (
-    <DisplayCard className="relative overflow-hidden p-4">
+    <DisplayCard className="relative w-full overflow-hidden p-4">
       <Particles
         className="absolute inset-0 z-0 h-full w-full"
         quantity={ 19 }

@@ -5,7 +5,7 @@ import ScrambleHover from '@/fancy/components/text/scramble-hover';
 
 export default async function KeyboardShortcutsDisplay() {
   return (
-    <DisplayCard className="relative overflow-hidden p-4">
+    <DisplayCard className="relative w-full overflow-hidden p-4">
       <section className="flex flex-row items-center justify-between">
         <Typography variant="body0" className="font-semibold">
           <ScrambleHover

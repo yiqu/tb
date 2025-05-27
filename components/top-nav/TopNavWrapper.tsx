@@ -1,3 +1,4 @@
+/* eslint-disable readable-tailwind/multiline */
 'use client';
 
 import { ReactNode } from 'react';
@@ -11,13 +12,7 @@ export default function TopNavWrapper({ children }: { children: ReactNode }) {
   return (
     <header
       className={ cn(
-        `
-          sticky top-0 z-10 flex h-16 shrink-0 flex-row items-center
-          justify-between gap-2 bg-background/95 backdrop-blur
-          transition-[width,height] ease-linear
-          group-has-data-[collapsible=icon]/sidebar-wrapper:h-12
-          supports-[backdrop-filter]:bg-background/60
-        `,
+        `sticky top-0 z-21 flex h-16 shrink-0 flex-row items-center justify-between gap-2 bg-background/95 backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 supports-[backdrop-filter]:bg-background/60`,
         {
           'kq-light-shadow': hasScrolled,
         },

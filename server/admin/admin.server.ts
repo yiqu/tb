@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect, RedirectType } from 'next/navigation';
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 
-import { ADMIN_PASSWORD_CORRECT_COOKIE_NAME } from '@/constants/constants';
+import { CONSENT_GIVEN_COOKIE_NAME, ADMIN_PASSWORD_CORRECT_COOKIE_NAME } from '@/constants/constants';
 
 export async function triggerPasswordCorrect() {
   const cookieStore: ReadonlyRequestCookies = await cookies();
@@ -19,8 +19,9 @@ export async function getAdminPasswordCorrect() {
   return null;
 }
 
-export async function removeIsAdminPasswordCorrect() {
+export async function removeIsAdminPasswordCorrectAndConsentGiven() {
   const cookieStore: ReadonlyRequestCookies = await cookies();
   cookieStore.delete(ADMIN_PASSWORD_CORRECT_COOKIE_NAME);
+  cookieStore.delete(CONSENT_GIVEN_COOKIE_NAME);
   redirect('/', RedirectType.replace);
 }

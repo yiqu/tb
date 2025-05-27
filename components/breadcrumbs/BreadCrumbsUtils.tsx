@@ -28,18 +28,6 @@ export function BreadcrumbSegmentIcon({ path }: { path: string; params: Params; 
 }
 
 export function BreadcrumbSegmentTitle({ path, isLast }: { path: string; isLast?: boolean }) {
-  if (path === 'poke') {
-    return (
-      <Typography
-        className={ cn({
-          'text-muted-foreground': isLast,
-        }) }
-      >
-        Pokemon
-      </Typography>
-    );
-  }
-
   if (path === 'account') {
     return (
       <Typography

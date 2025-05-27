@@ -13,7 +13,7 @@ import { getAchievementImgUrl } from './account.utils';
 
 export default async function AccountAchievementsParent() {
   return (
-    <DisplayCard className="relative overflow-hidden p-4">
+    <DisplayCard className="relative w-full overflow-hidden p-4">
       <section className="flex flex-row items-center justify-between">
         <Typography variant="body0" className="font-semibold">
           <ScrambleHover
@@ -38,7 +38,6 @@ export default async function AccountAchievementsParent() {
 
 async function UserAchievementsWrapper() {
   const userAchievements: UserAchievement[] = await getUserAchievements();
-  console.log(userAchievements);
 
   return (
     <div className="grid grid-cols-4 gap-2">

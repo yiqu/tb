@@ -1,8 +1,8 @@
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
-import ThemeToggleButton from './ThemeToggleButton';
 import Breadcrumbs from '../breadcrumbs/Breadcrumbs';
+import TopNavRightActionButtons from './TopNavRightActionButtons';
 
 export default function TopNav() {
   return (
@@ -12,9 +12,7 @@ export default function TopNav() {
         <Separator orientation="vertical" className={ `mr-2 data-[orientation=vertical]:h-4` } />
         <Breadcrumbs />
       </div>
-      <div className="flex flex-row items-center justify-end gap-x-2 px-4">
-        <ThemeToggleButton />
-      </div>
+      <TopNavRightActionButtons />
     </>
   );
 }

@@ -3,14 +3,22 @@
 'use client';
 // react-scan must be imported before react
 import { scan } from 'react-scan';
-import { JSX, useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 
-export default function ReactScan(): JSX.Element {
+import useIsClient from '@/hooks/useIsClient';
+
+export default function ReactScan(): ReactNode {
+  const isClient = useIsClient();
+
   useEffect(() => {
-    scan({
-      enabled: process.env.NODE_ENV === 'development',
-    });
-  }, []);
+    if (!isClient) return;
 
-  return <></>;
+    if (process.env.NODE_ENV === 'development') {
+      scan({
+        enabled: true,
+      });
+    }
+  }, [isClient]);
+
+  return null;
 }

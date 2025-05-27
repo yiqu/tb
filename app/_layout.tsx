@@ -21,9 +21,9 @@ import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider
 
 import type { Metadata } from 'next';
 
-import './globals.css';
-import './scrollbar.css';
-import './tailwind-config.css';
+// import './globals.css';
+// import './scrollbar.css';
+// import './tailwind-config.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -76,33 +76,10 @@ export default function RootLayout({
       <ReactScan />
       <body
         className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} font-sans antialiased` }
+        id="default-root-layout"
       >
-        <AgGridRegister />
-        <AppTopLoader />
-        <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
-        <AppRouterCacheProvider options={ { enableCssLayer: true } }>
-          <MuiThemeProvider theme={ theme } defaultMode="light">
-            <NuqsAdapter>
-              <TanstackQueryClientProvider>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="light"
-                  enableSystem={ false }
-                  disableTransitionOnChange
-                  storageKey="app-theme"
-                >
-                  { /* <TooltipProvider delayDuration={ 0 }>
-                    <Suspense>
-                      <AppLayout>{ children }</AppLayout>
-                    </Suspense>
-                    <CustomToaster />
-                  </TooltipProvider> */ }
-                  { children }
-                </ThemeProvider>
-              </TanstackQueryClientProvider>
-            </NuqsAdapter>
-          </MuiThemeProvider>
-        </AppRouterCacheProvider>
+        <ReactScan />
+        { children }
       </body>
     </html>
   );

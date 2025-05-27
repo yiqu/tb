@@ -12,11 +12,12 @@ export interface LayoutGutterProps {
   size?: 'full' | 'widest' | 'wider' | 'wide' | 'large' | 'medplus' | 'med' | 'narrow' | 'narrower' | 'small' | 'skinny';
   //       12,      11.5       11        10,      9          8           7,        6,          5.5         5,      4
   gridProps?: GridProps;
+  className?: string;
 }
 
-function LayoutWithGutter({ children, size = 'full', gridProps }: LayoutGutterProps) {
+function LayoutWithGutter({ children, size = 'full', gridProps, className }: LayoutGutterProps) {
   return (
-    <Grid container className="layout-with-gutter-container-parent">
+    <Grid container className={ cn('layout-with-gutter-container-parent', className) }>
       <Grid
         className={ cn('layout-with-gutter-parent', gridProps?.className) }
         size={ {

@@ -2,13 +2,13 @@ import Image from 'next/image';
 
 const LOGO_SIZE = 40;
 
-export default function NavHeaderLogo() {
+export default function NavHeaderLogo({ size = LOGO_SIZE }: { size?: number }) {
   return (
     <>
       <Image
         src="/images/leaf.png"
-        width={ LOGO_SIZE }
-        height={ LOGO_SIZE }
+        width={ size }
+        height={ size }
         alt="logo"
         className="shrink-0"
         data-hide-on-theme="dark"
@@ -17,8 +17,8 @@ export default function NavHeaderLogo() {
 
       <Image
         src="/images/leafnight.png"
-        width={ LOGO_SIZE }
-        height={ LOGO_SIZE }
+        width={ size }
+        height={ size }
         alt="logo"
         className="shrink-0"
         data-hide-on-theme="light"
