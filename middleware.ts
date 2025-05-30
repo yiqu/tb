@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getCookieByName } from './lib/cookies';
-import { ADMIN_PASSWORD_CORRECT_COOKIE_NAME } from './constants/constants';
+import { CONSENT_GIVEN_COOKIE_NAME, ADMIN_PASSWORD_CORRECT_COOKIE_NAME } from './constants/constants';
 
 export async function middleware(request: NextRequest) {
   const nextPath = request.nextUrl.pathname;
@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
   if (nextPath === '/consent') {
     const shouldAskConsent = process.env.NEXT_PUBLIC_ASK_CONSENT === 'true';
     if (shouldAskConsent) {
-      const consentGivenDateCookie = await getCookieByName('consent-given');
+      const consentGivenDateCookie = await getCookieByName(CONSENT_GIVEN_COOKIE_NAME);
       const consentGivenDate: string | undefined = consentGivenDateCookie?.value;
 
       if (consentGivenDate !== undefined) {
@@ -29,11 +29,22 @@ export async function middleware(request: NextRequest) {
     const shouldAskConsent = process.env.NEXT_PUBLIC_ASK_CONSENT === 'true';
     // check if consent is needed
     if (shouldAskConsent) {
-      const consentGivenDateCookie = await getCookieByName('consent-given');
+      const consentGivenDateCookie = await getCookieByName(CONSENT_GIVEN_COOKIE_NAME);
       const consentGivenDate: string | undefined = consentGivenDateCookie?.value;
 
+      const nextPathname = request.nextUrl.pathname;
+      const nextPathSearchParams = request.nextUrl.search;
+
+      const nextPathFullUrl: string = `${nextPathname}${nextPathSearchParams}`;
+
+      const redirectUrlParams = new URLSearchParams();
+      redirectUrlParams.set('redirectUrl', nextPathFullUrl);
+
+      const nextUrl = new URL('/consent', request.url);
+      nextUrl.search = redirectUrlParams.toString();
+
       if (consentGivenDate === undefined) {
-        return NextResponse.redirect(new URL('/consent', request.url));
+        return NextResponse.redirect(nextUrl);
       }
     }
 

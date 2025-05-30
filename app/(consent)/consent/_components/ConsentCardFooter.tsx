@@ -2,6 +2,7 @@
 
 import confetti from 'canvas-confetti';
 import { useState, startTransition } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Handshake, LoaderCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,8 @@ import { InteractiveHoverButton } from '@/components/magicui/interactive-hover-b
 export default function ConsentCardFooter() {
   const [isAccepting, setIsAccepting] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirectUrl');
 
   const handleOnDecline = async () => {
     setIsDeclining(true);
@@ -24,7 +27,7 @@ export default function ConsentCardFooter() {
     setIsAccepting(true);
     confetti({ particleCount: 150 });
     startTransition(async () => {
-      await acceptConsent();
+      await acceptConsent(redirectUrl);
     });
   };
 
@@ -37,19 +40,20 @@ export default function ConsentCardFooter() {
       </Button>
       }
       { isAccepting || isDeclining ?
-        <div className="flex flex-row items-center justify-start gap-x-2 h-9">
+        <div className="flex h-9 flex-row items-center justify-start gap-x-2">
           <LoaderCircle size={ 18 } className="animate-spin" />
           <Typography>Redirecting you to { isDeclining ? 'home page' : appName }</Typography>
         </div>
       : <InteractiveHoverButton
           onClick={ handleOnAccept }
-          className="bg-primary text-sm text-background"
+          className="bg-primary text-background text-sm"
           dotClassName="bg-card"
-          postAnimationClassName="text-foreground bg-gradient-to-r from-white to-green-200"
+          postAnimationClassName="text-foreground bg-gradient-to-r from-white to-green-500"
           postAnimationIcon={ <Handshake size={ 18 } /> }
           disabled={ isAccepting }
+          postAnimationText="Continue"
         >
-        Accept and continue
+        Accept
       </InteractiveHoverButton>
       }
     </CardFooter>

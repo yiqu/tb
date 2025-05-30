@@ -1,27 +1,28 @@
 import { ReactNode } from 'react';
 
-import PageLayout from '@/shared/PageLayout';
-import PageLayout2 from '@/shared/PageLayout2';
 import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
+import LayoutParent from '@/components/layout/LayoutParent';
 import { AuroraText } from '@/components/magicui/aurora-text';
+import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
 import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
-
-const titleColors = ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'];
+import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
 export default function SearchLayout({ children }: { children: ReactNode; params: Promise<any> }) {
   return (
-    <PageLayout>
-      <LayoutWithGutter size="wider">
-        <section className="w-full">
-          <PageTitle
-            title={ <AuroraText colors={ titleColors }>Search</AuroraText> }
-            subText="Search or view your subscriptions and bills."
-          />
-        </section>
-      </LayoutWithGutter>
+    <div id="search-layout-parent">
+      <LayoutParent>
+        <LayoutWithGutter size="wider">
+          <section className="w-full">
+            <PageTitle
+              title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.search }>Search</AuroraText> }
+              subText="Search or view your subscriptions and bills."
+            />
+          </section>
+        </LayoutWithGutter>
+      </LayoutParent>
       <Separator />
-      <PageLayout2>{ children }</PageLayout2>
-    </PageLayout>
+      <LayoutChildrenParent>{ children }</LayoutChildrenParent>
+    </div>
   );
 }

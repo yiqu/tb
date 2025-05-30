@@ -4,7 +4,7 @@ import Typography from '../typography/Typography';
 
 export default function PageTitle({ title, subText }: { title: ReactNode; subText?: ReactNode }) {
   return (
-    <section className="mb-9 flex flex-col gap-y-2">
+    <section className="flex flex-col gap-y-4 w-full" id="page-title-parent">
       <Typography variant="h1" className="font-fun tracking-wide">
         { title }
       </Typography>

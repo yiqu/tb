@@ -6,13 +6,17 @@ import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adap
 
 import { CONSENT_GIVEN_COOKIE_NAME } from '@/constants/constants';
 
-export async function acceptConsent() {
+export async function acceptConsent(redirectUrl: string | null) {
   const cookieStore: ReadonlyRequestCookies = await cookies();
   cookieStore.set(CONSENT_GIVEN_COOKIE_NAME, Date.now().toString(), {
     path: '/',
     maxAge: 60 * 1 * 60 * 24 * 7, // 1 week
   });
-  redirect('/', RedirectType.replace);
+  if (redirectUrl) {
+    redirect(redirectUrl, RedirectType.replace);
+  } else {
+    redirect('/', RedirectType.replace);
+  }
 }
 
 export async function declineConsent() {

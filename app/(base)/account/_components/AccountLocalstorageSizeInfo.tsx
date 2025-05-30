@@ -40,7 +40,7 @@ export default function AccountLocalstorageSizeInfo() {
 
   return (
     <DisplayCard className="relative w-full overflow-hidden p-4">
-      <Particles
+      { /* <Particles
         className="absolute inset-0 z-0 h-full w-full"
         quantity={ 19 }
         ease={ 80 }
@@ -48,7 +48,7 @@ export default function AccountLocalstorageSizeInfo() {
         refresh={ false }
         staticity={ 40 }
         size={ 0.4 }
-      />
+      /> */ }
       <section className="flex flex-row items-center justify-between">
         <Typography variant="body0" className="font-semibold">
           <ScrambleHover
