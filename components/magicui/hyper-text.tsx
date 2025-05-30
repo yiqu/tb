@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
@@ -104,9 +105,9 @@ export function HyperText({
 
       setDisplayText((currentText) =>
         currentText.map((letter, index) =>
-          letter === ' ' ? letter
+          (letter === ' ' ? letter
           : index <= iterationCount.current ? children[index]
-          : characterSet[getRandomInt(characterSet.length)],
+          : characterSet[getRandomInt(characterSet.length)]),
         ),
       );
 
@@ -124,17 +125,17 @@ export function HyperText({
 
   return (
     <MotionComponent
-      ref={elementRef}
-      className={cn('overflow-hidden py-2 text-4xl font-bold', className)}
-      onMouseEnter={handleAnimationTrigger}
-      {...props}
+      ref={ elementRef }
+      className={ cn('overflow-hidden py-2 text-4xl font-bold', className) }
+      onMouseEnter={ handleAnimationTrigger }
+      { ...props }
     >
       <AnimatePresence>
-        {displayText.map((letter, index) => (
-          <motion.span key={index} className={cn('font-mono', letter === ' ' ? 'w-4' : '', letterClassName)}>
-            {letter}
+        { displayText.map((letter, index) => (
+          <motion.span key={ index } className={ cn('font-mono', letter === ' ' ? 'w-4' : '', letterClassName) }>
+            { letter }
           </motion.span>
-        ))}
+        )) }
       </AnimatePresence>
     </MotionComponent>
   );

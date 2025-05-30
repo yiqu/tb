@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { motion, useAnimation } from 'motion/react';
@@ -157,7 +158,7 @@ export const ScratchToReveal: React.FC<ScratchToRevealProps> = ({
         ref={ canvasRef }
         width={ width }
         height={ height }
-        className="absolute top-0 left-0"
+        className="absolute left-0 top-0"
         onMouseDown={ handleMouseDown }
         onTouchStart={ handleTouchStart }
       ></canvas>

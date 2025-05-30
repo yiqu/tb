@@ -1,3 +1,4 @@
+/* eslint-disable readable-tailwind/multiline */
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
 */
@@ -27,19 +28,20 @@ export default function GradientText({
   return (
     <div
       className={ `
-        relative mx-auto flex max-w-fit cursor-pointer flex-row items-center justify-center overflow-hidden rounded-[1.25rem] font-medium backdrop-blur
-        transition-shadow duration-500
+        relative mx-auto flex max-w-fit cursor-pointer flex-row items-center justify-center overflow-hidden rounded-[1.25rem] font-medium backdrop-blur transition-shadow
+        duration-500
         ${className}
       ` }
     >
-      { showBorder ? <div
+      { showBorder ?
+        <div
           className="animate-gradient pointer-events-none absolute inset-0 z-0 bg-cover"
           style={ {
             ...gradientStyle,
             backgroundSize: '300% 100%',
           } }
         >
-        <div
+          <div
             className="absolute inset-0 z-[-1] rounded-[1.25rem] bg-black"
             style={ {
               width: 'calc(100% - 2px)',
@@ -49,9 +51,10 @@ export default function GradientText({
               transform: 'translate(-50%, -50%)',
             } }
           ></div>
-      </div> : null }
+        </div>
+      : null }
       <div
-        className="animate-gradient relative z-2 inline-block bg-cover text-transparent"
+        className="animate-gradient z-2 relative inline-block bg-cover text-transparent"
         style={ {
           ...gradientStyle,
           backgroundClip: 'text',

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
@@ -1314,7 +1316,7 @@ export default function SplashCursor({
   ]);
 
   return (
-    <div className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full">
+    <div className="pointer-events-none fixed left-0 top-0 z-50 h-full w-full">
       <canvas ref={ canvasRef } id="fluid" className="block h-screen w-screen"></canvas>
     </div>
   );

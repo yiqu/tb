@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable unicorn/no-useless-spread */
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -44,7 +46,7 @@ export const Meteors = ({
           key={ idx }
           style={ { ...style } }
           className={ cn(
-            'pointer-events-none absolute size-0.5 rotate-[var(--angle)] animate-meteor rounded-full bg-zinc-500 shadow-[0_0_0_1px_#ffffff10]',
+            'animate-meteor pointer-events-none absolute size-0.5 rotate-[var(--angle)] rounded-full bg-zinc-500 shadow-[0_0_0_1px_#ffffff10]',
             className,
           ) }
         >

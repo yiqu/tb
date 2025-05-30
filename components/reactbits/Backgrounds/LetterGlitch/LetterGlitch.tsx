@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 'use client';
 import { useRef, useEffect } from 'react';
 
@@ -275,12 +276,16 @@ const LetterGlitch = ({
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
       <canvas ref={ canvasRef } className="block h-full w-full" />
-      { outerVignette ? <div className={ `
-        pointer-events-none absolute top-0 left-0 h-full w-full bg-[radial-gradient(circle,_rgba(0,0,0,0)_60%,_rgba(0,0,0,1)_100%)]
-      ` }></div> : null }
-      { centerVignette ? <div className={ `
-        pointer-events-none absolute top-0 left-0 h-full w-full bg-[radial-gradient(circle,_rgba(0,0,0,0.8)_0%,_rgba(0,0,0,0)_60%)]
-      ` }></div> : null }
+      { outerVignette ?
+        <div
+          className={ `pointer-events-none absolute left-0 top-0 h-full w-full bg-[radial-gradient(circle,_rgba(0,0,0,0)_60%,_rgba(0,0,0,1)_100%)]` }
+        ></div>
+      : null }
+      { centerVignette ?
+        <div
+          className={ `pointer-events-none absolute left-0 top-0 h-full w-full bg-[radial-gradient(circle,_rgba(0,0,0,0.8)_0%,_rgba(0,0,0,0)_60%)]` }
+        ></div>
+      : null }
     </div>
   );
 };

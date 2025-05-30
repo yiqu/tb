@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/explicit-length-check */
 'use client';
 
 import * as React from 'react';
@@ -25,10 +26,7 @@ function ToggleGroup({
       data-variant={ variant }
       data-size={ size }
       className={ cn(
-        `
-          group/toggle-group flex w-fit items-center rounded-md
-          data-[variant=outline]:shadow-xs
-        `,
+        `group/toggle-group data-[variant=outline]:shadow-xs flex w-fit items-center rounded-md`,
         className,
       ) }
       { ...props }
@@ -63,8 +61,7 @@ function ToggleGroupItem({
           last:rounded-r-md
           focus:z-10
           focus-visible:z-10
-          data-[variant=outline]:border-l-0
-          data-[variant=outline]:first:border-l
+          data-[variant=outline]:border-l-0 data-[variant=outline]:first:border-l
         `,
         className,
       ) }

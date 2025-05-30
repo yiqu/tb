@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-param-reassign */
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
 */

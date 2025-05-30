@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import { useEffect, useRef } from 'react';
-import { Renderer, Program, Mesh, Triangle, Vec3 } from 'ogl';
+import { useRef, useEffect } from 'react';
+import { Mesh, Vec3, Program, Renderer, Triangle } from 'ogl';
 
 interface OrbProps {
   hue?: number;
@@ -184,7 +185,7 @@ export default function Orb({
     if (!container) return;
 
     const renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
-    const gl = renderer.gl;
+    const {gl} = renderer;
     gl.clearColor(0, 0, 0, 0);
     container.appendChild(gl.canvas);
 
@@ -228,8 +229,8 @@ export default function Orb({
       const rect = container.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      const width = rect.width;
-      const height = rect.height;
+      const {width} = rect;
+      const {height} = rect;
       const size = Math.min(width, height);
       const centerX = width / 2;
       const centerY = height / 2;
@@ -281,5 +282,5 @@ export default function Orb({
     };
   }, [hue, hoverIntensity, rotateOnHover, forceHoverState]);
 
-  return <div ref={ctnDom} className="h-full w-full" />;
+  return <div ref={ ctnDom } className="h-full w-full" />;
 }

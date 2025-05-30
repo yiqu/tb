@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable no-unused-vars */
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
 */

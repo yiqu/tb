@@ -1,6 +1,6 @@
+/* eslint-disable react/no-array-index-key */
 'use client';
 
-import { ClassValue } from 'clsx';
 import { motion } from 'framer-motion';
 import { useRef, useState, useEffect, HTMLAttributes } from 'react';
 
@@ -34,7 +34,7 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
   animationDuration = 0.5,
   pauseBetweenAnimations = 1,
   parentClassName = '',
-  textClassName
+  textClassName,
 }) => {
   const words = sentence.split(' ');
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -86,17 +86,17 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
 
   return (
     <div
-      className={cn(`relative flex flex-wrap items-center justify-center gap-4`, parentClassName)}
-      ref={containerRef}
+      className={ cn(`relative flex flex-wrap items-center justify-center gap-4`, parentClassName) }
+      ref={ containerRef }
     >
-      {words.map((word, index) => {
+      { words.map((word, index) => {
         const isActive = index === currentIndex;
         return (
           <span
-            key={index}
+            key={ index }
             //@ts-ignore
-            ref={(el) => (wordRefs.current[index] = el)}
-            className={cn(`font-fun relative cursor-pointer tracking-wider`, textClassName)}
+            ref={ (el) => (wordRefs.current[index] = el) }
+            className={ cn(`font-fun relative cursor-pointer tracking-wider`, textClassName) }
             style={
               {
                 filter:
@@ -108,26 +108,26 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
                 transition: `filter ${animationDuration}s ease`,
               } as React.CSSProperties
             }
-            onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={handleMouseLeave}
+            onMouseEnter={ () => handleMouseEnter(index) }
+            onMouseLeave={ handleMouseLeave }
           >
-            {word}
+            { word }
           </span>
         );
-      })}
+      }) }
 
       <motion.div
-        className={`pointer-events-none absolute top-0 left-0 box-border border-0`}
-        animate={{
+        className={ `pointer-events-none absolute left-0 top-0 box-border border-0` }
+        animate={ {
           x: focusRect.x,
           y: focusRect.y,
           width: focusRect.width,
           height: focusRect.height,
           opacity: currentIndex >= 0 ? 1 : 0,
-        }}
-        transition={{
+        } }
+        transition={ {
           duration: animationDuration,
-        }}
+        } }
         style={
           {
             '--border-color': borderColor,
@@ -136,32 +136,32 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
         }
       >
         <span
-          className={`absolute top-[-2px] left-[-5px] size-4 rounded-[3px] border-[3px] border-r-0 border-b-0`}
-          style={{
+          className={ `absolute left-[-5px] top-[-2px] size-4 rounded-[3px] border-[3px] border-b-0 border-r-0` }
+          style={ {
             borderColor: 'var(--border-color)',
             filter: 'drop-shadow(0 0 4px var(--border-color))',
-          }}
+          } }
         ></span>
         <span
-          className={`absolute top-[-2px] right-[-5px] size-4 rounded-[3px] border-[3px] border-b-0 border-l-0`}
-          style={{
+          className={ `absolute right-[-5px] top-[-2px] size-4 rounded-[3px] border-[3px] border-b-0 border-l-0` }
+          style={ {
             borderColor: 'var(--border-color)',
             filter: 'drop-shadow(0 0 4px var(--border-color))',
-          }}
+          } }
         ></span>
         <span
-          className={`absolute bottom-[-2px] left-[-5px] size-4 rounded-[3px] border-[3px] border-t-0 border-r-0`}
-          style={{
+          className={ `absolute bottom-[-2px] left-[-5px] size-4 rounded-[3px] border-[3px] border-r-0 border-t-0` }
+          style={ {
             borderColor: 'var(--border-color)',
             filter: 'drop-shadow(0 0 4px var(--border-color))',
-          }}
+          } }
         ></span>
         <span
-          className={`absolute right-[-2px] bottom-[-5px] size-4 rounded-[3px] border-[3px] border-t-0 border-l-0`}
-          style={{
+          className={ `absolute bottom-[-5px] right-[-2px] size-4 rounded-[3px] border-[3px] border-l-0 border-t-0` }
+          style={ {
             borderColor: 'var(--border-color)',
             filter: 'drop-shadow(0 0 4px var(--border-color))',
-          }}
+          } }
         ></span>
       </motion.div>
     </div>

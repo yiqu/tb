@@ -1,6 +1,3 @@
-/*
-	Installed from https://reactbits.dev/ts/tailwind/
-*/
 
 import { FC, CSSProperties } from 'react';
 

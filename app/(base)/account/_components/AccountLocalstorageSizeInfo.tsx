@@ -1,15 +1,12 @@
 /* eslint-disable readable-tailwind/multiline */
 'use client';
 
-import { useTheme } from 'next-themes';
-
 import useIsClient from '@/hooks/useIsClient';
 import { manageLocalStorage } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getPercentFormatter } from '@/lib/number.utils';
 import DisplayCard from '@/shared/components/DisplayCard';
-import { Particles } from '@/components/magicui/particles';
 import Typography from '@/components/typography/Typography';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import ScrambleHover from '@/fancy/components/text/scramble-hover';
@@ -17,7 +14,6 @@ const percentFormatter = getPercentFormatter(2, 2);
 
 export default function AccountLocalstorageSizeInfo() {
   const isClient = useIsClient();
-  const { theme } = useTheme();
 
   if (!isClient) {
     return (

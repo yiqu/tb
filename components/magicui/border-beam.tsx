@@ -1,3 +1,4 @@
+/* eslint-disable readable-tailwind/multiline */
 'use client';
 
 import { motion, Transition, MotionStyle } from 'motion/react';
@@ -63,9 +64,9 @@ export const BorderBeam = ({
     <div
       className={ `
         pointer-events-none absolute inset-0 rounded-[inherit] border border-transparent
-        [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)]
-        [mask-composite:intersect]
         [mask-clip:padding-box,border-box]
+        [mask-composite:intersect]
+        [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)]
       ` }
     >
       <motion.div
