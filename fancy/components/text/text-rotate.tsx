@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable no-unused-vars */
 'use client';
 
 import { motion, Transition, MotionProps, AnimatePresence, AnimatePresenceProps } from 'motion/react';

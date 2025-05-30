@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { motion, AnimationOptions } from 'motion/react';
@@ -178,7 +180,9 @@ const VerticalCutReveal = forwardRef<VerticalCutRevealRef, TextProps>(
                   </motion.span>
                 </span>
               )) }
-              { wordObj.needsSpace ? <span> </span> : null }
+              { wordObj.needsSpace ?
+                <span> </span>
+              : null }
             </span>
           );
         }) }

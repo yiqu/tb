@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { motion } from 'motion/react';
@@ -32,7 +34,7 @@ const ScrambleHover: React.FC<ScrambleHoverProps> = ({
   const [displayText, setDisplayText] = useState(text);
   const [isHovering, setIsHovering] = useState(false);
   const [isScrambling, setIsScrambling] = useState(false);
-  const [revealedIndices, setRevealedIndices] = useState(new Set<number>());
+  const [revealedIndices] = useState(new Set<number>());
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
