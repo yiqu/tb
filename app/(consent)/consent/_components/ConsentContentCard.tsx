@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-vars */
 
+import { Suspense } from 'react';
+
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import DisplayCard from '@/shared/components/DisplayCard';
 import Typography from '@/components/typography/Typography';
 import Typewriter from '@/fancy/components/text/typewriter';
@@ -15,7 +18,7 @@ const GOOG = ['#4285f4', '#34a853', '#fbbc05', '#ea4335'];
 
 export default function ConsentContentCard() {
   return (
-    <DisplayCard className="relative z-10 max-w-[40rem] overflow-hidden bg-background">
+    <DisplayCard className="bg-background relative z-10 max-w-[40rem] overflow-hidden">
       <ShineBorder shineColor={ GOOG } borderWidth={ 2 } />
       <CardHeader>
         <CardTitle>
@@ -31,7 +34,7 @@ export default function ConsentContentCard() {
         </CardTitle>
         <CardDescription>
           <HyperText
-            className={ cn('py-0 font-sans text-[0.875rem] leading-6 font-normal tracking-normal') }
+            className={ cn('py-0 font-sans text-[0.875rem] font-normal leading-6 tracking-normal') }
             letterClassName="font-sans text-[0.875rem] "
             duration={ 1200 }
             delay={ 1500 }
@@ -47,7 +50,9 @@ export default function ConsentContentCard() {
           marketing efforts.
         </Typography>
       </CardContent>
-      <ConsentCardFooter />
+      <Suspense fallback={ <Skeleton className="h-9 w-full" /> }>
+        <ConsentCardFooter />
+      </Suspense>
     </DisplayCard>
   );
 }
