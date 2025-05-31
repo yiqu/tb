@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/multiline */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-array-index-key */
 /*
@@ -69,8 +70,7 @@ const BlurText: React.FC<BlurTextProps> = ({
   }, [threshold, rootMargin]);
 
   const defaultFrom = useMemo(
-    () =>
-      (direction === 'top' ? { filter: 'blur(10px)', opacity: 0, y: -50 } : { filter: 'blur(10px)', opacity: 0, y: 50 }),
+    () => (direction === 'top' ? { filter: 'blur(10px)', opacity: 0, y: -50 } : { filter: 'blur(10px)', opacity: 0, y: 50 }),
     [direction],
   );
 
@@ -94,7 +94,11 @@ const BlurText: React.FC<BlurTextProps> = ({
   const times = Array.from({ length: stepCount }, (_, i) => (stepCount === 1 ? 0 : i / (stepCount - 1)));
 
   return (
-    <p ref={ ref } className={ `blur-text ${className} flex flex-wrap` }>
+    <p ref={ ref } className={ `
+      blur-text
+      ${className}
+      flex flex-wrap
+    ` }>
       { elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
 

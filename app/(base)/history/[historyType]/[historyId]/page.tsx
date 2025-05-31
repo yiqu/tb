@@ -1,6 +1,5 @@
 export default async function HistoryDetailsPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ historyType: string; historyId: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

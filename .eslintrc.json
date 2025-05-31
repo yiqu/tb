@@ -4,9 +4,7 @@
     "next",
     "plugin:@next/next/recommended",
     "prettier",
-    "plugin:@tanstack/eslint-plugin-query/recommended",
-    "plugin:readable-tailwind/warning",
-    "plugin:readable-tailwind/error"
+    "plugin:@tanstack/eslint-plugin-query/recommended"
   ],
   "plugins": [
     "perfectionist",
@@ -15,10 +13,9 @@
     "unused-imports",
     "eslint-plugin-react-compiler",
     "unicorn",
-    "readable-tailwind",
     "@tanstack/query",
     "mui-path-imports",
-    "react-you-might-not-need-an-effect"
+    "better-tailwindcss"
   ],
   "rules": {
     "@next/next/no-img-element": 1,
@@ -166,14 +163,13 @@
     "unicorn/no-useless-undefined": 1,
     "unicorn/prefer-date-now": 1,
     "unicorn/prefer-number-properties": 1,
-    "readable-tailwind/multiline": ["warn", { "lineBreakStyle": "unix", "printWidth": 180, "preferSingleLine": true }],
-    "readable-tailwind/no-unnecessary-whitespace": 1,
-    "readable-tailwind/sort-classes": "off",
-    "readable-tailwind/no-duplicate-classes": 2
+    "better-tailwindcss/multiline": ["warn", { "printWidth": 160, "lineBreakStyle": "unix", "classesPerLine": 10 }],
+    "better-tailwindcss/no-unnecessary-whitespace": ["warn"],
+    "better-tailwindcss/no-duplicate-classes": ["warn"]
   },
   "settings": {
-    "readable-tailwind": {
-      "entryPoint": ["./app/tailwind-config.css"]
+    "better-tailwindcss": {
+      "entryPoint": "app/(base)/tailwind-config.css"
     }
   }
 }

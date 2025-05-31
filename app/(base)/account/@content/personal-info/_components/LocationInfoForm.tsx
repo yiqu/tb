@@ -1,6 +1,6 @@
 'use client';
 
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 import { z } from 'zod';
 import startCase from 'lodash/startCase';
 import { useHotkeys } from 'react-hotkeys-hook';

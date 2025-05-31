@@ -1,4 +1,4 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 import { X } from 'lucide-react';
 import { Control } from 'react-hook-form';
 

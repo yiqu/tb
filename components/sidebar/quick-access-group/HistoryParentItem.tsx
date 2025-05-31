@@ -1,11 +1,11 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
 import { useOptimistic, useTransition } from 'react';
-import { Plus, History, Calendar, ChevronRight, CalendarSync } from 'lucide-react';
+import { Plus, History, ChevronRight } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import useSideBarState from '@/hooks/useSideBarState';
@@ -18,7 +18,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { SidebarMenuSub, SidebarMenuItem, SidebarMenuButton, SidebarMenuSubItem } from '@/components/ui/sidebar';
 
 import SidebarMenuSubButtonHistoryParentWithActive from '../SidebarMenuSubButtonHistoryParentWithActive';
-import SidebarMenuSubButtonFavoritesParentWithActive from '../SidebarMenuSubButtonFavoritesParentWithActive';
 
 export default function HistoryParentItem({ collapsableState }: { collapsableState: SidebarCollapsableState }) {
   const [isPending, startTransition] = useTransition();
@@ -73,11 +72,7 @@ export default function HistoryParentItem({ collapsableState }: { collapsableSta
       <SidebarMenuItem>
         <Popover open={ isCollapsedMenuOpen } onOpenChange={ setIsCollapsedMenuOpen }>
           <PopoverTrigger asChild>
-            <SidebarMenuButtonV1
-              onMouseEnter={ handleMouseEnter }
-              onMouseLeave={ handleMouseLeave }
-              className="cursor-pointer"
-            >
+            <SidebarMenuButtonV1 onMouseEnter={ handleMouseEnter } onMouseLeave={ handleMouseLeave } className="cursor-pointer">
               <Plus />
             </SidebarMenuButtonV1>
           </PopoverTrigger>
@@ -97,12 +92,7 @@ export default function HistoryParentItem({ collapsableState }: { collapsableSta
 
   // Default collapsible behavior when not collapsed
   return (
-    <Collapsible
-      asChild
-      open={ collapsedStateOptimistic }
-      className={ `group/collapsible` }
-      onOpenChange={ handleOnOpenChange }
-    >
+    <Collapsible asChild open={ collapsedStateOptimistic } className={ `group/collapsible` } onOpenChange={ handleOnOpenChange }>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButtonV1>
@@ -110,10 +100,7 @@ export default function HistoryParentItem({ collapsableState }: { collapsableSta
             <span>History</span>
             { isPending ?
               <Skeleton className="ml-auto h-4 w-4" />
-            : <ChevronRight
-                className={ `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90` }
-              />
-            }
+            : <ChevronRight className={ `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90` } /> }
           </SidebarMenuButtonV1>
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -155,10 +142,7 @@ function CollapsedMenuContent() {
       <div className="mb-2 text-sm font-medium">Add New</div>
       <Separator className="my-1" />
       <div className="space-y-1">
-        <Link
-          href={ '' }
-          className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }
-        >
+        <Link href={ '' } className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }>
           1
         </Link>
       </div>

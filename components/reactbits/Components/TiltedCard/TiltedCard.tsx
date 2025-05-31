@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/multiline */
 'use client';
 
 import { useRef, useState } from 'react';
@@ -98,7 +99,10 @@ export default function TiltedCard({
   return (
     <figure
       ref={ ref }
-      className={ `relative flex h-full w-full flex-col items-center justify-center [perspective:800px]` }
+      className={ `
+        relative flex h-full w-full flex-col items-center justify-center
+        [perspective:800px]
+      ` }
       style={ {
         height: containerHeight,
         width: containerWidth,
@@ -108,13 +112,19 @@ export default function TiltedCard({
       onMouseLeave={ handleMouseLeave }
     >
       { showMobileWarning ?
-        <div className={ `absolute top-4 block text-center text-sm sm:hidden` }>
+        <div className={ `
+          absolute top-4 block text-center text-sm
+          sm:hidden
+        ` }>
           This effect is not optimized for mobile. Check on desktop.
         </div>
       : null }
 
       <motion.div
-        className={ `relative [transform-style:preserve-3d]` }
+        className={ `
+          relative
+          [transform-style:preserve-3d]
+        ` }
         style={ {
           width: imageWidth,
           height: imageHeight,
@@ -127,7 +137,11 @@ export default function TiltedCard({
           src={ imageSrc }
           alt={ altText }
           className={ cn(
-            `absolute top-0 left-0 [transform:translateZ(0)] rounded-[15px] object-cover will-change-transform`,
+            `
+              absolute top-0 left-0
+              [transform:translateZ(0)]
+              rounded-[15px] object-cover will-change-transform
+            `,
           ) }
           style={ {
             width: imageWidth,
@@ -138,7 +152,11 @@ export default function TiltedCard({
         { displayOverlayContent && overlayContent ?
           <motion.div
             className={ cn(
-              `absolute top-0 left-0 z-[2] [transform:translateZ(30px)] will-change-transform`,
+              `
+                absolute top-0 left-0 z-[2]
+                [transform:translateZ(30px)]
+                will-change-transform
+              `,
               imgClassName,
             ) }
           >
@@ -150,7 +168,8 @@ export default function TiltedCard({
       { showTooltip ?
         <motion.figcaption
           className={ `
-            pointer-events-none absolute top-0 left-0 z-[3] hidden rounded-[4px] bg-white px-[10px] py-[4px] text-[10px] text-[#2d2d2d] opacity-0
+            pointer-events-none absolute top-0 left-0 z-[3] hidden rounded-[4px] bg-white px-[10px] py-[4px]
+            text-[10px] text-[#2d2d2d] opacity-0
             sm:block
           ` }
           style={ {

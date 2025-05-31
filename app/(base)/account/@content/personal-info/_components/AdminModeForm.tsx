@@ -1,4 +1,4 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 'use client';
 
 import { LoaderCircle } from 'lucide-react';

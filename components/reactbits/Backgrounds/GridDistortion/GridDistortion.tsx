@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/multiline */
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
 */

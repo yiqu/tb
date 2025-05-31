@@ -1,5 +1,5 @@
-/* eslint-disable readable-tailwind/no-unnecessary-whitespace */
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/no-unnecessary-whitespace */
+/* eslint-disable better-tailwindcss/multiline */
 
 import { Metadata } from 'next';
 import { Borel, Geist, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One } from 'next/font/google';

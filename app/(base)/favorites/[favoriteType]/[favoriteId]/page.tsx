@@ -1,6 +1,5 @@
 export default async function FavoriteDetailsPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ favoriteType: string; favoriteId: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

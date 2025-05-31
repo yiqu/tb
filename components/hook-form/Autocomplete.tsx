@@ -1,4 +1,5 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable no-unused-vars */
+/* eslint-disable better-tailwindcss/multiline */
 'use client';
 
 import { X, Check, ChevronsUpDown } from 'lucide-react';

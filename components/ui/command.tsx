@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable better-tailwindcss/multiline */
+
 import * as React from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Command as CommandPrimitive } from 'cmdk';
@@ -62,7 +64,12 @@ function CommandInput({ className, ...props }: React.ComponentProps<typeof Comma
       <CommandPrimitive.Input
         data-slot="command-input"
         className={ cn(
-          `outline-hidden placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm disabled:cursor-not-allowed disabled:opacity-50`,
+          `
+            outline-hidden
+            placeholder:text-muted-foreground
+            flex h-10 w-full rounded-md bg-transparent py-3 text-sm
+            disabled:cursor-not-allowed disabled:opacity-50
+          `,
           className,
         ) }
         { ...props }
@@ -94,7 +101,8 @@ function CommandGroup({ className, ...props }: React.ComponentProps<typeof Comma
           text-foreground
           [&_[cmdk-group-heading]]:text-muted-foreground
           overflow-hidden p-1
-          [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium
+          [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs
+          [&_[cmdk-group-heading]]:font-medium
         `,
         className,
       ) }

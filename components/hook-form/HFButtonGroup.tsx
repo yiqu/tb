@@ -1,4 +1,5 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable no-unused-vars */
+/* eslint-disable better-tailwindcss/multiline */
 import { useState } from 'react';
 import { Control } from 'react-hook-form';
 

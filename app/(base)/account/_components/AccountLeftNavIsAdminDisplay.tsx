@@ -1,4 +1,4 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 import { ShieldCheck } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';

@@ -1,51 +1,45 @@
-"use client"
+'use client';
 
-import {
-  Folder,
-  Forward,
-  MoreHorizontal,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react"
+import { Folder, Trash2, Forward, MoreHorizontal, type LucideIcon } from 'lucide-react';
 
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
+  DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import {
-  SidebarGroup,
-  SidebarGroupLabel,
+  useSidebar,
   SidebarMenu,
+  SidebarGroup,
+  SidebarMenuItem,
+  SidebarGroupLabel,
   SidebarMenuAction,
   SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar';
 
 export function NavProjects({
   projects,
 }: {
   projects: {
-    name: string
-    url: string
-    icon: LucideIcon
-  }[]
+    name: string;
+    url: string;
+    icon: LucideIcon;
+  }[];
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
+        { projects.map((item) => (
+          <SidebarMenuItem key={ item.name }>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
+              <a href={ item.url }>
                 <item.icon />
-                <span>{item.name}</span>
+                <span>{ item.name }</span>
               </a>
             </SidebarMenuButton>
             <DropdownMenu>
@@ -55,11 +49,7 @@ export function NavProjects({
                   <span className="sr-only">More</span>
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
-              >
+              <DropdownMenuContent className="w-48 rounded-lg" side={ isMobile ? 'bottom' : 'right' } align={ isMobile ? 'end' : 'start' }>
                 <DropdownMenuItem>
                   <Folder className="text-muted-foreground" />
                   <span>View Project</span>
@@ -76,7 +66,7 @@ export function NavProjects({
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
-        ))}
+        )) }
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
             <MoreHorizontal className="text-sidebar-foreground/70" />
@@ -85,5 +75,5 @@ export function NavProjects({
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/multiline */
 import Image from 'next/image';
 import { ReactNode } from 'react';
 
@@ -18,15 +19,10 @@ interface PageNotFoundCardProps {
   blendTextAreaBorder?: boolean;
 }
 
-export default function PageNotFoundCard({
-  children,
-  blendBg,
-  showTextAreaBorder,
-  blendTextAreaBorder,
-}: PageNotFoundCardProps) {
+export default function PageNotFoundCard({ children, blendBg, showTextAreaBorder, blendTextAreaBorder }: PageNotFoundCardProps) {
   return (
     <DisplayCard
-      className={ cn('w-[45rem] sec:w-[60rem] main:w-[80rem]', {
+      className={ cn(`w-[45rem] sec:w-[60rem] main:w-[80rem]`, {
         'border-0 bg-transparent shadow-none': blendBg,
       }) }
     >
@@ -39,7 +35,7 @@ export default function PageNotFoundCard({
               width={ IMAGE_WIDTH }
               height={ IMAGE_WIDTH }
               priority
-              className="rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]"
+              className={ `rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]` }
               data-hide-on-theme="dark"
             />
             <Image
@@ -48,13 +44,13 @@ export default function PageNotFoundCard({
               width={ IMAGE_WIDTH }
               height={ IMAGE_WIDTH }
               priority
-              className="rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]"
+              className={ `rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]` }
               data-hide-on-theme="light"
             />
           </Lens>
         </div>
         <div
-          className={ cn('flex w-full flex-col items-start justify-start gap-y-4 main:gap-y-6', {
+          className={ cn(`flex w-full flex-col items-start justify-start gap-y-4 main:gap-y-6`, {
             'rounded-md border bg-card px-6 py-6': showTextAreaBorder,
             'border-0 bg-transparent': blendTextAreaBorder,
           }) }

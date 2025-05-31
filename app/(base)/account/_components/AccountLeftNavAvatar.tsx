@@ -1,4 +1,4 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 import Typography from '@/components/typography/Typography';
 import { SparklesText } from '@/components/magicui/sparkles-text';
 import { getAvatarNameById, getAvatarImgUrlById } from '@/lib/utils';

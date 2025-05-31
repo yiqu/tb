@@ -1,4 +1,4 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 import omit from 'lodash/omit';
 import { ReactNode } from 'react';
 import { Info, Flame, BadgeInfo, Lightbulb, CircleCheck, LucideProps, TriangleAlert } from 'lucide-react';

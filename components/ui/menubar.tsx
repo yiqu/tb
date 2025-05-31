@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable better-tailwindcss/multiline */
+
 import * as React from 'react';
 import * as MenubarPrimitive from '@radix-ui/react-menubar';
 import { CheckIcon, CircleIcon, ChevronRightIcon } from 'lucide-react';
@@ -101,7 +103,8 @@ function MenubarItem({
         `
           outline-hidden
           focus:bg-accent focus:text-accent-foreground
-          data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive
+          data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10
+          data-[variant=destructive]:focus:text-destructive
           dark:data-[variant=destructive]:focus:bg-destructive/20
           [&_svg:not([class*='text-'])]:text-muted-foreground
           data-[variant=destructive]:*:[svg]:!text-destructive
@@ -190,7 +193,10 @@ function MenubarLabel({
     <MenubarPrimitive.Label
       data-slot="menubar-label"
       data-inset={ inset }
-      className={ cn(`px-2 py-1.5 text-sm font-medium data-[inset]:pl-8`, className) }
+      className={ cn(`
+        px-2 py-1.5 text-sm font-medium
+        data-[inset]:pl-8
+      `, className) }
       { ...props }
     />
   );

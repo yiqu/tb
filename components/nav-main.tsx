@@ -33,13 +33,13 @@ export function NavMain({
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         { items.map((item) => (
-          <Collapsible key={ item.title } asChild defaultOpen={ item.isActive } className={ `
-            group/collapsible
-          ` }>
+          <Collapsible key={ item.title } asChild defaultOpen={ item.isActive } className={ `group/collapsible` }>
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip={ item.title }>
-                  { item.icon ? <item.icon /> : null }
+                  { item.icon ?
+                    <item.icon />
+                  : null }
                   <span>{ item.title }</span>
                   <ChevronRight className={ `
                     ml-auto transition-transform duration-200

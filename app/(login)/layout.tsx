@@ -1,5 +1,5 @@
-/* eslint-disable readable-tailwind/no-unnecessary-whitespace */
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/no-unnecessary-whitespace */
+/* eslint-disable better-tailwindcss/multiline */
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';

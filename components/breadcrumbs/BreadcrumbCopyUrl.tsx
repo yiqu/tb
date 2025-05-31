@@ -1,6 +1,6 @@
 'use client';
-/* eslint-disable readable-tailwind/multiline */
-import { useParams, usePathname, useSearchParams } from 'next/navigation';
+
+import { usePathname, useSearchParams } from 'next/navigation';
 
 import useIsClient from '@/hooks/useIsClient';
 
@@ -9,7 +9,6 @@ import CopyToClipBoard from '../copy-clipboard/CopyToClipboard';
 
 export default function BreadcrumbCopyUrl() {
   const pathName = usePathname();
-  const params = useParams();
   const searchParams = useSearchParams();
 
   const isClient = useIsClient();

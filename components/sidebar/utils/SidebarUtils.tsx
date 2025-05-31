@@ -1,9 +1,7 @@
 import { ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
 import { Plus, Search, History, CircleDot, FolderHeart } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { SidebarMenuItem } from '@/components/ui/sidebar';
 
 export function getSideBarLucideIcon(url: string) {
   switch (url) {

@@ -1,4 +1,4 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 

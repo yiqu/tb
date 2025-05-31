@@ -1,4 +1,4 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 import { ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';

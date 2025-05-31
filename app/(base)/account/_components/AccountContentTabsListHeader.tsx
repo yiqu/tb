@@ -1,4 +1,3 @@
-/* eslint-disable readable-tailwind/multiline */
 import Link from 'next/link';
 
 import { TabListItem } from '@/models/NavItem.models';

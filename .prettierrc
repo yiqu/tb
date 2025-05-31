@@ -2,7 +2,8 @@
   "bracketSpacing": true,
   "singleQuote": true,
   "experimentalTernaries": true,
-  "printWidth": 120,
+  "printWidth": 140,
   "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindStylesheet": "./app/tailwind-config.css"
+  "tailwindStylesheet": "./app/(base)/tailwind-config.css",
+  "tailwindFunctions": ["clsx", "cn", "cva"]
 }

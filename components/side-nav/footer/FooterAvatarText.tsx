@@ -1,4 +1,4 @@
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 import { Suspense } from 'react';
 import { ShieldCheck } from 'lucide-react';
 

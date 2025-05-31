@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/multiline */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable no-unused-vars */
 /*

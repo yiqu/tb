@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/multiline */
 'use client';
 
 import Image from 'next/image';
@@ -30,12 +31,9 @@ interface AccountGeneralAvatarSelectionProps {
 export default function AccountGeneralAvatarSelection({ avatarId }: AccountGeneralAvatarSelectionProps) {
   const [isPending, startTransition] = useTransition();
 
-  const [avatarIdOptimistic, setAvatarIdOptimistic] = useOptimistic(
-    avatarId,
-    (currentState: string, optimisticValue: string) => {
-      return optimisticValue;
-    },
-  );
+  const [avatarIdOptimistic, setAvatarIdOptimistic] = useOptimistic(avatarId, (currentState: string, optimisticValue: string) => {
+    return optimisticValue;
+  });
 
   const onAvatarChange = (value: string) => {
     startTransition(async () => {
@@ -70,14 +68,7 @@ export default function AccountGeneralAvatarSelection({ avatarId }: AccountGener
                       rootMargin="-50px"
                     />
                   </Typography>
-                  <Image
-                    key={ option.id }
-                    src={ option.imageUrl }
-                    alt={ option.name }
-                    width={ 200 }
-                    height={ 200 }
-                    className="rounded-2xl"
-                  />
+                  <Image key={ option.id } src={ option.imageUrl } alt={ option.name } width={ 200 } height={ 200 } className="rounded-2xl" />
 
                   <RadioGroupItem
                     value={ option.id }

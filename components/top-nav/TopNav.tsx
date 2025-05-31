@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/multiline */
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-/* eslint-disable readable-tailwind/multiline */
+/* eslint-disable better-tailwindcss/multiline */
 /* eslint-disable no-unused-vars */
 'use client';
 
