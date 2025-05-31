@@ -1,3 +1,5 @@
+/* eslint-disable better-tailwindcss/multiline */
+
 'use client';
 
 import * as React from 'react';

@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-children-prop */
 /* eslint-disable no-unused-vars */
+/* eslint-disable better-tailwindcss/multiline */
 'use client';
 
 import * as React from 'react';

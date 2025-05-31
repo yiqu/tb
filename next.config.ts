@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     dynamicIO: true,
     viewTransition: true,
     useCache: true,
+    reactCompiler: true,
   },
 };
 
