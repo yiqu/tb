@@ -53,7 +53,6 @@ export default function FooterMenuContent() {
           </Link>
         </DropdownMenuItem>
       </DropdownMenuGroup>
-
       <DropdownMenuSeparator />
 
       <DropdownMenuGroup>

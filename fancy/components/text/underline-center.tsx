@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/multiline */
 'use client';
 
 import { useRef, useEffect } from 'react';
