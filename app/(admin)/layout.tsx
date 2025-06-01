@@ -54,8 +54,8 @@ const cherryBombOne = Cherry_Bomb_One({
 });
 
 export const metadata: Metadata = {
-  title: 'Education Budget',
-  description: 'Education Budget',
+  title: 'Admin',
+  description: 'Admin',
 };
 
 export default function AdminRootLayout({

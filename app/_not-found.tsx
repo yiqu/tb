@@ -47,10 +47,6 @@ const cherryBombOne = Cherry_Bomb_One({
   preload: true,
 });
 
-export const metadata: Metadata = {
-  title: 'Education Budget',
-  description: 'Education Budget',
-};
 
 export default function NotFound() {
   return (

@@ -1,5 +1,8 @@
+import { Metadata } from 'next';
 import { twMerge } from 'tailwind-merge';
 import { clsx, type ClassValue } from 'clsx';
+
+import { appName } from '@/constants/constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -101,6 +104,20 @@ export function manageLocalStorage(clearStorage = false) {
     items,
     percentUsed: `${((totalSize / (5 * 1024 * 1024)) * 100).toFixed(2)}%`, // 5MB limit in most browsers
     isEmpty: itemCount === 0,
-    percentNumber: (totalSize / (5 * 1024 * 1024)),
+    percentNumber: totalSize / (5 * 1024 * 1024),
+  };
+}
+
+/**
+ * Metadata Generator
+ */
+
+export function getLayoutMetadata(layoutTitle: string, layoutDescription?: string): Metadata {
+  return {
+    title: {
+      template: `%s | ${layoutTitle} | ${appName}`,
+      default: `${layoutTitle}`,
+    },
+    description: `${layoutDescription ?? ''} page`,
   };
 }

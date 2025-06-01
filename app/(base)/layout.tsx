@@ -8,6 +8,7 @@ import { Suspense } from 'react';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Geist, Borel, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One } from 'next/font/google';
 
+import { appName } from '@/constants/constants';
 import theme from '@/components/ui-mui/mui/theme';
 import AppLayout from '@/components/layout/AppLayout';
 import ReactScan from '@/components/react-scan/ReactScan';
@@ -62,8 +63,11 @@ const cherryBombOne = Cherry_Bomb_One({
 });
 
 export const metadata: Metadata = {
-  title: 'Education Budget',
-  description: 'Education Budget',
+  title: {
+    template: `%s | ${appName}`, // child pages will use this template
+    default: `Home | ${appName}`, // the title for this defined in
+  },
+  description: '',
 };
 
 export default function BaseRootLayout({
@@ -85,13 +89,7 @@ export default function BaseRootLayout({
           <MuiThemeProvider theme={ theme } defaultMode="light">
             <NuqsAdapter>
               <TanstackQueryClientProvider>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="light"
-                  enableSystem={ false }
-                  disableTransitionOnChange
-                  storageKey="app-theme"
-                >
+                <ThemeProvider attribute="class" defaultTheme="light" enableSystem={ false } disableTransitionOnChange storageKey="app-theme">
                   <TooltipProvider delayDuration={ 0 }>
                     <Suspense>
                       <AppLayout>{ children }</AppLayout>

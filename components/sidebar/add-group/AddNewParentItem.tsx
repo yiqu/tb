@@ -2,7 +2,6 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
 import { useOptimistic, useTransition } from 'react';
 import { Plus, Calendar, ChevronRight, CalendarSync } from 'lucide-react';
@@ -72,11 +71,7 @@ export default function AddNewParentItem({ collapsableState }: { collapsableStat
       <SidebarMenuItem>
         <Popover open={ isCollapsedMenuOpen } onOpenChange={ setIsCollapsedMenuOpen }>
           <PopoverTrigger asChild>
-            <SidebarMenuButtonV1
-              onMouseEnter={ handleMouseEnter }
-              onMouseLeave={ handleMouseLeave }
-              className="cursor-pointer"
-            >
+            <SidebarMenuButtonV1 onMouseEnter={ handleMouseEnter } onMouseLeave={ handleMouseLeave } className="cursor-pointer">
               <Plus />
             </SidebarMenuButtonV1>
           </PopoverTrigger>
@@ -96,12 +91,7 @@ export default function AddNewParentItem({ collapsableState }: { collapsableStat
 
   // Default view
   return (
-    <Collapsible
-      asChild
-      open={ collapsedStateOptimistic }
-      className={ `group/collapsible` }
-      onOpenChange={ handleOnOpenChange }
-    >
+    <Collapsible asChild open={ collapsedStateOptimistic } className={ `group/collapsible` } onOpenChange={ handleOnOpenChange }>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButtonV1>
@@ -109,10 +99,7 @@ export default function AddNewParentItem({ collapsableState }: { collapsableStat
             <span>Add New</span>
             { isPending ?
               <Skeleton className="ml-auto h-4 w-4" />
-            : <ChevronRight
-                className={ `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90` }
-              />
-            }
+            : <ChevronRight className={ `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90` } /> }
           </SidebarMenuButtonV1>
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -154,10 +141,7 @@ function CollapsedMenuContent() {
       <div className="mb-2 text-sm font-medium">Add New</div>
       <Separator className="my-1" />
       <div className="space-y-1">
-        <Link
-          href={ '' }
-          className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }
-        >
+        <Link href={ '' } className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }>
           New Subscription
         </Link>
       </div>
@@ -166,12 +150,12 @@ function CollapsedMenuContent() {
 }
 
 function SidebarMenuButtonV1({ children, ...props }: { children: React.ReactNode } & React.ComponentProps<'button'>) {
-  const pathname = usePathname();
-  const firstPath = pathname.split('/')[1] || ''; // add
-  const isActive = firstPath === 'add';
+  //const pathname = usePathname();
+  //const firstPath = pathname.split('/')[1] || ''; // add
+  //const isActive = firstPath === 'add';
 
   return (
-    <SidebarMenuButton className="cursor-pointer" isActive={ isActive } { ...props }>
+    <SidebarMenuButton className="cursor-pointer" { ...props }>
       { children }
     </SidebarMenuButton>
   );

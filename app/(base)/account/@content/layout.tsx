@@ -5,6 +5,14 @@ import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
 import AccountLeftNav from '../_components/AccountLeftNav';
 import AccountContentTabsParent from '../_components/AccountContentTabsParent';
 
+// export const metadata: Metadata = {
+//   title: {
+//     template: `%s | Account | ${appName}`, // child pages will use this template
+//     default: `General | Account | ${appName}`, // the title for this defined in
+//   },
+//   description: '',
+// };
+
 interface AccountContentLayoutProps {
   children: React.ReactNode;
   params: Promise<{ any: string }>;

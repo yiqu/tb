@@ -15,7 +15,7 @@ export default function PageInfoLayout({ children }: { children: ReactNode; para
         <LayoutWithGutter size="wider">
           <section className="w-full">
             <PageTitle
-              title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.search }>Page Information</AuroraText> }
+              title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.pageInfo }>Page Information</AuroraText> }
               subText="Page information."
             />
           </section>

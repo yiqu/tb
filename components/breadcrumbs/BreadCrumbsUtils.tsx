@@ -1,6 +1,6 @@
 import startCase from 'lodash/startCase';
 import { Params } from 'next/dist/server/request/params';
-import { Brush, Search, Settings, UserRound, UserRoundPen } from 'lucide-react';
+import { Link, Brush, Search, Shield, Settings, Calendar, UserRound, CirclePlus, UserRoundPen, CalendarSync } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import CenterUnderline from '@/fancy/components/text/underline-center';
@@ -23,8 +23,19 @@ export function BreadcrumbSegmentIcon({ path }: { path: string; params: Params; 
   if (path === 'art') {
     return <Brush size={ 14 } />;
   }
-
-  return null;
+  if (path === 'add') {
+    return <CirclePlus size={ 14 } />;
+  }
+  if (path === 'subscription') {
+    return <CalendarSync size={ 14 } />;
+  }
+  if (path === 'bill') {
+    return <Calendar size={ 14 } />;
+  }
+  if (path === 'security') {
+    return <Shield size={ 14 } />;
+  }
+  return <Link size={ 14 } />;
 }
 
 export function BreadcrumbSegmentTitle({ path, isLast }: { path: string; isLast?: boolean }) {
@@ -35,7 +46,7 @@ export function BreadcrumbSegmentTitle({ path, isLast }: { path: string; isLast?
           'text-muted-foreground': isLast,
         }) }
       >
-        <CenterUnderline label="User Account" />
+        <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'General Settings' } />
       </Typography>
     );
   }
@@ -47,7 +58,31 @@ export function BreadcrumbSegmentTitle({ path, isLast }: { path: string; isLast?
           'text-muted-foreground': isLast,
         }) }
       >
-        <CenterUnderline label="User Account" />
+        <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Personal Info' } />
+      </Typography>
+    );
+  }
+
+  if (path === 'bill') {
+    return (
+      <Typography
+        className={ cn({
+          'text-muted-foreground': isLast,
+        }) }
+      >
+        <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Bill' } />
+      </Typography>
+    );
+  }
+
+  if (path === 'add') {
+    return (
+      <Typography
+        className={ cn({
+          'text-muted-foreground': isLast,
+        }) }
+      >
+        <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Add' } />
       </Typography>
     );
   }
@@ -61,4 +96,12 @@ export function BreadcrumbSegmentTitle({ path, isLast }: { path: string; isLast?
       { startCase(path) }
     </Typography>
   );
+}
+
+export function BreadcrumbSegmentDisplay({ isLast, path }: { isLast?: boolean; path: string }) {
+  if (isLast) {
+    return <>{ path }</>;
+  }
+
+  return <CenterUnderline label={ path } />;
 }

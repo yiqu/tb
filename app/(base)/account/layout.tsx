@@ -6,6 +6,19 @@ import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
 import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
 import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
+// export const metadata: Metadata = {
+//   title: 'Settings',
+//   description: 'Manage your account settings',
+// };
+
+// export const metadata: Metadata = {
+//   title: {
+//     template: `%s | Account`, // child pages will use this template
+//     default: `General | Account`, // the title for this defined in
+//   },
+//   description: '',
+// };
+
 export default async function AccountLayout({ content }: { children: React.ReactNode; content: React.ReactNode }) {
   return (
     <div id="account-layout-parent">

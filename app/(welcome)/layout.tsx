@@ -55,8 +55,8 @@ const architectsDaughter = Architects_Daughter({
 });
 
 export const metadata: Metadata = {
-  title: 'Education Budget',
-  description: 'Education Budget',
+  title: 'Welcome',
+  description: 'Welcome',
 };
 
 export default function WelcomeRootLayout({
