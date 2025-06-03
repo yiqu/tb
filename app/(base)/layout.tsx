@@ -6,6 +6,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 import { Suspense } from 'react';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Geist, Borel, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One } from 'next/font/google';
 
 import { appName } from '@/constants/constants';
@@ -89,6 +90,7 @@ export default function BaseRootLayout({
           <MuiThemeProvider theme={ theme } defaultMode="light">
             <NuqsAdapter>
               <TanstackQueryClientProvider>
+                <ReactQueryDevtools initialIsOpen={ true } />
                 <ThemeProvider attribute="class" defaultTheme="light" enableSystem={ false } disableTransitionOnChange storageKey="app-theme">
                   <TooltipProvider delayDuration={ 0 }>
                     <Suspense>

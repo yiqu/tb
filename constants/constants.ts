@@ -22,13 +22,15 @@ export const API_TIMEOUT = 30_000;
 export const FONT_FAMILY_FUN = 'Cherry Bomb One';
 export const FONT_FAMILY_PRIMARY = 'Geist';
 
+export const TANSTACK_QUERY_QUERY_KEY_FIREBASE_USER = 'firebase-user';
+
 export const APP_TITLE_GRADIENT_COLORS = {
   search: ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'],
   account: ['#FF0080', '#7928CA', '#0070F3', '#38bdf8'],
   pageInfo: ['#FF6B6B', '#c63527', '#45B7D1', '#000066'],
   art: ['#005493', '#f5aa1c', '#c63527', '#002754'],
   changelog: ['#0079bf', '#f2d600', '#00c2e0', '#51e898'],
-  welcome: ['#82bbe4', '#a3d9ef', '#211f1f', '#f0ccb4', '#a66156'],
+  apiStatus: ['#82bbe4', '#a3d9ef', '#211f1f', '#a66156'],
   admin: ['#cc0000', '#ff9900', '#000066'],
   settings: ['#005493', '#f5aa1c', '#c63527', '#002754'],
   login: ['#00a3e2', '#1ba548', '#fdc800', '#f1860e', '#e41b13'],

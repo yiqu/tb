@@ -1,4 +1,4 @@
-import { Info, ExternalLink } from 'lucide-react';
+import { ExternalLink, MessageCircleQuestion } from 'lucide-react';
 
 import CenterUnderline from '@/fancy/components/text/underline-center';
 import {
@@ -11,44 +11,42 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import { Button } from '../ui/button';
-import { DropdownMenuItem, DropdownMenuShortcut } from '../ui/dropdown-menu';
+import { DropdownMenuItem } from '../ui/dropdown-menu';
 
 export default function ResourcesDropdownMenuButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
-          <Info />
+          <MessageCircleQuestion />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="" align="end">
+      <DropdownMenuContent className="min-w-50" align="end">
         <DropdownMenuLabel>Resources</DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
             <a
               href={ `https://google.com` }
               target="_blank"
               rel="noreferrer"
-              className="flex w-full flex-row items-center justify-start gap-x-1"
+              className="flex w-full flex-row items-center justify-between gap-x-1"
             >
-              <ExternalLink />
               <CenterUnderline label="Documentation" className="" />
-              <DropdownMenuShortcut className="ml-2">⇧D</DropdownMenuShortcut>
+              <ExternalLink />
             </a>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
             <a
               href={ `https://google.com` }
               target="_blank"
               rel="noreferrer"
-              className="flex w-full flex-row items-center justify-start gap-x-1"
+              className="flex w-full flex-row items-center justify-between gap-x-1"
             >
+              <CenterUnderline label="Discord" className="" />
               <ExternalLink />
-              <CenterUnderline label="Support Room" className="" />
-              <DropdownMenuShortcut className="ml-2">⇧R</DropdownMenuShortcut>
             </a>
           </DropdownMenuItem>
         </DropdownMenuGroup>
