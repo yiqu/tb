@@ -2,10 +2,10 @@ import { RefreshCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-export default function Searchbar() {
+export default function SearchTableActionBar() {
   return (
-    <div>
-      <Button variant="outline" size="default">
+    <div className="flex flex-row items-center justify-start">
+      <Button variant="outline" size="default" className="bg-card">
         <RefreshCcw />
         Refresh
       </Button>

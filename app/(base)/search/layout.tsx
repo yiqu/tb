@@ -28,7 +28,9 @@ export default function SearchLayout({ children }: { children: ReactNode; params
         </LayoutWithGutter>
       </LayoutParent>
       <Separator />
-      <LayoutChildrenParent>{ children }</LayoutChildrenParent>
+      <LayoutChildrenParent>
+        <LayoutWithGutter size="wider">{ children }</LayoutWithGutter>
+      </LayoutChildrenParent>
     </div>
   );
 }

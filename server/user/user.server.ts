@@ -9,6 +9,7 @@ import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
 import { UserAchievement } from '@/models/auth/user.model';
+import { CACHE_TAG_USER_ACHIEVEMENTS } from '@/constants/constants';
 import { displayNameSchema } from '@/validators/settings/account/PersonalInfo';
 import { UserProfile, UserProfileAddable, UserProfileEditable, UserLocationEditable } from '@/models/user/user.model';
 import {
@@ -265,8 +266,8 @@ export async function updateUserLocation(userId: string, location: UserLocationE
 
 export async function getUserAchievements(): Promise<UserAchievement[]> {
   'use cache';
-  cacheLife('hours');
-  cacheTag('get-user-achievements');
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_USER_ACHIEVEMENTS);
 
   const userAchievements: UserAchievement[] = [
     {

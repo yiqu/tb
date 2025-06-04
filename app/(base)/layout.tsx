@@ -90,7 +90,7 @@ export default function BaseRootLayout({
           <MuiThemeProvider theme={ theme } defaultMode="light">
             <NuqsAdapter>
               <TanstackQueryClientProvider>
-                <ReactQueryDevtools initialIsOpen={ true } />
+                <ReactQueryDevtools initialIsOpen={ false } />
                 <ThemeProvider attribute="class" defaultTheme="light" enableSystem={ false } disableTransitionOnChange storageKey="app-theme">
                   <TooltipProvider delayDuration={ 0 }>
                     <Suspense>

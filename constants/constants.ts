@@ -24,6 +24,9 @@ export const FONT_FAMILY_PRIMARY = 'Geist';
 
 export const TANSTACK_QUERY_QUERY_KEY_FIREBASE_USER = 'firebase-user';
 
+export const CACHE_TAG_BILL_DUES_ALL = 'bill-dues-all';
+export const CACHE_TAG_USER_ACHIEVEMENTS = 'user-achievements';
+
 export const APP_TITLE_GRADIENT_COLORS = {
   search: ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'],
   account: ['#FF0080', '#7928CA', '#0070F3', '#38bdf8'],
