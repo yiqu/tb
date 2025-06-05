@@ -1,18 +1,16 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 'use server';
 
-import { z } from 'zod';
 import { Prisma } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
-import humanizeDuration from 'humanize-duration';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
-import { BillDue } from '@/models/bills/bills.model';
 import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
+import { BillDue, BillDueWithSubscription } from '@/models/bills/bills.model';
 
-export async function getAllBills(): Promise<BillDue[]> {
+export async function getAllBills(): Promise<BillDueWithSubscription[]> {
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);

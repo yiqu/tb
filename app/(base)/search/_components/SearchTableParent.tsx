@@ -7,11 +7,13 @@ import { cn } from '@/lib/utils';
 import { CardContent } from '@/components/ui/card';
 import { getAllBills } from '@/server/bills/bills.server';
 import DisplayCard from '@/shared/components/DisplayCard';
+import SearchTableCell from '@/shared/table/SearchTableCellDisplay';
+import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { Table, TableRow, TableBody, TableHead, TableHeader } from '@/components/ui/table';
-import { SEARCH_TABLE_COLUMN_IDS, getSearchTableColumnWidth } from '@/shared/table/table.utils';
+import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS, getSearchTableColumnWidth } from '@/shared/table/table.utils';
 
 export default async function SearchTableParent() {
-  const billDues = await getAllBills();
+  const billDues: BillDueWithSubscription[] = await getAllBills();
 
   console.log('billDues: ', billDues);
 
@@ -36,7 +38,15 @@ export default async function SearchTableParent() {
               )) }
             </TableRow>
           </TableHeader>
-          <TableBody></TableBody>
+          <TableBody>
+            { billDues.map((billDue: BillDueWithSubscription) => (
+              <TableRow key={ billDue.id }>
+                { SEARCH_TABLE_COLUMN_IDS.map((column: SearchTableColumn) => (
+                  <SearchTableCell key={ column.headerId } colId={ column.headerId } billDue={ billDue } />
+                )) }
+              </TableRow>
+            )) }
+          </TableBody>
         </Table>
       </CardContent>
     </DisplayCard>

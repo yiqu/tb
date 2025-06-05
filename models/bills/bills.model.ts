@@ -28,6 +28,21 @@ export interface Subscription {
   totalCost?: number;
 }
 
+export type SubscriptionOriginal = {
+  approved: boolean;
+  billCycleDuration: string;
+  billCycleInDays: number | null;
+  billStartDate: string; //"2024-05-25"
+  cost: number;
+  dateAdded: Date;
+  updatedAt: Date | null;
+  description: string | null;
+  id: string;
+  name: string;
+  signed: boolean;
+  url: string | null;
+};
+
 export interface BillDue {
   id: string;
   subscriptionId: string;
@@ -40,7 +55,11 @@ export interface BillDue {
   isInThePast?: boolean;
 }
 
-export interface BillDueWithSubscription {
+export type BillDueWithSubscription = BillDue & {
+  subscription: SubscriptionOriginal;
+};
+
+export interface BillDueWithSubscription2 {
   id: string;
   subscriptionId: string;
   dueDate: string;
