@@ -11,7 +11,7 @@ interface SearchPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function SearchPage({}: SearchPageProps) {
+export default function SearchPage({}: SearchPageProps) {
   const billDuesPromise = getAllBills();
 
   return (
