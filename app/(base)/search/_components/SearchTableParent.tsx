@@ -1,5 +1,6 @@
 /* eslint-disable quote-props */
 /* eslint-disable better-tailwindcss/multiline */
+'use client';
 
 import { use } from 'react';
 import { ChevronsUpDown } from 'lucide-react';
@@ -13,16 +14,14 @@ import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { Table, TableRow, TableBody, TableHead, TableHeader } from '@/components/ui/table';
 import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS, getSearchTableColumnWidth } from '@/shared/table/table.utils';
 
-export default function SearchTableParent() {
-  const billDues: BillDueWithSubscription[] = use(getAllBills());
+export default function SearchTableParent({ billDuesPromise }: { billDuesPromise: Promise<BillDueWithSubscription[]> }) {
+  const billDues: BillDueWithSubscription[] = use(billDuesPromise);
+
+  console.log('billDues: ', billDues);
 
   // console.log('billDues: ', billDues);
 
-  return (
-    <div>
-      Search
-    </div>
-  );
+  return <div>Search</div>;
 
   return (
     <DisplayCard className="w-full">
