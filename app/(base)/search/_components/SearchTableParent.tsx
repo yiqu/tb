@@ -1,8 +1,6 @@
 /* eslint-disable quote-props */
 /* eslint-disable better-tailwindcss/multiline */
-'use client';
 
-import { use } from 'react';
 import { ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -14,8 +12,8 @@ import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { Table, TableRow, TableBody, TableHead, TableHeader } from '@/components/ui/table';
 import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS, getSearchTableColumnWidth } from '@/shared/table/table.utils';
 
-export default function SearchTableParent({ billDuesPromise }: { billDuesPromise: Promise<BillDueWithSubscription[]> }) {
-  const billDues: BillDueWithSubscription[] = use(billDuesPromise);
+export default async function SearchTableParent() {
+  const billDues = await getAllBills();
 
   console.log('billDues: ', billDues);
 
