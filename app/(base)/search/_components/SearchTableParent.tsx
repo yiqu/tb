@@ -38,7 +38,7 @@ export default async function SearchTableParent() {
               )) }
             </TableRow>
           </TableHeader>
-          <TableBody>
+          { /* <TableBody>
             { billDues.map((billDue: BillDueWithSubscription) => (
               <TableRow key={ billDue.id }>
                 { SEARCH_TABLE_COLUMN_IDS.map((column: SearchTableColumn) => (
@@ -46,7 +46,7 @@ export default async function SearchTableParent() {
                 )) }
               </TableRow>
             )) }
-          </TableBody>
+          </TableBody> */ }
         </Table>
       </CardContent>
     </DisplayCard>

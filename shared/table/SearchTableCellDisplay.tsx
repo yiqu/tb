@@ -57,4 +57,10 @@ export default function SearchTableCell({ colId, billDue }: { colId: string; bil
       </TableCell>
     );
   }
+
+  return (
+    <TableCell>
+      <span>N/A</span>
+    </TableCell>
+  );
 }
