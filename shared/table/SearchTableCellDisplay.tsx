@@ -3,30 +3,58 @@ import { BillDueWithSubscription } from '@/models/bills/bills.model';
 
 export default function SearchTableCell({ colId, billDue }: { colId: string; billDue: BillDueWithSubscription }) {
   if (colId === 'id') {
-    return <TableCell>{ billDue.id }</TableCell>;
+    return (
+      <TableCell>
+        <span>{ billDue.id }</span>
+      </TableCell>
+    );
   }
 
   if (colId === 'dateAdded') {
-    return <TableCell>TBD</TableCell>;
+    return (
+      <TableCell>
+        <span>TBD</span>
+      </TableCell>
+    );
   }
 
   if (colId === 'dueDate') {
-    return <TableCell>{ billDue.dueDate }</TableCell>;
+    return (
+      <TableCell>
+        <span>TBD</span>
+      </TableCell>
+    );
   }
 
   if (colId === 'paid') {
-    return <TableCell>{ billDue.paid }</TableCell>;
+    return (
+      <TableCell>
+        <span>TBD</span>
+      </TableCell>
+    );
   }
 
   if (colId === 'reimbursed') {
-    return <TableCell>{ billDue.reimbursed }</TableCell>;
+    return (
+      <TableCell>
+        <span>TBD</span>
+      </TableCell>
+    );
   }
 
   if (colId === 'subscription') {
-    return <TableCell>TBD</TableCell>;
+    return (
+      <TableCell>
+        <span>TBD</span>
+      </TableCell>
+    );
   }
 
   if (colId === 'updatedAt') {
-    return <TableCell>TBD</TableCell>;
+    return (
+      <TableCell>
+        <span>TBD</span>
+      </TableCell>
+    );
   }
 }

@@ -15,7 +15,7 @@ import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS, getSearchTableColumnWidth }
 export default async function SearchTableParent() {
   const billDues: BillDueWithSubscription[] = await getAllBills();
 
-  console.log('billDues: ', billDues);
+  // console.log('billDues: ', billDues);
 
   return (
     <DisplayCard className="w-full">
