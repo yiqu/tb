@@ -20,7 +20,7 @@ export default async function SearchTableParent() {
   return (
     <DisplayCard className="w-full">
       <CardContent>
-        <Table>
+        { /* <Table>
           <TableHeader>
             <TableRow>
               { SEARCH_TABLE_COLUMN_IDS.map((column) => (
@@ -38,7 +38,7 @@ export default async function SearchTableParent() {
               )) }
             </TableRow>
           </TableHeader>
-          { /* <TableBody>
+          <TableBody>
             { billDues.map((billDue: BillDueWithSubscription) => (
               <TableRow key={ billDue.id }>
                 { SEARCH_TABLE_COLUMN_IDS.map((column: SearchTableColumn) => (
@@ -46,8 +46,8 @@ export default async function SearchTableParent() {
                 )) }
               </TableRow>
             )) }
-          </TableBody> */ }
-        </Table>
+          </TableBody>
+        </Table> */ }
       </CardContent>
     </DisplayCard>
   );
