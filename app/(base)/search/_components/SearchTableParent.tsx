@@ -19,6 +19,12 @@ export default function SearchTableParent() {
   // console.log('billDues: ', billDues);
 
   return (
+    <div>
+      Search
+    </div>
+  );
+
+  return (
     <DisplayCard className="w-full">
       <CardContent>
         { /* <Table>
