@@ -19,12 +19,10 @@ export default async function SearchTableParent() {
 
   // console.log('billDues: ', billDues);
 
-  return <div>Search</div>;
-
   return (
     <DisplayCard className="w-full">
       <CardContent>
-        { /* <Table>
+        <Table>
           <TableHeader>
             <TableRow>
               { SEARCH_TABLE_COLUMN_IDS.map((column) => (
@@ -51,7 +49,7 @@ export default async function SearchTableParent() {
               </TableRow>
             )) }
           </TableBody>
-        </Table> */ }
+        </Table>
       </CardContent>
     </DisplayCard>
   );
