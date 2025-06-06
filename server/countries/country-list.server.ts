@@ -4,8 +4,8 @@ import { unstable_cacheLife as cacheLife } from 'next/cache';
 import { Country } from '@/models/country/country.model';
 
 export async function getCountryList(): Promise<Country[]> {
-  'use cache';
-  cacheLife('max');
+  // 'use cache';
+  // cacheLife('max');
 
   // return promise with delay
   return new Promise((resolve) => {

@@ -11,9 +11,9 @@ import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { BillDue, BillDueWithSubscription } from '@/models/bills/bills.model';
 
 export async function getAllBills(): Promise<BillDueWithSubscription[]> {
-  'use cache';
-  cacheLife('weeks');
-  cacheTag(CACHE_TAG_BILL_DUES_ALL);
+  // 'use cache';
+  // cacheLife('weeks');
+  // cacheTag(CACHE_TAG_BILL_DUES_ALL);
 
   try {
     console.log('getAllBills() function called');
