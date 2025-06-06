@@ -9,8 +9,8 @@ import DisplayCard from './DisplayCard';
 import DisplayNameWrapper from './DisplayNameWrapper';
 
 export default async function DisplayName() {
-  // 'use cache';
-  // cacheLife('weeks');
+  'use cache';
+  cacheLife('weeks');
 
   return (
     <DisplayCard>

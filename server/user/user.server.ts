@@ -54,9 +54,9 @@ export async function getUserById(id: string) {
 }
 
 export async function getUser(): Promise<UserProfile | null> {
-  // 'use cache';
-  // cacheLife('weeks');
-  // cacheTag('get-user');
+  'use cache';
+  cacheLife('weeks');
+  cacheTag('get-user');
 
   try {
     const users = await prisma.userProfile.findFirst();
@@ -265,9 +265,9 @@ export async function updateUserLocation(userId: string, location: UserLocationE
 }
 
 export async function getUserAchievements(): Promise<UserAchievement[]> {
-  // 'use cache';
-  // cacheLife('weeks');
-  // cacheTag(CACHE_TAG_USER_ACHIEVEMENTS);
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_USER_ACHIEVEMENTS);
 
   const userAchievements: UserAchievement[] = [
     {
