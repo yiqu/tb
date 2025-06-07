@@ -238,9 +238,9 @@
       text-decoration-thickness: 1px;
     }
 
-    a:not([role='menuitem']):not([data-slot='sidebar-menu-button']):not([data-slot='sidebar-menu-sub-button']):not(
-        [role='tab']
-      ):not([data-slot='popover-trigger']) {
+    a:not([role='menuitem']):not([data-slot='sidebar-menu-button']):not([data-slot='sidebar-menu-sub-button']):not([role='tab']):not(
+        [data-slot='popover-trigger']
+      ) {
       color: var(--link-internal);
       font-weight: 500;
     }
@@ -254,6 +254,9 @@
     .text-lighter {
       color: #6c6f7a;
     }
+    .text-lighter-more {
+      color: #ccc;
+    }
   }
   .dark {
     .text-lightish {
@@ -264,6 +267,9 @@
     }
     .text-lighter {
       color: #858893;
+    }
+    .text-lighter-more {
+      color: #a0a3ab;
     }
   }
 }
@@ -278,7 +284,6 @@
     }
   }
 }
-
 
 @layer app-sidebar-menu {
   .app-sidebar-group {

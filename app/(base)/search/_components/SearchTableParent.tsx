@@ -9,6 +9,7 @@ import { getAllBills } from '@/server/bills/bills.server';
 import DisplayCard from '@/shared/components/DisplayCard';
 import SearchTableCell from '@/shared/table/SearchTableCellDisplay';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
 import { Table, TableRow, TableBody, TableHead, TableHeader } from '@/components/ui/table';
 import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS, getSearchTableColumnWidth } from '@/shared/table/table.utils';
 
@@ -23,20 +24,10 @@ export default async function SearchTableParent() {
     <DisplayCard className="w-full">
       <CardContent>
         <Table>
-          <TableHeader>
-            <TableRow>
-              { SEARCH_TABLE_COLUMN_IDS.map((column) => (
-                <TableHead
-                  key={ column.headerId }
-                  className={ cn('', {
-                    [`w-[${getSearchTableColumnWidth(column.headerId)}]`]: !!getSearchTableColumnWidth(column.headerId),
-                  }) }
-                >
-                  <span className="flex flex-row items-center justify-start gap-x-2">
-                    { column.headerId }
-                    <ChevronsUpDown className="size-4" />
-                  </span>
-                </TableHead>
+          <TableHeader className="bg-background">
+            <TableRow className="hover:bg-transparent">
+              { SEARCH_TABLE_COLUMN_IDS.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => (
+                <SearchTableHeaderDisplay key={ column.headerId } columnId={ column.headerId } index={ index } length={ array.length } />
               )) }
             </TableRow>
           </TableHeader>

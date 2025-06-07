@@ -22,4 +22,51 @@ export const getSearchTableColumnWidth = (columnId: string): string | undefined 
   }
 };
 
+export const SEARCH_TABLE_COLUMN_WIDTH = {
+  id: '10rem',
+};
+
+export const SEARCH_TABLE_COLUMN_TEXT = {
+  id: 'ID',
+  dateAdded: 'Date Added',
+  dueDate: 'Due Date',
+  paid: 'Paid',
+  reimbursed: 'Reimbursed',
+  subscription: 'Subscription',
+  updatedAt: 'Updated At',
+};
+
+export type SortDirection = 'asc' | 'desc' | '';
+export type SortField = 'id' | 'dateAdded' | 'dueDate' | 'paid' | 'reimbursed' | 'subscription' | 'updatedAt' | '';
+export type SortData = {
+  sort: SortField;
+  direction: SortDirection;
+};
+
+export function getNextSortDirection(currentSortData: SortData, nextSortField: SortField): SortData {
+  const currentDirection = currentSortData.direction;
+  let nextDirection: SortDirection = 'asc';
+  if (currentSortData.sort === nextSortField) {
+    if (currentDirection === 'asc') {
+      nextDirection = 'desc';
+    } else if (currentDirection === 'desc') {
+      nextDirection = '';
+    } else {
+      nextDirection = 'asc';
+    }
+  } else {
+    if (currentDirection === 'asc') {
+      nextDirection = 'asc';
+    } else if (currentDirection === 'desc') {
+      nextDirection = 'desc';
+    } else {
+      nextDirection = 'asc';
+    }
+  }
+  return {
+    sort: nextDirection === '' ? '' : nextSortField,
+    direction: nextDirection,
+  };
+}
+
 export function getSearchTableColumns() {}
