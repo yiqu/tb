@@ -39,6 +39,7 @@ model BillDue {
   dueDate        String
   paid           Boolean      @default(false)
   reimbursed     Boolean      @default(false)
+  cost           Float?
   dateAdded      DateTime     @default(now())
   updatedAt      DateTime?    @updatedAt
 }

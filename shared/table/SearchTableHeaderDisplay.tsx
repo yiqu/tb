@@ -66,7 +66,7 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
       onClick={ handleOnHeaderClick.bind(null, columnId) }
     >
       <span className="flex flex-row items-center justify-between gap-x-2 select-none">
-        { SEARCH_TABLE_COLUMN_TEXT[columnId] }
+        { SEARCH_TABLE_COLUMN_TEXT[columnId] ?? columnId }
         { isColumnSorted ?
           <>
             { sortDirection === 'asc' ?

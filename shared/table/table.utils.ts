@@ -4,13 +4,15 @@ export type SearchTableColumn = {
 };
 
 export const SEARCH_TABLE_COLUMN_IDS: SearchTableColumn[] = [
-  { headerId: 'id', ordinal: 0 },
-  { headerId: 'dateAdded', ordinal: 1 },
+  { headerId: 'cost', ordinal: 0 },
+  { headerId: 'id', ordinal: 7 },
+  { headerId: 'dateAdded', ordinal: 5 },
   { headerId: 'dueDate', ordinal: 2 },
   { headerId: 'paid', ordinal: 3 },
   { headerId: 'reimbursed', ordinal: 4 },
-  { headerId: 'subscription', ordinal: 5 },
+  { headerId: 'subscription', ordinal: 1 },
   { headerId: 'updatedAt', ordinal: 6 },
+  { headerId: 'actions', ordinal: 8 },
 ];
 
 export const getSearchTableColumnWidth = (columnId: string): string | undefined => {
@@ -23,10 +25,19 @@ export const getSearchTableColumnWidth = (columnId: string): string | undefined 
 };
 
 export const SEARCH_TABLE_COLUMN_WIDTH = {
-  id: '10rem',
+  id: '1rem',
+  cost: '10rem',
+  dueDate: '10rem',
+  subscription: '20rem',
+  updatedAt: '10rem',
+  actions: '10rem',
+  dateAdded: '10rem',
+  paid: '10rem',
+  reimbursed: '10rem',
 };
 
 export const SEARCH_TABLE_COLUMN_TEXT = {
+  cost: 'Cost',
   id: 'ID',
   dateAdded: 'Date Added',
   dueDate: 'Due Date',
@@ -34,6 +45,7 @@ export const SEARCH_TABLE_COLUMN_TEXT = {
   reimbursed: 'Reimbursed',
   subscription: 'Subscription',
   updatedAt: 'Updated At',
+  actions: 'Actions',
 };
 
 export type SortDirection = 'asc' | 'desc' | '';

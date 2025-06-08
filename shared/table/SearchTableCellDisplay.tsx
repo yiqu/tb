@@ -1,11 +1,15 @@
 import { TableCell } from '@/components/ui/table';
+import Typography from '@/components/typography/Typography';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+
+import DateDisplay from './DateDisplay';
+import DateRelativeDisplay from './DateRelativeDisplay';
 
 export default function SearchTableCell({ colId, billDue }: { colId: string; billDue: BillDueWithSubscription }) {
   if (colId === 'id') {
     return (
       <TableCell>
-        <span>{ billDue.id }</span>
+        <Typography className="truncate">{ billDue.id }</Typography>
       </TableCell>
     );
   }
@@ -13,7 +17,7 @@ export default function SearchTableCell({ colId, billDue }: { colId: string; bil
   if (colId === 'dateAdded') {
     return (
       <TableCell>
-        <span>TBD</span>
+        <DateRelativeDisplay time={ billDue.dateAdded } />
       </TableCell>
     );
   }
@@ -21,7 +25,10 @@ export default function SearchTableCell({ colId, billDue }: { colId: string; bil
   if (colId === 'dueDate') {
     return (
       <TableCell>
-        <span>TBD</span>
+        <div title={ `${new Date(Number.parseInt(billDue.dueDate)).toLocaleString()}` }>
+          <DateRelativeDisplay time={ billDue.dueDate } />
+          <DateDisplay date={ billDue.dueDate } />
+        </div>
       </TableCell>
     );
   }
@@ -53,7 +60,7 @@ export default function SearchTableCell({ colId, billDue }: { colId: string; bil
   if (colId === 'updatedAt') {
     return (
       <TableCell>
-        <span>TBD</span>
+        <DateRelativeDisplay time={ billDue.updatedAt } />
       </TableCell>
     );
   }

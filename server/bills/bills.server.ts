@@ -11,9 +11,7 @@ import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
-import { getSortDataForPageId } from '../sort-data/sort-data.server';
-
-export async function getAllBills(pageId: string, sortData: SortDataModel | null): Promise<BillDueWithSubscriptionAndSortData> {
+export async function getAllBills(sortData: SortDataModel | null): Promise<BillDueWithSubscriptionAndSortData> {
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
@@ -26,7 +24,18 @@ export async function getAllBills(pageId: string, sortData: SortDataModel | null
     });
 
     const sortedByDueDate: BillDueWithSubscription[] = billDues.sort((a: BillDue, b: BillDue) => {
-      return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
+      if (sortData?.sortField) {
+        if (sortData.sortField === 'dueDate') {
+          if (sortData.sortDirection === 'asc') {
+            return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
+          } else if (sortData.sortDirection === 'desc') {
+            return Number.parseInt(a.dueDate) < Number.parseInt(b.dueDate) ? 1 : -1;
+          }
+          return 0;
+        }
+      }
+
+      return 0;
     });
 
     return {

@@ -12,7 +12,10 @@ import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/m
 
 export default async function SearchTableParent() {
   const sortData: SortDataModel | null = await getSortDataForPageId(SORT_DATA_PAGE_IDS.search);
-  const billDues: BillDueWithSubscriptionAndSortData = await getAllBills(SORT_DATA_PAGE_IDS.search, sortData);
+  const billDues: BillDueWithSubscriptionAndSortData = await getAllBills(sortData);
+  const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
+
+  console.log(billDues);
 
   return (
     <DisplayCard className="w-full">
@@ -20,7 +23,7 @@ export default async function SearchTableParent() {
         <Table>
           <TableHeader className="bg-background">
             <TableRow className="hover:bg-transparent">
-              { SEARCH_TABLE_COLUMN_IDS.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => (
+              { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => (
                 <SearchTableHeaderDisplay
                   key={ column.headerId }
                   columnId={ column.headerId }
