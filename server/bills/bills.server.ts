@@ -8,26 +8,31 @@ import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
 import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
-import { BillDue, BillDueWithSubscription } from '@/models/bills/bills.model';
+import { SortDataModel } from '@/models/sort-data/SortData.model';
+import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
-export async function getAllBills(): Promise<BillDueWithSubscription[]> {
+import { getSortDataForPageId } from '../sort-data/sort-data.server';
+
+export async function getAllBills(pageId: string, sortData: SortDataModel | null): Promise<BillDueWithSubscriptionAndSortData> {
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
 
   try {
-    console.log('getAllBills() function called');
-    const billDues = await prisma.billDue.findMany({
+    const billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
       include: {
         subscription: true,
       },
     });
 
-    const sortedByDueDate = billDues.sort((a: BillDue, b: BillDue) => {
+    const sortedByDueDate: BillDueWithSubscription[] = billDues.sort((a: BillDue, b: BillDue) => {
       return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
     });
 
-    return sortedByDueDate;
+    return {
+      billDues: sortedByDueDate,
+      sortData,
+    };
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllBills(): ', JSON.stringify(error));
     throw new Error(`Error retrieving bill dues. Code: ${error.code}`);

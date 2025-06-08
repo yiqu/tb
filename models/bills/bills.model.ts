@@ -1,3 +1,5 @@
+import { SortDataModel } from '../sort-data/SortData.model';
+
 export interface SubscriptionPostBody {
   name: string;
   billCycleDuration: string;
@@ -46,7 +48,7 @@ export type SubscriptionOriginal = {
 export interface BillDue {
   id: string;
   subscriptionId: string;
-  dueDate: string;
+  dueDate: string; //'1716267600000'
   paid: boolean;
   reimbursed: boolean;
   dateAdded: Date;
@@ -57,6 +59,11 @@ export interface BillDue {
 
 export type BillDueWithSubscription = BillDue & {
   subscription: SubscriptionOriginal;
+};
+
+export type BillDueWithSubscriptionAndSortData = {
+  billDues: BillDueWithSubscription[];
+  sortData: SortDataModel | null;
 };
 
 export interface BillDueWithSubscription2 {

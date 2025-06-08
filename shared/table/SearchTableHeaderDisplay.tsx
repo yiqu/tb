@@ -1,11 +1,14 @@
 'use client';
 
-import { parseAsString, useQueryStates } from 'nuqs';
+import { useOptimistic, useTransition } from 'react';
 /* eslint-disable better-tailwindcss/multiline */
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { TableHead } from '@/components/ui/table';
+import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
+import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
+import { SortDataModel, SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import {
   SortData,
   SortField,
@@ -19,28 +22,37 @@ interface SearchTableHeaderDisplayProps {
   columnId: string;
   index: number;
   length: number;
+  sortData: SortDataModel | null;
 }
 
-export default function SearchTableHeaderDisplay({ columnId, index, length }: SearchTableHeaderDisplayProps) {
-  const [sortData, setSortData] = useQueryStates(
-    {
-      sort: parseAsString.withDefault(''),
-      direction: parseAsString.withDefault(''),
-    },
-    {
-      history: 'push',
-    },
-  );
+export default function SearchTableHeaderDisplay({ columnId, index, length, sortData }: SearchTableHeaderDisplayProps) {
+  const [isPending, startTransition] = useTransition();
 
-  const isColumnSorted: boolean = sortData.sort === columnId;
-  const sortDirection: SortDirection = sortData.direction as SortDirection;
+  const currentSortData: SortData = {
+    direction: (sortData?.sortDirection as SortDirection) ?? '',
+    sort: (sortData?.sortField as SortField) ?? '',
+  };
+  const [optimisticSortData, upsertOptimisticSortData] = useOptimistic(currentSortData, (state, optimisticValue: SortData) => {
+    return {
+      ...state,
+      ...optimisticValue,
+    };
+  });
+
+  const isColumnSorted: boolean = optimisticSortData.sort === columnId;
+  const sortDirection: string | undefined = optimisticSortData.direction;
 
   const handleOnHeaderClick = (columnId: string) => {
-    const currentSortData = sortData;
-    const nextSortData = getNextSortDirection(currentSortData as SortData, columnId as SortField);
-    setSortData({
-      sort: nextSortData.sort,
-      direction: nextSortData.direction,
+    const nextSortData: SortData = getNextSortDirection(optimisticSortData, columnId as SortField);
+    startTransition(() => {
+      upsertOptimisticSortData(nextSortData);
+      const sortDataToUpdate: SortDataUpsertable = {
+        id: sortData?.id ?? undefined,
+        pageId: SORT_DATA_PAGE_IDS.search,
+        sortDirection: nextSortData.direction,
+        sortField: nextSortData.sort,
+      };
+      upsertSortData2(sortDataToUpdate);
     });
   };
 
@@ -58,8 +70,17 @@ export default function SearchTableHeaderDisplay({ columnId, index, length }: Se
         { isColumnSorted ?
           <>
             { sortDirection === 'asc' ?
-              <ChevronUp className="size-4" />
-            : <ChevronDown className="size-4" /> }
+              <ChevronUp
+                className={ cn('size-4', {
+                  'opacity-30': isPending,
+                }) }
+              />
+            : <ChevronDown
+                className={ cn('size-4', {
+                  'opacity-30': isPending,
+                }) }
+              />
+            }
           </>
         : <ChevronsUpDown className="text-lighter-more size-4" /> }
       </span>
