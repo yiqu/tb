@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 'use server';
 
+import { cache } from 'react';
 import { Prisma } from '@prisma/client';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
@@ -10,6 +11,11 @@ import prisma from '@/lib/prisma';
 import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
+
+export const getAllBillsCached = cache(async (sortData: SortDataModel | null) => {
+  const res = await getAllBills(sortData);
+  return res;
+});
 
 export async function getAllBills(sortData: SortDataModel | null): Promise<BillDueWithSubscriptionAndSortData> {
   'use cache';

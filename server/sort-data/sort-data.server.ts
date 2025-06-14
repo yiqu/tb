@@ -1,5 +1,6 @@
 'use server';
 
+import { cache } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
 import { revalidateTag } from 'next/cache';
@@ -9,6 +10,11 @@ import { unstable_cacheLife as cacheLife } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { CACHE_TAG_SORT_DATA_PREFIX } from '@/constants/constants';
 import { SortDataModel, SortDataAddable, SortDataEditable, SortDataUpsertable } from '@/models/sort-data/SortData.model';
+
+export const getSortDataForPageIdCached = cache(async (pageId: string) => {
+  const res = await getSortDataForPageId(pageId);
+  return res;
+});
 
 export async function getSortDataForPageId(pageId: string): Promise<SortDataModel | null> {
   'use cache';

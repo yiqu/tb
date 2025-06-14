@@ -1,18 +1,18 @@
 import { CardContent } from '@/components/ui/card';
-import { getAllBills } from '@/server/bills/bills.server';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
+import { getAllBillsCached } from '@/server/bills/bills.server';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import SearchTableCell from '@/shared/table/SearchTableCellDisplay';
-import { getSortDataForPageId } from '@/server/sort-data/sort-data.server';
 import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
+import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS } from '@/shared/table/table.utils';
 import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
 export default async function SearchTableParent() {
-  const sortData: SortDataModel | null = await getSortDataForPageId(SORT_DATA_PAGE_IDS.search);
-  const billDues: BillDueWithSubscriptionAndSortData = await getAllBills(sortData);
+  const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
+  const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData);
   const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
   console.log(billDues);

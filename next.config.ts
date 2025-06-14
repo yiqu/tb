@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     dynamicIO: true,
     //viewTransition: true,
     useCache: true,
-    reactCompiler: process.env.NODE_ENV === 'production',
+    reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
   },
 };
 

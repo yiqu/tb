@@ -72,12 +72,12 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
             { sortDirection === 'asc' ?
               <ChevronUp
                 className={ cn('size-4', {
-                  'opacity-30': isPending,
+                  'text-yellow-700': isPending,
                 }) }
               />
             : <ChevronDown
                 className={ cn('size-4', {
-                  'opacity-30': isPending,
+                  'text-yellow-700': isPending,
                 }) }
               />
             }
