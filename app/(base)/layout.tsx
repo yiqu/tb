@@ -17,7 +17,6 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 //import { geistFont, geistMonoFont } from '@/lib/fonts-config';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
-import AgGridRegister from '@/components/ag-grid/AgGridRegister';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider';
 
@@ -83,7 +82,6 @@ export default function BaseRootLayout({
         className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} font-sans antialiased` }
         id="base-root-layout"
       >
-        <AgGridRegister />
         <AppTopLoader />
         <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
         <AppRouterCacheProvider options={ { enableCssLayer: true } }>

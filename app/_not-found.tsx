@@ -1,7 +1,6 @@
 /* eslint-disable better-tailwindcss/no-unnecessary-whitespace */
 /* eslint-disable better-tailwindcss/multiline */
 
-import { Metadata } from 'next';
 import { Borel, Geist, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One } from 'next/font/google';
 
 import Typography from '@/components/typography/Typography';
@@ -46,7 +45,6 @@ const cherryBombOne = Cherry_Bomb_One({
   weight: '400',
   preload: true,
 });
-
 
 export default function NotFound() {
   return (

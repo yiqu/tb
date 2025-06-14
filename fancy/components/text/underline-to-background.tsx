@@ -64,7 +64,10 @@ const UnderlineToBackground = ({
 
   return (
     <motion.span
-      className={ `relative inline-block cursor-pointer ${className}` }
+      className={ `
+        relative inline-block cursor-pointer
+        ${className}
+      ` }
       whileHover="target"
       onClick={ onClick }
       ref={ textRef }
