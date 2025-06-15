@@ -54,7 +54,7 @@
   --breakpoint-xl: 2560px;
   --breakpoint-main: 2560px;
   /* 2xl: even bigger */
-  --breakpoint-3xl: 3200px;
+  --breakpoint-two: 2000px;
 
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-geist-sans);
@@ -115,7 +115,7 @@
   --breakpoint-xl: 2560px;
   --breakpoint-main: 2560px;
   /* 2xl: even bigger */
-  --breakpoint-3xl: 3200px;
+  --breakpoint-two: 2000px;
 }
 
 @theme inline {
@@ -181,7 +181,7 @@
   --breakpoint-xl: 2560px;
   --breakpoint-main: 2560px;
   /* 2xl: even bigger */
-  --breakpoint-3xl: 3200px;
+  --breakpoint-two: 2000px;
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;

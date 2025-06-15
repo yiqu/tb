@@ -35,6 +35,7 @@ export const SORT_DATA_PAGE_IDS = {
 
 export const APP_TITLE_GRADIENT_COLORS = {
   search: ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'],
+  bills: ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'],
   account: ['#FF0080', '#7928CA', '#0070F3', '#38bdf8'],
   pageInfo: ['#FF6B6B', '#c63527', '#45B7D1', '#000066'],
   art: ['#005493', '#f5aa1c', '#c63527', '#002754'],

@@ -6,7 +6,7 @@ import useIsClient from '@/hooks/useIsClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
 
-export default function DateDisplay({ date }: { date: Date | string | null }) {
+export default function DateDisplay({ date, dateFormat = 'MM/dd/yyyy hh:mm a' }: { date: Date | string | null; dateFormat?: string }) {
   const isClient = useIsClient();
 
   if (!isClient) {
@@ -17,7 +17,7 @@ export default function DateDisplay({ date }: { date: Date | string | null }) {
     return <Typography>N/A</Typography>;
   }
 
-  const dateDisplay = format(date instanceof Date ? date : new Date(Number.parseInt(date)), 'MM/dd/yyyy hh:mm a');
+  const dateDisplay = format(date instanceof Date ? date : new Date(Number.parseInt(date)), dateFormat);
 
-  return <Typography>{ dateDisplay }</Typography>;
+  return <Typography className="truncate">{ dateDisplay }</Typography>;
 }

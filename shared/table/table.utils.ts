@@ -25,12 +25,12 @@ export const getSearchTableColumnWidth = (columnId: string): string | undefined 
 };
 
 export const SEARCH_TABLE_COLUMN_WIDTH = {
-  id: '1rem',
-  cost: '10rem',
-  dueDate: '10rem',
+  id: '4rem',
+  cost: '11rem',
+  dueDate: '14rem',
   subscription: '20rem',
   updatedAt: '10rem',
-  actions: '10rem',
+  actions: '5rem',
   dateAdded: '10rem',
   paid: '10rem',
   reimbursed: '10rem',

@@ -12,10 +12,6 @@ interface SearchPageProps {
 export default function SearchPage({}: SearchPageProps) {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
-      <SearchTableActionBar />
-      <Suspense fallback={ <SearchTableSkeleton /> }>
-        <SearchTableParent />
-      </Suspense>
     </div>
   );
 }

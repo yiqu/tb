@@ -55,6 +55,7 @@ export interface BillDue {
   updatedAt: Date | null;
   isApiLoading?: boolean;
   isInThePast?: boolean;
+  cost: number | null;
 }
 
 export type BillDueWithSubscription = BillDue & {

@@ -29,7 +29,7 @@ export async function getAllBills(sortData: SortDataModel | null): Promise<BillD
       },
     });
 
-    const sortedByDueDate: BillDueWithSubscription[] = billDues.sort((a: BillDue, b: BillDue) => {
+    const sortedByDueDate: BillDueWithSubscription[] = billDues.sort((a: BillDueWithSubscription, b: BillDueWithSubscription) => {
       if (sortData?.sortField) {
         if (sortData.sortField === 'dueDate') {
           if (sortData.sortDirection === 'asc') {
@@ -39,6 +39,55 @@ export async function getAllBills(sortData: SortDataModel | null): Promise<BillD
           }
           return 0;
         }
+        if (sortData.sortField === 'dateAdded') {
+          if (sortData.sortDirection === 'asc') {
+            return a.dateAdded.getTime() > b.dateAdded.getTime() ? 1 : -1;
+          } else if (sortData.sortDirection === 'desc') {
+            return a.dateAdded.getTime() < b.dateAdded.getTime() ? 1 : -1;
+          }
+        }
+        if (sortData.sortField === 'updatedAt') {
+          if (sortData.sortDirection === 'asc') {
+            return (a.updatedAt ? a.updatedAt.getTime() : 0) > (b.updatedAt ? b.updatedAt.getTime() : 0) ? 1 : -1;
+          } else if (sortData.sortDirection === 'desc') {
+            return (a.updatedAt ? a.updatedAt.getTime() : 0) < (b.updatedAt ? b.updatedAt.getTime() : 0) ? 1 : -1;
+          }
+        }
+        if (sortData.sortField === 'subscription') {
+          if (sortData.sortDirection === 'asc') {
+            return a.subscription.name.toLowerCase() > b.subscription.name.toLowerCase() ? 1 : -1;
+          } else if (sortData.sortDirection === 'desc') {
+            return a.subscription.name.toLowerCase() < b.subscription.name.toLowerCase() ? 1 : -1;
+          }
+        }
+
+        if (sortData.sortField === 'cost') {
+          const aCost = a.cost ?? a.subscription.cost;
+          const bCost = b.cost ?? b.subscription.cost;
+          if (sortData.sortDirection === 'asc') {
+            return aCost > bCost ? 1 : -1;
+          } else if (sortData.sortDirection === 'desc') {
+            return aCost < bCost ? 1 : -1;
+          }
+        }
+
+        if (sortData.sortField === 'paid') {
+          if (sortData.sortDirection === 'asc') {
+            return a.paid > b.paid ? 1 : -1;
+          } else if (sortData.sortDirection === 'desc') {
+            return a.paid < b.paid ? 1 : -1;
+          }
+        }
+
+        if (sortData.sortField === 'reimbursed') {
+          if (sortData.sortDirection === 'asc') {
+            return a.reimbursed > b.reimbursed ? 1 : -1;
+          } else if (sortData.sortDirection === 'desc') {
+            return a.reimbursed < b.reimbursed ? 1 : -1;
+          }
+        }
+
+        return a[sortData.sortField] > b[sortData.sortField] ? 1 : -1;
       }
 
       return 0;
