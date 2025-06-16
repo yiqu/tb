@@ -98,7 +98,7 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
                 />
               }
             </>
-          : <ChevronsUpDown className="size-4 min-w-4 text-gray-200" /> }
+          : <ChevronsUpDown className="size-4 min-w-4 text-gray-300/60 dark:text-gray-600/30" /> }
         </div>
       </span>
     </TableHead>
