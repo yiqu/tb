@@ -48,8 +48,8 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     return (
       <TableCell>
         <div title={ `${new Date(Number.parseInt(billDue.dueDate)).toLocaleString()}` } className="truncate">
-          <DateRelativeDisplay time={ billDue.dueDate } />
           <DateDisplay date={ billDue.dueDate } dateFormat="MM/dd/yy" />
+          <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis />
         </div>
       </TableCell>
     );
@@ -59,7 +59,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const isPaid = !!billDue.paid;
     return (
       <TableCell>
-        <BillsTableTogglePaidButton isPaid={ isPaid } />
+        <BillsTableTogglePaidButton isPaid={ isPaid } billDueId={ billDue.id } />
       </TableCell>
     );
   }
@@ -68,7 +68,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const isReimbursed = !!billDue.reimbursed;
     return (
       <TableCell>
-        <BillsTableToggleReimbursedButton isReimbursed={ isReimbursed } />
+        <BillsTableToggleReimbursedButton isReimbursed={ isReimbursed } billDueId={ billDue.id } />
       </TableCell>
     );
   }

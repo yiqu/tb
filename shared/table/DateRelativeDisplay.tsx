@@ -6,11 +6,17 @@ import useIsClient from '@/hooks/useIsClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
 
-export default function DateRelativeDisplay({ time }: { time: Date | string | null }) {
+export default function DateRelativeDisplay({
+  time,
+  includeParenthesis = false,
+}: {
+  time: Date | string | null;
+  includeParenthesis?: boolean;
+}) {
   const isClient = useIsClient();
 
   if (!isClient) {
-    return <Skeleton className="h-4 w-full" />;
+    return <Skeleton className="h-6 w-full" />;
   }
 
   if (!time) {
@@ -19,5 +25,5 @@ export default function DateRelativeDisplay({ time }: { time: Date | string | nu
 
   const relativeDate = formatDistanceToNow(time instanceof Date ? time : new Date(Number.parseInt(time)), { addSuffix: true });
 
-  return <Typography>{ relativeDate }</Typography>;
+  return <Typography>{ includeParenthesis ? `(${relativeDate})` : relativeDate }</Typography>;
 }

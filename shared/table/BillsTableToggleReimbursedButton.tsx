@@ -1,15 +1,40 @@
+'use client';
+
 /* eslint-disable better-tailwindcss/multiline */
 import { BanknoteArrowDown } from 'lucide-react';
+import { useOptimistic, useTransition } from 'react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { updateIsBillDueReimbursed } from '@/server/bills/bills.server';
 
-export default function BillsTableToggleReimbursedButton({ isReimbursed }: { isReimbursed: boolean }) {
+export default function BillsTableToggleReimbursedButton({ billDueId, isReimbursed }: { billDueId: string; isReimbursed: boolean }) {
+  const [isPending, startTransition] = useTransition();
+
+  const [optimisticIsReimbursed, setOptimisticIsReimbursed] = useOptimistic(isReimbursed, (curr: boolean, optimisticValue: boolean) => {
+    return optimisticValue;
+  });
+
+  const handleOnClick = (isReimbursed: boolean) => {
+    startTransition(async () => {
+      setOptimisticIsReimbursed(!isReimbursed);
+      await updateIsBillDueReimbursed(billDueId, !isReimbursed);
+    });
+  };
+
   return (
-    <Button size="icon" variant="ghost">
+    <Button
+      size="icon"
+      variant="ghost"
+      onClick={ handleOnClick.bind(null, optimisticIsReimbursed) }
+      type="button"
+      className={ cn({
+        'border-1 border-yellow-400 dark:border-yellow-700/80': isPending,
+      }) }
+    >
       <BanknoteArrowDown
         className={ cn(`size-6 text-muted dark:text-gray-500/60`, {
-          'text-green-600 dark:text-green-500': isReimbursed,
+          'text-green-600 dark:text-green-500': optimisticIsReimbursed,
         }) }
       />
     </Button>

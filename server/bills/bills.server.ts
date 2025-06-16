@@ -4,13 +4,17 @@
 
 import { cache } from 'react';
 import { Prisma } from '@prisma/client';
-import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
+import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 
 import prisma from '@/lib/prisma';
 import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
+
+export async function revalidateBillDue() {
+  revalidateTag(CACHE_TAG_BILL_DUES_ALL);
+}
 
 export const getAllBillsCached = cache(async (sortData: SortDataModel | null) => {
   const res = await getAllBills(sortData);
@@ -102,3 +106,35 @@ export async function getAllBills(sortData: SortDataModel | null): Promise<BillD
     throw new Error(`Error retrieving bill dues. Code: ${error.code}`);
   }
 }
+
+export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean): Promise<BillDue> {
+  try {
+    const billDue: BillDue = await prisma.billDue.update({
+      where: { id: billDueId },
+      data: { paid: isPaid },
+    });
+
+    revalidateBillDue();
+
+    return billDue;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at updateIsBillDuePaid(): ', JSON.stringify(error));
+    throw new Error(`Error updating bill due paid status. Code: ${error.code}`);
+  }
+}
+
+export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed: boolean): Promise<BillDue> {
+  try {
+    const billDue: BillDue = await prisma.billDue.update({
+      where: { id: billDueId },
+      data: { reimbursed: isReimbursed },
+    });
+
+    revalidateBillDue();
+
+    return billDue;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at updateIsBillDueReimbursed(): ', JSON.stringify(error));
+    throw new Error(`Error updating bill due reimbursed status. Code: ${error.code}`);
+  }
+} 
