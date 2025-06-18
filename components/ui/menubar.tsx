@@ -3,7 +3,7 @@
 /* eslint-disable better-tailwindcss/multiline */
 
 import * as React from 'react';
-import * as MenubarPrimitive from '@radix-ui/react-menubar';
+import { Menubar as MenubarPrimitive } from 'radix-ui';
 import { CheckIcon, CircleIcon, ChevronRightIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';

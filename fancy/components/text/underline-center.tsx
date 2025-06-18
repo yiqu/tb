@@ -2,12 +2,12 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import { motion, ValueAnimationTransition } from 'motion/react';
+import { motion, Transition } from 'motion/react';
 
 interface UnderlineProps {
   label: string;
   className?: string;
-  transition?: ValueAnimationTransition;
+  transition?: Transition;
   onClick?: () => void;
   underlineHeightRatio?: number;
   underlinePaddingRatio?: number;
@@ -48,16 +48,12 @@ const CenterUnderline = ({
     },
     visible: {
       width: '100%',
-      transition: transition,
     },
   };
 
   return (
     <motion.span
-      className={ `
-        relative inline-block cursor-pointer
-        ${className}
-      ` }
+      className={ `relative inline-block cursor-pointer ${className}` }
       whileHover="visible"
       onClick={ onClick }
       ref={ textRef }
@@ -71,6 +67,7 @@ const CenterUnderline = ({
           bottom: 'calc(-1 * var(--underline-padding))',
         } }
         variants={ underlineVariants }
+        transition={ transition }
       />
     </motion.span>
   );

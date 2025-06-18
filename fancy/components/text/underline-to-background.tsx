@@ -1,12 +1,12 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import { motion, ValueAnimationTransition } from 'motion/react';
+import { motion, Transition } from 'motion/react';
 
 interface UnderlineProps {
   label: string;
   className?: string;
-  transition?: ValueAnimationTransition;
+  transition?: Transition;
   onClick?: () => void;
   targetTextColor: string;
   underlineHeightRatio?: number;
@@ -48,7 +48,6 @@ const UnderlineToBackground = ({
     },
     target: {
       height: '100%',
-      transition: transition,
     },
   };
 
@@ -58,7 +57,6 @@ const UnderlineToBackground = ({
     },
     target: {
       color: targetTextColor,
-      transition: transition,
     },
   };
 
@@ -80,9 +78,10 @@ const UnderlineToBackground = ({
           bottom: 'calc(-1 * var(--underline-padding))',
         } }
         variants={ underlineVariants }
+        transition={ transition }
         aria-hidden="true"
       />
-      <motion.span variants={ textVariants } className="relative text-current">
+      <motion.span variants={ textVariants } transition={ transition } className="relative text-current">
         { label }
       </motion.span>
     </motion.span>

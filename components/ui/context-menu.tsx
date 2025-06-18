@@ -3,7 +3,7 @@
 /* eslint-disable better-tailwindcss/multiline */
 
 import * as React from 'react';
-import * as ContextMenuPrimitive from '@radix-ui/react-context-menu';
+import { ContextMenu as ContextMenuPrimitive } from 'radix-ui';
 import { CheckIcon, CircleIcon, ChevronRightIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';

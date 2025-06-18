@@ -1,3 +1,5 @@
+/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -105,10 +107,7 @@ const Typewriter = ({
       { showCursor ?
         <motion.span
           variants={ cursorAnimationVariants }
-          className={ cn(
-            cursorClassName,
-            hideCursorOnType && (currentIndex < texts[currentTextIndex].length || isDeleting) ? 'hidden' : '',
-          ) }
+          className={ cn(cursorClassName, hideCursorOnType && (currentIndex < texts[currentTextIndex].length || isDeleting) ? 'hidden' : '') }
           initial="initial"
           animate="animate"
         >

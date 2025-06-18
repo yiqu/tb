@@ -2,7 +2,7 @@
 'use client';
 
 import { LoaderCircle } from 'lucide-react';
-import * as SwitchPrimitive from '@radix-ui/react-switch';
+import { Switch as SwitchPrimitive } from 'radix-ui';
 import { useTransition, useOptimistic, useActionState } from 'react';
 
 import { Label } from '@/components/ui/label';
@@ -54,11 +54,7 @@ export default function AdminModeForm({ user }: AdminModeFormProps) {
   return (
     <form action={ formAction }>
       <div className="flex flex-row items-center justify-start gap-x-1">
-        <AdminModeFormSwitch
-          checked={ optimisticIsAdminCheckedState }
-          onCheckedChange={ handleOnAdminToggle }
-          name="isAdmin"
-        />
+        <AdminModeFormSwitch checked={ optimisticIsAdminCheckedState } onCheckedChange={ handleOnAdminToggle } name="isAdmin" />
         { isPending ?
           <LoaderCircle className="h-4 w-4 animate-spin" />
         : null }
@@ -68,7 +64,7 @@ export default function AdminModeForm({ user }: AdminModeFormProps) {
   );
 }
 
-function AdminModeFormSwitch(props: React.ComponentProps<typeof SwitchPrimitive.Root>) {
+function AdminModeFormSwitch(props: React.ComponentProps<typeof SwitchPrimitive.Switch>) {
   return (
     <div className="flex items-center space-x-2">
       <Switch id="admin-mode" { ...props } className="cursor-pointer" />
