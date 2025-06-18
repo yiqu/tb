@@ -16,8 +16,6 @@ export default async function SearchTableParent() {
   const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData);
   const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
-  console.log(billDues);
-
   return (
     <DisplayCard className="w-full">
       <CardContent className="overflow-x-auto">

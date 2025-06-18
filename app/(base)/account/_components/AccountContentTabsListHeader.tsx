@@ -1,7 +1,9 @@
 import Link from 'next/link';
 
 import { TabListItem } from '@/models/NavItem.models';
-import { TabsList, TabsTrigger } from '@/components/ui/tabs';
+//import { TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { TabsList, TabsTrigger } from '@/components/animate-ui/radix/tabs';
 
 import AccountContentTabsListTabs from './AccountContentTabsListTabs';
 

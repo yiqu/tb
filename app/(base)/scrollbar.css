@@ -6,7 +6,7 @@
 }
 ::-webkit-scrollbar-thumb {
   background-color: var(--primary); 
-  border-radius: 24px; 
+  border-radius: 32px; 
 }
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--primary); 
@@ -23,7 +23,7 @@
 
 #app-sidebar ::-webkit-scrollbar-thumb {
   background-color: var(--primary); 
-  border-radius: 24px; 
+  border-radius: 32px; 
 }
 
 #app-sidebar ::-webkit-scrollbar-thumb:hover {

@@ -1,4 +1,5 @@
 /* eslint-disable prefer-destructuring */
+
 import { TableCell } from '@/components/ui/table';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
@@ -6,7 +7,9 @@ import { BillDueWithSubscription } from '@/models/bills/bills.model';
 
 import DateDisplay from './DateDisplay';
 import DateRelativeDisplay from './DateRelativeDisplay';
+import BillsTableEditBillButton from './BillsTableEditBillButton';
 import BillsTableTogglePaidButton from './BillsTableTogglePaidButton';
+import BillsTableDeleteBillButton from './BillsTableDeleteBillButton';
 import BillsTableToggleReimbursedButton from './BillsTableToggleReimbursedButton';
 
 const useFormatter = getUSDFormatter(2, 2);
@@ -87,6 +90,17 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
       <TableCell>
         <div title={ `${billDue.updatedAt}` } className="truncate">
           <DateDisplay date={ billDue.updatedAt } dateFormat="MM/dd/yy" />
+        </div>
+      </TableCell>
+    );
+  }
+
+  if (colId === 'actions') {
+    return (
+      <TableCell className="text-center">
+        <div className="flex w-full flex-row items-center justify-center gap-x-1">
+          <BillsTableEditBillButton billDue={ billDue } />
+          <BillsTableDeleteBillButton />
         </div>
       </TableCell>
     );

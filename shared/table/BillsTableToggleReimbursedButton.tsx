@@ -29,7 +29,7 @@ export default function BillsTableToggleReimbursedButton({ billDueId, isReimburs
       onClick={ handleOnClick.bind(null, optimisticIsReimbursed) }
       type="button"
       className={ cn({
-        'border-1 border-yellow-400 dark:border-yellow-700/80': isPending,
+        'border-1 border-green-500/20 dark:border-green-500/20': isPending,
       }) }
     >
       <BanknoteArrowDown
