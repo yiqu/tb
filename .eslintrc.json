@@ -157,7 +157,8 @@
     "unicorn/prefer-number-properties": 1,
     "better-tailwindcss/multiline": ["warn", { "printWidth": 140, "lineBreakStyle": "windows" }],
     "better-tailwindcss/no-unnecessary-whitespace": ["warn"],
-    "better-tailwindcss/no-duplicate-classes": ["warn"]
+    "better-tailwindcss/no-duplicate-classes": ["warn"],
+    "better-tailwindcss/sort-classes": ["warn", { "order": "official" }]
   },
   "settings": {
     "better-tailwindcss": {
