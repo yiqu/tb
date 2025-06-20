@@ -236,7 +236,12 @@ function Sidebar({
   );
 }
 
-function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
+function SidebarTrigger({
+  className,
+  onClick,
+  icon = <PanelLeftIcon />,
+  ...props
+}: React.ComponentProps<typeof Button> & { icon?: React.ReactNode }) {
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -252,7 +257,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       } }
       { ...props }
     >
-      <PanelLeftIcon />
+      { icon }
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

@@ -1,29 +1,26 @@
-/* eslint-disable better-tailwindcss/multiline */
-'use client';
-
-import { useFormContext } from 'react-hook-form';
-
 import DisplayCard from '@/shared/components/DisplayCard';
+import DisplayCardContentDivider from '@/shared/components/DisplayCardContentDivider';
 
 import { CardContent } from '../ui/card';
-import { HFCurrencyInput } from '../hook-form/HFCurrencyInput';
+import EditBillIsPaid from './EditBillIsPaid';
+import EditBillDueDate from './EditBillDueDate';
+import EditBillCurrency from './EditBillCurrency';
+import EditBillIsReimbursed from './EditBillIsReimbursed';
+import EditBillSubscriptionsWrapper from './EditBillSubscriptionsWrapper';
 
 export default function EditBillForm() {
-  const { control } = useFormContext();
-
   return (
     <DisplayCard>
-      <CardContent>
-        <HFCurrencyInput
-          name="cost"
-          label="Bill Cost"
-          control={ control }
-          onFocus={ (event) => {
-            event.target.select();
-          } }
-          autoFocus
-          className=""
-        />
+      <CardContent className="flex w-full flex-col items-start justify-start gap-y-4">
+        <EditBillDueDate />
+        <DisplayCardContentDivider />
+        <EditBillCurrency />
+        <DisplayCardContentDivider />
+        <EditBillSubscriptionsWrapper />
+        <DisplayCardContentDivider />
+        <EditBillIsPaid />
+        <DisplayCardContentDivider />
+        <EditBillIsReimbursed />
       </CardContent>
     </DisplayCard>
   );

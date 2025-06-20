@@ -9,9 +9,11 @@ import Typography from '@/components/typography/Typography';
 export default function DateRelativeDisplay({
   time,
   includeParenthesis = false,
+  prefixText = '',
 }: {
   time: Date | string | null;
   includeParenthesis?: boolean;
+  prefixText?: string;
 }) {
   const isClient = useIsClient();
 
@@ -25,5 +27,5 @@ export default function DateRelativeDisplay({
 
   const relativeDate = formatDistanceToNow(time instanceof Date ? time : new Date(Number.parseInt(time)), { addSuffix: true });
 
-  return <Typography>{ includeParenthesis ? `(${relativeDate})` : relativeDate }</Typography>;
+  return <Typography>{ includeParenthesis ? `(${prefixText} ${relativeDate})` : `${prefixText} ${relativeDate}` }</Typography>;
 }

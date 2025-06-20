@@ -4,6 +4,14 @@ import { cva, VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
 
+// 0.75rem = 12px
+// 0.875rem = 14px
+// 1rem = 16px
+// 1.25rem = 20px
+// 1.5rem = 24px
+// 1.75rem = 28px
+// 2rem = 32px
+
 const typographyVariants = cva('scroll-m-20 tracking-tight', {
   variants: {
     variant: {

@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 'use server';
 
+import z from 'zod';
 import { cache } from 'react';
 import { Prisma } from '@prisma/client';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
@@ -10,6 +11,7 @@ import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
+import { billEditableSchema } from '@/validators/bills/bill.schema';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
 export async function revalidateBillDue() {
@@ -137,4 +139,30 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
     console.error('Server error at updateIsBillDueReimbursed(): ', JSON.stringify(error));
     throw new Error(`Error updating bill due reimbursed status. Code: ${error.code}`);
   }
-} 
+}
+
+export async function updateBillDue(billDueId: string, data: z.infer<typeof billEditableSchema>): Promise<BillDueWithSubscription> {
+  const billCost: number = Number.parseFloat(`${data.cost}`);
+  try {
+    const billDue: BillDueWithSubscription = await prisma.billDue.update({
+      where: { id: billDueId },
+      data: {
+        cost: billCost,
+        dueDate: data.dueDate,
+        paid: data.paid,
+        reimbursed: data.reimbursed,
+        subscriptionId: data.subscriptionId,
+      },
+      include: {
+        subscription: true,
+      },
+    });
+
+    revalidateBillDue();
+
+    return billDue;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at updateBillDue(): ', JSON.stringify(error));
+    throw new Error(`Error updating bill due. Code: ${error.code}`);
+  }
+}

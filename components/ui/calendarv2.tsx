@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 
 import { Button, buttonVariants } from './button';
 
-function Calendar({
+function CalendarV2({
   className,
   classNames,
   showOutsideDays = true,
@@ -143,4 +143,4 @@ function CalendarDayButton({ className, day, modifiers, ...props }: React.Compon
   );
 }
 
-export { Calendar, CalendarDayButton };
+export { CalendarV2, CalendarDayButton };

@@ -23,6 +23,8 @@ interface HFSelectProps {
   disabled?: boolean;
   isLoading?: boolean;
   startAdornment?: React.ReactNode;
+  className?: string;
+  formItemClassName?: string;
 }
 
 export default function HFSelect({
@@ -35,6 +37,8 @@ export default function HFSelect({
   label,
   placeholder,
   startAdornment,
+  className,
+  formItemClassName,
 }: HFSelectProps) {
   return (
     <FormField
@@ -42,16 +46,14 @@ export default function HFSelect({
       name={ name }
       render={ ({ field }) => {
         return (
-          <FormItem>
+          <FormItem className={ formItemClassName }>
             { label ?
-              <FormLabel>{ label }</FormLabel>
+              <FormLabel className="font-normal text-gray-600 dark:text-gray-300">{ label }</FormLabel>
             : null }
 
-            <div className="relative">
+            <div className={ cn('relative', className) }>
               { startAdornment ?
-                <div className={ `pointer-events-none absolute top-0 left-0 flex h-full items-center pl-3` }>
-                  { startAdornment }
-                </div>
+                <div className={ `pointer-events-none absolute top-0 left-0 flex h-full items-center pl-3` }>{ startAdornment }</div>
               : null }
               <Select onValueChange={ field.onChange } defaultValue={ field.value } value={ field.value } disabled={ disabled }>
                 <FormControl className="w-full">

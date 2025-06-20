@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/multiline */
 'use client';
 
 import * as React from 'react';
@@ -58,10 +59,7 @@ function FlipButton({
       whileHover="hover"
       whileTap={ { scale: 0.95 } }
       className={ cn(
-        `
-          relative inline-block h-10 cursor-pointer px-4 py-2 text-sm font-medium perspective-[1000px]
-          focus:outline-none
-        `,
+        `relative inline-block h-10 cursor-pointer px-4 py-2 text-sm font-medium perspective-[1000px] focus:outline-none`,
         className,
       ) }
       { ...props }
@@ -70,10 +68,7 @@ function FlipButton({
         data-slot="flip-button-front"
         variants={ frontVariants }
         transition={ transition }
-        className={ cn(DEFAULT_SPAN_CLASS_NAME, `
-          bg-muted text-black
-          dark:text-white
-        `, frontClassName) }
+        className={ cn(DEFAULT_SPAN_CLASS_NAME, `bg-muted text-black dark:text-white`, frontClassName) }
       >
         { frontText }
       </motion.span>

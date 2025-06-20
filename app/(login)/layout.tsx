@@ -9,7 +9,6 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Geist, Borel, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One } from 'next/font/google';
 
 import theme from '@/components/ui-mui/mui/theme';
-import ReactScan from '@/components/react-scan/ReactScan';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
@@ -68,7 +67,6 @@ export default function LoginRootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ReactScan />
       <body
         className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} font-sans antialiased` }
         id="login-root-layout"
@@ -79,13 +77,7 @@ export default function LoginRootLayout({
           <MuiThemeProvider theme={ theme } defaultMode="light">
             <NuqsAdapter>
               <TanstackQueryClientProvider>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="light"
-                  enableSystem={ false }
-                  disableTransitionOnChange
-                  storageKey="app-theme"
-                >
+                <ThemeProvider attribute="class" defaultTheme="light" enableSystem={ false } disableTransitionOnChange storageKey="app-theme">
                   <div className="h-dvh!" id="login-root">
                     <Suspense>{ children }</Suspense>
                     <CustomToaster />

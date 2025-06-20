@@ -73,15 +73,7 @@
           "custom-mui",
           ["builtin"],
           "external",
-          [
-            "custom-routes",
-            "custom-hooks",
-            "custom-utils",
-            "internal",
-            "custom-components",
-            "custom-sections",
-            "custom-types"
-          ],
+          ["custom-routes", "custom-hooks", "custom-utils", "internal", "custom-components", "custom-sections", "custom-types"],
           "type",
           ["parent", "sibling", "index"],
           "object",
@@ -163,7 +155,7 @@
     "unicorn/no-useless-undefined": 1,
     "unicorn/prefer-date-now": 1,
     "unicorn/prefer-number-properties": 1,
-    "better-tailwindcss/multiline": ["warn", { "printWidth": 160, "lineBreakStyle": "unix", "classesPerLine": 10 }],
+    "better-tailwindcss/multiline": ["warn", { "printWidth": 140, "lineBreakStyle": "windows" }],
     "better-tailwindcss/no-unnecessary-whitespace": ["warn"],
     "better-tailwindcss/no-duplicate-classes": ["warn"]
   },

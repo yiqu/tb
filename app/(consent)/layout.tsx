@@ -3,8 +3,6 @@
 
 import { Geist, Borel, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One, Architects_Daughter } from 'next/font/google';
 
-import ReactScan from '@/components/react-scan/ReactScan';
-
 import type { Metadata } from 'next';
 
 import './scrollbar.css';
@@ -66,7 +64,6 @@ export default function WelcomeRootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ReactScan />
       <body
         className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} ${architectsDaughter.variable} font-sans antialiased` }
         id="consent-root-layout"

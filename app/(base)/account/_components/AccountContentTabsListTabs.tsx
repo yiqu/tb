@@ -2,9 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 
-import { Tabs } from '@/components/animate-ui/radix/tabs';
-
-//import { Tabs } from '@/components/ui/tabs';
+import { Tabs } from '@/components/ui/tabs';
 
 interface AccountContentTabsListTabsProps {
   children: React.ReactNode;

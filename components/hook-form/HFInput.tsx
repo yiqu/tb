@@ -17,7 +17,6 @@ interface HFInputFieldProps extends React.ComponentProps<'input'> {
   name: string;
   label?: string;
   placeholder?: string;
-  type?: string;
   description?: string;
   startAdornment?: ReactNode;
   isTextArea?: boolean;
@@ -30,7 +29,6 @@ interface HFInputFieldProps extends React.ComponentProps<'input'> {
 
 export function HFInputField({
   control,
-  type = 'text',
   description,
   startAdornment,
   isTextArea = false,
@@ -55,7 +53,7 @@ export function HFInputField({
       render={ ({ field }: { field: ControllerRenderProps<FieldValues, string> }) => (
         <FormItem className={ cn(formItemClassName) }>
           { label ?
-            <FormLabel>{ label }</FormLabel>
+            <FormLabel className="text-gray-600 dark:text-gray-300 font-normal">{ label }</FormLabel>
           : null }
           <div className="relative">
             { startAdornment ?
@@ -81,7 +79,7 @@ export function HFInputField({
                   { ...inputProps }
                   { ...field }
                   placeholder={ placeholder }
-                  type={ type }
+                  type={ inputProps.type ?? 'text' }
                   className={ cn(
                     `pr-10`,
                     {

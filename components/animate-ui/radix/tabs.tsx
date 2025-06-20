@@ -1,5 +1,5 @@
 'use client';
-
+/* eslint-disable better-tailwindcss/multiline */
 import * as React from 'react';
 import { Tabs as TabsPrimitive } from 'radix-ui';
 import { motion, type Transition, type HTMLMotionProps } from 'motion/react';

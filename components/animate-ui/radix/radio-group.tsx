@@ -1,5 +1,5 @@
 'use client';
-
+/* eslint-disable better-tailwindcss/multiline */
 import * as React from 'react';
 import { Circle } from 'lucide-react';
 import { RadioGroup as RadioGroupPrimitive } from 'radix-ui';

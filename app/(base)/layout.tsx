@@ -1,5 +1,6 @@
 /* eslint-disable better-tailwindcss/no-unnecessary-whitespace */
 /* eslint-disable better-tailwindcss/multiline */
+
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
@@ -12,7 +13,6 @@ import { Geist, Borel, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One } from 'n
 import { appName } from '@/constants/constants';
 import theme from '@/components/ui-mui/mui/theme';
 import AppLayout from '@/components/layout/AppLayout';
-import ReactScan from '@/components/react-scan/ReactScan';
 import { TooltipProvider } from '@/components/ui/tooltip';
 //import { geistFont, geistMonoFont } from '@/lib/fonts-config';
 import CustomToaster from '@/components/toaster/CustomToaster';
@@ -77,7 +77,6 @@ export default function BaseRootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ReactScan />
       <body
         className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} font-sans antialiased` }
         id="base-root-layout"

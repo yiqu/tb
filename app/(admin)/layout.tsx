@@ -10,7 +10,6 @@ import { Geist, Outfit, Merriweather, JetBrains_Mono, Cherry_Bomb_One } from 'ne
 
 import theme from '@/components/ui-mui/mui/theme';
 import AppLayout from '@/components/layout/AppLayout';
-import ReactScan from '@/components/react-scan/ReactScan';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
@@ -65,7 +64,6 @@ export default function AdminRootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ReactScan />
       <body
         className={ `${outfit.variable} ${merriweather.variable} ${jetBrainsMono.variable} ${cherryBombOne.variable} ${geistSans.variable} font-sans antialiased` }
         id="admin-root-layout"

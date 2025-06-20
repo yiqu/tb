@@ -7,7 +7,7 @@ import { Button } from '../ui/button';
 
 export default function CustomToasterCloseButton({ t }: { t: Toast }) {
   return (
-    <Button variant="outline" size="icon" onClick={ () => toast.remove(t.id) }>
+    <Button variant="ghost" size="icon" onClick={ () => toast.remove(t.id) }>
       <X className="size-4" />
     </Button>
   );
