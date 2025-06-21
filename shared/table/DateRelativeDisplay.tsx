@@ -27,5 +27,5 @@ export default function DateRelativeDisplay({
 
   const relativeDate = formatDistanceToNow(time instanceof Date ? time : new Date(Number.parseInt(time)), { addSuffix: true });
 
-  return <Typography>{ includeParenthesis ? `(${prefixText} ${relativeDate})` : `${prefixText} ${relativeDate}` }</Typography>;
+  return <Typography>{ includeParenthesis ? `(${prefixText ? `${prefixText} ` : ''}${relativeDate})` : `${prefixText ? `${prefixText} ` : ''}${relativeDate}` }</Typography>;
 }

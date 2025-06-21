@@ -4,8 +4,10 @@ import { TableCell } from '@/components/ui/table';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import DateDisplay from './DateDisplay';
+import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import BillsTableEditBillButton from './BillsTableEditBillButton';
 import BillsTableTogglePaidButton from './BillsTableTogglePaidButton';
@@ -32,7 +34,9 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
   if (colId === 'id') {
     return (
       <TableCell>
-        <Typography className="truncate">{ billDue.id }</Typography>
+        <Typography className="truncate" title={ billDue.id }>
+          { billDue.id }
+        </Typography>
       </TableCell>
     );
   }
@@ -50,10 +54,17 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
   if (colId === 'dueDate') {
     return (
       <TableCell>
-        <div title={ `${new Date(Number.parseInt(billDue.dueDate)).toLocaleString()}` } className="truncate">
-          <DateDisplay date={ billDue.dueDate } dateFormat="MM/dd/yy" />
-          <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis />
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <div title={ `${new Date(Number.parseInt(billDue.dueDate)).toLocaleString()}` } className={ `cursor-pointer truncate` }>
+              <DateDisplay date={ billDue.dueDate } dateFormat="MM/dd/yy" />
+              <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent>
+            <DateDialogContent dateString={ billDue.dueDate } />
+          </PopoverContent>
+        </Popover>
       </TableCell>
     );
   }
