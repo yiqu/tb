@@ -1,9 +1,11 @@
+import { connection } from 'next/server';
 import { format, formatDistanceToNow } from 'date-fns';
 
 import Typography from '@/components/typography/Typography';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 
-export default function DateDialogContent({ dateString }: { dateString: string }) {
+export default async function DateDialogContent({ dateString }: { dateString: string }) {
+  await connection();
   const dateDisplay = format(new Date(Number.parseInt(dateString)), 'MM/dd/yyyy hh:mm a');
   const relativeDate = formatDistanceToNow(new Date(Number.parseInt(dateString)), { addSuffix: true });
 
