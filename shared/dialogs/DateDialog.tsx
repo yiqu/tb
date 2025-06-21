@@ -1,12 +1,14 @@
+import { DateTime } from 'luxon';
 import { connection } from 'next/server';
 import { format, formatDistanceToNow } from 'date-fns';
 
+import { EST_TIME_ZONE } from '@/lib/general.utils';
 import Typography from '@/components/typography/Typography';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 
 export default async function DateDialogContent({ dateString }: { dateString: string }) {
   await connection();
-  const dateDisplay = format(new Date(Number.parseInt(dateString)), 'MM/dd/yyyy hh:mm a');
+  const dateDisplay = DateTime.fromMillis(Number.parseInt(dateString)).setZone(EST_TIME_ZONE).toLocaleString(DateTime.DATETIME_MED);
   const relativeDate = formatDistanceToNow(new Date(Number.parseInt(dateString)), { addSuffix: true });
 
   return (

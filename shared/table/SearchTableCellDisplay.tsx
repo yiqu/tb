@@ -1,6 +1,9 @@
 /* eslint-disable prefer-destructuring */
 
+import { DateTime } from 'luxon';
+
 import { TableCell } from '@/components/ui/table';
+import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
@@ -56,7 +59,10 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
       <TableCell>
         <Popover>
           <PopoverTrigger asChild>
-            <div title={ `${new Date(Number.parseInt(billDue.dueDate)).toLocaleString()}` } className={ `cursor-pointer truncate` }>
+            <div
+              title={ `${DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toLocaleString(DateTime.DATETIME_MED)}` }
+              className={ `cursor-pointer truncate` }
+            >
               <DateDisplay date={ billDue.dueDate } dateFormat="MM/dd/yy" />
               <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis />
             </div>
