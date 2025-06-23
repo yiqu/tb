@@ -1,20 +1,24 @@
+'use client';
+
+import { useQueryState } from 'nuqs';
 import { Pencil } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
-import EditBillDialogContent from '@/components/bills/EditBillDialogContent';
 
 export default function BillsTableEditBillButton({ billDue }: { billDue: BillDueWithSubscription }) {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="size-6" type="button">
-          <Pencil />
-        </Button>
-      </DialogTrigger>
+  const [, setEditBillId] = useQueryState('editBillId', {
+    history: 'push',
+    scroll: false,
+  });
 
-      <EditBillDialogContent billDue={ billDue } />
-    </Dialog>
+  const handleOnOpenEditDialog = () => {
+    setEditBillId(billDue.id);
+  };
+
+  return (
+    <Button variant="ghost" size="icon" className="size-6" type="button" onClick={ handleOnOpenEditDialog }>
+      <Pencil />
+    </Button>
   );
 }

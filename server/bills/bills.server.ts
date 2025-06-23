@@ -166,3 +166,19 @@ export async function updateBillDue(billDueId: string, data: z.infer<typeof bill
     throw new Error(`Error updating bill due. Code: ${error.code}`);
   }
 }
+
+export async function getBillDueById(billDueId: string): Promise<BillDueWithSubscription | null> {
+  try {
+    const billDue: BillDueWithSubscription | null = await prisma.billDue.findUnique({
+      where: { id: billDueId },
+      include: {
+        subscription: true,
+      },
+    });
+
+    return billDue;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getBillDueById(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving bill due. Code: ${error.code}`);
+  }
+}

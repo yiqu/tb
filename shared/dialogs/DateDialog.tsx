@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { connection } from 'next/server';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import Typography from '@/components/typography/Typography';

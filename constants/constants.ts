@@ -23,6 +23,7 @@ export const FONT_FAMILY_FUN = 'Cherry Bomb One';
 export const FONT_FAMILY_PRIMARY = 'Geist';
 
 export const TANSTACK_QUERY_QUERY_KEY_FIREBASE_USER = 'firebase-user';
+export const TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS = 'bill-due-details';
 
 export const CACHE_TAG_BILL_DUES_ALL = 'bill-dues-all';
 export const CACHE_TAG_USER_ACHIEVEMENTS = 'user-achievements';

@@ -1,14 +1,26 @@
+'use client';
+
+import { ReactNode } from 'react';
 import { X, Save } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
-import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import { getBillDueByIdQueryOptions } from '@/server/bills/query/bills.quey';
 import { DialogClose, DialogTitle, DialogFooter, DialogHeader, DialogContent, DialogDescription } from '@/components/ui/dialog';
 
-import EditBillForm from './EditBillForm';
+import { Alert } from '../alerts/Alert';
+import { Skeleton } from '../ui/skeleton';
+import Typography from '../typography/Typography';
 import EditBillDialogFormWrapper from './EditBillDialogFormWrapper';
 import EditBillDialogResetButton from './EditBillDialogResetButton';
 
-export default function EditBillDialogContent({ billDue }: { billDue: BillDueWithSubscription }) {
+export default function EditBillDialogContent({ billDueId, children }: { billDueId: string; children: ReactNode }) {
+  const { isLoading, isError, error, data } = useQuery({
+    ...getBillDueByIdQueryOptions(billDueId),
+  });
+
+  const isBillLoaded: boolean = !!(!isLoading && data && !isError);
+
   return (
     <DialogContent
       className={ `
@@ -22,29 +34,41 @@ export default function EditBillDialogContent({ billDue }: { billDue: BillDueWit
         <DialogTitle>Edit Bill</DialogTitle>
         <DialogDescription>Make changes to your bill.</DialogDescription>
       </DialogHeader>
-      <EditBillDialogFormWrapper billDue={ billDue }>
-        <div className="px-4">
-          <EditBillForm />
+      { isError ?
+        <div className="flex w-full flex-col">
+          <Alert description={ <Typography>{ error.message }</Typography> } variant="danger" />
         </div>
-        <DialogFooter className={ `
-          mt-4 flex w-full flex-row bg-sidebar p-4
-          sm:items-center sm:justify-between
-        ` }>
-          <DialogClose asChild>
-            <Button variant="outline" type="button">
-              <X />
-              Cancel
-            </Button>
-          </DialogClose>
-          <div className="flex flex-row items-center justify-end gap-x-2">
-            <EditBillDialogResetButton />
-            <Button type="submit" className="w-[90px]" id="edit-bill-dialog-save-button">
-              <Save />
-              Save
-            </Button>
-          </div>
-        </DialogFooter>
-      </EditBillDialogFormWrapper>
+      : null }
+      { isBillLoaded && data ?
+        <EditBillDialogFormWrapper billDue={ data }>
+          <div className="px-4">{ children }</div>
+          <DialogFooter className={ `
+            mt-4 flex w-full flex-row bg-sidebar p-4
+            sm:items-center sm:justify-between
+          ` }>
+            <DialogClose asChild>
+              <Button variant="outline" type="button">
+                <X />
+                Cancel
+              </Button>
+            </DialogClose>
+            <div className="flex flex-row items-center justify-end gap-x-2">
+              <EditBillDialogResetButton />
+              <Button type="submit" className="w-[90px]" id="edit-bill-dialog-save-button">
+                <Save />
+                Save
+              </Button>
+            </div>
+          </DialogFooter>
+        </EditBillDialogFormWrapper>
+      : <div className="mb-4 flex flex-col justify-start gap-y-4 px-4">
+        <Skeleton className="h-[5rem] w-full" />
+        <Skeleton className="h-[5rem] w-full" />
+        <Skeleton className="h-[5rem] w-full" />
+        <Skeleton className="h-[5rem] w-full" />
+        <Skeleton className="h-[10.5rem] w-full" />
+      </div>
+      }
     </DialogContent>
   );
 }
