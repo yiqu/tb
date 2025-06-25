@@ -1,5 +1,6 @@
 'use client';
 
+import toast from 'react-hot-toast';
 /* eslint-disable better-tailwindcss/multiline */
 import { BanknoteArrowUp } from 'lucide-react';
 import { useOptimistic, useTransition } from 'react';
@@ -18,7 +19,8 @@ export default function BillsTableTogglePaidButton({ billDueId, isPaid }: { bill
   const handleOnClick = (isPaid: boolean) => {
     startTransition(async () => {
       setOptimisticIsPaid(!isPaid);
-      await updateIsBillDuePaid(billDueId, !isPaid);
+      const res = await updateIsBillDuePaid(billDueId, !isPaid);
+      toast.success(`${res.paid ? 'Marked as paid.' : 'Marked as unpaid.'}`);
     });
   };
 

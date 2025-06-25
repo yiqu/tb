@@ -158,7 +158,7 @@
     "better-tailwindcss/multiline": ["warn", { "printWidth": 140, "lineBreakStyle": "windows" }],
     "better-tailwindcss/no-unnecessary-whitespace": ["warn"],
     "better-tailwindcss/no-duplicate-classes": ["warn"],
-    "better-tailwindcss/sort-classes": ["warn", { "order": "official" }]
+    "better-tailwindcss/sort-classes": ["off", { "order": "official" }]
   },
   "settings": {
     "better-tailwindcss": {

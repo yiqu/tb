@@ -1,11 +1,13 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { X, Save } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { X, Save, RefreshCcw } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { getBillDueByIdQueryOptions } from '@/server/bills/query/bills.quey';
+import { TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
 import { DialogClose, DialogTitle, DialogFooter, DialogHeader, DialogContent, DialogDescription } from '@/components/ui/dialog';
 
 import { Alert } from '../alerts/Alert';
@@ -15,11 +17,23 @@ import EditBillDialogFormWrapper from './EditBillDialogFormWrapper';
 import EditBillDialogResetButton from './EditBillDialogResetButton';
 
 export default function EditBillDialogContent({ billDueId, children }: { billDueId: string; children: ReactNode }) {
-  const { isLoading, isError, error, data } = useQuery({
+  const queryClient = useQueryClient();
+  const { isLoading, isError, error, data, isFetching } = useQuery({
     ...getBillDueByIdQueryOptions(billDueId),
   });
 
   const isBillLoaded: boolean = !!(!isLoading && data && !isError);
+  const isBillLoading: boolean = isLoading || isFetching;
+
+  const handleOnRefetch = () => {
+    queryClient.invalidateQueries({
+      queryKey: [
+        {
+          [TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS]: billDueId,
+        },
+      ],
+    });
+  };
 
   return (
     <DialogContent
@@ -32,7 +46,12 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
     >
       <DialogHeader className="px-4">
         <DialogTitle>Edit Bill</DialogTitle>
-        <DialogDescription>Make changes to your bill.</DialogDescription>
+        <DialogDescription className="flex flex-row items-center justify-start gap-x-1">
+          Make changes to your bill.
+          <Button variant="ghost" size="icon" onClick={ handleOnRefetch }>
+            <RefreshCcw className={ cn({ 'animate-spin': isFetching }) } />
+          </Button>
+        </DialogDescription>
       </DialogHeader>
       { isError ?
         <div className="flex w-full flex-col">
@@ -54,7 +73,7 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
             </DialogClose>
             <div className="flex flex-row items-center justify-end gap-x-2">
               <EditBillDialogResetButton />
-              <Button type="submit" className="w-[90px]" id="edit-bill-dialog-save-button">
+              <Button type="submit" className="w-[90px]" id="edit-bill-dialog-save-button" disabled={ isBillLoading }>
                 <Save />
                 Save
               </Button>

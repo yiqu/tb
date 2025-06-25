@@ -3,16 +3,22 @@
 import z from 'zod';
 import { ReactNode } from 'react';
 import toast from 'react-hot-toast';
+import confetti from 'canvas-confetti';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { updateBillDue } from '@/server/bills/bills.server';
 import { billEditableSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import { TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
 
 import { Form } from '../ui/form';
 
 export default function EditBillDialogFormWrapper({ children, billDue }: { children: ReactNode; billDue: BillDueWithSubscription }) {
+  const queryClient = useQueryClient();
+  const nav = useRouter();
   const billCost: number = billDue.cost === null ? billDue.subscription.cost : billDue.cost;
 
   const methods = useForm<z.infer<typeof billEditableSchema>>({
@@ -54,6 +60,17 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
         if (submitButton) {
           submitButton.disabled = false;
         }
+        queryClient.invalidateQueries({
+          queryKey: [
+            {
+              [TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS]: billDue.id,
+            },
+          ],
+        });
+        confetti({
+          particleCount: 50,
+        });
+        nav.push('/bills');
         return `${res.subscription.name}'s bill updated successfully.`;
       },
       error: (error: Error) => {

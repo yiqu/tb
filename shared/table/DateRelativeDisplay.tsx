@@ -10,10 +10,14 @@ export default function DateRelativeDisplay({
   time,
   includeParenthesis = false,
   prefixText = '',
+  postFixText = '',
+  addSuffix = true,
 }: {
   time: Date | string | null;
   includeParenthesis?: boolean;
   prefixText?: string;
+  postFixText?: string;
+  addSuffix?: boolean;
 }) {
   const isClient = useIsClient();
 
@@ -25,7 +29,13 @@ export default function DateRelativeDisplay({
     return <Typography>N/A</Typography>;
   }
 
-  const relativeDate = formatDistanceToNow(time instanceof Date ? time : new Date(Number.parseInt(time)), { addSuffix: true });
+  const relativeDate = formatDistanceToNow(time instanceof Date ? time : new Date(Number.parseInt(time)), { addSuffix: addSuffix });
 
-  return <Typography>{ includeParenthesis ? `(${prefixText ? `${prefixText} ` : ''}${relativeDate})` : `${prefixText ? `${prefixText} ` : ''}${relativeDate}` }</Typography>;
+  return (
+    <Typography>
+      { includeParenthesis ?
+        `(${prefixText ? `${prefixText} ` : ''}${relativeDate}${postFixText ? ` ${postFixText}` : ''})`
+      : `${prefixText ? `${prefixText} ` : ''}${relativeDate}${postFixText ? ` ${postFixText}` : ''}` }
+    </Typography>
+  );
 }

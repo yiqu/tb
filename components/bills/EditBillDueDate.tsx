@@ -35,7 +35,12 @@ export default function EditBillDueDate() {
           { isDueInFuture ?
             <Calendar className="size-4" />
           : <CircleAlert className="size-4 text-yellow-600" /> }
-          <DateRelativeDisplay time={ dueDate } prefixText={ isDueInFuture ? 'Due' : 'Past due' } />
+          <DateRelativeDisplay
+            time={ dueDate }
+            addSuffix={ false }
+            postFixText={ isDueInFuture ? '' : 'past due!' }
+            prefixText={ isDueInFuture ? 'Due in' : '' }
+          />
         </div>
       : null }
     </div>
