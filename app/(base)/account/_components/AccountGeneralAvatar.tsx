@@ -18,19 +18,19 @@ export default function AccountGeneralAvatar() {
           <Typography variant="body1">Select an avatar for your account.</Typography>
         </CardDescription>
       </CardHeader>
-      <Suspense fallback={ <AvatarSelectionSkeleton /> }>
-        <CardContent>
+      <CardContent>
+        <Suspense fallback={ <AvatarSelectionSkeleton /> }>
           <AccountGeneralAvatarSelectionWrapper />
-        </CardContent>
-      </Suspense>
+        </Suspense>
+      </CardContent>
     </DisplayCard>
   );
 }
 
 function AvatarSelectionSkeleton() {
   return (
-    <div className="min-h-[288px] w-full">
+    <section className="h-[296px] w-full">
       <Skeleton className="h-full w-full" />
-    </div>
+    </section>
   );
 }

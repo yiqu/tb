@@ -13,5 +13,5 @@ export default function AccountLeftNavIsAdminDisplayWrapper() {
 }
 
 function AccountLeftNavIsAdminDisplaySkeleton() {
-  return <Skeleton className="h-10 w-full" />;
+  return <Skeleton className="h-[25.3px] w-full" />;
 }

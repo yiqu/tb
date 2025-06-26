@@ -24,7 +24,7 @@ export default function AccountLocalstorageSizeInfo() {
           </Typography>
         </section>
         <section>
-          <Skeleton className="h-15 w-[212px]" />
+          <Skeleton className="h-15 w-full" />
         </section>
         <BorderBeam duration={ 10 } size={ 400 } className="from-transparent via-[#53ff1a] to-transparent" />
         <BorderBeam duration={ 10 } delay={ 3 } size={ 400 } className="from-transparent via-[#6600ff] to-transparent" />
@@ -47,13 +47,7 @@ export default function AccountLocalstorageSizeInfo() {
       /> */ }
       <section className="flex flex-row items-center justify-between">
         <Typography variant="body0" className="font-semibold">
-          <ScrambleHover
-            text={ 'Local Storage Usage' }
-            scrambleSpeed={ 50 }
-            maxIterations={ 8 }
-            useOriginalCharsOnly={ true }
-            className=""
-          />
+          <ScrambleHover text={ 'Local Storage Usage' } scrambleSpeed={ 50 } maxIterations={ 8 } useOriginalCharsOnly={ true } className="" />
         </Typography>
       </section>
       <section className={ `flex w-full flex-col items-start justify-start gap-y-2` }>

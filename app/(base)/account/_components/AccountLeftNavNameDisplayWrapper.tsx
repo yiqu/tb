@@ -13,5 +13,5 @@ export default function AccountLeftNavNameDisplayWrapper() {
 }
 
 function AccountLeftNavNameDisplaySkeleton() {
-  return <Skeleton className="h-10 w-full" />;
+  return <Skeleton className="h-7 w-full" />;
 }

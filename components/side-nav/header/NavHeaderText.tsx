@@ -5,7 +5,6 @@ import { Suspense } from 'react';
 
 import { cn } from '@/lib/utils';
 import { appName } from '@/constants/constants';
-import { Skeleton } from '@/components/ui/skeleton';
 import useSideBarState from '@/hooks/useSideBarState';
 import RandomLetterSwapPingPong from '@/fancy/components/text/random-letter-swap-pingpong-anim';
 
@@ -29,5 +28,5 @@ export default function NavHeaderText() {
 }
 
 function NavHeaderTextSuspended() {
-  return <Skeleton className="h-24 w-full rounded-full" />;
+  return <div className="mb-2 tracking-wide">{ appName ?? 'Reimbursement' }</div>;
 }
