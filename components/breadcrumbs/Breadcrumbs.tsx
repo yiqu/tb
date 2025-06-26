@@ -13,7 +13,9 @@ export default function Breadcrumbs() {
     <BreadcrumbsList>
       <HomeSegment />
       <BreadcrumbSeparator />
-      <BreadcrumbSegments />
+      <Suspense>
+        <BreadcrumbSegments />
+      </Suspense>
       <Suspense fallback={ <Skeleton className="h-4 w-4 rounded-full" /> }>
         <BreadcrumbCopyUrl />
       </Suspense>
