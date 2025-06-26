@@ -19,7 +19,6 @@ export default function BreadcrumbSegments() {
       { paths.map((path, index) => {
         const href = `/${paths.slice(0, index + 1).join('/')}`;
         const isLast = index === paths.length - 1;
-
         return (
           <React.Fragment key={ path }>
             { isLast ?

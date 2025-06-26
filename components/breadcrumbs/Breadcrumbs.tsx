@@ -13,7 +13,7 @@ export default function Breadcrumbs() {
     <BreadcrumbsList>
       <HomeSegment />
       <BreadcrumbSeparator />
-      <Suspense>
+      <Suspense fallback={ <Skeleton className="h-6 w-[45px] rounded-md" /> }>
         <BreadcrumbSegments />
       </Suspense>
       <Suspense fallback={ <Skeleton className="h-4 w-4 rounded-full" /> }>
