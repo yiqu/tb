@@ -1,8 +1,11 @@
 /* eslint-disable better-tailwindcss/multiline */
 'use client';
 
+import { Suspense } from 'react';
+
 import { cn } from '@/lib/utils';
 import { appName } from '@/constants/constants';
+import { Skeleton } from '@/components/ui/skeleton';
 import useSideBarState from '@/hooks/useSideBarState';
 import RandomLetterSwapPingPong from '@/fancy/components/text/random-letter-swap-pingpong-anim';
 
@@ -17,8 +20,14 @@ export default function NavHeaderText() {
           isSidebarCollapsed ? 'invisible translate-x-8 opacity-0' : `visible translate-x-0 opacity-100`,
         ) }
       >
-        <RandomLetterSwapPingPong label={ appName ?? 'Reimbursement' } reverse={ false } />
+        <Suspense fallback={ <NavHeaderTextSuspended /> }>
+          <RandomLetterSwapPingPong label={ appName ?? 'Reimbursement' } reverse={ false } />
+        </Suspense>
       </div>
     </div>
   );
+}
+
+function NavHeaderTextSuspended() {
+  return <Skeleton className="h-24 w-full rounded-full" />;
 }

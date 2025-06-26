@@ -3,14 +3,17 @@ import { SidebarMenu, SidebarGroup, SidebarGroupLabel } from '@/components/ui/si
 
 import HistoryParentItem from './HistoryParentItem';
 import FavoriteParentItem from './FavoriteParentItem';
+import { getSidebarCollapsableState } from '../utils/sidebar-cookies';
 
-export function QuickAccessGroup({ collapsableState }: { collapsableState: SidebarCollapsableState }) {
+export async function QuickAccessGroup() {
+  const sidebarCollapsableState: SidebarCollapsableState = await getSidebarCollapsableState();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Quick Access</SidebarGroupLabel>
       <SidebarMenu className="app-sidebar-menu gap-2">
-        <FavoriteParentItem collapsableState={ collapsableState } />
-        <HistoryParentItem collapsableState={ collapsableState } />
+        <FavoriteParentItem collapsableState={ sidebarCollapsableState } />
+        <HistoryParentItem collapsableState={ sidebarCollapsableState } />
       </SidebarMenu>
     </SidebarGroup>
   );

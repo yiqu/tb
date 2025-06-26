@@ -1,5 +1,3 @@
-import { Suspense } from 'react';
-
 import { getAvatarImgUrlById } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserProfile } from '@/models/user/user.model';
@@ -23,9 +21,5 @@ export default async function FooterAvatarLogoSuspended() {
   const avatarImgUrl: string = getAvatarImgUrlById(avatarId);
   const user: UserProfile | null = await getUserCached();
 
-  return (
-    <Suspense fallback={ <Skeleton className="h-8 w-11 rounded-full" /> }>
-      <FooterAvatarLogo avatarImgUrl={ avatarImgUrl } user={ user } />
-    </Suspense>
-  );
+  return <FooterAvatarLogo avatarImgUrl={ avatarImgUrl } user={ user } />;
 }

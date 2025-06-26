@@ -90,9 +90,7 @@ export default function BaseRootLayout({
                 <ReactQueryDevtools initialIsOpen={ false } />
                 <ThemeProvider attribute="class" defaultTheme="light" enableSystem={ false } disableTransitionOnChange storageKey="app-theme">
                   <TooltipProvider delayDuration={ 0 }>
-                    <Suspense>
-                      <AppLayout>{ children }</AppLayout>
-                    </Suspense>
+                    <AppLayout>{ children }</AppLayout>
                     <CustomToaster />
                   </TooltipProvider>
                 </ThemeProvider>

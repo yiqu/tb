@@ -4,9 +4,9 @@ import DisplayCard from '@/shared/components/DisplayCard';
 
 export default function BillsTableSkeleton() {
   return (
-    <DisplayCard className="w-full">
-      <CardContent>
-        <Skeleton className="h-[20rem] w-full" />
+    <DisplayCard className="h-[calc(100dvh-20rem)] w-full">
+      <CardContent className="h-full w-full">
+        <Skeleton className="h-full w-full" />
       </CardContent>
     </DisplayCard>
   );
