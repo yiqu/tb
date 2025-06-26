@@ -12,13 +12,7 @@ import { LinkItem, NestNavListItem } from '@/models/NavItem.models';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { setSidebarCollapsableStateAction } from '@/server/sidebar/sidebar-actions';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import {
-  SidebarMenuSub,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-} from '@/components/ui/sidebar';
+import { SidebarMenuSub, SidebarMenuItem, SidebarMenuButton, SidebarMenuSubItem, SidebarMenuSubButton } from '@/components/ui/sidebar';
 
 import { Skeleton } from '../ui/skeleton';
 import { Separator } from '../ui/separator';
@@ -82,12 +76,7 @@ export default function NavExpandableItem({ item, isCollapsed }: NavExpandableIt
       <SidebarMenuItem>
         <Popover open={ isCollapsedMenuOpen } onOpenChange={ setIsCollapsedMenuOpen }>
           <PopoverTrigger asChild>
-            <MenuItemButton
-              onMouseEnter={ handleMouseEnter }
-              onMouseLeave={ handleMouseLeave }
-              className="cursor-pointer"
-              item={ item }
-            >
+            <MenuItemButton onMouseEnter={ handleMouseEnter } onMouseLeave={ handleMouseLeave } className="cursor-pointer" item={ item }>
               { item.icon ?
                 <item.icon />
               : null }
@@ -109,12 +98,7 @@ export default function NavExpandableItem({ item, isCollapsed }: NavExpandableIt
 
   // Default collapsible behavior when not collapsed
   return (
-    <Collapsible
-      asChild
-      open={ collapsedStateOptimistic }
-      className={ `group/collapsible` }
-      onOpenChange={ handleOnOpenChange }
-    >
+    <Collapsible asChild open={ collapsedStateOptimistic } className={ `group/collapsible` } onOpenChange={ handleOnOpenChange }>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <MenuItemButton item={ item }>
@@ -124,10 +108,7 @@ export default function NavExpandableItem({ item, isCollapsed }: NavExpandableIt
             <span>{ item.title }</span>
             { isPending ?
               <Skeleton className="ml-auto h-4 w-4" />
-            : <ChevronRight
-                className={ `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90` }
-              />
-            }
+            : <ChevronRight className={ `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90` } /> }
           </MenuItemButton>
         </CollapsibleTrigger>
         <CollapsibleContent>

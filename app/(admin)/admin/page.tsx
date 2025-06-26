@@ -5,6 +5,6 @@ interface SearchPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function AdminPage({}: SearchPageProps) {
+export default function AdminPage({}: SearchPageProps) {
   return <AdminPanel />;
 }

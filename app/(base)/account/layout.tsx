@@ -19,7 +19,7 @@ import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 //   description: '',
 // };
 
-export default async function AccountLayout({ content }: { children: React.ReactNode; content: React.ReactNode }) {
+export default function AccountLayout({ content }: { children: React.ReactNode; content: React.ReactNode }) {
   return (
     <div id="account-layout-parent">
       <LayoutParent>

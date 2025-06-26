@@ -18,7 +18,7 @@ interface AccountContentLayoutProps {
   params: Promise<{ any: string }>;
 }
 
-export default async function AccountContentLayout({ children }: AccountContentLayoutProps) {
+export default function AccountContentLayout({ children }: AccountContentLayoutProps) {
   return (
     <LayoutWithGutter size="med">
       <div className="h-full w-full">

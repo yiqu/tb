@@ -8,19 +8,8 @@ import { Folder, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LinkItem, LeftNavItem } from '@/models/NavItem.models';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  useSidebar,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuAction,
-  SidebarGroupLabel,
-} from '@/components/ui/sidebar';
+import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useSidebar, SidebarMenu, SidebarMenuItem, SidebarMenuAction, SidebarGroupLabel } from '@/components/ui/sidebar';
 
 import CollapsedMenuButton from '../CollapsedMenuButton';
 
@@ -94,13 +83,7 @@ export default function NavItemAddNewBoba() {
             <PopoverTrigger asChild>
               <CollapsedMenuButton item={ NEW_ITEM } onMouseEnter={ handleMouseEnter } onMouseLeave={ handleMouseLeave } />
             </PopoverTrigger>
-            <PopoverContent
-              side="right"
-              align="start"
-              className="w-48 p-2"
-              onMouseEnter={ handleMouseEnter }
-              onMouseLeave={ handleMouseLeave }
-            >
+            <PopoverContent side="right" align="start" className="w-48 p-2" onMouseEnter={ handleMouseEnter } onMouseLeave={ handleMouseLeave }>
               <div className="mb-2 text-sm font-medium"> New Boba Tea</div>
               <div className="space-y-1">
                 { BOBA_TEA_CATEGORIES.map((subItem: LinkItem) => (
