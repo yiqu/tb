@@ -93,6 +93,14 @@ export async function getAllBills(sortData: SortDataModel | null): Promise<BillD
           }
         }
 
+        if (sortData.sortField === 'frequency') {
+          if (sortData.sortDirection === 'asc') {
+            return a.subscription.billCycleDuration.toLowerCase() > b.subscription.billCycleDuration.toLowerCase() ? 1 : -1;
+          } else if (sortData.sortDirection === 'desc') {
+            return a.subscription.billCycleDuration.toLowerCase() < b.subscription.billCycleDuration.toLowerCase() ? 1 : -1;
+          }
+        }
+
         return a[sortData.sortField] > b[sortData.sortField] ? 1 : -1;
       }
 

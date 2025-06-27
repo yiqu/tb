@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { Info, Brush, Shield, Settings, UserRound, ScrollText, Presentation } from 'lucide-react';
 
 import { DropdownMenuItem, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -13,8 +14,12 @@ export default function FooterMenuContent() {
     <FooterMenuContentWrapper>
       <DropdownMenuLabel className="p-0 font-normal">
         <div className={ `flex items-center gap-2 px-1 py-1.5` }>
-          <FooterAvatarLogo />
-          <FooterAvatarText />
+          <Suspense>
+            <FooterAvatarLogo />
+          </Suspense>
+          <Suspense>
+            <FooterAvatarText />
+          </Suspense>
         </div>
       </DropdownMenuLabel>
 
@@ -42,7 +47,6 @@ export default function FooterMenuContent() {
         </DropdownMenuItem>
       </DropdownMenuGroup>
 
-
       <DropdownMenuGroup>
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link href={ `/changelog` } prefetch={ true }>
@@ -58,7 +62,6 @@ export default function FooterMenuContent() {
           </Link>
         </DropdownMenuItem>
       </DropdownMenuGroup>
-
 
       <DropdownMenuGroup>
         <DropdownMenuItem asChild className="cursor-pointer">

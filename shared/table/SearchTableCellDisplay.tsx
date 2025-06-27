@@ -1,15 +1,20 @@
 /* eslint-disable prefer-destructuring */
 
+import Link from 'next/link';
+import Image from 'next/image';
 import { DateTime } from 'luxon';
+import startCase from 'lodash/startCase';
 
 import { TableCell } from '@/components/ui/table';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import DateDisplay from './DateDisplay';
+import { getFrequencyImageUrl } from './table.utils';
 import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import BillsTableEditBillButton from './BillsTableEditBillButton';
@@ -29,7 +34,20 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
 
     return (
       <TableCell>
-        <Typography className="truncate">{ useFormatter.format(cost) }</Typography>
+        <div className={ `
+          flex flex-row items-center justify-start gap-x-1
+          sec:gap-x-1
+          two:gap-x-6
+        ` }>
+          <Image
+            src={ getFrequencyImageUrl(billDue.subscription.billCycleDuration) }
+            alt="Frequency"
+            width={ 22 }
+            height={ 22 }
+            className="opacity-90"
+          />
+          <Typography className="truncate">{ useFormatter.format(cost) }</Typography>
+        </div>
       </TableCell>
     );
   }
@@ -40,6 +58,15 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
         <Typography className="truncate" title={ billDue.id }>
           { billDue.id }
         </Typography>
+      </TableCell>
+    );
+  }
+
+  if (colId === 'frequency') {
+    const freq: string = billDue.subscription.billCycleDuration;
+    return (
+      <TableCell>
+        <Typography className="truncate">{ startCase(freq) }</Typography>
       </TableCell>
     );
   }
@@ -61,7 +88,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
           <PopoverTrigger asChild>
             <div
               title={ `${DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toLocaleString(DateTime.DATETIME_MED)}` }
-              className={ `cursor-pointer truncate` }
+              className={ `flex cursor-pointer flex-col gap-y-1 truncate` }
             >
               <DateDisplay date={ billDue.dueDate } dateFormat="MM/dd/yy" />
               <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis />
@@ -97,7 +124,9 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const subName = billDue.subscription.name;
     return (
       <TableCell>
-        <Typography className="truncate">{ subName }</Typography>
+        <Link href={ `/subscriptions/${billDue.subscription.id}` } prefetch>
+          <CenterUnderline label={ subName } />
+        </Link>
       </TableCell>
     );
   }
@@ -105,17 +134,35 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
   if (colId === 'updatedAt') {
     return (
       <TableCell>
-        <div title={ `${billDue.updatedAt}` } className="truncate">
-          <DateDisplay date={ billDue.updatedAt } dateFormat="MM/dd/yy" />
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <div
+              title={ `${DateTime.fromISO(new Date(billDue.updatedAt ?? '').toISOString())
+                .setZone(EST_TIME_ZONE)
+                .toLocaleString(DateTime.DATETIME_MED)}` }
+              className={ `flex cursor-pointer flex-col gap-y-1 truncate` }
+            >
+              <DateDisplay date={ billDue.updatedAt } dateFormat="MM/dd/yy" />
+              <DateRelativeDisplay time={ billDue.updatedAt } includeParenthesis />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent>
+            <DateDialogContent
+              dateString={ DateTime.fromISO(new Date(billDue.updatedAt ?? '').toISOString())
+                .setZone(EST_TIME_ZONE)
+                .toMillis()
+                .toString() }
+            />
+          </PopoverContent>
+        </Popover>
       </TableCell>
     );
   }
 
   if (colId === 'actions') {
     return (
-      <TableCell className="text-center">
-        <div className="flex w-full flex-row items-center justify-center gap-x-1">
+      <TableCell className="">
+        <div className="flex w-full flex-row items-center justify-start gap-x-1">
           <BillsTableEditBillButton billDue={ billDue } />
           <BillsTableDeleteBillButton />
         </div>

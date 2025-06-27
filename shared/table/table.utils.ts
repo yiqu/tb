@@ -5,7 +5,8 @@ export type SearchTableColumn = {
 
 export const SEARCH_TABLE_COLUMN_IDS: SearchTableColumn[] = [
   { headerId: 'cost', ordinal: 0 },
-  { headerId: 'id', ordinal: 7 },
+  { headerId: 'frequency', ordinal: 0.5 },
+  // { headerId: 'id', ordinal: 7 },
   { headerId: 'dateAdded', ordinal: 5 },
   { headerId: 'dueDate', ordinal: 2 },
   { headerId: 'paid', ordinal: 3 },
@@ -27,18 +28,20 @@ export const getSearchTableColumnWidth = (columnId: string): string | undefined 
 export const SEARCH_TABLE_COLUMN_WIDTH = {
   id: '4rem',
   cost: '11rem',
+  frequency: '7rem',
   dueDate: '14rem',
   subscription: '20rem',
   updatedAt: '10rem',
-  actions: '5rem',
+  actions: '7rem',
   dateAdded: '10rem',
-  paid: '10rem',
-  reimbursed: '10rem',
+  paid: '5rem',
+  reimbursed: '7rem',
 };
 
 export const SEARCH_TABLE_COLUMN_TEXT = {
   cost: 'Cost',
   id: 'ID',
+  frequency: 'Frequency',
   dateAdded: 'Date Added',
   dueDate: 'Due Date',
   paid: 'Paid',
@@ -49,7 +52,7 @@ export const SEARCH_TABLE_COLUMN_TEXT = {
 };
 
 export type SortDirection = 'asc' | 'desc' | '';
-export type SortField = 'id' | 'dateAdded' | 'dueDate' | 'paid' | 'reimbursed' | 'subscription' | 'updatedAt' | '';
+export type SortField = 'id' | 'dateAdded' | 'dueDate' | 'paid' | 'reimbursed' | 'subscription' | 'updatedAt' | 'frequency' | '';
 export type SortData = {
   sort: SortField;
   direction: SortDirection;
@@ -82,3 +85,18 @@ export function getNextSortDirection(currentSortData: SortData, nextSortField: S
 }
 
 export function getSearchTableColumns() {}
+
+export function getFrequencyImageUrl(frequency: string): string {
+  switch (frequency) {
+    case 'monthly':
+      return '/frequency/month.png';
+    case 'yearly':
+      return '/frequency/year.png';
+    case 'once': {
+      return '/frequency/once.png';
+    }
+    default: {
+      return '';
+    }
+  }
+}

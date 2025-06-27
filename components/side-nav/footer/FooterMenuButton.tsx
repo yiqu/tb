@@ -20,7 +20,9 @@ export function FooterMenuButton() {
         <Suspense fallback={ <FooterAvatarLogoSuspended /> }>
           <FooterAvatarLogo />
         </Suspense>
-        <FooterAvatarText />
+        <Suspense fallback={ <FooterAvatarTextSuspended /> }>
+          <FooterAvatarText />
+        </Suspense>
         <ChevronsUpDown className="ml-auto size-4" />
       </SidebarMenuButton>
     </DropdownMenuTrigger>
@@ -29,4 +31,13 @@ export function FooterMenuButton() {
 
 function FooterAvatarLogoSuspended() {
   return <Skeleton className="size-8 rounded-full" />;
+}
+
+function FooterAvatarTextSuspended() {
+  return (
+    <section className="flex w-full flex-col gap-1">
+      <Skeleton className="h-[17.5px] w-[100px]" />
+      <Skeleton className="h-[12px] w-full" />
+    </section>
+  );
 }

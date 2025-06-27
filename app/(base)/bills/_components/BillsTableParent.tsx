@@ -19,13 +19,16 @@ export default async function BillsTableParent() {
   const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
   return (
-    <DisplayCard className="w-full">
-      <CardContent className="overflow-x-auto">
+    <DisplayCard className="w-full py-0">
+      <CardContent className="overflow-x-auto px-0">
         <Table className={ `
           table-auto
           two:table-fixed
         ` }>
-          <TableHeader className="bg-background">
+          <TableHeader className={ `
+            bg-sidebar-accent/70
+            dark:bg-sidebar-accent/100
+          ` }>
             <TableRow className="hover:bg-transparent">
               { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {
                 return (

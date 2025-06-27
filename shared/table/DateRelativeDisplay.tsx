@@ -22,7 +22,7 @@ export default function DateRelativeDisplay({
   const isClient = useIsClient();
 
   if (!isClient) {
-    return <Skeleton className="h-6 w-full" />;
+    return <Skeleton className="h-6 w-[50%]" />;
   }
 
   if (!time) {

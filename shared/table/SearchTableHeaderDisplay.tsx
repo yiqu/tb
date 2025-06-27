@@ -59,13 +59,12 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
 
   return (
     <TableHead
-      className={ cn('cursor-pointer truncate hover:bg-sidebar dark:hover:bg-secondary', {
-        'rounded-tl-lg': index === 0,
-        'rounded-tr-lg': index === length - 1,
+      className={ cn('cursor-pointer truncate hover:bg-sidebar-accent/70 dark:hover:bg-[#65574e]', {
+        'rounded-tl-md': index === 0,
+        'rounded-tr-md': index === length - 1,
       }) }
       style={ {
         width: SEARCH_TABLE_COLUMN_WIDTH[columnId],
-        //maxWidth: SEARCH_TABLE_COLUMN_WIDTH[columnId],
       } }
       onClick={ handleOnHeaderClick.bind(null, columnId) }
     >
@@ -81,24 +80,24 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
         </Typography>
         <div className="flex flex-row items-center justify-end gap-x-1">
           { isPending ?
-            <LoaderCircle className="size-3 animate-spin text-gray-300 dark:text-gray-600" />
+            <LoaderCircle className="size-3 animate-spin text-gray-500/70 dark:text-gray-200/30" />
           : null }
           { isColumnSorted ?
             <>
               { sortDirection === 'asc' ?
                 <ChevronUp
                   className={ cn('size-4', {
-                    'text-yellow-700': isPending,
+                    'dark:text-gray-200/90': isPending,
                   }) }
                 />
               : <ChevronDown
                   className={ cn('size-4', {
-                    'text-yellow-700': isPending,
+                    'dark:text-gray-200/90': isPending,
                   }) }
                 />
               }
             </>
-          : <ChevronsUpDown className="size-4 min-w-4 text-gray-300/60 dark:text-gray-600/30" /> }
+          : <ChevronsUpDown className="size-4 min-w-4 text-gray-300/60 dark:text-gray-500/30" /> }
         </div>
       </span>
     </TableHead>

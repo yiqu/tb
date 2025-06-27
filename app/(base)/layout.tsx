@@ -5,7 +5,6 @@ import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
-import { Suspense } from 'react';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Geist, Borel, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One } from 'next/font/google';
@@ -69,6 +68,8 @@ export const metadata: Metadata = {
   },
   description: '',
 };
+
+export const experimental_ppr = true;
 
 export default function BaseRootLayout({
   children,

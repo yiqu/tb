@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description: 'View all of your bills.',
 };
 
+export const experimental_ppr = true;
+
 export default function AllBillsLayout({ children }: { children: ReactNode; params: Promise<any> }) {
   return (
     <div id="bills-layout-parent">

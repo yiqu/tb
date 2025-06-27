@@ -220,7 +220,7 @@
 
 @layer link-color-utils {
   :root {
-    --link-internal: #3b673f;
+    --link-internal: #549259;
     --link-external-foreground: #2c58a8;
   }
   .dark {

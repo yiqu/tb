@@ -19,6 +19,8 @@ import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 //   description: '',
 // };
 
+export const experimental_ppr = true;
+
 export default function AccountLayout({ content }: { children: React.ReactNode; content: React.ReactNode }) {
   return (
     <div id="account-layout-parent">

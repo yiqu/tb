@@ -10,7 +10,7 @@ export default function DateDisplay({ date, dateFormat = 'MM/dd/yyyy hh:mm a' }:
   const isClient = useIsClient();
 
   if (!isClient) {
-    return <Skeleton className="h-6 w-full" />;
+    return <Skeleton className="h-6 w-[50%]" />;
   }
 
   if (!date) {
