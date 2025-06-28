@@ -70,7 +70,9 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
         confetti({
           particleCount: 50,
         });
-        nav.push('/bills');
+        nav.push('/bills', {
+          scroll: false,
+        });
         return `${res.subscription.name}'s bill updated successfully.`;
       },
       error: (error: Error) => {

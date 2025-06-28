@@ -1,6 +1,5 @@
 @import 'tailwindcss';
-
-@plugin "tailwindcss-animate";
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -53,7 +52,7 @@
   /* xl: max size of primary monitor */
   --breakpoint-xl: 2560px;
   --breakpoint-main: 2560px;
-  
+
   --breakpoint-two: 2000px;
 
   --font-sans: var(--font-geist-sans);

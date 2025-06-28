@@ -30,12 +30,12 @@ export default function BillsTableTogglePaidButton({ billDueId, isPaid }: { bill
       variant="ghost"
       onClick={ handleOnClick.bind(null, optimisticIsPaid) }
       type="button"
-      className={ cn({
-        'border-1 border-green-500/20 dark:border-green-500/20': isPending,
+      className={ cn('size-12', {
+        'border-1 border-green-500/20 dark:border-green-500/20': isPending && optimisticIsPaid,
       }) }
     >
       <BanknoteArrowUp
-        className={ cn(`size-6 text-muted dark:text-gray-500/60`, {
+        className={ cn(`size-10 text-muted dark:text-gray-500/60`, {
           'text-green-600 dark:text-green-500': optimisticIsPaid,
         }) }
       />

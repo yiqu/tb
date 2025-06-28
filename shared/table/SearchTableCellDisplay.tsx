@@ -88,7 +88,10 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
           <PopoverTrigger asChild>
             <div
               title={ `${DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toLocaleString(DateTime.DATETIME_MED)}` }
-              className={ `flex cursor-pointer flex-col gap-y-1 truncate` }
+              className={ `
+                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+                hover:border-border hover:bg-accent
+              ` }
             >
               <DateDisplay date={ billDue.dueDate } dateFormat="MM/dd/yy" />
               <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis />
@@ -140,7 +143,10 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
               title={ `${DateTime.fromISO(new Date(billDue.updatedAt ?? '').toISOString())
                 .setZone(EST_TIME_ZONE)
                 .toLocaleString(DateTime.DATETIME_MED)}` }
-              className={ `flex cursor-pointer flex-col gap-y-1 truncate` }
+              className={ `
+                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+                hover:border-border hover:bg-accent
+              ` }
             >
               <DateDisplay date={ billDue.updatedAt } dateFormat="MM/dd/yy" />
               <DateRelativeDisplay time={ billDue.updatedAt } includeParenthesis />
@@ -164,7 +170,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
       <TableCell className="">
         <div className="flex w-full flex-row items-center justify-start gap-x-1">
           <BillsTableEditBillButton billDue={ billDue } />
-          <BillsTableDeleteBillButton />
+          <BillsTableDeleteBillButton billDue={ billDue } />
         </div>
       </TableCell>
     );

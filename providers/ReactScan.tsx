@@ -11,11 +11,13 @@ export default function ReactScan(): ReactNode {
   // const isClient = useIsClient();
 
   useEffect(() => {
-    scan({
-      enabled: process.env.NODE_ENV === 'development',
-      showFPS: true,
-      showToolbar: true,
-    });
+    if (process.env.NODE_ENV === 'development') {
+      scan({
+        enabled: process.env.NODE_ENV === 'development',
+        showFPS: true,
+        showToolbar: true,
+      });
+    }
   }, []);
 
   return <></>;

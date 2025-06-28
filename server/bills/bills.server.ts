@@ -190,3 +190,21 @@ export async function getBillDueById(billDueId: string): Promise<BillDueWithSubs
     throw new Error(`Error retrieving bill due. Code: ${error.code}`);
   }
 }
+
+export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubscription> {
+  try {
+    const billDue: BillDueWithSubscription = await prisma.billDue.delete({
+      where: { id: billDueId },
+      include: {
+        subscription: true,
+      },
+    });
+
+    revalidateBillDue();
+
+    return billDue;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at deleteBillDue(): ', JSON.stringify(error));
+    throw new Error(`Error deleting bill due. Code: ${error.code}`);
+  }
+}

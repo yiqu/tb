@@ -13,7 +13,10 @@ export default function BillsTableEditBillButton({ billDue }: { billDue: BillDue
   });
 
   const handleOnOpenEditDialog = () => {
-    setEditBillId(billDue.id);
+    setEditBillId(billDue.id, {
+      history: 'push',
+      scroll: false,
+    });
   };
 
   return (
