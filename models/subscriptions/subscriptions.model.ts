@@ -25,3 +25,10 @@ export interface SubscriptionOriginal {
   billStartDate: string; //2023-07-30  , YYYY-MM-DD
 }
 
+export const BILL_CYCLE_DURATION_OPTIONS = [
+  { label: 'Yearly', value: 'yearly' },
+  { label: 'Monthly', value: 'monthly' },
+  { label: 'Once', value: 'once' },
+] as const;
+
+export type BillCycleDuration = (typeof BILL_CYCLE_DURATION_OPTIONS)[number]['value'];

@@ -25,6 +25,10 @@ export default function DateRelativeDisplay({
     return <Skeleton className="h-6 w-[50%]" />;
   }
 
+  if (time === '0' || Number.parseInt(time as string) === 0) {
+    return <Skeleton className="h-6 w-[50%]" />;
+  }
+
   if (!time) {
     return <Typography>N/A</Typography>;
   }

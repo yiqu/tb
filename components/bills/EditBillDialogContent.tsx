@@ -6,8 +6,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import DateRelativeDisplay from '@/shared/table/DateRelativeDisplay';
 import { getBillDueByIdQueryOptions } from '@/server/bills/query/bills.quey';
-import { TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
+import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
 import { DialogClose, DialogTitle, DialogFooter, DialogHeader, DialogContent, DialogDescription } from '@/components/ui/dialog';
 
 import { Alert } from '../alerts/Alert';
@@ -18,7 +19,7 @@ import EditBillDialogResetButton from './EditBillDialogResetButton';
 
 export default function EditBillDialogContent({ billDueId, children }: { billDueId: string; children: ReactNode }) {
   const queryClient = useQueryClient();
-  const { isLoading, isError, error, data, isFetching } = useQuery({
+  const { isLoading, isError, error, data, isFetching, dataUpdatedAt } = useQuery({
     ...getBillDueByIdQueryOptions(billDueId),
   });
 
@@ -28,8 +29,9 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
   const handleOnRefetch = () => {
     queryClient.invalidateQueries({
       queryKey: [
+        TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS,
         {
-          [TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS]: billDueId,
+          [TANSTACK_QUERY_QUERY_KEY_ID_GENERAL]: billDueId,
         },
       ],
     });
@@ -46,11 +48,18 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
     >
       <DialogHeader className="px-4">
         <DialogTitle>Edit Bill</DialogTitle>
-        <DialogDescription className="flex flex-row items-center justify-start gap-x-1">
-          Make changes to your bill.
-          <Button variant="ghost" size="icon" onClick={ handleOnRefetch }>
-            <RefreshCcw className={ cn({ 'animate-spin': isFetching }) } />
-          </Button>
+        <DialogDescription asChild>
+          <div className="flex w-full flex-row items-center justify-between gap-x-1">
+            <div className="flex flex-row items-center justify-start gap-x-1">
+              <Typography>Make changes to your bill.</Typography>
+              <Button variant="ghost" size="icon" onClick={ handleOnRefetch }>
+                <RefreshCcw className={ cn({ 'animate-spin': isFetching }) } />
+              </Button>
+            </div>
+            <div className="flex flex-row items-center justify-end gap-x-2">
+              <DateRelativeDisplay time={ `${dataUpdatedAt}` } includeParenthesis={ false } prefixText="Last updated:" />
+            </div>
+          </div>
         </DialogDescription>
       </DialogHeader>
       { isError ?
@@ -59,7 +68,7 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
         </div>
       : null }
       { isBillLoaded && data ?
-        <EditBillDialogFormWrapper billDue={ data }>
+        <EditBillDialogFormWrapper billDue={ data } key={ `${dataUpdatedAt}` }>
           <div className="px-4">{ children }</div>
           <DialogFooter className={ `
             mt-4 flex w-full flex-row bg-sidebar p-4
@@ -73,7 +82,7 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
             </DialogClose>
             <div className="flex flex-row items-center justify-end gap-x-2">
               <EditBillDialogResetButton />
-              <Button type="submit" className="w-[90px]" id="edit-bill-dialog-save-button" disabled={ isBillLoading }>
+              <Button type="submit" className="w-[90px]" id="edit-bill-dialog-save-button" disabled={ isBillLoading || isFetching }>
                 <Save />
                 Save
               </Button>

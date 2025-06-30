@@ -12,7 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { updateBillDue } from '@/server/bills/bills.server';
 import { billEditableSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
-import { TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
+import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
 
 import { Form } from '../ui/form';
 
@@ -62,8 +62,9 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
         }
         queryClient.invalidateQueries({
           queryKey: [
+            TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS,
             {
-              [TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS]: billDue.id,
+              [TANSTACK_QUERY_QUERY_KEY_ID_GENERAL]: billDue.id,
             },
           ],
         });

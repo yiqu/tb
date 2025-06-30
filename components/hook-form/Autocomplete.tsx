@@ -75,7 +75,7 @@ export function AutocompleteInput({
     defaultValue: defaultValues,
     disabled: !isControlled, // Disable the controller if not controlled
   });
-
+  
   // Get the current value (either from form control or local state)
   const currentValues: any[] = useMemo(() => {
     return (
