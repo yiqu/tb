@@ -49,34 +49,34 @@ export default function BillsActionBarDueDateFilter() {
 
   const handleOnDueDateYearChange = (year: string) => {
     setSelectedDueDate({
-      year,
-      month: selectedDueDate.month,
+      year: year === 'none' ? null : year,
+      month: selectedDueDate.month === 'none' ? null : selectedDueDate.month,
     });
   };
 
   const handleOnDueDateMonthChange = (month: string) => {
     setSelectedDueDate({
-      year: selectedDueDate.year,
-      month,
+      year: selectedDueDate.year === 'none' ? null : selectedDueDate.year,
+      month: month === 'none' ? null : month,
     });
   };
 
   const handleClearYearValue = () => {
     setSelectedDueDate({
       year: null,
-      month: selectedDueDate.month,
+      month: selectedDueDate.month === 'none' ? null : selectedDueDate.month,
     });
   };
 
   const handleClearMonthValue = () => {
     setSelectedDueDate({
-      year: selectedDueDate.year,
+      year: selectedDueDate.year === 'none' ? null : selectedDueDate.year,
       month: null,
     });
   };
 
-  const isYearValueSelected: boolean = selectedDueDate.year !== null;
-  const isMonthValueSelected: boolean = selectedDueDate.month !== null;
+  const isYearValueSelected: boolean = selectedDueDate.year !== null && selectedDueDate.year !== 'none';
+  const isMonthValueSelected: boolean = selectedDueDate.month !== null && selectedDueDate.month !== 'none';
 
   return (
     <div className="flex flex-row items-center justify-start gap-x-2">
@@ -88,6 +88,12 @@ export default function BillsActionBarDueDateFilter() {
             <SelectValue placeholder="Due date year" />
           </SelectTrigger>
           <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Reset</SelectLabel>
+              <SelectItem key="clear" value="none" onClick={ handleClearYearValue }>
+                Clear year
+              </SelectItem>
+            </SelectGroup>
             <SelectGroup>
               <SelectLabel>Year</SelectLabel>
               { YEAR_OPTIONS.map((option) => (
@@ -121,6 +127,12 @@ export default function BillsActionBarDueDateFilter() {
             <SelectValue placeholder="Due date month" />
           </SelectTrigger>
           <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Reset</SelectLabel>
+              <SelectItem key="clear" value="none" onClick={ handleClearMonthValue }>
+                Clear month
+              </SelectItem>
+            </SelectGroup>
             <SelectGroup>
               <SelectLabel>Month</SelectLabel>
               { MONTH_OPTIONS.map((option) => (

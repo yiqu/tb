@@ -1,3 +1,6 @@
+import { Suspense } from 'react';
+
+import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 
 import BillsActionBarRefreshButton from './BillsActionBarRefreshButton';
@@ -7,13 +10,23 @@ import BillsActionBarSubscriptionFilter from './BillsActionBarSubscriptionFilter
 
 export default function BillsTableActionBar() {
   return (
-    <div className="flex flex-row items-center justify-start gap-x-2 flex-wrap gap-y-2">
+    <div className="flex flex-row flex-wrap items-center justify-start gap-x-2 gap-y-2">
       <BillsActionBarRefreshButton />
       <Separator orientation="vertical" className="h-[1.5rem]!" />
-      <BillsActionBarSubscriptionFilter />
-      <BillsActionBarFrequencyFilter />
+      <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+        <BillsActionBarSubscriptionFilter />
+      </Suspense>
+      <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+        <BillsActionBarFrequencyFilter />
+      </Suspense>
       <Separator orientation="vertical" className="h-[1.5rem]!" />
-      <BillsActionBarDueDateFilter />
+      <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+        <BillsActionBarDueDateFilter />
+      </Suspense>
     </div>
   );
+}
+
+function ActionBarButtonSkeleton() {
+  return <Skeleton className="h-9 w-[240px]" />;
 }

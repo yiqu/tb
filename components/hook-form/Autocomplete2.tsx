@@ -149,12 +149,12 @@ function AutocompleteInputBase({
                 })
               : <span>{ getSingleSelectedLabel() }</span> }
             </div>
-            <div className="flex items-center">
-              { currentValues.length > 0 && (
+            <div className="flex items-end">
+              { currentValues.length > 0 ?
                 <div
                   className={ `
-                    mr-1 flex size-8 cursor-pointer items-center justify-center rounded-sm p-0
-                    hover:bg-accent hover:text-accent-foreground
+                    flex size-4 cursor-pointer items-center justify-center rounded-sm p-0
+                    hover:text-accent-foreground
                   ` }
                   onClick={ (e) => {
                     e.stopPropagation();
@@ -173,8 +173,7 @@ function AutocompleteInputBase({
                 >
                   <X className="size-4" />
                 </div>
-              ) }
-              <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
+              : <ChevronsUpDown className="size-4 shrink-0 opacity-50" /> }
             </div>
           </Button>
         </PopoverTrigger>
@@ -203,19 +202,16 @@ function AutocompleteInputBase({
                             setInputValue('');
                           } }
                           data-value={ option.value }
-                          className={ cn(`
-                            mb-1
-                            last:mb-0
-                            flex flex-row justify-between items-center
-                          `, currentValues.includes(option.value) && 'bg-accent/40 text-accent-foreground') }
+                          className={ cn(
+                            `
+                              mb-1 flex flex-row items-center justify-between
+                              last:mb-0
+                            `,
+                            currentValues.includes(option.value) && 'bg-accent/40 text-accent-foreground',
+                          ) }
                         >
                           <span>{ option.label }</span>
-                          <Check
-                            className={ cn(
-                              'ml-2 size-4',
-                              currentValues.includes(option.value) ? 'opacity-100' : 'opacity-0',
-                            ) }
-                          />
+                          <Check className={ cn('ml-2 size-4', currentValues.includes(option.value) ? 'opacity-100' : 'opacity-0') } />
                         </CommandItem>
                       );
                     }) }
@@ -317,6 +313,16 @@ function UncontrolledAutocompleteInput({
     : [];
 
   const [selectedValues, setSelectedValues] = React.useState<string[]>(initialValues);
+
+  // Sync local state with defaultValues prop when it changes
+  React.useEffect(() => {
+    const newValues =
+      Array.isArray(defaultValues) ? defaultValues
+      : defaultValues ? [defaultValues]
+      : [];
+
+    setSelectedValues(newValues);
+  }, [defaultValues]);
 
   const handleSelect = React.useCallback(
     (value: string) => {
