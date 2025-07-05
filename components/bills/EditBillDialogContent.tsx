@@ -13,6 +13,7 @@ import { DialogClose, DialogTitle, DialogFooter, DialogHeader, DialogContent, Di
 
 import { Alert } from '../alerts/Alert';
 import { Skeleton } from '../ui/skeleton';
+import { Separator } from '../ui/separator';
 import Typography from '../typography/Typography';
 import EditBillDialogFormWrapper from './EditBillDialogFormWrapper';
 import EditBillDialogResetButton from './EditBillDialogResetButton';
@@ -62,6 +63,7 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
           </div>
         </DialogDescription>
       </DialogHeader>
+      <Separator />
       { isError ?
         <div className="flex w-full flex-col">
           <Alert description={ <Typography>{ error.message }</Typography> } variant="danger" />

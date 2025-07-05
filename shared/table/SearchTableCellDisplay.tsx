@@ -39,13 +39,6 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
           sec:gap-x-1
           two:gap-x-6
         ` }>
-          <Image
-            src={ getFrequencyImageUrl(billDue.subscription.billCycleDuration) }
-            alt="Frequency"
-            width={ 22 }
-            height={ 22 }
-            className="opacity-90"
-          />
           <Typography className="truncate">{ useFormatter.format(cost) }</Typography>
         </div>
       </TableCell>
@@ -66,7 +59,21 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const freq: string = billDue.subscription.billCycleDuration;
     return (
       <TableCell>
-        <Typography className="truncate">{ startCase(freq) }</Typography>
+        <div className={ `
+          flex flex-row items-center justify-start gap-x-1
+          sec:gap-x-1
+          two:gap-x-2
+        ` }>
+          <Image
+            src={ getFrequencyImageUrl(billDue.subscription.billCycleDuration) }
+            alt="Frequency"
+            width={ 22 }
+            height={ 22 }
+            className="opacity-90"
+          />
+
+          <Typography className="truncate">{ startCase(freq) }</Typography>
+        </div>
       </TableCell>
     );
   }

@@ -19,3 +19,20 @@ export const billEditableSchema = z.object({
     }
   }),
 });
+
+export const billSearchParamsSchema = z.object({
+  frequency: z.string().optional(),
+  paymentStatus: z
+    .enum([
+      'paid-only',
+      'reimbursed-only',
+      'paid-or-reimbursed',
+      'paid-and-reimbursed',
+      'need-payment-or-reimbursement',
+      'need-payment-and-reimbursement',
+    ])
+    .optional(),
+  subscriptions: z.string().optional(),
+  year: z.string().optional(),
+  month: z.string().optional(),
+});

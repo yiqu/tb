@@ -107,7 +107,7 @@ function AutocompleteInputBase({
           <Button variant="outline" role="combobox" aria-expanded={ open } className={ cn('w-full justify-between bg-transparent', className) }>
             <div className="flex flex-wrap items-center gap-1.5">
               { currentValues.length === 0 ?
-                <span className={ cn('', labelClassName) }>{ placeholder }</span>
+                <span className={ cn('text-muted-foreground/50', labelClassName) }>{ placeholder }</span>
               : multi ?
                 currentValues.map((value) => {
                   const option = options.find((opt) => opt.value === value);

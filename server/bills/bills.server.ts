@@ -11,28 +11,62 @@ import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
-import { billEditableSchema } from '@/validators/bills/bill.schema';
+import { billEditableSchema, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
 export async function revalidateBillDue() {
   revalidateTag(CACHE_TAG_BILL_DUES_ALL);
 }
 
-export const getAllBillsCached = cache(async (sortData: SortDataModel | null) => {
-  const res = await getAllBills(sortData);
+export const getAllBillsCached = cache(async (sortData: SortDataModel | null, searchParams?: z.infer<typeof billSearchParamsSchema>) => {
+  const res = await getAllBills(sortData, searchParams);
   return res;
 });
 
-export async function getAllBills(sortData: SortDataModel | null): Promise<BillDueWithSubscriptionAndSortData> {
+export const getAllBillsCountCached = cache(async () => {
+  const res = await getAllBillsCount();
+  return res;
+});
+
+export async function getAllBills(
+  sortData: SortDataModel | null,
+  searchParams?: z.infer<typeof billSearchParamsSchema>,
+): Promise<BillDueWithSubscriptionAndSortData> {
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
+
+  console.log('searchParams: ', searchParams);
+
+  const whereClause: any = {
+    AND: [],
+  };
+
+  if (searchParams?.subscriptions && searchParams.subscriptions.trim() !== '') {
+    // subscriptions is a string of ids separated by commas
+    const subscriptionIds = searchParams.subscriptions.split(',');
+    whereClause.AND.push({
+      subscriptionId: {
+        in: subscriptionIds,
+      },
+    });
+  }
+
+  if (searchParams?.frequency && searchParams.frequency.trim() !== '') {
+    // the billCycleDuration is a prop in the subscription that is included in the billDue
+    whereClause.AND.push({
+      subscription: {
+        billCycleDuration: searchParams.frequency,
+      },
+    });
+  }
 
   try {
     const billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
       include: {
         subscription: true,
       },
+      where: whereClause,
     });
 
     const sortedByDueDate: BillDueWithSubscription[] = billDues.sort((a: BillDueWithSubscription, b: BillDueWithSubscription) => {
@@ -114,6 +148,25 @@ export async function getAllBills(sortData: SortDataModel | null): Promise<BillD
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllBills(): ', JSON.stringify(error));
     throw new Error(`Error retrieving bill dues. Code: ${error.code}`);
+  }
+}
+
+export async function getAllBillsCount(): Promise<number> {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_BILL_DUES_ALL);
+
+  try {
+    const billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
+      include: {
+        subscription: true,
+      },
+    });
+
+    return billDues.length;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getAllBillsCount(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving bill dues count. Code: ${error.code}`);
   }
 }
 

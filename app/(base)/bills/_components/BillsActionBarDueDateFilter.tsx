@@ -5,7 +5,16 @@ import { parseAsString, useQueryStates } from 'nuqs';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Select, SelectItem, SelectGroup, SelectLabel, SelectValue, SelectContent, SelectTrigger } from '@/components/ui/select';
+import {
+  Select,
+  SelectItem,
+  SelectGroup,
+  SelectLabel,
+  SelectValue,
+  SelectContent,
+  SelectTrigger,
+  SelectSeparator,
+} from '@/components/ui/select';
 
 const YEAR_OPTIONS = [
   { label: '2021', value: '2021' },
@@ -18,6 +27,13 @@ const YEAR_OPTIONS = [
   { label: '2028', value: '2028' },
   { label: '2029', value: '2029' },
   { label: '2030', value: '2030' },
+];
+
+const DYNAMIC_YEAR_OPTIONS = [
+  { label: 'Future (include today)', value: 'future-include-today' },
+  { label: 'Past (include today)', value: 'past-include-today' },
+  { label: 'Future (include current year)', value: 'future-include-current-year' },
+  { label: 'Past (include current year)', value: 'past-include-current-year' },
 ];
 
 const MONTH_OPTIONS = [
@@ -44,6 +60,7 @@ export default function BillsActionBarDueDateFilter() {
     {
       history: 'push',
       scroll: false,
+      shallow: false
     },
   );
 
@@ -83,7 +100,7 @@ export default function BillsActionBarDueDateFilter() {
       <div className="relative">
         <Select onValueChange={ handleOnDueDateYearChange } value={ selectedDueDate.year === null ? '' : selectedDueDate.year }>
           <SelectTrigger
-            className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium text-inherit! select-none', isYearValueSelected && `pr-7`) }
+            className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isYearValueSelected && `pr-7`) }
           >
             <SelectValue placeholder="Due date year" />
           </SelectTrigger>
@@ -94,6 +111,18 @@ export default function BillsActionBarDueDateFilter() {
                 Clear year
               </SelectItem>
             </SelectGroup>
+
+            <SelectSeparator />
+
+            <SelectGroup>
+              <SelectLabel>Dynamic</SelectLabel>
+              { DYNAMIC_YEAR_OPTIONS.map((option) => (
+                <SelectItem key={ option.value } value={ option.value }>
+                  { option.label }
+                </SelectItem>
+              )) }
+            </SelectGroup>
+            <SelectSeparator />
             <SelectGroup>
               <SelectLabel>Year</SelectLabel>
               { YEAR_OPTIONS.map((option) => (
@@ -122,7 +151,7 @@ export default function BillsActionBarDueDateFilter() {
       <div className="relative">
         <Select onValueChange={ handleOnDueDateMonthChange } value={ selectedDueDate.month === null ? '' : selectedDueDate.month }>
           <SelectTrigger
-            className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium text-inherit! select-none', isMonthValueSelected && `pr-7`) }
+            className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isMonthValueSelected && `pr-7`) }
           >
             <SelectValue placeholder="Due date month" />
           </SelectTrigger>
@@ -133,6 +162,7 @@ export default function BillsActionBarDueDateFilter() {
                 Clear month
               </SelectItem>
             </SelectGroup>
+            <SelectSeparator />
             <SelectGroup>
               <SelectLabel>Month</SelectLabel>
               { MONTH_OPTIONS.map((option) => (

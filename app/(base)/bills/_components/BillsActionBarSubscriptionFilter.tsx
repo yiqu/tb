@@ -24,6 +24,7 @@ export default function BillsActionBarSubscriptionFilter({ allSubscriptionsPromi
       .withOptions({
         history: 'push',
         scroll: false,
+        shallow: false
       })
       .withDefault([]),
   );
@@ -42,7 +43,7 @@ export default function BillsActionBarSubscriptionFilter({ allSubscriptionsPromi
         multi={ true }
         className="min-w-[15rem] bg-card"
         searchBy="label"
-        badgeTextMaxLength={ 5 }
+        badgeTextMaxLength={ 8 }
       />
     </div>
   );

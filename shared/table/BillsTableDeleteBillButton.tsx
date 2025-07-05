@@ -6,6 +6,7 @@ import { Trash, RefreshCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { getUSDFormatter } from '@/lib/number.utils';
+import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
 import { deleteBillDue } from '@/server/bills/bills.server';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
@@ -24,6 +25,7 @@ const usdFormatter = getUSDFormatter();
 
 export default function BillsTableDeleteBillButton({ billDue }: { billDue: BillDueWithSubscription }) {
   const [isPending, startTransition] = useTransition();
+  const cost = billDue.cost === undefined || billDue.cost === null ? billDue.subscription.cost : billDue.cost;
 
   const handleOnDeleteBill = async (formData: FormData) => {
     const billDueId = formData.get('billDueId') as string;
@@ -54,6 +56,7 @@ export default function BillsTableDeleteBillButton({ billDue }: { billDue: BillD
           : <Trash /> }
         </Button>
       </DialogTrigger>
+
       <DialogContent
         className={ `
           overflow-x-auto px-0 pb-0
@@ -62,20 +65,20 @@ export default function BillsTableDeleteBillButton({ billDue }: { billDue: BillD
           sm:max-w-[600px]
         ` }
       >
-        <form action={ handleOnDeleteBill }>
+        <form action={ handleOnDeleteBill } className="flex flex-col gap-y-4">
           <input type="hidden" name="billDueId" value={ billDue.id } />
-          <div className="flex flex-col gap-y-4 px-6">
-            <DialogHeader>
-              <DialogTitle>Delete Bill</DialogTitle>
-              <DialogDescription>Are you sure you want to delete this bill? This action cannot be undone.</DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col gap-y-2">
-              <Typography>Subscription Name: { billDue.subscription.name }</Typography>
-              <Typography>Bill Amount: { usdFormatter.format(billDue.cost ?? 0) }</Typography>
-            </div>
+          <DialogHeader className="px-4">
+            <DialogTitle>Delete Bill</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this bill? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <Separator />
+          <div className="flex flex-col gap-y-2 px-6">
+            <Typography variant="body1">Subscription: { billDue.subscription.name }</Typography>
+            <Typography variant="body1">Bill Amount: { usdFormatter.format(cost ?? 0) }</Typography>
           </div>
+
           <DialogFooter className={ `
-            mt-4 flex w-full flex-row bg-sidebar p-4
+            flex w-full flex-row bg-sidebar p-4
             sm:items-center sm:justify-between
           ` }>
             <DialogClose asChild>

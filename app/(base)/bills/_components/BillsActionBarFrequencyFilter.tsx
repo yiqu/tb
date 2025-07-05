@@ -13,6 +13,7 @@ export default function BillsActionBarFrequencyFilter() {
       .withOptions({
         history: 'push',
         scroll: false,
+        shallow: false
       })
       .withDefault([]),
   );

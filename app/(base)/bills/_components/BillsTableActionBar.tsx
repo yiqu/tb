@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { memo, Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
@@ -6,22 +6,32 @@ import { Separator } from '@/components/ui/separator';
 import BillsActionBarRefreshButton from './BillsActionBarRefreshButton';
 import BillsActionBarDueDateFilter from './BillsActionBarDueDateFilter';
 import BillsActionBarFrequencyFilter from './BillsActionBarFrequencyFilter';
+import BillsActionBarClearAllFilters from './BillsActionBarClearAllFilters';
+import BillsActionBarPaymentStatusFilter from './BillsActionBarPaymentStatusFilter';
 import BillsActionBarSubscriptionFilter from './BillsActionBarSubscriptionFilterWrapper';
 
-export default function BillsTableActionBar() {
+function BillsTableActionBar() {
   return (
-    <div className="flex flex-row flex-wrap items-center justify-start gap-x-2 gap-y-2">
-      <BillsActionBarRefreshButton />
-      <Separator orientation="vertical" className="h-[1.5rem]!" />
+    <div className="flex w-full flex-row flex-wrap items-center justify-between gap-x-2 gap-y-2">
+      <div className="flex flex-row flex-wrap items-center justify-start gap-x-2 gap-y-2">
+        <BillsActionBarRefreshButton />
+        <Separator orientation="vertical" className="h-[1.5rem]!" />
+        <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+          <BillsActionBarSubscriptionFilter />
+        </Suspense>
+        <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+          <BillsActionBarFrequencyFilter />
+        </Suspense>
+        <Separator orientation="vertical" className="h-[1.5rem]!" />
+        <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+          <BillsActionBarDueDateFilter />
+        </Suspense>
+        <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+          <BillsActionBarPaymentStatusFilter />
+        </Suspense>
+      </div>
       <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-        <BillsActionBarSubscriptionFilter />
-      </Suspense>
-      <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-        <BillsActionBarFrequencyFilter />
-      </Suspense>
-      <Separator orientation="vertical" className="h-[1.5rem]!" />
-      <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-        <BillsActionBarDueDateFilter />
+        <BillsActionBarClearAllFilters />
       </Suspense>
     </div>
   );
@@ -30,3 +40,6 @@ export default function BillsTableActionBar() {
 function ActionBarButtonSkeleton() {
   return <Skeleton className="h-9 w-[240px]" />;
 }
+
+const BillsTableActionBarMemoized = memo(BillsTableActionBar);
+export default BillsTableActionBarMemoized;
