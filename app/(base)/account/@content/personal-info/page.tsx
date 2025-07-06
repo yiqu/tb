@@ -5,7 +5,7 @@ import DisplayName from './_components/DisplayName';
 import LocationInfo from './_components/LocationInfo';
 import RefetchButton from './_components/RefetchButton';
 
-export const experimental_ppr = true;
+//export const experimental_ppr = true;
 
 export const metadata: Metadata = {
   title: 'Personal Info | Settings',
