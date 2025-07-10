@@ -7,6 +7,7 @@ import EditBillForm from '@/components/bills/EditBillForm';
 import { getAllBillsCached } from '@/server/bills/bills.server';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import BillsTableCell from '@/shared/table/SearchTableCellDisplay';
+import NoResultsCard from '@/components/status-cards/NoResultsCard';
 import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
@@ -25,6 +26,14 @@ export default async function BillsTableParent({ searchParamsPromise }: BillsTab
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
   const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, searchParams);
   const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
+
+  if (billDues.billDues.length === 0) {
+    return (
+      <div className="flex w-full flex-col items-center justify-center gap-y-2 mt-6">
+        <NoResultsCard blendBg={ true } blendTextAreaBorder={ true } />
+      </div>
+    );
+  }
 
   return (
     <DisplayCard className="w-full py-0">

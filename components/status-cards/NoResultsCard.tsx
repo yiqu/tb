@@ -17,9 +17,16 @@ interface NoResultsCardProps {
   blendBg?: boolean;
   showTextAreaBorder?: boolean;
   blendTextAreaBorder?: boolean;
+  useLensAnimation?: boolean;
 }
 
-export default function NoResultsCard({ children, blendBg, showTextAreaBorder, blendTextAreaBorder }: NoResultsCardProps) {
+export default function NoResultsCard({
+  children,
+  blendBg,
+  showTextAreaBorder,
+  blendTextAreaBorder,
+  useLensAnimation,
+}: NoResultsCardProps) {
   return (
     <DisplayCard
       className={ cn(`w-[45rem] sec:w-[60rem] main:w-[80rem]`, {
@@ -28,26 +35,48 @@ export default function NoResultsCard({ children, blendBg, showTextAreaBorder, b
     >
       <div className="grid grid-cols-2 gap-x-8">
         <div className={ `relative flex flex-col items-center justify-center overflow-hidden rounded-2xl` }>
-          <Lens zoomFactor={ 2 } lensSize={ 120 } isStatic={ false } ariaLabel="no results img">
+          { useLensAnimation ?
+            <Lens zoomFactor={ 2 } lensSize={ 120 } isStatic={ false } ariaLabel="no results img">
+              <Image
+                src={ `/search/library-blank-book.png` }
+                alt="error img"
+                width={ IMAGE_WIDTH }
+                height={ IMAGE_WIDTH }
+                priority
+                className={ `rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]` }
+                data-hide-on-theme="dark"
+              />
+              <Image
+                src={ `/search/library-blank-book-night.png` }
+                alt="error img"
+                width={ IMAGE_WIDTH }
+                height={ IMAGE_WIDTH }
+                priority
+                className={ `rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]` }
+                data-hide-on-theme="light"
+              />
+            </Lens>
+          : <>
             <Image
-              src={ `/search/library-blank-book.png` }
-              alt="error img"
-              width={ IMAGE_WIDTH }
-              height={ IMAGE_WIDTH }
-              priority
-              className={ `rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]` }
-              data-hide-on-theme="dark"
-            />
+                src={ `/search/library-blank-book.png` }
+                alt="error img"
+                width={ IMAGE_WIDTH }
+                height={ IMAGE_WIDTH }
+                priority
+                className={ `rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]` }
+                data-hide-on-theme="dark"
+              />
             <Image
-              src={ `/search/library-blank-book-night.png` }
-              alt="error img"
-              width={ IMAGE_WIDTH }
-              height={ IMAGE_WIDTH }
-              priority
-              className={ `rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]` }
-              data-hide-on-theme="light"
-            />
-          </Lens>
+                src={ `/search/library-blank-book-night.png` }
+                alt="error img"
+                width={ IMAGE_WIDTH }
+                height={ IMAGE_WIDTH }
+                priority
+                className={ `rounded-2xl mask-t-from-90% mask-l-from-90% main:w-[80rem]` }
+                data-hide-on-theme="light"
+              />
+          </>
+          }
         </div>
         <div
           className={ cn(`flex w-full flex-col items-start justify-start gap-y-4 main:gap-y-6`, {

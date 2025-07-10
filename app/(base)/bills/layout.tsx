@@ -22,7 +22,10 @@ export default function AllBillsLayout({ children }: { children: ReactNode; para
       <LayoutParent>
         <LayoutWithGutter size="wider">
           <section className="w-full">
-            <PageTitle title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.bills }>Bills</AuroraText> } subText="View all of your bills." />
+            <PageTitle
+              title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.bills }>Bills</AuroraText> }
+              subText="View and manage all your due bills — sort, filter, and edit with ease."
+            />
           </section>
         </LayoutWithGutter>
       </LayoutParent>

@@ -53,6 +53,15 @@ model SortData {
   updatedAt     DateTime? @updatedAt
 }
 
+model PaginationData {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  pageId     String
+  pageNumber Int
+  pageSize   Int
+  dateAdded  DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt
+}
+
 model UserProfile {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String

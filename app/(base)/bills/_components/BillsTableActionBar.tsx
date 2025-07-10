@@ -6,7 +6,6 @@ import { Separator } from '@/components/ui/separator';
 import BillsActionBarRefreshButton from './BillsActionBarRefreshButton';
 import BillsActionBarDueDateFilter from './BillsActionBarDueDateFilter';
 import BillsActionBarFrequencyFilter from './BillsActionBarFrequencyFilter';
-import BillsActionBarClearAllFilters from './BillsActionBarClearAllFilters';
 import BillsActionBarPaymentStatusFilter from './BillsActionBarPaymentStatusFilter';
 import BillsActionBarSubscriptionFilter from './BillsActionBarSubscriptionFilterWrapper';
 
@@ -26,13 +25,11 @@ function BillsTableActionBar() {
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <BillsActionBarDueDateFilter />
         </Suspense>
+        <Separator orientation="vertical" className="h-[1.5rem]!" />
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <BillsActionBarPaymentStatusFilter />
         </Suspense>
       </div>
-      <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-        <BillsActionBarClearAllFilters />
-      </Suspense>
     </div>
   );
 }

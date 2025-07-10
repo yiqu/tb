@@ -1,7 +1,9 @@
 import Pagination from '@mui/material/Pagination';
 
 import z from 'zod';
+import { Suspense } from 'react';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import Typography from '@/components/typography/Typography';
@@ -10,6 +12,8 @@ import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { getAllBillsCached, getAllBillsCountCached } from '@/server/bills/bills.server';
+
+import BillsActionBarClearAllFilters from './BillsActionBarClearAllFilters';
 
 interface BillsTablePaginationProps {
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
@@ -29,6 +33,10 @@ export default async function BillsTablePagination({ searchParamsPromise }: Bill
     <div className="flex w-full flex-row items-center justify-between">
       <div>{ `` }</div>
       <div className="flex flex-row items-center justify-end gap-x-4">
+        <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+          <BillsActionBarClearAllFilters />
+        </Suspense>
+        <Separator orientation="vertical" className="h-[1.2rem]!" />
         <div>
           <Typography>
             1 - X of { billsCount }{ ' ' }
@@ -42,4 +50,8 @@ export default async function BillsTablePagination({ searchParamsPromise }: Bill
       </div>
     </div>
   );
+}
+
+function ActionBarButtonSkeleton() {
+  return <Skeleton className="h-8 w-[120px]" />;
 }

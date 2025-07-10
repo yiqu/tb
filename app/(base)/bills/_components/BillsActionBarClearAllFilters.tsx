@@ -19,9 +19,12 @@ export default function BillsActionBarClearAllFilters() {
   }
 
   return (
-    <Button variant="ghost" size="default" onClick={ handleClearAllFilters }>
+    <Button variant="outline" size="sm" onClick={ handleClearAllFilters } className={ `
+      bg-yellow-500/20
+      dark:bg-yellow-500/50
+    ` }>
       <X className="size-4" />
-      Clear all filters
+      Clear filters
     </Button>
   );
 }

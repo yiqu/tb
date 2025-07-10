@@ -4,15 +4,26 @@
 
 import z from 'zod';
 import { cache } from 'react';
+import { DateTime } from 'luxon';
 import { Prisma } from '@prisma/client';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 
 import prisma from '@/lib/prisma';
+import { isNumeric } from '@/lib/number.utils';
+import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { billEditableSchema, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
+
+import {
+  getSortedBillDues,
+  getFilteredBillDuesByYear,
+  getFilteredBillDuesByMonth,
+  getFilteredBillDuesBySpecialYear,
+  getFilteredBillDuesBySpecialYearAndMonth,
+} from './bills.server.utils';
 
 export async function revalidateBillDue() {
   revalidateTag(CACHE_TAG_BILL_DUES_ALL);
@@ -35,8 +46,6 @@ export async function getAllBills(
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
-
-  console.log('searchParams: ', searchParams);
 
   const whereClause: any = {
     AND: [],
@@ -61,88 +70,86 @@ export async function getAllBills(
     });
   }
 
+  if (searchParams?.paymentStatus && searchParams.paymentStatus.trim() !== '') {
+    if (searchParams.paymentStatus === 'paid-only') {
+      whereClause.AND.push({
+        paid: true,
+        reimbursed: false,
+      });
+    } else if (searchParams.paymentStatus === 'reimbursed-only') {
+      whereClause.AND.push({
+        reimbursed: true,
+        paid: false,
+      });
+    } else if (searchParams.paymentStatus === 'paid-or-reimbursed') {
+      whereClause.AND.push({
+        OR: [{ paid: true }, { reimbursed: true }],
+      });
+    } else if (searchParams.paymentStatus === 'paid-and-reimbursed') {
+      whereClause.AND.push({
+        paid: true,
+        reimbursed: true,
+      });
+    } else if (searchParams.paymentStatus === 'need-payment-or-reimbursement') {
+      whereClause.AND.push({
+        OR: [{ paid: false }, { reimbursed: false }],
+      });
+    } else if (searchParams.paymentStatus === 'need-payment-and-reimbursement') {
+      whereClause.AND.push({
+        paid: false,
+        reimbursed: false,
+      });
+    }
+  }
+
   try {
-    const billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
+    let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
       include: {
         subscription: true,
       },
       where: whereClause,
     });
 
-    const sortedByDueDate: BillDueWithSubscription[] = billDues.sort((a: BillDueWithSubscription, b: BillDueWithSubscription) => {
-      if (sortData?.sortField) {
-        if (sortData.sortField === 'dueDate') {
-          if (sortData.sortDirection === 'asc') {
-            return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
-          } else if (sortData.sortDirection === 'desc') {
-            return Number.parseInt(a.dueDate) < Number.parseInt(b.dueDate) ? 1 : -1;
-          }
-          return 0;
-        }
-        if (sortData.sortField === 'dateAdded') {
-          if (sortData.sortDirection === 'asc') {
-            return a.dateAdded.getTime() > b.dateAdded.getTime() ? 1 : -1;
-          } else if (sortData.sortDirection === 'desc') {
-            return a.dateAdded.getTime() < b.dateAdded.getTime() ? 1 : -1;
-          }
-        }
-        if (sortData.sortField === 'updatedAt') {
-          if (sortData.sortDirection === 'asc') {
-            return (a.updatedAt ? a.updatedAt.getTime() : 0) > (b.updatedAt ? b.updatedAt.getTime() : 0) ? 1 : -1;
-          } else if (sortData.sortDirection === 'desc') {
-            return (a.updatedAt ? a.updatedAt.getTime() : 0) < (b.updatedAt ? b.updatedAt.getTime() : 0) ? 1 : -1;
-          }
-        }
-        if (sortData.sortField === 'subscription') {
-          if (sortData.sortDirection === 'asc') {
-            return a.subscription.name.toLowerCase() > b.subscription.name.toLowerCase() ? 1 : -1;
-          } else if (sortData.sortDirection === 'desc') {
-            return a.subscription.name.toLowerCase() < b.subscription.name.toLowerCase() ? 1 : -1;
-          }
-        }
+    // Due date related filters
+    const yearParams: string | undefined = searchParams?.year;
+    const monthParams: string | undefined = searchParams?.month;
 
-        if (sortData.sortField === 'cost') {
-          const aCost = a.cost ?? a.subscription.cost;
-          const bCost = b.cost ?? b.subscription.cost;
-          if (sortData.sortDirection === 'asc') {
-            return aCost > bCost ? 1 : -1;
-          } else if (sortData.sortDirection === 'desc') {
-            return aCost < bCost ? 1 : -1;
-          }
-        }
+    if ((yearParams && yearParams.trim() !== '') || (monthParams && monthParams.trim() !== '')) {
+      const doesMonthExist: boolean = !!(monthParams && monthParams.trim() !== '');
+      const doesYearExist: boolean = !!(yearParams && yearParams.trim() !== '');
 
-        if (sortData.sortField === 'paid') {
-          if (sortData.sortDirection === 'asc') {
-            return a.paid > b.paid ? 1 : -1;
-          } else if (sortData.sortDirection === 'desc') {
-            return a.paid < b.paid ? 1 : -1;
-          }
-        }
+      const isYearInt: boolean = isNumeric(yearParams);
 
-        if (sortData.sortField === 'reimbursed') {
-          if (sortData.sortDirection === 'asc') {
-            return a.reimbursed > b.reimbursed ? 1 : -1;
-          } else if (sortData.sortDirection === 'desc') {
-            return a.reimbursed < b.reimbursed ? 1 : -1;
-          }
-        }
-
-        if (sortData.sortField === 'frequency') {
-          if (sortData.sortDirection === 'asc') {
-            return a.subscription.billCycleDuration.toLowerCase() > b.subscription.billCycleDuration.toLowerCase() ? 1 : -1;
-          } else if (sortData.sortDirection === 'desc') {
-            return a.subscription.billCycleDuration.toLowerCase() < b.subscription.billCycleDuration.toLowerCase() ? 1 : -1;
-          }
-        }
-
-        return a[sortData.sortField] > b[sortData.sortField] ? 1 : -1;
+      // both month and year are numbers
+      if (isYearInt && doesMonthExist && doesYearExist && monthParams && yearParams) {
+        billDues = getFilteredBillDuesByMonth(billDues, monthParams, yearParams);
       }
+      // only year is a number
+      else if (isYearInt && doesYearExist && yearParams) {
+        billDues = getFilteredBillDuesByYear(billDues, yearParams);
+      }
+      // only month is selected, auto default year to current year
+      else if (!doesYearExist && doesMonthExist && monthParams) {
+        const currentYear: number = DateTime.now().setZone(EST_TIME_ZONE).year;
+        billDues = getFilteredBillDuesByMonth(billDues, monthParams, currentYear.toString());
+      }
+      // if the year is special scenario
+      else if (doesYearExist && !isYearInt && !doesMonthExist) {
+        billDues = getFilteredBillDuesBySpecialYear(billDues, yearParams ?? '');
+      }
+      // if the year is special and month is selected
+      else if (doesYearExist && !isYearInt && doesMonthExist) {
+        billDues = getFilteredBillDuesBySpecialYearAndMonth(billDues, yearParams ?? '', monthParams ?? '');
+      }
+    }
 
-      return 0;
-    });
+    // sort the bill dues
+    if (sortData) {
+      billDues = getSortedBillDues(billDues, sortData);
+    }
 
     return {
-      billDues: sortedByDueDate,
+      billDues: billDues,
       sortData,
     };
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {

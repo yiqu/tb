@@ -60,7 +60,6 @@ export async function getUser(): Promise<UserProfile | null> {
 
   try {
     const users = await prisma.userProfile.findFirst();
-    console.log('getUser() function called');
     return users;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getUser(): ', JSON.stringify(error));
@@ -292,7 +291,6 @@ export async function getUserAchievements(): Promise<UserAchievement[]> {
     },
   ];
   try {
-    console.log('getUserAchievements() function called');
     return userAchievements;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getUserAchievements(): ', JSON.stringify(error));

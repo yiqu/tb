@@ -23,7 +23,7 @@ export default function BillsActionBarPaymentStatusFilter() {
       .withOptions({
         history: 'push',
         scroll: false,
-        shallow: false
+        shallow: false,
       })
       .withDefault(''),
   );
