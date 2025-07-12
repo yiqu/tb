@@ -56,8 +56,8 @@ model SortData {
 model PaginationData {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   pageId     String
-  pageNumber Int
-  pageSize   Int
+  pageNumber Int       @default(1)
+  pageSize   Int       @default(10)
   dateAdded  DateTime  @default(now())
   updatedAt  DateTime? @updatedAt
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { parseAsString, useQueryStates } from 'nuqs';
+import { parseAsString, parseAsInteger, useQueryStates } from 'nuqs';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -56,11 +56,18 @@ export default function BillsActionBarDueDateFilter() {
     {
       year: parseAsString,
       month: parseAsString,
+      page: parseAsInteger
+        .withOptions({
+          history: 'push',
+          scroll: false,
+          shallow: false,
+        })
+        .withDefault(1),
     },
     {
       history: 'push',
       scroll: false,
-      shallow: false
+      shallow: false,
     },
   );
 
@@ -68,6 +75,7 @@ export default function BillsActionBarDueDateFilter() {
     setSelectedDueDate({
       year: year === 'none' ? null : year,
       month: selectedDueDate.month === 'none' ? null : selectedDueDate.month,
+      page: 1,
     });
   };
 
@@ -75,6 +83,7 @@ export default function BillsActionBarDueDateFilter() {
     setSelectedDueDate({
       year: selectedDueDate.year === 'none' ? null : selectedDueDate.year,
       month: month === 'none' ? null : month,
+      page: 1,
     });
   };
 
@@ -82,6 +91,7 @@ export default function BillsActionBarDueDateFilter() {
     setSelectedDueDate({
       year: null,
       month: selectedDueDate.month === 'none' ? null : selectedDueDate.month,
+      page: 1,
     });
   };
 
@@ -89,6 +99,7 @@ export default function BillsActionBarDueDateFilter() {
     setSelectedDueDate({
       year: selectedDueDate.year === 'none' ? null : selectedDueDate.year,
       month: null,
+      page: 1,
     });
   };
 
@@ -99,9 +110,7 @@ export default function BillsActionBarDueDateFilter() {
     <div className="flex flex-row items-center justify-start gap-x-2">
       <div className="relative">
         <Select onValueChange={ handleOnDueDateYearChange } value={ selectedDueDate.year === null ? '' : selectedDueDate.year }>
-          <SelectTrigger
-            className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isYearValueSelected && `pr-7`) }
-          >
+          <SelectTrigger className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isYearValueSelected && `pr-7`) }>
             <SelectValue placeholder="Due date year" />
           </SelectTrigger>
           <SelectContent>
@@ -150,9 +159,7 @@ export default function BillsActionBarDueDateFilter() {
       </div>
       <div className="relative">
         <Select onValueChange={ handleOnDueDateMonthChange } value={ selectedDueDate.month === null ? '' : selectedDueDate.month }>
-          <SelectTrigger
-            className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isMonthValueSelected && `pr-7`) }
-          >
+          <SelectTrigger className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isMonthValueSelected && `pr-7`) }>
             <SelectValue placeholder="Due date month" />
           </SelectTrigger>
           <SelectContent>

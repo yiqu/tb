@@ -6,7 +6,7 @@ import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import BillsTableParent from './_components/BillsTableParent';
 import BillsTableSkeleton from './_components/BillsTableSkeleton';
 import BillsTableActionBar from './_components/BillsTableActionBar';
-import BillsTablePagination from './_components/BillsTablePagination';
+import BillsTablePaginationWrapper from './_components/BillsTablePaginationWrapper';
 
 interface AllBillsPageProps {
   params: Promise<{ slug: string }>;
@@ -17,7 +17,7 @@ export default function AllBillsPage({ searchParams }: AllBillsPageProps) {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
       <BillsTableActionBar />
-      <BillsTablePagination searchParamsPromise={ searchParams } />
+      <BillsTablePaginationWrapper searchParams={ searchParams } />
       <Suspense fallback={ <BillsTableSkeleton /> }>
         <BillsTableParent searchParamsPromise={ searchParams } />
       </Suspense>

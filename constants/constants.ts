@@ -30,6 +30,7 @@ export const CACHE_TAG_BILL_DUES_ALL = 'bill-dues-all';
 export const CACHE_TAG_USER_ACHIEVEMENTS = 'user-achievements';
 
 export const CACHE_TAG_SORT_DATA_PREFIX = 'sort-data-page-';
+export const CACHE_TAG_PAGINATION_DATA_PREFIX = 'pagination-data-page-';
 
 export const CACHE_TAG_SUBSCRIPTIONS_ALL = 'subscriptions-all';
 

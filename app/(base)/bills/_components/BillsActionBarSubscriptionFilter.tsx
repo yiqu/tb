@@ -1,8 +1,8 @@
 'use client';
 
 import { use } from 'react';
-import { parseAsArrayOf } from 'nuqs';
-import { parseAsString, useQueryState } from 'nuqs';
+import { parseAsString } from 'nuqs';
+import { parseAsArrayOf, parseAsInteger, useQueryStates } from 'nuqs';
 
 import { AutocompleteInput } from '@/components/hook-form/Autocomplete2';
 import { SubscriptionOriginal } from '@/models/subscriptions/subscriptions.model';
@@ -18,19 +18,35 @@ export default function BillsActionBarSubscriptionFilter({ allSubscriptionsPromi
     value: subscription.id,
   }));
 
-  const [selectedSubscriptions, setSelectedSubscriptions] = useQueryState(
-    'subscriptions',
-    parseAsArrayOf(parseAsString)
-      .withOptions({
-        history: 'push',
-        scroll: false,
-        shallow: false
-      })
-      .withDefault([]),
+  const [selectedSubscriptions, setSelectedSubscriptions] = useQueryStates(
+    {
+      subscriptions: parseAsArrayOf(parseAsString)
+        .withOptions({
+          history: 'push',
+          scroll: false,
+          shallow: false,
+        })
+        .withDefault([]),
+      page: parseAsInteger
+        .withOptions({
+          history: 'push',
+          scroll: false,
+          shallow: false,
+        })
+        .withDefault(1),
+    },
+    {
+      history: 'push',
+      scroll: false,
+      shallow: false,
+    },
   );
 
   const handleOnSubscriptionsChange = (values: string[] | string) => {
-    setSelectedSubscriptions(values as string[]);
+    setSelectedSubscriptions({
+      subscriptions: values as string[],
+      page: 1,
+    });
   };
 
   return (
@@ -39,7 +55,7 @@ export default function BillsActionBarSubscriptionFilter({ allSubscriptionsPromi
         options={ subscriptionOptions }
         placeholder="Subscriptions"
         onChange={ handleOnSubscriptionsChange }
-        defaultValues={ selectedSubscriptions }
+        defaultValues={ selectedSubscriptions.subscriptions }
         multi={ true }
         className="min-w-[15rem] bg-card"
         searchBy="label"

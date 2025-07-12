@@ -1,7 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { parseAsString, useQueryState } from 'nuqs';
+import { parseAsString, parseAsInteger, useQueryStates } from 'nuqs';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -17,35 +17,57 @@ import {
 } from '@/components/ui/select';
 
 export default function BillsActionBarPaymentStatusFilter() {
-  const [paymentStatus, setPaymentStatus] = useQueryState(
-    'paymentStatus',
-    parseAsString
-      .withOptions({
-        history: 'push',
-        scroll: false,
-        shallow: false,
-      })
-      .withDefault(''),
+  const [paymentStatus, setPaymentStatus] = useQueryStates(
+    {
+      paymentStatus: parseAsString
+        .withOptions({
+          history: 'push',
+          scroll: false,
+          shallow: false,
+        })
+        .withDefault(''),
+      page: parseAsInteger
+        .withOptions({
+          history: 'push',
+          scroll: false,
+          shallow: false,
+        })
+        .withDefault(1),
+    },
+    {
+      history: 'push',
+      scroll: false,
+      shallow: false,
+    },
   );
 
   const handleOnStatusChange = (status: string) => {
     if (status === 'none') {
-      setPaymentStatus(null);
+      setPaymentStatus({
+        paymentStatus: null,
+        page: 1,
+      });
     } else {
-      setPaymentStatus(status);
+      setPaymentStatus({
+        paymentStatus: status,
+        page: 1,
+      });
     }
   };
 
   const handleClearStatusValue = () => {
-    setPaymentStatus(null);
+    setPaymentStatus({
+      paymentStatus: null,
+      page: 1,
+    });
   };
 
-  const isStatusValueSelected: boolean = paymentStatus !== null && paymentStatus !== '';
+  const isStatusValueSelected: boolean = paymentStatus.paymentStatus !== null && paymentStatus.paymentStatus !== '';
 
   return (
     <div className="flex flex-row items-center justify-start gap-x-2">
       <div className="relative">
-        <Select onValueChange={ handleOnStatusChange } value={ paymentStatus ?? '' }>
+        <Select onValueChange={ handleOnStatusChange } value={ paymentStatus.paymentStatus ?? '' }>
           <SelectTrigger className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isStatusValueSelected && `pr-7`) }>
             <SelectValue placeholder="Payment status" />
           </SelectTrigger>

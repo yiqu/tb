@@ -35,4 +35,5 @@ export const billSearchParamsSchema = z.object({
   subscriptions: z.string().optional(),
   year: z.string().optional(),
   month: z.string().optional(),
+  page: z.number().optional(),
 });
