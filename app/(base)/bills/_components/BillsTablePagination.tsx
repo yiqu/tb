@@ -24,14 +24,15 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
   const pagination: PaginationDataModel | null = await paginationPromise;
   const searchParams: z.infer<typeof billSearchParamsSchema> = await searchParamsPromise;
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
-  const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, searchParams);
+  const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, pagination, searchParams);
   const totalBillsCount: number = await getAllBillsCountCached();
-  const billsCount = billDues.billDues.length;
+  const billsCount = billDues.totalBillsCount;
+  const startIndex = billDues.startIndex + 1;
+  const { endIndex } = billDues;
+  const { totalPages } = billDues;
 
   const searchParamsKeys = Object.keys(searchParams);
   const hasSearchParams: boolean = searchParamsKeys.length > 0;
-
-  console.log('pagination', pagination);
 
   return (
     <div className="flex w-full flex-row items-center justify-between">
@@ -43,7 +44,7 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
         <Separator orientation="vertical" className="h-[1.2rem]!" />
         <div>
           <Typography>
-            1 - X of { billsCount }{ ' ' }
+            { startIndex } - { endIndex } of { billsCount }{ ' ' }
             { hasSearchParams ?
               <span> ({ totalBillsCount })</span>
             : null }
@@ -51,7 +52,7 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
         </div>
         <Separator orientation="vertical" className="h-[1.2rem]!" />
         <Suspense fallback={ <PaginationSkeleton /> }>
-          <BillsTablePaginationPageSelect pageCount={ pagination?.pageSize ?? 10 } />
+          <BillsTablePaginationPageSelect pageCount={ totalPages } />
         </Suspense>
       </div>
     </div>

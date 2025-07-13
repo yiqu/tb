@@ -38,6 +38,9 @@ export const SORT_DATA_PAGE_IDS = {
   search: 'search',
 };
 
+// pagination
+export const DEFAULT_PAGE_SIZE = 10;
+
 export const APP_TITLE_GRADIENT_COLORS = {
   search: ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'],
   bills: ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'],

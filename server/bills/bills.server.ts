@@ -12,8 +12,9 @@ import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
-import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
+import { DEFAULT_PAGE_SIZE, CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
+import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { billEditableSchema, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
@@ -29,10 +30,16 @@ export async function revalidateBillDue() {
   revalidateTag(CACHE_TAG_BILL_DUES_ALL);
 }
 
-export const getAllBillsCached = cache(async (sortData: SortDataModel | null, searchParams?: z.infer<typeof billSearchParamsSchema>) => {
-  const res = await getAllBills(sortData, searchParams);
-  return res;
-});
+export const getAllBillsCached = cache(
+  async (
+    sortData: SortDataModel | null,
+    paginationData: PaginationDataModel | null,
+    searchParams?: z.infer<typeof billSearchParamsSchema>,
+  ) => {
+    const res = await getAllBills(sortData, paginationData, searchParams);
+    return res;
+  },
+);
 
 export const getAllBillsCountCached = cache(async () => {
   const res = await getAllBillsCount();
@@ -41,6 +48,7 @@ export const getAllBillsCountCached = cache(async () => {
 
 export async function getAllBills(
   sortData: SortDataModel | null,
+  paginationData: PaginationDataModel | null,
   searchParams?: z.infer<typeof billSearchParamsSchema>,
 ): Promise<BillDueWithSubscriptionAndSortData> {
   'use cache';
@@ -148,9 +156,26 @@ export async function getAllBills(
       billDues = getSortedBillDues(billDues, sortData);
     }
 
+    const pageSize: number = paginationData?.pageSize ?? DEFAULT_PAGE_SIZE;
+    const totalPages: number = Math.ceil(billDues.length / pageSize);
+    // page starts at 1
+    const pageNumber: number =
+      searchParams?.page && isNumeric(searchParams?.page) && Number.parseInt(`${searchParams?.page}`) > 0 ?
+        Number.parseInt(`${searchParams?.page}`)
+      : 1;
+
+    const startIndex: number = (pageNumber - 1) * pageSize;
+    // if we are on the last page, the end index should be the total number of bills
+    const endIndex: number = pageNumber === totalPages ? billDues.length : startIndex + pageSize;
+    const billDuesToReturn: BillDueWithSubscription[] = billDues.slice(startIndex, endIndex);
+
     return {
-      billDues: billDues,
+      billDues: billDuesToReturn,
       sortData,
+      totalPages,
+      totalBillsCount: billDues.length,
+      startIndex,
+      endIndex,
     };
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllBills(): ', JSON.stringify(error));

@@ -12,6 +12,7 @@ import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
+import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS } from '@/shared/table/table.utils';
 import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
@@ -19,17 +20,19 @@ import BillsTableActionDialog from './BillsTableActionDialog';
 
 interface BillsTableParentProps {
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
+  paginationPromise: Promise<PaginationDataModel | null>;
 }
 
-export default async function BillsTableParent({ searchParamsPromise }: BillsTableParentProps) {
+export default async function BillsTableParent({ searchParamsPromise, paginationPromise }: BillsTableParentProps) {
   const searchParams: z.infer<typeof billSearchParamsSchema> = await searchParamsPromise;
+  const pagination: PaginationDataModel | null = await paginationPromise;
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
-  const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, searchParams);
+  const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, pagination, searchParams);
   const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
   if (billDues.billDues.length === 0) {
     return (
-      <div className="flex w-full flex-col items-center justify-center gap-y-2 mt-6">
+      <div className="mt-6 flex w-full flex-col items-center justify-center gap-y-2">
         <NoResultsCard blendBg={ true } blendTextAreaBorder={ true } />
       </div>
     );

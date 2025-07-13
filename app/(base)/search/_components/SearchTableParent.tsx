@@ -13,7 +13,7 @@ import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/m
 
 export default async function SearchTableParent() {
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
-  const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData);
+  const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, null);
   const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
   return (

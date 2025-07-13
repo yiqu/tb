@@ -65,6 +65,10 @@ export type BillDueWithSubscription = BillDue & {
 export type BillDueWithSubscriptionAndSortData = {
   billDues: BillDueWithSubscription[];
   sortData: SortDataModel | null;
+  totalPages: number;
+  totalBillsCount: number;
+  startIndex: number;
+  endIndex: number;
 };
 
 export interface BillDueWithSubscription2 {
