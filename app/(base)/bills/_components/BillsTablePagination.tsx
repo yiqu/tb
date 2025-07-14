@@ -12,8 +12,10 @@ import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server'
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { getAllBillsCached, getAllBillsCountCached } from '@/server/bills/bills.server';
 
+import { isSearchParamsExist } from './bills.utils';
 import BillsActionBarClearAllFilters from './BillsActionBarClearAllFilters';
 import BillsTablePaginationPageSelect from './BillsTablePaginationPageSelect';
+import BillsTablePaginationPageCountSelect from './BillsTablePaginationPageCountSelect';
 
 interface BillsTablePaginationProps {
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
@@ -31,24 +33,30 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
   const { endIndex } = billDues;
   const { totalPages } = billDues;
 
-  const searchParamsKeys = Object.keys(searchParams);
-  const hasSearchParams: boolean = searchParamsKeys.length > 0;
+  const hasSearchParams: boolean = isSearchParamsExist(searchParams);
 
   return (
     <div className="flex w-full flex-row items-center justify-between">
       <div>{ `` }</div>
       <div className="flex flex-row items-center justify-end gap-x-4">
-        <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-          <BillsActionBarClearAllFilters />
-        </Suspense>
-        <Separator orientation="vertical" className="h-[1.2rem]!" />
+        { hasSearchParams ?
+          <>
+            <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+              <BillsActionBarClearAllFilters />
+            </Suspense>
+            <Separator orientation="vertical" className="h-[1.2rem]!" />
+          </>
+        : null }
+
         <div>
-          <Typography>
-            { startIndex } - { endIndex } of { billsCount }{ ' ' }
-            { hasSearchParams ?
-              <span> ({ totalBillsCount })</span>
-            : null }
-          </Typography>
+          <BillsTablePaginationPageCountSelect>
+            <Typography>
+              { startIndex } - { endIndex } of { billsCount }{ ' ' }
+              { hasSearchParams ?
+                <span> ({ totalBillsCount })</span>
+              : null }
+            </Typography>
+          </BillsTablePaginationPageCountSelect>
         </div>
         <Separator orientation="vertical" className="h-[1.2rem]!" />
         <Suspense fallback={ <PaginationSkeleton /> }>

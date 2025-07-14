@@ -53,7 +53,6 @@ export async function upsertPaginationData(paginationData: PaginationDataUpserta
       const updatedPaginationData = await prisma.paginationData.update({
         where: { id: paginationData.id },
         data: {
-          pageNumber: paginationData.pageNumber,
           pageSize: paginationData.pageSize,
         },
       });

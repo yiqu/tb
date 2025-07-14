@@ -14,6 +14,5 @@ export type PaginationDataEditable = Omit<PaginationDataModel, 'dateAdded' | 'up
 export type PaginationDataUpsertable = {
   id?: string;
   pageId: string;
-  pageNumber: number;
   pageSize: number;
 };
