@@ -157,6 +157,7 @@ export async function getAllBills(
       billDues = getSortedBillDues(billDues, sortData);
     }
 
+    console.log('searchParams: ', searchParams);
     const pageSize: number = paginationData?.pageSize ?? DEFAULT_PAGE_SIZE;
     const totalPages: number = Math.ceil(billDues.length / pageSize);
     // page starts at 1
