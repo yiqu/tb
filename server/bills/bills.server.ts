@@ -37,6 +37,7 @@ export const getAllBillsCached = cache(
     paginationData: PaginationDataModel | null,
     searchParams?: z.infer<typeof billSearchParamsSchema>,
   ) => {
+    console.log('searchParams in react cache: ', searchParams);
     const res = await getAllBills(sortData, paginationData, searchParams);
     return res;
   },
