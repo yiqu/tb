@@ -13,11 +13,12 @@ import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
-import { DEFAULT_PAGE_SIZE, CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { billEditableSchema, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
+import { DEFAULT_PAGE_SIZE, SORT_DATA_PAGE_IDS, CACHE_TAG_BILL_DUES_ALL, CACHE_TAG_PAGINATION_DATA_PREFIX } from '@/constants/constants';
 
+import { revalidatePaginationForPage } from '../pagination-data/pagination-data.server';
 import {
   getSortedBillDues,
   getFilteredBillDuesByYear,
@@ -209,6 +210,7 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean): P
       data: { paid: isPaid },
     });
 
+    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
 
     return billDue;
@@ -225,6 +227,7 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
       data: { reimbursed: isReimbursed },
     });
 
+    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
 
     return billDue;
@@ -251,6 +254,7 @@ export async function updateBillDue(billDueId: string, data: z.infer<typeof bill
       },
     });
 
+    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
 
     return billDue;
@@ -285,6 +289,7 @@ export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubsc
       },
     });
 
+    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
 
     return billDue;

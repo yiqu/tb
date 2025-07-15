@@ -11,6 +11,10 @@ import prisma from '@/lib/prisma';
 import { CACHE_TAG_PAGINATION_DATA_PREFIX } from '@/constants/constants';
 import { PaginationDataModel, PaginationDataUpsertable } from '@/models/pagination-data/pagination-data.model';
 
+export async function revalidatePaginationForPage(pageId: string) {
+  revalidateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${pageId}`);
+}
+
 export const getPaginationDataForPageIdCached = cache(async (pageId: string) => {
   const res = await getPaginationDataForPageId(pageId);
   return res;
