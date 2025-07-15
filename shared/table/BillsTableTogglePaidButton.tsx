@@ -31,6 +31,7 @@ export default function BillsTableTogglePaidButton({ billDueId, isPaid }: { bill
     startTransition(async () => {
       setOptimisticIsPaid(!isPaid);
       const res = await updateIsBillDuePaid(billDueId, !isPaid);
+      setPage(page);
       toast.success(`${res.paid ? 'Marked as paid.' : 'Marked as unpaid.'}`);
     });
   };
