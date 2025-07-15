@@ -4,12 +4,22 @@ import toast from 'react-hot-toast';
 /* eslint-disable better-tailwindcss/multiline */
 import { BanknoteArrowUp } from 'lucide-react';
 import { useOptimistic, useTransition } from 'react';
+import { useQueryState, parseAsInteger } from 'nuqs';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { updateIsBillDuePaid } from '@/server/bills/bills.server';
 
 export default function BillsTableTogglePaidButton({ billDueId, isPaid }: { billDueId: string; isPaid: boolean }) {
+  const [page, setPage] = useQueryState(
+    'page',
+    parseAsInteger
+      .withOptions({
+        shallow: false,
+      })
+      .withDefault(1),
+  );
+
   const [isPending, startTransition] = useTransition();
 
   const [optimisticIsPaid, setOptimisticIsPaid] = useOptimistic(isPaid, (curr: boolean, optimisticValue: boolean) => {
@@ -17,6 +27,7 @@ export default function BillsTableTogglePaidButton({ billDueId, isPaid }: { bill
   });
 
   const handleOnClick = (isPaid: boolean) => {
+    setPage(page);
     startTransition(async () => {
       setOptimisticIsPaid(!isPaid);
       const res = await updateIsBillDuePaid(billDueId, !isPaid);

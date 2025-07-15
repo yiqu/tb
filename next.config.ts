@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
     reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
     enablePrerenderSourceMaps: true,
     ppr: 'incremental',
-    // clientSegmentCache: true,
-    // turbopackPersistentCaching: true,
+    clientSegmentCache: true,
+    turbopackPersistentCaching: true,
   },
 };
 
