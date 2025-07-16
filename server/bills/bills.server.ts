@@ -37,7 +37,6 @@ export const getAllBillsCached = cache(
     paginationData: PaginationDataModel | null,
     searchParams?: z.infer<typeof billSearchParamsSchema>,
   ) => {
-    console.log('searchParams in react cache: ', searchParams);
     const res = await getAllBills(sortData, paginationData, searchParams);
     return res;
   },
@@ -158,7 +157,6 @@ export async function getAllBills(
       billDues = getSortedBillDues(billDues, sortData);
     }
 
-    console.log('searchParams: ', searchParams);
     const pageSize: number = paginationData?.pageSize ?? DEFAULT_PAGE_SIZE;
     const totalPages: number = Math.ceil(billDues.length / pageSize);
     // page starts at 1

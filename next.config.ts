@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     ppr: 'incremental',
     clientSegmentCache: true,
     turbopackPersistentCaching: true,
+    devtoolSegmentExplorer: true,
   },
 };
 

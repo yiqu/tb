@@ -68,9 +68,9 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
 }
 
 function ActionBarButtonSkeleton() {
-  return <Skeleton className="h-8 w-[120px]" />;
+  return <Skeleton className="h-9 w-[120px]" />;
 }
 
 function PaginationSkeleton() {
-  return <Skeleton className="h-8 w-[300px]" />;
+  return <Skeleton className="h-9 w-[300px]" />;
 }
