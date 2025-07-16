@@ -28,7 +28,7 @@ function BillsTablePaginationSkeleton() {
     <div className="flex w-full flex-row items-center justify-between">
       <div>{ `` }</div>
       <div className="flex flex-row items-center justify-end gap-x-4">
-        <Skeleton className="h-8 w-[500px]" />
+        <Skeleton className="h-9 w-[500px]" />
       </div>
     </div>
   );
