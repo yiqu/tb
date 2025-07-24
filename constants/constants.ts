@@ -33,6 +33,7 @@ export const CACHE_TAG_SORT_DATA_PREFIX = 'sort-data-page-';
 export const CACHE_TAG_PAGINATION_DATA_PREFIX = 'pagination-data-page-';
 
 export const CACHE_TAG_SUBSCRIPTIONS_ALL = 'subscriptions-all';
+export const CACHE_TAG_SUBSCRIPTION_DETAILS = 'subscription-by-id-';
 
 export const SORT_DATA_PAGE_IDS = {
   search: 'search',
@@ -53,4 +54,5 @@ export const APP_TITLE_GRADIENT_COLORS = {
   settings: ['#005493', '#f5aa1c', '#c63527', '#002754'],
   login: ['#00a3e2', '#1ba548', '#fdc800', '#f1860e', '#e41b13'],
   dashboard: ['#005493', '#e31837', '#489cd4', '#2774a6'],
+  subscriptions: ['#005493', '#f5aa1c', '#c63527', '#002754'],
 };

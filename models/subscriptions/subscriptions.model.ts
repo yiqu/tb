@@ -1,3 +1,5 @@
+import { BillDue } from '../bills/bills.model';
+
 export interface SubscriptionPostBody {
   name: string;
   billCycleDuration: string;
@@ -23,6 +25,10 @@ export interface SubscriptionOriginal {
   billCycleInDays: number | null; // deprecated
   billCycleDuration: 'yearly' | 'monthly' | 'once' | string; // yearly, monthly, once
   billStartDate: string; //2023-07-30  , YYYY-MM-DD
+}
+
+export interface SubscriptionWithBillDues extends SubscriptionOriginal {
+  billDues: BillDue[];
 }
 
 export const BILL_CYCLE_DURATION_OPTIONS = [
