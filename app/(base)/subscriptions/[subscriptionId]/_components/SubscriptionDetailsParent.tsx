@@ -2,6 +2,7 @@ import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.m
 import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
 import SubscriptionDetailsHeader from './SubscriptionDetailsHeader';
+import SubscriptionDetailsMetadata from './SubscriptionDetailsMetadata';
 
 interface SubscriptionDetailsParentProps {
   paramsPromise: Promise<{ subscriptionId: string }>;
@@ -18,8 +19,11 @@ export default async function SubscriptionDetailsParent({ paramsPromise }: Subsc
   }
 
   return (
-    <div className="flex w-full flex-col items-start justify-start gap-y-3">
+    <div className="flex w-full flex-col items-start justify-start gap-y-9">
       <SubscriptionDetailsHeader subscription={ subscription } />
+      <div className="flex w-full flex-col items-start justify-start gap-y-3">
+        <SubscriptionDetailsMetadata subscription={ subscription } />
+      </div>
     </div>
   );
 }

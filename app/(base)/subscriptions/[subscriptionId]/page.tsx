@@ -1,5 +1,3 @@
-import { Suspense } from 'react';
-
 import { SubscriptionOriginal } from '@/models/subscriptions/subscriptions.model';
 import { getAllSubscriptionsBareCached } from '@/server/subscriptions/subscriptions.server';
 
@@ -20,9 +18,5 @@ export async function generateStaticParams() {
 }
 
 export default async function SubscriptionDetailsPage({ params }: SubscriptionDetailsPageProps) {
-  return (
-    <Suspense fallback={ <div>Loading...</div> }>
-      <SubscriptionDetailsParent paramsPromise={ params } />
-    </Suspense>
-  );
+  return <SubscriptionDetailsParent paramsPromise={ params } />;
 }
