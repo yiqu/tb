@@ -46,6 +46,8 @@
   --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 8px 10px -1px hsl(28 13% 20% / 0.02);
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.05);
 
+  --grey-1: oklch(0.92 0.02 83.06);
+
   /* lg: max size of secondary monitor */
   --breakpoint-lg: 1920px;
   --breakpoint-sec: 1920px;
@@ -106,6 +108,8 @@
   --shadow-lg: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 4px 6px -1px hsl(28 13% 20% / 0.02);
   --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.02), 2px 8px 10px -1px hsl(28 13% 20% / 0.02);
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.05);
+
+  --grey-1: oklch(0.38 0.02 57.13);
 
   /* lg: max size of secondary monitor */
   --breakpoint-lg: 1920px;

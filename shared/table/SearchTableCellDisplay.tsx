@@ -9,6 +9,7 @@ import { TableCell } from '@/components/ui/table';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
+import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -135,7 +136,10 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     return (
       <TableCell>
         <Link href={ `/subscriptions/${billDue.subscription.id}` } prefetch>
-          <CenterUnderline label={ subName } />
+          <div className="flex flex-row items-center justify-start gap-x-2">
+            <SubscriptionLogo subscriptionName={ subName } height={ 20 } />
+            <CenterUnderline label={ subName } />
+          </div>
         </Link>
       </TableCell>
     );

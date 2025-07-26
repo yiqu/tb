@@ -100,3 +100,124 @@ export function getFrequencyImageUrl(frequency: string): string {
     }
   }
 }
+
+export function getSubscriptionLogoUrl(subscriptionName: string) {
+  let logoLightUrl = 'renewal';
+  let logoDarkUrl = 'renewal';
+  const name = subscriptionName.trim();
+
+  switch (name) {
+    case 'GitHub Copilot': {
+      logoLightUrl = 'githubcopilot_light';
+      logoDarkUrl = 'githubcopilot_dark';
+      break;
+    }
+
+    case 'GitHub Pro': {
+      logoLightUrl = 'github_light';
+      logoDarkUrl = 'github_dark';
+      break;
+    }
+
+    case 'UI dot dev': {
+      logoLightUrl = 'uidotdev';
+      logoDarkUrl = 'uidotdev';
+      break;
+    }
+
+    case 'Vercel Pro': {
+      logoLightUrl = 'vercel_light';
+      logoDarkUrl = 'vercel_dark';
+      break;
+    }
+
+    case 'MUI Minimal Dashboard': {
+      logoLightUrl = 'mui';
+      logoDarkUrl = 'mui';
+      break;
+    }
+
+    case 'MonaLisa Typeface': {
+      logoLightUrl = 'mona-lisa';
+      logoDarkUrl = 'mona-lisa';
+      break;
+    }
+
+    case 'Flaticon Pro': {
+      logoLightUrl = 'flaticon';
+      logoDarkUrl = 'flaticon';
+      break;
+    }
+
+    case 'Loading io': {
+      logoLightUrl = 'loading';
+      logoDarkUrl = 'loading';
+      break;
+    }
+
+    case 'Pro Nextjs By Jack Harrington': {
+      logoLightUrl = 'blackboard';
+      logoDarkUrl = 'blackboard';
+      break;
+    }
+
+    case 'Cursor IDE Pro': {
+      logoLightUrl = 'cursor_light';
+      logoDarkUrl = 'cursor_dark';
+      break;
+    }
+
+    case 'ByteGrad': {
+      logoLightUrl = 'blackboard';
+      logoDarkUrl = 'blackboard';
+      break;
+    }
+
+    case 'ChatGPT Plus': {
+      logoLightUrl = 'openai_light';
+      logoDarkUrl = 'openai_dark';
+      break;
+    }
+
+    case 'MUI X Pro License': {
+      logoLightUrl = 'mui';
+      logoDarkUrl = 'mui';
+      break;
+    }
+
+    case 'Medium': {
+      logoLightUrl = 'medium';
+      logoDarkUrl = 'medium';
+      break;
+    }
+
+    case 'Microsoft 365': {
+      logoLightUrl = 'microsoft';
+      logoDarkUrl = 'microsoft';
+      break;
+    }
+
+    case 'T3 Chat': {
+      logoLightUrl = 'chat_t3';
+      logoDarkUrl = 'chat_t3';
+      break;
+    }
+
+    case 'Vercel v0': {
+      logoLightUrl = 'v0_light';
+      logoDarkUrl = 'v0_dark';
+      break;
+    }
+
+    case 'CompTIA Security Plus': {
+      logoLightUrl = 'shield';
+      logoDarkUrl = 'shield';
+      break;
+    }
+  }
+
+  return {
+    light: `/subs/${logoLightUrl}.png`,
+    dark: `/subs/${logoDarkUrl}.png`,
+  };
+}

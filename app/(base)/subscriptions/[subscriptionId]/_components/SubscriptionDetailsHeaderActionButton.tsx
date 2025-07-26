@@ -1,3 +1,5 @@
+import { EllipsisVerticalIcon } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import {
@@ -15,7 +17,10 @@ export function SubscriptionDetailsHeaderActionButton({ subscription }: { subscr
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="default">Actions</Button>
+        <Button variant="default">
+          <EllipsisVerticalIcon className="h-4 w-4" />
+          Actions
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-56" align="end">
         <DropdownMenuLabel>Bills</DropdownMenuLabel>
