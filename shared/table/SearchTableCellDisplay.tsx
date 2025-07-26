@@ -135,7 +135,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const subName = billDue.subscription.name;
     return (
       <TableCell>
-        <Link href={ `/subscriptions/${billDue.subscription.id}` } prefetch>
+        <Link href={ `/subscriptions/${billDue.subscription.id}` } prefetch={ true }>
           <div className="flex flex-row items-center justify-start gap-x-2">
             <SubscriptionLogo subscriptionName={ subName } height={ 20 } />
             <CenterUnderline label={ subName } />
