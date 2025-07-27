@@ -1,4 +1,4 @@
-import { BillDue } from '../bills/bills.model';
+import { BillDueWithSubscription } from '../bills/bills.model';
 
 export interface SubscriptionPostBody {
   name: string;
@@ -28,7 +28,7 @@ export interface SubscriptionOriginal {
 }
 
 export interface SubscriptionWithBillDues extends SubscriptionOriginal {
-  billDues: BillDue[];
+  billDues: BillDueWithSubscription[];
 }
 
 export const BILL_CYCLE_DURATION_OPTIONS = [

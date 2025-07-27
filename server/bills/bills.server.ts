@@ -16,7 +16,13 @@ import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { billEditableSchema, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
-import { DEFAULT_PAGE_SIZE, SORT_DATA_PAGE_IDS, CACHE_TAG_BILL_DUES_ALL, CACHE_TAG_PAGINATION_DATA_PREFIX } from '@/constants/constants';
+import {
+  DEFAULT_PAGE_SIZE,
+  SORT_DATA_PAGE_IDS,
+  CACHE_TAG_BILL_DUES_ALL,
+  CACHE_TAG_PAGINATION_DATA_PREFIX,
+  CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
+} from '@/constants/constants';
 
 import { revalidatePaginationForPage } from '../pagination-data/pagination-data.server';
 import {
@@ -29,6 +35,7 @@ import {
 
 export async function revalidateBillDue() {
   revalidateTag(CACHE_TAG_BILL_DUES_ALL);
+  revalidateTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}TBDTODO`);
 }
 
 export const getAllBillsCached = cache(

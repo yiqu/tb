@@ -22,6 +22,7 @@ import BillsTableEditBillButton from './BillsTableEditBillButton';
 import BillsTableTogglePaidButton from './BillsTableTogglePaidButton';
 import BillsTableDeleteBillButton from './BillsTableDeleteBillButton';
 import BillsTableToggleReimbursedButton from './BillsTableToggleReimbursedButton';
+import SearchTableCellDisplayDueDateDateDisplay from './SearchTableCellDisplayDueDateDateDisplay';
 
 const useFormatter = getUSDFormatter(2, 2);
 
@@ -101,7 +102,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
                 hover:border-border hover:bg-accent
               ` }
             >
-              <DateDisplay date={ billDue.dueDate } dateFormat="MM/dd/yy" />
+              <SearchTableCellDisplayDueDateDateDisplay date={ billDue.dueDate } billDue={ billDue } />
               <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis />
             </div>
           </PopoverTrigger>

@@ -3,15 +3,26 @@
 'use server';
 
 import { cache } from 'react';
+import { DateTime } from 'luxon';
 import { Prisma } from '@prisma/client';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 
 import prisma from '@/lib/prisma';
-import { SortDataModel } from '@/models/sort-data/SortData.model';
-import { CACHE_TAG_SUBSCRIPTIONS_ALL, CACHE_TAG_SUBSCRIPTION_DETAILS } from '@/constants/constants';
+import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SubscriptionOriginal, SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
-import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
+import {
+  CACHE_TAG_SUBSCRIPTIONS_ALL,
+  CACHE_TAG_SUBSCRIPTION_DETAILS,
+  CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
+} from '@/constants/constants';
+import {
+  BillDue,
+  BillDueGroupedByYear,
+  BillDueWithSubscription,
+  BillsDueGroupedByYearObject,
+  BillDueWithSubscriptionAndSortData,
+} from '@/models/bills/bills.model';
 
 export async function revalidateSubscriptions() {
   revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
@@ -34,6 +45,11 @@ export const getAllSubscriptionsBareCached = cache(async () => {
 
 export const getSubscriptionWithBillDuesByIdCached = cache(async (subscriptionId: string) => {
   const res = await getSubscriptionWithBillDuesById(subscriptionId);
+  return res;
+});
+
+export const getSubscriptionBillsGroupedByYearByIdCached = cache(async (subscriptionId: string) => {
+  const res = await getSubscriptionBillsGroupedByYearById(subscriptionId);
   return res;
 });
 
@@ -64,7 +80,11 @@ async function getAllSubscriptionsWithBillDues(): Promise<SubscriptionWithBillDu
   try {
     const subscriptions: SubscriptionWithBillDues[] = await prisma.subscription.findMany({
       include: {
-        billDues: true,
+        billDues: {
+          include: {
+            subscription: true,
+          },
+        },
       },
     });
 
@@ -103,7 +123,11 @@ export async function getSubscriptionWithBillDuesById(subscriptionId: string): P
     const subscription: SubscriptionWithBillDues | null = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
       include: {
-        billDues: true,
+        billDues: {
+          include: {
+            subscription: true,
+          },
+        },
       },
     });
 
@@ -111,5 +135,52 @@ export async function getSubscriptionWithBillDuesById(subscriptionId: string): P
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getSubscriptionWithBillDuesById(): ', JSON.stringify(error));
     throw new Error(`Error retrieving subscription by id. Code: ${error.code}`);
+  }
+}
+
+export async function getSubscriptionBillsGroupedByYearById(subscriptionId: string): Promise<BillsDueGroupedByYearObject[]> {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}${subscriptionId}`);
+
+  try {
+    const subscription: SubscriptionWithBillDues | null = await prisma.subscription.findUnique({
+      where: { id: subscriptionId },
+      include: {
+        billDues: {
+          include: {
+            subscription: true,
+          },
+        },
+      },
+    });
+
+    const billDues: BillDueWithSubscription[] = subscription?.billDues ?? [];
+
+    const billDuesGroupedByYear: BillDueGroupedByYear = billDues.reduce((acc, billDue) => {
+      const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE);
+      const { year } = billDueDateLuxon;
+      if (!acc[year]) {
+        acc[year] = [];
+      }
+      acc[year].push(billDue);
+      return acc;
+    }, {} as BillDueGroupedByYear);
+
+    const billsDueGroupedByYear: BillsDueGroupedByYearObject[] = Object.entries(billDuesGroupedByYear).map(([year, bills]) => ({
+      year: year,
+      bills: bills.toSorted((a, b) => {
+        return Number.parseInt(a.dueDate) < Number.parseInt(b.dueDate) ? 1 : -1;
+      }),
+    }));
+
+    const sortedBillsDueGroupedByYear: BillsDueGroupedByYearObject[] = billsDueGroupedByYear.sort((a, b) => {
+      return Number.parseInt(a.year) < Number.parseInt(b.year) ? 1 : -1;
+    });
+
+    return sortedBillsDueGroupedByYear;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getSubscriptionBillsGroupedByYearById(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving getSubscriptionBillsGroupedByYearById. Code: ${error.code}`);
   }
 }

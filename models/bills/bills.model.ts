@@ -83,3 +83,12 @@ export interface BillDueWithSubscription2 {
   weekNumber?: number;
   humanReadable?: string;
 }
+
+export interface BillDueGroupedByYear {
+  [year: string]: BillDueWithSubscription[];
+}
+
+export interface BillsDueGroupedByYearObject {
+  year: string;
+  bills: BillDueWithSubscription[];
+}
