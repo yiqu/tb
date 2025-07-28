@@ -3,8 +3,10 @@
 import { Pie, Cell, PieChart } from 'recharts';
 
 export default function SubscriptionDetailsMetadataFooterTotalBillsChart({ count1, count2 }: { count1: number; count2: number }) {
+  const isAllReimbursedOrPaid = count2 === 0;
+
   const data = [
-    { name: 'count1', count: count1, fill: 'var(--chart-1)' },
+    { name: 'count1', count: count1, fill: isAllReimbursedOrPaid ? 'var(--green-1)' : 'var(--chart-1)' },
     { name: 'count2', count: count2, fill: 'var(--grey-1)' },
   ];
 

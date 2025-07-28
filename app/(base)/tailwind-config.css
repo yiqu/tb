@@ -47,6 +47,7 @@
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.05);
 
   --grey-1: oklch(0.92 0.02 83.06);
+  --green-1: #009933;
 
   /* lg: max size of secondary monitor */
   --breakpoint-lg: 1920px;
