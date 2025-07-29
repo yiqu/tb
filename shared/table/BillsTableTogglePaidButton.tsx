@@ -10,7 +10,15 @@ import { Button } from '@/components/ui/button';
 import billsTableViewStore from '@/store/bills/bills.store';
 import { updateIsBillDuePaid } from '@/server/bills/bills.server';
 
-export default function BillsTableTogglePaidButton({ billDueId, isPaid }: { billDueId: string; isPaid: boolean }) {
+export default function BillsTableTogglePaidButton({
+  billDueId,
+  isPaid,
+  subscriptionId,
+}: {
+  billDueId: string;
+  isPaid: boolean;
+  subscriptionId: string;
+}) {
   const setBillDueIdBeingEdited = billsTableViewStore.use.setBillDueIdBeingEdited();
   const setLastEdited = billsTableViewStore.use.setLastEdited();
   const clearBillDueIdBeingEdited = billsTableViewStore.use.clearBillDueIdBeingEdited();
@@ -37,10 +45,10 @@ export default function BillsTableTogglePaidButton({ billDueId, isPaid }: { bill
     setPage(page);
     startTransition(async () => {
       setOptimisticIsPaid(!isPaid);
-      const res = await updateIsBillDuePaid(billDueId, !isPaid);
+      const res = await updateIsBillDuePaid(billDueId, !isPaid, subscriptionId);
       setPage(page);
       toast.remove();
-      toast.success(`${res.paid ? 'Paid' : 'Unpaid'}`);
+      toast.success(`${res.paid ? 'Marked as paid.' : 'Marked as unpaid.'}`);
       clearBillDueIdBeingEdited(billDueId);
     });
   };
@@ -57,7 +65,7 @@ export default function BillsTableTogglePaidButton({ billDueId, isPaid }: { bill
     >
       <BanknoteArrowUp
         className={ cn(`
-          size-10 text-muted
+          size-8 text-muted
           dark:text-gray-500/60
         `, {
           'text-green-600 dark:text-green-500': optimisticIsPaid,

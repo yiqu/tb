@@ -77,7 +77,7 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
         });
 
         setEditBillId(null, {
-          history: 'push',
+          history: 'replace',
           scroll: false,
         });
 
@@ -94,7 +94,9 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
 
   return (
     <Form { ...methods }>
-      <form onSubmit={ methods.handleSubmit(onSubmit) }>{ children }</form>
+      <form onSubmit={ methods.handleSubmit(onSubmit) } id="edit-bill-dialog-form">
+        { children }
+      </form>
     </Form>
   );
 }

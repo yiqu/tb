@@ -2,6 +2,7 @@ import z from 'zod';
 import { Suspense } from 'react';
 
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
+import EditBillForm from '@/components/bills/EditBillForm';
 import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
@@ -9,6 +10,7 @@ import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagin
 import BillsTableParent from './_components/BillsTableParent';
 import BillsTableSkeleton from './_components/BillsTableSkeleton';
 import BillsTableActionBar from './_components/BillsTableActionBar';
+import BillsTableActionDialog from './_components/BillsTableActionDialog';
 import BillsTablePaginationWrapper from './_components/BillsTablePaginationWrapper';
 
 interface AllBillsPageProps {
@@ -25,6 +27,9 @@ export default function AllBillsPage({ searchParams }: AllBillsPageProps) {
       <BillsTablePaginationWrapper searchParams={ searchParams } />
       <Suspense fallback={ <BillsTableSkeleton /> }>
         <BillsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
+        <BillsTableActionDialog>
+          <EditBillForm />
+        </BillsTableActionDialog>
       </Suspense>
     </div>
   );

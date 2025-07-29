@@ -1,12 +1,10 @@
 import { CardContent } from '@/components/ui/card';
 import DisplayCard from '@/shared/components/DisplayCard';
-import EditBillForm from '@/components/bills/EditBillForm';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import BillsTableParentRow from '@/app/(base)/bills/_components/BillsTableParentRow';
 import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS } from '@/shared/table/table.utils';
-import BillsTableActionDialog from '@/app/(base)/bills/_components/BillsTableActionDialog';
 
 interface SubscriptionDetailsBillsTableProps {
   billDues: BillDueWithSubscription[];
@@ -46,10 +44,6 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
             )) }
           </TableBody>
         </Table>
-
-        <BillsTableActionDialog>
-          <EditBillForm />
-        </BillsTableActionDialog>
       </CardContent>
     </DisplayCard>
   );

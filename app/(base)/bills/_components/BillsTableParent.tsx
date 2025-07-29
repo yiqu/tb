@@ -3,7 +3,6 @@ import z from 'zod';
 import { CardContent } from '@/components/ui/card';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
-import EditBillForm from '@/components/bills/EditBillForm';
 import { getAllBillsCached } from '@/server/bills/bills.server';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import NoResultsCard from '@/components/status-cards/NoResultsCard';
@@ -16,7 +15,6 @@ import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS } from '@/shared/table/table
 import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
 import BillsTableParentRow from './BillsTableParentRow';
-import BillsTableActionDialog from './BillsTableActionDialog';
 
 interface BillsTableParentProps {
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
@@ -69,10 +67,6 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
             )) }
           </TableBody>
         </Table>
-
-        <BillsTableActionDialog>
-          <EditBillForm />
-        </BillsTableActionDialog>
       </CardContent>
     </DisplayCard>
   );

@@ -84,7 +84,13 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
             </DialogClose>
             <div className="flex flex-row items-center justify-end gap-x-2">
               <EditBillDialogResetButton />
-              <Button type="submit" className="w-[90px]" id="edit-bill-dialog-save-button" disabled={ isBillLoading || isFetching }>
+              <Button
+                type="submit"
+                className="w-[90px]"
+                id="edit-bill-dialog-save-button"
+                disabled={ isBillLoading || isFetching }
+                form="edit-bill-dialog-form"
+              >
                 <Save />
                 Save
               </Button>

@@ -8,7 +8,7 @@ import EditBillDialogContent from '@/components/bills/EditBillDialogContent';
 
 export default function BillsTableActionDialog({ children }: { children: ReactNode }) {
   const [editBillId, setEditBillId] = useQueryState('editBillId', {
-    history: 'push',
+    history: 'replace',
     scroll: false,
   });
 
@@ -17,7 +17,7 @@ export default function BillsTableActionDialog({ children }: { children: ReactNo
   const handleOnOpenEditDialog = (open: boolean) => {
     if (!open) {
       setEditBillId(null, {
-        history: 'push',
+        history: 'replace',
         scroll: false,
       });
     }

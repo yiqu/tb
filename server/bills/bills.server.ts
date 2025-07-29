@@ -35,7 +35,10 @@ import {
 
 export async function revalidateBillDue() {
   revalidateTag(CACHE_TAG_BILL_DUES_ALL);
-  revalidateTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}TBDTODO`);
+}
+
+export async function revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId: string) {
+  revalidateTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}${subscriptionId}`);
 }
 
 export const getAllBillsCached = cache(
@@ -210,7 +213,7 @@ export async function getAllBillsCount(): Promise<number> {
   }
 }
 
-export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean): Promise<BillDue> {
+export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, subscriptionId: string): Promise<BillDue> {
   try {
     const billDue: BillDue = await prisma.billDue.update({
       where: { id: billDueId },
@@ -219,6 +222,7 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean): P
 
     revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
+    revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -227,7 +231,7 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean): P
   }
 }
 
-export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed: boolean): Promise<BillDue> {
+export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed: boolean, subscriptionId: string): Promise<BillDue> {
   try {
     const billDue: BillDue = await prisma.billDue.update({
       where: { id: billDueId },
@@ -236,6 +240,7 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
 
     revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
+    revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -263,6 +268,7 @@ export async function updateBillDue(billDueId: string, data: z.infer<typeof bill
 
     revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
+    revalidateSubscriptionDetailsBillsDueGroupedByYear(billDue.subscriptionId);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {

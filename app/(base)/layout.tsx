@@ -1,5 +1,7 @@
+/* eslint-disable perfectionist/sort-imports */
 /* eslint-disable better-tailwindcss/no-unnecessary-whitespace */
 /* eslint-disable better-tailwindcss/multiline */
+import ReactScan from '@/providers/ReactScan';
 
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
@@ -13,7 +15,6 @@ import { appName } from '@/constants/constants';
 import theme from '@/components/ui-mui/mui/theme';
 import AppLayout from '@/components/layout/AppLayout';
 import { TooltipProvider } from '@/components/ui/tooltip';
-//import { geistFont, geistMonoFont } from '@/lib/fonts-config';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
@@ -78,6 +79,7 @@ export default function BaseRootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <ReactScan />
       <body
         className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} font-sans antialiased` }
         id="base-root-layout"

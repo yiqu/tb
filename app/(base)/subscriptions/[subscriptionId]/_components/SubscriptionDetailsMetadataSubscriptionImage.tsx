@@ -5,7 +5,7 @@ import { SparklesText } from '@/components/magicui/sparkles-text';
 import { getSubscriptionLogoUrl } from '@/shared/table/table.utils';
 import TiltedCard from '@/components/reactbits/Components/TiltedCard/TiltedCard';
 
-const IMAGE_WIDTH = 200;
+const IMAGE_WIDTH = 250;
 
 export default function SubscriptionDetailsMetadataSubscriptionImage({
   subscriptionName,

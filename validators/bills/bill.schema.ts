@@ -37,3 +37,9 @@ export const billSearchParamsSchema = z.object({
   month: z.string().optional(),
   page: z.number().optional(),
 });
+
+export const newBillDueSchema = z.object({
+  dueDate: z.string().min(1, { message: 'Due date is required' }),
+  paid: z.boolean().optional(),
+  reimbursed: z.boolean().optional(),
+});

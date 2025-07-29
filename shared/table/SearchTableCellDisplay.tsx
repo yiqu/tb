@@ -118,7 +118,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const isPaid = !!billDue.paid;
     return (
       <TableCell>
-        <BillsTableTogglePaidButton isPaid={ isPaid } billDueId={ billDue.id } />
+        <BillsTableTogglePaidButton isPaid={ isPaid } billDueId={ billDue.id } subscriptionId={ billDue.subscriptionId } />
       </TableCell>
     );
   }
@@ -127,7 +127,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const isReimbursed = !!billDue.reimbursed;
     return (
       <TableCell>
-        <BillsTableToggleReimbursedButton isReimbursed={ isReimbursed } billDueId={ billDue.id } />
+        <BillsTableToggleReimbursedButton isReimbursed={ isReimbursed } billDueId={ billDue.id } subscriptionId={ billDue.subscriptionId } />
       </TableCell>
     );
   }

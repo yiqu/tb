@@ -8,13 +8,13 @@ import { BillDueWithSubscription } from '@/models/bills/bills.model';
 
 export default function BillsTableEditBillButton({ billDue }: { billDue: BillDueWithSubscription }) {
   const [, setEditBillId] = useQueryState('editBillId', {
-    history: 'push',
+    history: 'replace',
     scroll: false,
   });
 
   const handleOnOpenEditDialog = () => {
     setEditBillId(billDue.id, {
-      history: 'push',
+      history: 'replace',
       scroll: false,
     });
   };
