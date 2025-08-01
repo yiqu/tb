@@ -1,11 +1,13 @@
 'use client';
 
+import { X, Plus } from 'lucide-react';
 import { RotateCcw } from 'lucide-react';
-import { X, Save, Plus } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { DialogClose, DialogTitle, DialogFooter, DialogHeader, DialogContent, DialogDescription } from '@/components/ui/dialog';
+import { DialogClose, DialogFooter } from '@/components/ui/dialog';
+
+import AddBillConsecutiveAdd from './form-fields/AddBillConsecutiveAdd';
 
 export default function AddNewBillDueDialogFooter() {
   return (
@@ -13,17 +15,20 @@ export default function AddNewBillDueDialogFooter() {
       mt-4 flex w-full flex-row bg-sidebar p-4
       sm:items-center sm:justify-between
     ` }>
-      <DialogClose asChild>
-        <Button variant="outline" type="button">
-          <X />
-          Cancel
-        </Button>
-      </DialogClose>
-      <div className="flex flex-row items-center justify-end gap-x-2">
+      <div className="flex flex-row items-center justify-start gap-x-2">
+        <DialogClose asChild>
+          <Button variant="outline" type="button">
+            <X />
+            Cancel
+          </Button>
+        </DialogClose>
         <ResetButton />
+      </div>
+      <div className="flex flex-row items-center justify-end gap-x-2">
+        <AddBillConsecutiveAdd />
         <Button type="submit" id="add-new-bill-due-dialog-save-button" disabled={ false } form="add-new-bill-due-dialog-form">
           <Plus />
-          Add
+          Add Bill Due
         </Button>
       </div>
     </DialogFooter>

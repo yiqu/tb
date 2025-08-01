@@ -1,17 +1,12 @@
 import { Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import EditBillForm from '@/components/bills/EditBillForm';
 import Typography from '@/components/typography/Typography';
+import AddNewBillDueDialog from '@/app/(base)/add/_components/AddNewBillDueDialog';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import BillsTableActionDialog from '@/app/(base)/bills/_components/BillsTableActionDialog';
-import AddNewBillDueDialogTitle from '@/app/(base)/add/_components/AddNewBillDueDialogTitle';
-import AddNewBillDueDialogFooter from '@/app/(base)/add/_components/AddNewBillDueDialogFooter';
-import AddNewBillDueDialogWrapper from '@/app/(base)/add/_components/AddNewBillDueDialogWrapper';
 import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
-import AddNewBillDueDialogContentCard from '@/app/(base)/add/_components/AddNewBillDueDialogContentCard';
-import AddNewBillDueDialogContentFormWrapper from '@/app/(base)/add/_components/AddNewBillDueDialogContentFormWrapper';
 
 import SubscriptionDetailsHeader from './SubscriptionDetailsHeader';
 import SubscriptionDetailsMetadata from './SubscriptionDetailsMetadata';
@@ -43,14 +38,7 @@ export default async function SubscriptionDetailsParent({ paramsPromise }: Subsc
       <BillsTableActionDialog>
         <EditBillForm />
       </BillsTableActionDialog>
-      <AddNewBillDueDialogWrapper>
-        <AddNewBillDueDialogTitle />
-        <Separator />
-        <AddNewBillDueDialogContentFormWrapper subscriptionId={ subscriptionId }>
-          <AddNewBillDueDialogContentCard />
-          <AddNewBillDueDialogFooter />
-        </AddNewBillDueDialogContentFormWrapper>
-      </AddNewBillDueDialogWrapper>
+      <AddNewBillDueDialog subscriptionId={ subscriptionId } />
     </div>
   );
 }

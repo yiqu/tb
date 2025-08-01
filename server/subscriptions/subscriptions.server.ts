@@ -11,18 +11,12 @@ import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 import prisma from '@/lib/prisma';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SubscriptionOriginal, SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
+import { BillDue, BillDueGroupedByYear, BillDueWithSubscription, BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
 import {
   CACHE_TAG_SUBSCRIPTIONS_ALL,
   CACHE_TAG_SUBSCRIPTION_DETAILS,
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
-import {
-  BillDue,
-  BillDueGroupedByYear,
-  BillDueWithSubscription,
-  BillsDueGroupedByYearObject,
-  BillDueWithSubscriptionAndSortData,
-} from '@/models/bills/bills.model';
 
 export async function revalidateSubscriptions() {
   revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);

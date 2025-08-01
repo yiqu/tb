@@ -81,7 +81,7 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
           scroll: false,
         });
 
-        return `${res.subscription.name}'s bill updated successfully.`;
+        return `Updated ${res.subscription.name}'s bill.`;
       },
       error: (error: Error) => {
         if (submitButton) {

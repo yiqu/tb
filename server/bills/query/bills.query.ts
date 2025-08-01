@@ -1,9 +1,11 @@
+import z from 'zod';
 import { queryOptions } from '@tanstack/react-query';
 
+import { billAddableSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
 
-import { getBillDueById } from '../bills.server';
+import { addBillDue, getBillDueById } from '../bills.server';
 
 // Fetch functions
 async function getBillById(billDueId: string): Promise<BillDueWithSubscription | null> {
@@ -26,4 +28,10 @@ export function getBillDueByIdQueryOptions(billDueId: string) {
     queryFn: getBillById.bind(null, billDueId),
     staleTime: 1000 * 1 * 60 * 5, // 5 minutes
   });
+}
+
+// ------------------------------ mutations ------------------------------
+
+export function addBillDueFn(subscriptionId: string, payload: z.infer<typeof billAddableSchema>): Promise<BillDueWithSubscription> {
+  return addBillDue(subscriptionId, payload);
 }

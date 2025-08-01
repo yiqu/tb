@@ -26,8 +26,8 @@ export default function BillsTablePaginationPageCountSelectList({
       }),
       {
         loading: 'Updating...',
-        success: `Updated Bills page size: ${value}`,
-        error: `Failed to update Bills page size to ${value}`,
+        success: `Updated bills page size: ${value}`,
+        error: `Failed to update bills page size to ${value}`,
       },
     );
   };

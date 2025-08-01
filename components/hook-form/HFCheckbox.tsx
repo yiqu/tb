@@ -46,13 +46,16 @@ export function HFCheckbox({
         return (
           <FormItem className={ cn(``, formItemClassName) }>
             <Label
-              className={ `
-                has-[[aria-checked=true]]:border-primary-600
-                dark:has-[[aria-checked=true]]:border-primary-900 dark:has-[[aria-checked=true]]:bg-primary-950
-                flex cursor-pointer items-start gap-3 rounded-lg border p-2
-                hover:bg-accent/10
-                has-[[aria-checked=true]]:bg-accent/10
-              ` }
+              className={ cn(
+                `
+                  has-[[aria-checked=true]]:border-primary-600
+                  dark:has-[[aria-checked=true]]:border-primary-900 dark:has-[[aria-checked=true]]:bg-primary-950
+                  flex cursor-pointer items-start gap-3 rounded-lg border p-2
+                  hover:bg-accent/10
+                  has-[[aria-checked=true]]:bg-accent/10
+                `,
+                labelClassName,
+              ) }
             >
               <Checkbox checked={ field.value } onCheckedChange={ handleOnCheckChange } disabled={ disabled } className={ checkboxClassName } />
 

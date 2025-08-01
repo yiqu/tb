@@ -38,7 +38,7 @@ export default function BillsTableDeleteBillButton({ billDue }: { billDue: BillD
       await toast.promise(deleteBillDue(billDueId), {
         loading: 'Deleting bill...',
         success: (res: BillDueWithSubscription) => {
-          return `${res.subscription.name}'s bill deleted successfully.`;
+          return `Deleted ${res.subscription.name}'s bill.`;
         },
         error: (error: Error) => {
           return `Failed to delete bill. ${error.message}`;

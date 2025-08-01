@@ -3,12 +3,11 @@
 import { z } from 'zod';
 import { useFormContext } from 'react-hook-form';
 
-import { billEditableSchema } from '@/validators/bills/bill.schema';
+import { HFCheckbox } from '@/components/hook-form/HFCheckbox';
+import { billAddableSchema } from '@/validators/bills/bill.schema';
 
-import { HFCheckbox } from '../hook-form/HFCheckbox';
-
-export default function EditBillIsReimbursed() {
-  const { control } = useFormContext<z.infer<typeof billEditableSchema>>();
+export default function AddBillIsReimbursed() {
+  const { control } = useFormContext<z.infer<typeof billAddableSchema>>();
 
   return (
     <HFCheckbox

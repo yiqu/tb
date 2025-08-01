@@ -14,13 +14,12 @@ import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
-import { billEditableSchema, billSearchParamsSchema } from '@/validators/bills/bill.schema';
+import { billAddableSchema, billEditableSchema, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 import {
   DEFAULT_PAGE_SIZE,
   SORT_DATA_PAGE_IDS,
   CACHE_TAG_BILL_DUES_ALL,
-  CACHE_TAG_PAGINATION_DATA_PREFIX,
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
@@ -309,5 +308,35 @@ export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubsc
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at deleteBillDue(): ', JSON.stringify(error));
     throw new Error(`Error deleting bill due. Code: ${error.code}`);
+  }
+}
+
+export async function addBillDue(subscriptionId: string, payload: z.infer<typeof billAddableSchema>): Promise<BillDueWithSubscription> {
+  // delay
+  await new Promise((resolve) => setTimeout(resolve, 3_000));
+  const billCost: number = Number.parseFloat(`${payload.cost}`);
+
+  try {
+    const billDue: BillDueWithSubscription = await prisma.billDue.create({
+      data: {
+        subscriptionId,
+        dueDate: payload.dueDate,
+        paid: payload.paid ?? false,
+        reimbursed: payload.reimbursed ?? false,
+        cost: billCost,
+      },
+      include: {
+        subscription: true,
+      },
+    });
+
+    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
+    revalidateBillDue();
+    revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
+
+    return billDue;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at addBillDue(): ', JSON.stringify(error));
+    throw new Error(`Error adding bill due. Code: ${error.code}`);
   }
 }

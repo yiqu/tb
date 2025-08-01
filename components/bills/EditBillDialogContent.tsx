@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import DateRelativeDisplay from '@/shared/table/DateRelativeDisplay';
-import { getBillDueByIdQueryOptions } from '@/server/bills/query/bills.quey';
+import { getBillDueByIdQueryOptions } from '@/server/bills/query/bills.query';
 import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
 import { DialogClose, DialogTitle, DialogFooter, DialogHeader, DialogContent, DialogDescription } from '@/components/ui/dialog';
 
