@@ -1,4 +1,4 @@
-import { Trash, Pencil, EllipsisVerticalIcon } from 'lucide-react';
+import { Trash, EllipsisVerticalIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import SubscriptionDetailsHeaderActionButtonAddNewBillDue from './SubscriptionDetailsHeaderActionButtonAddNewBillDue';
+import SubscriptionDetailsHeaderActionButtonEditSubscription from './SubscriptionDetailsHeaderActionButtonEditSubscription';
 
 export function SubscriptionDetailsHeaderActionButton({ subscription }: { subscription: SubscriptionWithBillDues }) {
   return (
@@ -32,11 +33,7 @@ export function SubscriptionDetailsHeaderActionButton({ subscription }: { subscr
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Pencil className="h-4 w-4" />
-            Edit subscription
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
+          <SubscriptionDetailsHeaderActionButtonEditSubscription subscriptionId={ subscription } />
           <DropdownMenuItem>
             <Trash className="h-4 w-4" />
             Delete subscription

@@ -28,7 +28,7 @@ model Subscription {
   cost              Float     @default(0)
   billCycleInDays   Int?      @default(0)
   billCycleDuration String    @default("yearly") // yearly, monthly
-  billStartDate     String    @default("2024-01-01")
+  billStartDate     String?   @default("2024-01-01")
   billDues          BillDue[]
 }
 

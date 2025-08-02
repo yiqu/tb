@@ -46,7 +46,7 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
       </div>
       <div className="flex flex-col items-start justify-start gap-y-1">
         <Typography variant="label1">Description</Typography>
-        <Typography variant="labelvalue1">{ subscription.description }</Typography>
+        <Typography variant={ subscription.description ? 'labelvalue1' : 'nodata1' }>{ subscription.description || 'N/A' }</Typography>
       </div>
       <div className="flex flex-col items-start justify-start gap-y-1">
         <Typography variant="label1">Last updated</Typography>

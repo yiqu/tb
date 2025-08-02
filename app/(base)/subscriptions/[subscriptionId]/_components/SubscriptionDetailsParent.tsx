@@ -5,6 +5,7 @@ import EditBillForm from '@/components/bills/EditBillForm';
 import Typography from '@/components/typography/Typography';
 import AddNewBillDueDialog from '@/app/(base)/add/_components/AddNewBillDueDialog';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
+import EditSubscriptionDialog from '@/app/(base)/add/_components/EditSubscriptionDialog';
 import BillsTableActionDialog from '@/app/(base)/bills/_components/BillsTableActionDialog';
 import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
@@ -39,6 +40,7 @@ export default async function SubscriptionDetailsParent({ paramsPromise }: Subsc
         <EditBillForm />
       </BillsTableActionDialog>
       <AddNewBillDueDialog subscriptionId={ subscriptionId } />
+      <EditSubscriptionDialog subscriptionId={ subscriptionId } />
     </div>
   );
 }

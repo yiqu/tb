@@ -303,6 +303,7 @@ export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubsc
 
     revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
+    revalidateSubscriptionDetailsBillsDueGroupedByYear(billDue.subscriptionId);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
