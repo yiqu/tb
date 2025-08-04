@@ -26,19 +26,17 @@ export default function SubscriptionDetailsMetadataFooterCurrentYearBills({ subs
   }
 
   const billsWithinTimeRangeCount = billsWithInTimeRange.length;
-  const paidOrReimbursedBillsCount = billsWithInTimeRange.filter(
-    (billDue: BillDueWithSubscription) => billDue.paid || billDue.reimbursed,
-  ).length;
+  const reimbursedBillsCount = billsWithInTimeRange.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
 
-  const count1 = paidOrReimbursedBillsCount;
-  const count2 = billsWithinTimeRangeCount - paidOrReimbursedBillsCount;
+  const count1 = reimbursedBillsCount;
+  const count2 = billsWithinTimeRangeCount - reimbursedBillsCount;
 
   return (
     <div className="flex flex-row items-center justify-end gap-x-2">
       <Typography variant="body1">
-        Current year { currentYearInNumber } bills:{ ' ' }
+        ({ currentYearInNumber }) Current year reimbursed bills:{ ' ' }
         <strong>
-          { paidOrReimbursedBillsCount } / { billsWithinTimeRangeCount }
+          { reimbursedBillsCount } / { billsWithinTimeRangeCount }
         </strong>
       </Typography>
       <SubscriptionDetailsMetadataFooterTotalBillsChart count1={ count1 } count2={ count2 } />

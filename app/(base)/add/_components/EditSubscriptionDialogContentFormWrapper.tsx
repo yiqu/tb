@@ -1,7 +1,6 @@
 'use client';
 
 import z from 'zod';
-import { DateTime } from 'luxon';
 import toast from 'react-hot-toast';
 import { useQueryState } from 'nuqs';
 import { use, ReactNode } from 'react';
@@ -10,10 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Form } from '@/components/ui/form';
-import { EST_TIME_ZONE } from '@/lib/general.utils';
-import { addBillDue } from '@/server/bills/bills.server';
-import { billAddableSchema } from '@/validators/bills/bill.schema';
-import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import { updateSubscription } from '@/server/subscriptions/subscriptions.server';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { subscriptionEditableSchema } from '@/validators/subscriptions/subscriptions.schema';
 
@@ -35,8 +31,8 @@ export default function EditSubscriptionDialogContentFormWrapper({
   const methods = useForm<z.infer<typeof subscriptionEditableSchema>>({
     defaultValues: {
       name: subscription?.name ?? '',
-      description: subscription?.description ?? '',
-      url: subscription?.url ?? '',
+      description: subscription?.description ?? undefined,
+      url: subscription?.url ?? undefined,
       approved: subscription?.approved ?? false,
       signed: subscription?.signed ?? false,
       cost: subscription?.cost ?? 0,
@@ -49,7 +45,22 @@ export default function EditSubscriptionDialogContentFormWrapper({
   });
 
   const onSubmit = async (data: z.infer<typeof subscriptionEditableSchema>) => {
-    console.log(data);
+    toast.promise(updateSubscription(subscriptionId, data), {
+      loading: 'Updating subscription...',
+      success: (res: SubscriptionWithBillDues) => {
+        confetti({
+          particleCount: 80,
+        });
+
+        setEditSubscriptionId(null, {
+          scroll: false,
+        });
+        return `Updated ${res.name}.`;
+      },
+      error: (error: Error) => {
+        return `Failed to update subscription. ${error.message}`;
+      },
+    });
   };
 
   return (

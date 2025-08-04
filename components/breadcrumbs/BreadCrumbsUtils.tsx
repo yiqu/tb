@@ -1,6 +1,17 @@
-import startCase from 'lodash/startCase';
 import { Params } from 'next/dist/server/request/params';
-import { Link, Brush, Search, Shield, Settings, Calendar, UserRound, CirclePlus, UserRoundPen, CalendarSync } from 'lucide-react';
+import {
+  Link,
+  Brush,
+  Search,
+  Shield,
+  Settings,
+  Calendar,
+  UserRound,
+  CirclePlus,
+  ReceiptText,
+  UserRoundPen,
+  CalendarSync,
+} from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import CenterUnderline from '@/fancy/components/text/underline-center';
@@ -29,8 +40,11 @@ export function BreadcrumbSegmentIcon({ path }: { path: string; params: Params; 
   if (path === 'subscription') {
     return <CalendarSync size={ 14 } />;
   }
-  if (path === 'bill') {
+  if (path === 'bills') {
     return <Calendar size={ 14 } />;
+  }
+  if (path === 'subscriptions') {
+    return <ReceiptText size={ 14 } />;
   }
   if (path === 'security') {
     return <Shield size={ 14 } />;
@@ -87,13 +101,37 @@ export function BreadcrumbSegmentTitle({ path, isLast }: { path: string; isLast?
     );
   }
 
+  if (path === 'subscriptions') {
+    return (
+      <Typography
+        className={ cn({
+          'text-muted-foreground': isLast,
+        }) }
+      >
+        <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Subscriptions' } />
+      </Typography>
+    );
+  }
+
+  if (path === 'bills') {
+    return (
+      <Typography
+        className={ cn({
+          'text-muted-foreground': isLast,
+        }) }
+      >
+        <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Bills' } />
+      </Typography>
+    );
+  }
+
   return (
     <Typography
       className={ cn({
         'text-muted-foreground': isLast,
       }) }
     >
-      { startCase(path) }
+      { path }
     </Typography>
   );
 }

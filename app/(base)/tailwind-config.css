@@ -48,6 +48,7 @@
 
   --grey-1: oklch(0.92 0.02 83.06);
   --green-1: #009933;
+  --yellow-1: #ffcc00;
 
   /* lg: max size of secondary monitor */
   --breakpoint-lg: 1920px;

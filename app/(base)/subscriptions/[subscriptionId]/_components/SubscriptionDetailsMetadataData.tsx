@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import Image from 'next/image';
 import { DateTime } from 'luxon';
 import startCase from 'lodash/startCase';
+import { ExternalLinkIcon } from 'lucide-react';
 
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { getUSDFormatter } from '@/lib/number.utils';
@@ -19,9 +21,21 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
     <div className="flex w-full flex-col items-start justify-start gap-y-4">
       <div className="flex flex-col items-start justify-start gap-y-1">
         <Typography variant="label1">Name</Typography>
-        <Typography variant="labelvalue1" className="font-semibold">
-          { subscription.name }
-        </Typography>
+        <div className="flex flex-col items-start justify-start gap-y-1">
+          <Typography variant="labelvalue1" className="font-semibold">
+            { subscription.name }
+          </Typography>
+          { subscription.url ?
+            <Link href={ subscription.url ?? '' } target="_blank" rel="noopener noreferrer">
+              <div className="flex flex-row items-center justify-start gap-x-1">
+                <Typography variant="labelvalue1" className="font-semibold">
+                  { subscription.url }
+                </Typography>
+                <ExternalLinkIcon className="h-4 w-4" />
+              </div>
+            </Link>
+          : null }
+        </div>
       </div>
       <div className="flex flex-col items-start justify-start gap-y-1">
         <Typography variant="label1">Frequency</Typography>

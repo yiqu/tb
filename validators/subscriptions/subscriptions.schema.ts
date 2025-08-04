@@ -26,3 +26,9 @@ export const subscriptionAddableSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
   description: z.string().optional(),
 });
+
+export const subscriptionSearchParamsSchema = z.object({
+  frequency: z.string().optional(),
+  subscriptions: z.string().optional(),
+  page: z.number().optional(),
+});

@@ -6,10 +6,9 @@ import { ChevronUp, ChevronDown, LoaderCircle, ChevronsUpDown } from 'lucide-rea
 
 import { cn } from '@/lib/utils';
 import { TableHead } from '@/components/ui/table';
-import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import Typography from '@/components/typography/Typography';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
-import { SortDataModel, SortDataUpsertable } from '@/models/sort-data/SortData.model';
+import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import {
   SortData,
   SortField,
@@ -24,9 +23,10 @@ interface SearchTableHeaderDisplayProps {
   index: number;
   length: number;
   sortData: SortDataModel | null;
+  pageId: SortDataPageId;
 }
 
-export default function SearchTableHeaderDisplay({ columnId, index, length, sortData }: SearchTableHeaderDisplayProps) {
+export default function SearchTableHeaderDisplay({ columnId, index, length, sortData, pageId }: SearchTableHeaderDisplayProps) {
   const [isPending, startTransition] = useTransition();
 
   const currentSortData: SortData = {
@@ -49,7 +49,7 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
       upsertOptimisticSortData(nextSortData);
       const sortDataToUpdate: SortDataUpsertable = {
         id: sortData?.id ?? undefined,
-        pageId: SORT_DATA_PAGE_IDS.search,
+        pageId,
         sortDirection: nextSortData.direction,
         sortField: nextSortData.sort,
       };

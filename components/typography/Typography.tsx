@@ -36,9 +36,9 @@ const typographyVariants = cva('scroll-m-20 tracking-tight', {
       subtitle1: `text-[0.875rem] leading-6 tracking-normal text-gray-500`,
       subtitle2: `text-[1rem] leading-6.5 tracking-normal text-gray-500`,
 
-      nodata0: `text-[0.75rem] leading-5 tracking-normal text-gray-600 italic`,
-      nodata1: `text-[0.875rem] leading-6 tracking-normal text-gray-600 italic`,
-      nodata2: `text-[1rem] leading-6.5 tracking-normal text-gray-600 italic`,
+      nodata0: `text-[0.75rem] leading-5 tracking-normal text-gray-300 italic`,
+      nodata1: `text-[0.875rem] leading-6 tracking-normal text-gray-300 italic`,
+      nodata2: `text-[1rem] leading-6.5 tracking-normal text-gray-300 italic`,
 
       label0: `text-[0.75rem] leading-5 tracking-normal text-gray-600 dark:text-gray-300`,
       label1: `text-[0.875rem] leading-6 tracking-normal text-gray-600 dark:text-gray-300`,

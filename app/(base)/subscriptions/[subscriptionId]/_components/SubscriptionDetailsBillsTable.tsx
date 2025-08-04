@@ -1,5 +1,6 @@
 import { CardContent } from '@/components/ui/card';
 import DisplayCard from '@/shared/components/DisplayCard';
+import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
@@ -33,6 +34,7 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
                     index={ index }
                     length={ array.length }
                     sortData={ null }
+                    pageId={ SORT_DATA_PAGE_IDS.search }
                   />
                 );
               }) }

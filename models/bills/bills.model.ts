@@ -34,7 +34,7 @@ export type SubscriptionOriginal = {
   approved: boolean;
   billCycleDuration: string;
   billCycleInDays: number | null;
-  billStartDate: string; //"2024-05-25"
+  billStartDate: string | null; //"2024-05-25"
   cost: number;
   dateAdded: Date;
   updatedAt: Date | null;

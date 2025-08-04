@@ -23,6 +23,7 @@ import {
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
+import { revalidateSubscriptionDetails } from '../subscriptions/subscriptions.server';
 import { revalidatePaginationForPage } from '../pagination-data/pagination-data.server';
 import {
   getSortedBillDues,
@@ -81,9 +82,12 @@ export async function getAllBills(
 
   if (searchParams?.frequency && searchParams.frequency.trim() !== '') {
     // the billCycleDuration is a prop in the subscription that is included in the billDue
+    const frequencies = searchParams.frequency.split(',');
     whereClause.AND.push({
       subscription: {
-        billCycleDuration: searchParams.frequency,
+        billCycleDuration: {
+          in: frequencies,
+        },
       },
     });
   }
@@ -222,6 +226,7 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, su
     revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
+    revalidateSubscriptionDetails(subscriptionId);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -240,6 +245,7 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
     revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
+    revalidateSubscriptionDetails(subscriptionId);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {

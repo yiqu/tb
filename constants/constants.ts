@@ -38,7 +38,8 @@ export const CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR = 'subscription-bills-
 
 export const SORT_DATA_PAGE_IDS = {
   search: 'search',
-};
+  subscriptions: 'subscriptions',
+} as const;
 
 // pagination
 export const DEFAULT_PAGE_SIZE = 10;

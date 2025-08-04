@@ -30,6 +30,7 @@ export default async function SearchTableParent() {
                     index={ index }
                     length={ array.length }
                     sortData={ billDues.sortData }
+                    pageId={ SORT_DATA_PAGE_IDS.search }
                   />
                 );
               }) }

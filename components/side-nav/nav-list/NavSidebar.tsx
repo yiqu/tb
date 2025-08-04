@@ -6,6 +6,7 @@ import { HomeGroup } from '@/components/sidebar/home-group/HomeGroup';
 import { AddNewGroup } from '@/components/sidebar/add-group/AddNewGroup';
 import { QueryGroup } from '@/components/sidebar/search-group/SearchGroup';
 import { QuickAccessGroup } from '@/components/sidebar/quick-access-group/QuickAccessGroup';
+import SubscriptionsGroup from '@/components/sidebar/subscriptions-group/SubscriptionsGroup';
 import { OutstandingBillsGroup } from '@/components/sidebar/outstanding-group/OutstandingBillsGroup';
 import {
   Sidebar,
@@ -30,6 +31,7 @@ export async function NavSidebar({ ...props }: React.ComponentProps<typeof Sideb
         <HomeGroup />
         <OutstandingBillsGroup />
         <BillsGroup />
+        <SubscriptionsGroup />
         <QueryGroup />
         <Suspense fallback={ <NavSidebarSuspended title="New" /> }>
           <AddNewGroup />
