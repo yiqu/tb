@@ -24,9 +24,10 @@ interface SearchTableHeaderDisplayProps {
   length: number;
   sortData: SortDataModel | null;
   pageId: SortDataPageId;
+  sortable?: boolean;
 }
 
-export default function SearchTableHeaderDisplay({ columnId, index, length, sortData, pageId }: SearchTableHeaderDisplayProps) {
+export default function SearchTableHeaderDisplay({ columnId, index, length, sortData, pageId, sortable }: SearchTableHeaderDisplayProps) {
   const [isPending, startTransition] = useTransition();
 
   const currentSortData: SortData = {
@@ -44,6 +45,10 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
   const sortDirection: string | undefined = optimisticSortData.direction;
 
   const handleOnHeaderClick = (columnId: string) => {
+    if (!sortable) {
+      return;
+    }
+
     const nextSortData: SortData = getNextSortDirection(optimisticSortData, columnId as SortField);
     startTransition(() => {
       upsertOptimisticSortData(nextSortData);
@@ -59,9 +64,10 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
 
   return (
     <TableHead
-      className={ cn('cursor-pointer truncate hover:bg-sidebar-accent/70 dark:hover:bg-[#65574e]', {
+      className={ cn('truncate', {
         'rounded-tl-md': index === 0,
         'rounded-tr-md': index === length - 1,
+        'cursor-pointer hover:bg-sidebar-accent/70 dark:hover:bg-[#65574e]': sortable,
       }) }
       style={ {
         width: SEARCH_TABLE_COLUMN_WIDTH[columnId],
@@ -97,7 +103,9 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
                 />
               }
             </>
-          : <ChevronsUpDown className="size-4 min-w-4 text-gray-300/60 dark:text-gray-500/30" /> }
+          : sortable ?
+            <ChevronsUpDown className="size-4 min-w-4 text-gray-400/60 dark:text-gray-500/30" />
+          : null }
         </div>
       </span>
     </TableHead>

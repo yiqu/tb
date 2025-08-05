@@ -29,7 +29,6 @@ import {
 } from '@/constants/constants';
 
 import { getSortedSubscriptions } from './subscriptions.utils';
-import { revalidateSubscriptionDetailsBillsDueGroupedByYear } from '../bills/bills.server';
 
 export async function revalidateSubscriptions() {
   revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
@@ -37,6 +36,10 @@ export async function revalidateSubscriptions() {
 
 export async function revalidateSubscriptionDetails(subscriptionId: string) {
   revalidateTag(`${CACHE_TAG_SUBSCRIPTION_DETAILS}${subscriptionId}`);
+}
+
+export async function revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId: string) {
+  revalidateTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}${subscriptionId}`);
 }
 
 export const getAllSubscriptionsCached = cache(async () => {
@@ -116,7 +119,7 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     // subscriptions is a string of ids separated by commas
     const subscriptionIds = searchParams.subscriptions.split(',');
     whereClause.AND.push({
-      subscriptionId: {
+      id: {
         in: subscriptionIds,
       },
     });
@@ -126,10 +129,8 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     // the billCycleDuration is a prop in the subscription that is included in the billDue
     const frequencies = searchParams.frequency.split(',');
     whereClause.AND.push({
-      subscription: {
-        billCycleDuration: {
-          in: frequencies,
-        },
+      billCycleDuration: {
+        in: frequencies,
       },
     });
   }
@@ -143,7 +144,25 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
           },
         },
       },
-      where: whereClause,
+      where: whereClause.AND.length > 0 ? whereClause : {},
+    });
+    // add the billDuesCurrentYearTotalCost to the subscriptions
+    subscriptions = subscriptions.map((subscription) => {
+      const billDuesCurrentYearCount = subscription.billDues.filter((billDue) => {
+        return (
+          DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).year === DateTime.now().setZone(EST_TIME_ZONE).year
+        );
+      }).length;
+
+      const billDuesCurrentYearTotalCost = subscription.billDues
+        .filter((billDue) => {
+          return (
+            DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).year === DateTime.now().setZone(EST_TIME_ZONE).year
+          );
+        })
+        .reduce((acc, billDue) => acc + Number.parseFloat(`${billDue.cost ?? 0}`), 0);
+
+      return { ...subscription, billDuesCurrentYearCount, billDuesCurrentYearTotalCost };
     });
 
     // sort the bill dues
@@ -164,24 +183,6 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     const endIndex: number = pageNumber === totalPages ? subscriptions.length : startIndex + pageSize;
     let subscriptionsToReturn: SubscriptionWithBillDues[] = subscriptions.slice(startIndex, endIndex);
 
-    subscriptionsToReturn = subscriptionsToReturn.map((subscription) => {
-      const billDuesCurrentYearCount = subscription.billDues.filter((billDue) => {
-        return (
-          DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).year === DateTime.now().setZone(EST_TIME_ZONE).year
-        );
-      }).length;
-
-      const billDuesCurrentYearTotalCost = subscription.billDues
-        .filter((billDue) => {
-          return (
-            DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).year === DateTime.now().setZone(EST_TIME_ZONE).year
-          );
-        })
-        .reduce((acc, billDue) => acc + Number.parseFloat(`${billDue.cost ?? 0}`), 0);
-
-      return { ...subscription, billDuesCurrentYearCount, billDuesCurrentYearTotalCost };
-    });
-
     return {
       subscriptions: subscriptionsToReturn,
       sortData,
@@ -192,7 +193,9 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     };
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllSubscriptionsWithBillDuesPaginated(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving subscriptions with bill dues. Code: ${error.code}`);
+    const errorCode = error?.code || 'UNKNOWN';
+    const errorMessage = error?.message || error?.toString() || 'Unknown error';
+    throw new Error(`Error retrieving subscriptions with bill dues. Code: ${errorCode}, Message: ${errorMessage}`);
   }
 }
 

@@ -57,6 +57,7 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
                     length={ array.length }
                     sortData={ billDues.sortData }
                     pageId={ SORT_DATA_PAGE_IDS.search }
+                    sortable={ column.sortable ?? false }
                   />
                 );
               }) }

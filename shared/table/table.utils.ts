@@ -1,34 +1,35 @@
 export type SearchTableColumn = {
   headerId: string;
   ordinal: number;
+  sortable?: boolean;
 };
 
 export const SEARCH_TABLE_COLUMN_IDS: SearchTableColumn[] = [
-  { headerId: 'cost', ordinal: 0 },
-  { headerId: 'frequency', ordinal: 0.5 },
+  { headerId: 'cost', ordinal: 0, sortable: true },
+  { headerId: 'frequency', ordinal: 0.5, sortable: true },
   // { headerId: 'id', ordinal: 7 },
-  { headerId: 'dateAdded', ordinal: 5 },
-  { headerId: 'dueDate', ordinal: 2 },
-  { headerId: 'paid', ordinal: 3 },
-  { headerId: 'reimbursed', ordinal: 4 },
-  { headerId: 'subscription', ordinal: 1 },
-  { headerId: 'updatedAt', ordinal: 6 },
-  { headerId: 'actions', ordinal: 8 },
+  { headerId: 'dateAdded', ordinal: 5, sortable: true },
+  { headerId: 'dueDate', ordinal: 2, sortable: true },
+  { headerId: 'paid', ordinal: 3, sortable: true },
+  { headerId: 'reimbursed', ordinal: 4, sortable: true },
+  { headerId: 'subscription', ordinal: 1, sortable: true },
+  { headerId: 'updatedAt', ordinal: 6, sortable: true },
+  { headerId: 'actions', ordinal: 8, sortable: false },
 ];
 
 export const SUBSCRIPTIONS_TABLE_COLUMN_IDS: SearchTableColumn[] = [
-  { headerId: 'name', ordinal: 0 },
-  { headerId: 'description', ordinal: 1 },
-  { headerId: 'url', ordinal: 2 },
-  { headerId: 'cost', ordinal: 3 },
-  { headerId: 'billCycleDuration', ordinal: 4 },
-  { headerId: 'billDuesCurrentYearCount', ordinal: 5 },
-  { headerId: 'billDuesCurrentYearTotalCost', ordinal: 6 },
-  { headerId: 'approved', ordinal: 7 },
-  { headerId: 'signed', ordinal: 8 },
-  { headerId: 'dateAdded', ordinal: 9 },
-  { headerId: 'updatedAt', ordinal: 10 },
-  { headerId: 'actions', ordinal: 11 },
+  { headerId: 'name', ordinal: 0, sortable: true },
+  { headerId: 'description', ordinal: 1, sortable: true },
+  { headerId: 'url', ordinal: 2, sortable: true },
+  { headerId: 'cost', ordinal: 3, sortable: true },
+  { headerId: 'billCycleDuration', ordinal: 4, sortable: true },
+  { headerId: 'billDuesCurrentYearCount', ordinal: 5, sortable: true },
+  { headerId: 'billDuesCurrentYearTotalCost', ordinal: 6, sortable: true },
+  { headerId: 'approved', ordinal: 7, sortable: true },
+  { headerId: 'signed', ordinal: 8, sortable: true },
+  { headerId: 'dateAdded', ordinal: 9, sortable: true },
+  { headerId: 'updatedAt', ordinal: 10, sortable: true },
+  { headerId: 'actions', ordinal: 11, sortable: false },
 ];
 
 export const getSearchTableColumnWidth = (columnId: string): string | undefined => {

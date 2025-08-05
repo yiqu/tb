@@ -21,6 +21,7 @@ import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import SubscriptionsTableToggleSignedButton from './SubscriptionsTableToggleSignedButton';
 import SubscriptionsTableToggleApprovedButton from './SubscriptionsTableToggleApprovedButton';
+import SubscriptionsTableCellDisplayCurrentYearCount from './SubscriptionsTableCellDisplayCurrentYearCount';
 
 const useFormatter = getUSDFormatter(2, 2);
 
@@ -163,9 +164,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
   if (colId === 'billDuesCurrentYearCount') {
     return (
       <TableCell>
-        <Typography className="truncate" variant={ subscription.billDuesCurrentYearCount !== undefined ? 'labelvalue1' : 'nodata1' }>
-          { subscription.billDuesCurrentYearCount ?? 0 }
-        </Typography>
+        <SubscriptionsTableCellDisplayCurrentYearCount subscription={ subscription } />
       </TableCell>
     );
   }
@@ -195,7 +194,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
               ` }
             >
               <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" />
-              <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis />
+              <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis className="truncate" />
             </div>
           </PopoverTrigger>
           <PopoverContent>

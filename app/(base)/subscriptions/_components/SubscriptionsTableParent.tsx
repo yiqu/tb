@@ -31,7 +31,7 @@ export default async function SubscriptionsTableParent({ searchParamsPromise, pa
     searchParams,
   );
   const columnsSorted: SearchTableColumn[] = SUBSCRIPTIONS_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
-  
+
   if (subscriptions.subscriptions.length === 0) {
     return (
       <div className="mt-6 flex w-full flex-col items-center justify-center gap-y-2">
@@ -61,6 +61,7 @@ export default async function SubscriptionsTableParent({ searchParamsPromise, pa
                     length={ array.length }
                     sortData={ subscriptions.sortData }
                     pageId={ SORT_DATA_PAGE_IDS.subscriptions }
+                    sortable={ column.sortable ?? false }
                   />
                 );
               }) }

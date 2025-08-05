@@ -2,11 +2,19 @@
 
 import { Pie, Cell, PieChart } from 'recharts';
 
-export default function SubscriptionDetailsMetadataFooterTotalBillsChart({ count1, count2 }: { count1: number; count2: number }) {
+export default function SubscriptionDetailsMetadataFooterTotalBillsChart({
+  count1,
+  count2,
+  progressColor = 'var(--yellow-1)',
+}: {
+  count1: number;
+  count2: number;
+  progressColor?: string;
+}) {
   const isAllReimbursed = count2 === 0;
 
   const data = [
-    { name: 'count1', count: count1, fill: isAllReimbursed ? 'var(--green-1)' : 'var(--yellow-1)' },
+    { name: 'count1', count: count1, fill: isAllReimbursed ? 'var(--green-1)' : progressColor },
     { name: 'count2', count: count2, fill: 'var(--grey-1)' },
   ];
 

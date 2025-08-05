@@ -2,6 +2,7 @@
 
 import { formatDistanceToNow } from 'date-fns';
 
+import { cn } from '@/lib/utils';
 import useIsClient from '@/hooks/useIsClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
@@ -12,12 +13,14 @@ export default function DateRelativeDisplay({
   prefixText = '',
   postFixText = '',
   addSuffix = true,
+  className = '',
 }: {
   time: Date | string | null;
   includeParenthesis?: boolean;
   prefixText?: string;
   postFixText?: string;
   addSuffix?: boolean;
+  className?: string;
 }) {
   const isClient = useIsClient();
 
@@ -36,7 +39,7 @@ export default function DateRelativeDisplay({
   const relativeDate = formatDistanceToNow(time instanceof Date ? time : new Date(Number.parseInt(time)), { addSuffix: addSuffix });
 
   return (
-    <Typography>
+    <Typography className={ cn(className) }>
       { includeParenthesis ?
         `(${prefixText ? `${prefixText} ` : ''}${relativeDate}${postFixText ? ` ${postFixText}` : ''})`
       : `${prefixText ? `${prefixText} ` : ''}${relativeDate}${postFixText ? ` ${postFixText}` : ''}` }

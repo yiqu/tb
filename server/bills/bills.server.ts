@@ -23,8 +23,8 @@ import {
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
-import { revalidateSubscriptionDetails } from '../subscriptions/subscriptions.server';
 import { revalidatePaginationForPage } from '../pagination-data/pagination-data.server';
+import { revalidateSubscriptions, revalidateSubscriptionDetails } from '../subscriptions/subscriptions.server';
 import {
   getSortedBillDues,
   getFilteredBillDuesByYear,
@@ -227,6 +227,7 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, su
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
+    revalidateSubscriptions();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -246,6 +247,7 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
+    revalidateSubscriptions();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -274,6 +276,8 @@ export async function updateBillDue(billDueId: string, data: z.infer<typeof bill
     revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(billDue.subscriptionId);
+    revalidateSubscriptionDetails(billDue.subscriptionId);
+    revalidateSubscriptions();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -310,6 +314,8 @@ export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubsc
     revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(billDue.subscriptionId);
+    revalidateSubscriptionDetails(billDue.subscriptionId);
+    revalidateSubscriptions();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -340,6 +346,8 @@ export async function addBillDue(subscriptionId: string, payload: z.infer<typeof
     revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
+    revalidateSubscriptionDetails(subscriptionId);
+    revalidateSubscriptions();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
