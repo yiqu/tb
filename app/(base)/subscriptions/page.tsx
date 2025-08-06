@@ -9,7 +9,9 @@ import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagin
 import SubscriptionsTableParent from './_components/SubscriptionsTableParent';
 import SubscriptionsTableSkeleton from './_components/SubscriptionsTableSkeleton';
 import SubscriptionsTableActionBar from './_components/SubscriptionsTableActionBar';
+import SubscriptionsTableActionDialog from './_components/SubscriptionsTableActionDialog';
 import SubscriptionsTablePaginationWrapper from './_components/SubscriptionsTablePaginationWrapper';
+import EditSubscriptionDialogContentCard from '../add/_components/EditSubscriptionDialogContentCard';
 
 interface SubscriptionsPageProps {
   params: Promise<{ slug: string }>;
@@ -25,9 +27,9 @@ export default function SubscriptionsPage({ searchParams }: SubscriptionsPagePro
       <SubscriptionsTablePaginationWrapper searchParams={ searchParams } />
       <Suspense fallback={ <SubscriptionsTableSkeleton /> }>
         <SubscriptionsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
-        { /* <BillsTableActionDialog>
-          <EditBillForm />
-        </BillsTableActionDialog> */ }
+        <SubscriptionsTableActionDialog>
+          <EditSubscriptionDialogContentCard />
+        </SubscriptionsTableActionDialog>
       </Suspense>
     </div>
   );

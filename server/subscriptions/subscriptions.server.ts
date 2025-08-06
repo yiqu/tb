@@ -28,6 +28,7 @@ import {
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
+import { revalidateBillDue } from '../bills/bills.server';
 import { getSortedSubscriptions } from './subscriptions.utils';
 
 export async function revalidateSubscriptions() {
@@ -265,6 +266,26 @@ export async function getSubscriptionWithBillDuesById(subscriptionId: string): P
   }
 }
 
+export async function getSubscriptionWithBillDuesByIdUncached(subscriptionId: string): Promise<SubscriptionWithBillDues | null> {
+  try {
+    const subscription: SubscriptionWithBillDues | null = await prisma.subscription.findUnique({
+      where: { id: subscriptionId },
+      include: {
+        billDues: {
+          include: {
+            subscription: true,
+          },
+        },
+      },
+    });
+
+    return subscription;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getSubscriptionWithBillDuesById(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving subscription by id. Code: ${error.code}`);
+  }
+}
+
 export async function getSubscriptionBillsGroupedByYearById(subscriptionId: string): Promise<BillsDueGroupedByYearObject[]> {
   'use cache';
   cacheLife('weeks');
@@ -316,6 +337,9 @@ export async function updateSubscription(
   subscriptionId: string,
   payload: z.infer<typeof subscriptionEditableSchema>,
 ): Promise<SubscriptionWithBillDues> {
+  // delay 2 seconds
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   try {
     const subscription: SubscriptionWithBillDues = await prisma.subscription.update({
       where: { id: subscriptionId },
@@ -340,6 +364,7 @@ export async function updateSubscription(
     revalidateSubscriptions();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
+    revalidateBillDue();
 
     return subscription;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {

@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 import { cn } from '@/lib/utils';
 import useIsClient from '@/hooks/useIsClient';
+import { isNumeric } from '@/lib/number.utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
 
@@ -36,7 +37,12 @@ export default function DateRelativeDisplay({
     return <Typography>N/A</Typography>;
   }
 
-  const relativeDate = formatDistanceToNow(time instanceof Date ? time : new Date(Number.parseInt(time)), { addSuffix: addSuffix });
+  const timeData =
+    time instanceof Date ? time
+    : isNumeric(time) ? new Date(Number.parseInt(time))
+    : new Date(time);
+
+  const relativeDate = formatDistanceToNow(timeData, { addSuffix: addSuffix });
 
   return (
     <Typography className={ cn(className) }>

@@ -24,7 +24,11 @@ export const FONT_FAMILY_PRIMARY = 'Geist';
 
 export const TANSTACK_QUERY_QUERY_KEY_FIREBASE_USER = 'firebase-user';
 export const TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS = 'bill-due-details';
+export const TANSTACK_QUERY_QUERY_KEY_SUBSCRIPTION_DETAILS = 'subscription-details';
 export const TANSTACK_QUERY_QUERY_KEY_ID_GENERAL = 'id';
+
+// TanStack mutation keys
+export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_UPDATE = 'subscription-details-update';
 
 export const CACHE_TAG_BILL_DUES_ALL = 'bill-dues-all';
 export const CACHE_TAG_USER_ACHIEVEMENTS = 'user-achievements';
