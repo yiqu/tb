@@ -27,9 +27,9 @@ export default function SubscriptionsPage({ searchParams }: SubscriptionsPagePro
       <SubscriptionsTablePaginationWrapper searchParams={ searchParams } />
       <Suspense fallback={ <SubscriptionsTableSkeleton /> }>
         <SubscriptionsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
-        <SubscriptionsTableActionDialog>
+        { /* <SubscriptionsTableActionDialog>
           <EditSubscriptionDialogContentCard />
-        </SubscriptionsTableActionDialog>
+        </SubscriptionsTableActionDialog> */ }
       </Suspense>
     </div>
   );
