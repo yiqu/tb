@@ -1,13 +1,14 @@
 import { Metadata } from 'next';
-import { ReactNode } from 'react';
+import { Suspense, ReactNode } from 'react';
 
-import { Separator } from '@/components/ui/separator';
-import PageTitle from '@/components/headings/PageTitle';
-import LayoutParent from '@/components/layout/LayoutParent';
-import { AuroraText } from '@/components/magicui/aurora-text';
-import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
-import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
-import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import SubscriptionDetailsHeader from './_components/SubscriptionDetailsHeader';
+
+interface SubscriptionDetailsLayoutProps {
+  children: ReactNode;
+  params: Promise<{ subscriptionId: string }>;
+}
 
 export const metadata: Metadata = {
   title: 'Subscription Details',
@@ -16,23 +17,21 @@ export const metadata: Metadata = {
 
 export const experimental_ppr = true;
 
-export default function SubscriptionDetailsLayout({ children }: { children: ReactNode; params: Promise<any> }) {
+export default function SubscriptionDetailsLayout({ children, params }: SubscriptionDetailsLayoutProps) {
   return (
-    <div id="subscription-details-layout-parent">
-      <LayoutParent>
-        <LayoutWithGutter size="wider">
-          <section className="w-full">
-            <PageTitle
-              title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.subscriptions }>Subscription</AuroraText> }
-              subText="View the subscription's bills and other details."
-            />
-          </section>
-        </LayoutWithGutter>
-      </LayoutParent>
-      <Separator />
-      <LayoutChildrenParent>
-        <LayoutWithGutter size="wider">{ children }</LayoutWithGutter>
-      </LayoutChildrenParent>
+    <div id="subscription-details-layout-parent" className="flex w-full flex-col items-start justify-start gap-y-9">
+      <Suspense fallback={ <HeaderSkeleton /> }>
+        <SubscriptionDetailsHeader subscriptionPromise={ params } />
+      </Suspense>
+      { children }
+    </div>
+  );
+}
+
+function HeaderSkeleton() {
+  return (
+    <div className="flex w-full flex-row items-center justify-start">
+      <Skeleton className="h-9 w-full" />
     </div>
   );
 }

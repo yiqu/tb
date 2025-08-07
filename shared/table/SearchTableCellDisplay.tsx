@@ -41,7 +41,9 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
           sec:gap-x-1
           two:gap-x-6
         ` }>
-          <Typography className="truncate">{ useFormatter.format(cost) }</Typography>
+          <Link href={ `/bills/${billDue.id}` } prefetch={ true }>
+            <CenterUnderline label={ useFormatter.format(cost) } className="truncate" />
+          </Link>
         </div>
       </TableCell>
     );

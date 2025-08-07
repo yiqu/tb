@@ -9,7 +9,6 @@ import EditSubscriptionDialog from '@/app/(base)/add/_components/EditSubscriptio
 import BillsTableActionDialog from '@/app/(base)/bills/_components/BillsTableActionDialog';
 import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
-import SubscriptionDetailsHeader from './SubscriptionDetailsHeader';
 import SubscriptionDetailsMetadata from './SubscriptionDetailsMetadata';
 import SubscriptionDetailsBillsTableParentParent from './SubscriptionDetailsBillsTableParentParent';
 
@@ -28,8 +27,7 @@ export default async function SubscriptionDetailsParent({ paramsPromise }: Subsc
   }
 
   return (
-    <div className="flex w-full flex-col items-start justify-start gap-y-9">
-      <SubscriptionDetailsHeader subscription={ subscription } />
+    <div className="flex w-full flex-col items-start justify-start">
       <div className="flex w-full flex-col items-start justify-start gap-y-6">
         <SubscriptionDetailsMetadata subscription={ subscription } />
         <Suspense fallback={ <TableLoading /> }>
