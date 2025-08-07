@@ -3,7 +3,7 @@ import { CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import DisplayCard from '@/shared/components/DisplayCard';
 
-const SKELETON_ROW_COUNT = 20;
+const SKELETON_ROW_COUNT = 15;
 
 export default function SubscriptionsTableSkeleton() {
   return (
