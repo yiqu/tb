@@ -27,6 +27,8 @@ export default function AllBillsPage({ searchParams }: AllBillsPageProps) {
       <BillsTablePaginationWrapper searchParams={ searchParams } />
       <Suspense fallback={ <BillsTableSkeleton /> }>
         <BillsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
+      </Suspense>
+      <Suspense>
         <BillsTableActionDialog>
           <EditBillForm />
         </BillsTableActionDialog>
