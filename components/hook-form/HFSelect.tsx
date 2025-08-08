@@ -25,6 +25,7 @@ interface HFSelectProps {
   startAdornment?: React.ReactNode;
   className?: string;
   formItemClassName?: string;
+  onChanged?: () => void;
 }
 
 export default function HFSelect({
@@ -39,12 +40,24 @@ export default function HFSelect({
   startAdornment,
   className,
   formItemClassName,
+  onChanged,
 }: HFSelectProps) {
   return (
     <FormField
       control={ control }
       name={ name }
       render={ ({ field }) => {
+        const handleOnValueChange = (value: string) => {
+          field.onChange(value);
+          onChanged?.();
+        };
+
+        const clearValue = (e: React.MouseEvent<HTMLButtonElement>) => {
+          e.stopPropagation();
+          field.onChange('');
+          onChanged?.();
+        };
+
         return (
           <FormItem className={ formItemClassName }>
             { label ?
@@ -55,7 +68,7 @@ export default function HFSelect({
               { startAdornment ?
                 <div className={ `pointer-events-none absolute top-0 left-0 flex h-full items-center pl-3` }>{ startAdornment }</div>
               : null }
-              <Select onValueChange={ field.onChange } defaultValue={ field.value } value={ field.value } disabled={ disabled }>
+              <Select onValueChange={ handleOnValueChange } defaultValue={ field.value } value={ field.value } disabled={ disabled }>
                 <FormControl className="w-full">
                   <SelectTrigger
                     className={ cn({
@@ -85,10 +98,7 @@ export default function HFSelect({
                   variant="ghost"
                   size="sm"
                   className={ `absolute top-0 right-0 h-full px-3 py-0 hover:bg-transparent` }
-                  onClick={ (e) => {
-                    e.stopPropagation();
-                    field.onChange('');
-                  } }
+                  onClick={ clearValue }
                   aria-label={ `Clear ${name}` }
                 >
                   <X className="h-4 w-4" />

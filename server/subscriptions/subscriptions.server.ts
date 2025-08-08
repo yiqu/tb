@@ -14,8 +14,8 @@ import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
+import { BillDueGroupedByYear, BillDueWithSubscription, BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
 import { subscriptionEditableSchema, subscriptionSearchParamsSchema } from '@/validators/subscriptions/subscriptions.schema';
-import { BillDue, BillDueGroupedByYear, BillDueWithSubscription, BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
 import {
   SubscriptionOriginal,
   SubscriptionWithBillDues,
@@ -23,13 +23,17 @@ import {
 } from '@/models/subscriptions/subscriptions.model';
 import {
   DEFAULT_PAGE_SIZE,
+  CACHE_TAG_BILL_DUES_ALL,
   CACHE_TAG_SUBSCRIPTIONS_ALL,
   CACHE_TAG_SUBSCRIPTION_DETAILS,
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
-import { revalidateBillDue } from '../bills/bills.server';
 import { getSortedSubscriptions } from './subscriptions.utils';
+
+export async function revalidateBillDue() {
+  revalidateTag(CACHE_TAG_BILL_DUES_ALL);
+}
 
 export async function revalidateSubscriptions() {
   revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);

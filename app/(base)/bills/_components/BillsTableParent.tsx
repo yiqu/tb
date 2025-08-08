@@ -30,23 +30,20 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
 
   if (billDues.billDues.length === 0) {
     return (
-      <div className="mt-6 flex w-full flex-col items-center justify-center gap-y-2">
+      <div className="mt-6 gap-y-2 flex w-full flex-col items-center justify-center">
         <NoResultsCard blendBg={ true } blendTextAreaBorder={ true } />
       </div>
     );
   }
 
   return (
-    <DisplayCard className="w-full py-0">
-      <CardContent className="overflow-x-auto px-0">
+    <DisplayCard className="py-0 w-full">
+      <CardContent className="px-0 overflow-x-auto">
         <Table className={ `
           table-auto
           two:table-fixed
         ` }>
-          <TableHeader className={ `
-            bg-sidebar-accent/70
-            dark:bg-sidebar-accent/100
-          ` }>
+          <TableHeader className={ `bg-muted` }>
             <TableRow className="hover:bg-transparent">
               { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {
                 return (

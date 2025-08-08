@@ -67,7 +67,7 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
       className={ cn('truncate', {
         'rounded-tl-md': index === 0,
         'rounded-tr-md': index === length - 1,
-        'cursor-pointer hover:bg-sidebar-accent/70 dark:hover:bg-[#65574e]': sortable,
+        'cursor-pointer hover:bg-sidebar-accent/30 dark:hover:bg-sidebar-accent/30': sortable,
       }) }
       style={ {
         width: SEARCH_TABLE_COLUMN_WIDTH[columnId],

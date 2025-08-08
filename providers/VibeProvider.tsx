@@ -1,0 +1,35 @@
+'use client';
+
+import { ReactNode, useEffect } from 'react';
+
+import { getVibeStylesheetHref } from '@/lib/vibes-css-map';
+import { AppVibe } from '@/models/settings/general-settings.models';
+
+const LINK_ID = 'vibe-theme-stylesheet';
+
+
+export default function VibeProvider({ vibe = 'vintage', children }: { vibe: AppVibe; children: ReactNode }) {
+
+  const cssHref = getVibeStylesheetHref(vibe);
+
+  // Ensure a dedicated <link> tag exists, and always point it to the active season CSS
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    let link = document.getElementById(LINK_ID) as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.id = LINK_ID;
+    }
+    // Ensure the vibe link is the last stylesheet in <head> so it wins cascade
+    document.head.appendChild(link);
+
+    // Update href when season changes
+    if (link.href !== new URL(cssHref, window.location.origin).href) {
+      link.href = cssHref;
+    }
+  }, [cssHref, vibe]);
+
+  return <div id="vibe-provider">{ children }</div>;
+}

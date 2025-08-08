@@ -20,7 +20,7 @@ export default async function SearchTableParent() {
     <DisplayCard className="w-full">
       <CardContent className="overflow-x-auto">
         <Table className={ `table-auto two:table-fixed` }>
-          <TableHeader className="bg-background">
+          <TableHeader className="bg-muted">
             <TableRow className="hover:bg-transparent">
               { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {
                 return (

@@ -20,11 +20,12 @@ import {
   DEFAULT_PAGE_SIZE,
   SORT_DATA_PAGE_IDS,
   CACHE_TAG_BILL_DUES_ALL,
+  CACHE_TAG_SUBSCRIPTIONS_ALL,
+  CACHE_TAG_SUBSCRIPTION_DETAILS,
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
 import { revalidatePaginationForPage } from '../pagination-data/pagination-data.server';
-import { revalidateSubscriptions, revalidateSubscriptionDetails } from '../subscriptions/subscriptions.server';
 import {
   getSortedBillDues,
   getFilteredBillDuesByYear,
@@ -32,6 +33,14 @@ import {
   getFilteredBillDuesBySpecialYear,
   getFilteredBillDuesBySpecialYearAndMonth,
 } from './bills.server.utils';
+
+export async function revalidateSubscriptionDetails(subscriptionId: string) {
+  revalidateTag(`${CACHE_TAG_SUBSCRIPTION_DETAILS}${subscriptionId}`);
+}
+
+export async function revalidateSubscriptions() {
+  revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
+}
 
 export async function revalidateBillDue() {
   revalidateTag(CACHE_TAG_BILL_DUES_ALL);
