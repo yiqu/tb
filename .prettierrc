@@ -4,6 +4,6 @@
   "experimentalTernaries": true,
   "printWidth": 140,
   "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindStylesheet": "./public/vibes/vintage/tw.css",
+  "tailwindStylesheet": "./app/(base)/tailwind-config.css",
   "tailwindFunctions": ["clsx", "cn", "cva"]
 }

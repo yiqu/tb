@@ -162,7 +162,7 @@
   },
   "settings": {
     "better-tailwindcss": {
-      "entryPoint": "public/vibes/vintage/tw.css"
+      "entryPoint": "app/(base)/tailwind-config.css"
     }
   }
 }
