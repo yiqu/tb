@@ -15,12 +15,16 @@ import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { BillDueGroupedByYear, BillDueWithSubscription, BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
-import { subscriptionEditableSchema, subscriptionSearchParamsSchema } from '@/validators/subscriptions/subscriptions.schema';
 import {
   SubscriptionOriginal,
   SubscriptionWithBillDues,
   SubscriptionWithBillDuesAndSortData,
 } from '@/models/subscriptions/subscriptions.model';
+import {
+  subscriptionAddableSchema,
+  subscriptionEditableSchema,
+  subscriptionSearchParamsSchema,
+} from '@/validators/subscriptions/subscriptions.schema';
 import {
   DEFAULT_PAGE_SIZE,
   CACHE_TAG_BILL_DUES_ALL,
@@ -439,5 +443,66 @@ export async function updateIsSubscriptionSigned(subscriptionId: string, isSigne
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at updateIsSubscriptionSigned(): ', JSON.stringify(error));
     throw new Error(`Error updating subscription signed status. Code: ${error.code}`);
+  }
+}
+
+export async function createNewSubscription(payload: z.infer<typeof subscriptionAddableSchema>): Promise<SubscriptionWithBillDues> {
+  try {
+    const subscription: SubscriptionWithBillDues = await prisma.subscription.create({
+      data: {
+        name: payload.name,
+        description: payload.description,
+        url: payload.url,
+        approved: payload.approved,
+        signed: payload.signed,
+        cost: Number.parseFloat(`${payload.cost}`),
+        billCycleDuration: payload.billCycleDuration,
+      },
+      include: {
+        billDues: {
+          include: {
+            subscription: true,
+          },
+        },
+      },
+    });
+
+    revalidateSubscriptions();
+    revalidateSubscriptionDetailsBillsDueGroupedByYear(subscription.id);
+    revalidateSubscriptionDetails(subscription.id);
+    revalidateBillDue();
+
+    return subscription;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at createNewSubscription(): ', JSON.stringify(error));
+    throw new Error(`Error creating new subscription. Code: ${error.code}`);
+  }
+}
+
+export async function deleteSubscription(subscriptionId: string): Promise<SubscriptionWithBillDues> {
+  // delay 2 seconds
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  try {
+    const subscription: SubscriptionWithBillDues = await prisma.subscription.delete({
+      where: { id: subscriptionId },
+      include: {
+        billDues: {
+          include: {
+            subscription: true,
+          },
+        },
+      },
+    });
+
+    revalidateSubscriptions();
+    revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
+    revalidateSubscriptionDetails(subscriptionId);
+    revalidateBillDue();
+
+    return subscription;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at deleteSubscription(): ', JSON.stringify(error));
+    throw new Error(`Error deleting subscription. Code: ${error.code}`);
   }
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryState } from 'nuqs';
 import { Plus, EllipsisVerticalIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -10,12 +11,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuContent,
   DropdownMenuTrigger,
-  DropdownMenuShortcut,
 } from '@/components/ui/dropdown-menu';
 
 export default function SubscriptionsActionBarActionsMenu() {
+  const [, setAddNewSubscription] = useQueryState('addNewSubscription', {
+    scroll: false,
+  });
+
   const handleOnClick = () => {
-    console.log('add new subscription');
+    setAddNewSubscription('true', {
+      scroll: false,
+    });
   };
 
   return (

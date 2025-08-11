@@ -10,8 +10,10 @@ import SubscriptionsTableParent from './_components/SubscriptionsTableParent';
 import SubscriptionsTableSkeleton from './_components/SubscriptionsTableSkeleton';
 import SubscriptionsTableActionBar from './_components/SubscriptionsTableActionBar';
 import SubscriptionsTableActionDialog from './_components/SubscriptionsTableActionDialog';
+import AddSubscriptionDialogContentCard from '../add/_components/AddSubscriptionDialogContentCard';
 import SubscriptionsTablePaginationWrapper from './_components/SubscriptionsTablePaginationWrapper';
 import EditSubscriptionDialogContentCard from '../add/_components/EditSubscriptionDialogContentCard';
+import SubscriptionsTableAddSubscriptionDialog from './_components/SubscriptionsTableAddSubscriptionDialog';
 
 interface SubscriptionsPageProps {
   params: Promise<{ slug: string }>;
@@ -32,6 +34,11 @@ export default function SubscriptionsPage({ searchParams }: SubscriptionsPagePro
         <SubscriptionsTableActionDialog>
           <EditSubscriptionDialogContentCard />
         </SubscriptionsTableActionDialog>
+      </Suspense>
+      <Suspense>
+        <SubscriptionsTableAddSubscriptionDialog>
+          <AddSubscriptionDialogContentCard />
+        </SubscriptionsTableAddSubscriptionDialog>
       </Suspense>
     </div>
   );

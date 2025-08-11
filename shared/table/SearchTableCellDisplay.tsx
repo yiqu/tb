@@ -98,7 +98,6 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
         <Popover>
           <PopoverTrigger asChild>
             <div
-              title={ `${DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toLocaleString(DateTime.DATETIME_MED)}` }
               className={ `
                 flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
                 hover:border-border hover:bg-accent
@@ -163,7 +162,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
               ` }
             >
               <DateDisplay date={ billDue.updatedAt } dateFormat="MM/dd/yy" />
-              <DateRelativeDisplay time={ billDue.updatedAt } includeParenthesis />
+              <DateRelativeDisplay time={ billDue.updatedAt } includeParenthesis className="truncate" />
             </div>
           </PopoverTrigger>
           <PopoverContent>

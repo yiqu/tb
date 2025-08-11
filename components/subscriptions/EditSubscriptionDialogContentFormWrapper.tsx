@@ -59,8 +59,8 @@ export default function EditSubscriptionDialogContentFormWrapper({
   const methods = useForm<z.infer<typeof subscriptionEditableSchema>>({
     defaultValues: {
       name: subscription?.name ?? '',
-      description: subscription?.description ?? undefined,
-      url: subscription?.url ?? undefined,
+      description: subscription?.description ?? '',
+      url: subscription?.url ?? '',
       approved: subscription?.approved ?? false,
       signed: subscription?.signed ?? false,
       cost: subscription?.cost ?? 0,

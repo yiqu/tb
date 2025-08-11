@@ -31,7 +31,7 @@ export default async function SubscriptionDetailsParent({ paramsPromise }: Subsc
       <div className="flex w-full flex-col items-start justify-start gap-y-6">
         <SubscriptionDetailsMetadata subscription={ subscription } />
         <Suspense fallback={ <TableLoading /> }>
-          <SubscriptionDetailsBillsTableParentParent subscriptionId={ subscriptionId } />
+          <SubscriptionDetailsBillsTableParentParent subscriptionId={ subscriptionId } subscription={ subscription } />
         </Suspense>
       </div>
       <BillsTableActionDialog>

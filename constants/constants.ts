@@ -30,6 +30,7 @@ export const TANSTACK_QUERY_QUERY_KEY_ID_GENERAL = 'id';
 
 // TanStack mutation keys
 export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_UPDATE = 'subscription-details-update';
+export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_CREATE = 'subscription-create';
 
 export const CACHE_TAG_BILL_DUES_ALL = 'bill-dues-all';
 export const CACHE_TAG_USER_ACHIEVEMENTS = 'user-achievements';

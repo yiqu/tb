@@ -20,7 +20,10 @@ export default async function DateDialogContent({ dateString, isIso = false }: {
       <div className="grid gap-2">
         <div className="grid grid-cols-3 items-center gap-4">
           <Typography>Date</Typography>
-          <div className="col-span-2">
+          <div
+            className="col-span-2"
+            title={ `${DateTime.fromMillis(Number.parseInt(dateString)).setZone(EST_TIME_ZONE).toLocaleString(DateTime.DATETIME_MED)}` }
+          >
             <Typography>{ dateDisplay }</Typography>
           </div>
         </div>

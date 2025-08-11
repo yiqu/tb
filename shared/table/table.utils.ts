@@ -19,10 +19,10 @@ export const SEARCH_TABLE_COLUMN_IDS: SearchTableColumn[] = [
 
 export const SUBSCRIPTIONS_TABLE_COLUMN_IDS: SearchTableColumn[] = [
   { headerId: 'name', ordinal: 0, sortable: true },
-  { headerId: 'description', ordinal: 1, sortable: true },
-  { headerId: 'url', ordinal: 2, sortable: true },
-  { headerId: 'cost', ordinal: 3, sortable: true },
-  { headerId: 'billCycleDuration', ordinal: 4, sortable: true },
+  { headerId: 'billCycleDuration', ordinal: 1, sortable: true },
+  { headerId: 'description', ordinal: 2, sortable: true },
+  { headerId: 'url', ordinal: 3, sortable: true },
+  { headerId: 'cost', ordinal: 4, sortable: true },
   { headerId: 'billDuesCurrentYearCount', ordinal: 5, sortable: true },
   { headerId: 'billDuesCurrentYearTotalCost', ordinal: 6, sortable: true },
   { headerId: 'approved', ordinal: 7, sortable: true },

@@ -6,7 +6,7 @@ import { Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 
-export default function SubscriptionsTableEditButton({ subscription }: { subscription: SubscriptionWithBillDues }) {
+export default function SubscriptionsTableEditSubscriptionButton({ subscription }: { subscription: SubscriptionWithBillDues }) {
   const [, setEditSubscriptionId] = useQueryState('editSubscriptionId', {
     history: 'replace',
     scroll: false,

@@ -39,13 +39,17 @@ export default function SearchTableCellDisplayDueDateDateDisplay({ date, billDue
     <div className="flex flex-row items-center justify-start gap-x-2">
       <DateDisplay date={ date } dateFormat="MM/dd/yy" />
       { isDueDateInCurrentMonth && !isPaidAndReimbursed ?
-        <AlarmClock className={ cn('size-6 text-red-500') } />
+        <span title={ `Due this month, not paid and not reimbursed` }>
+          <AlarmClock className={ cn('size-6 text-red-500') } />
+        </span>
       : null }
       { isDueDateInCurrentMonth && isPaidAndReimbursed ?
-        <CircleCheck className={ cn('size-6 text-green-500') } />
+        <span title={ `Due this month, paid and reimbursed` }>
+          <CircleCheck className={ cn('size-6 text-green-500') } />
+        </span>
       : null }
-      { isPastAndNotPaidOrReimbursed ?
-        <div className="flex flex-row items-center justify-start gap-x-2">
+      { !(isDueDateInCurrentMonth && !isPaidAndReimbursed) && isPastAndNotPaidOrReimbursed ?
+        <div className="flex flex-row items-center justify-start gap-x-2" title={ `Past due, not paid or reimbursed` }>
           <CircleAlert className="size-6 text-yellow-500" />
         </div>
       : null }

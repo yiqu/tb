@@ -13,6 +13,7 @@ import TrueFocus from '../reactbits/TextAnimations/TrueFocus/TrueFocus';
 const IMAGE_WIDTH = 400;
 
 interface NoResultsCardProps {
+  titleText?: string;
   children?: ReactNode;
   blendBg?: boolean;
   showTextAreaBorder?: boolean;
@@ -21,6 +22,7 @@ interface NoResultsCardProps {
 }
 
 export default function NoResultsCard({
+  titleText = 'No Results',
   children,
   blendBg,
   showTextAreaBorder,
@@ -86,7 +88,7 @@ export default function NoResultsCard({
         >
           <div className="flex w-full flex-row items-center justify-center pb-2">
             <TrueFocus
-              sentence="No Results"
+              sentence={ titleText }
               manualMode={ false }
               borderColor="oklch(0.62 0.08 65.54)"
               blurAmount={ 1.9 }

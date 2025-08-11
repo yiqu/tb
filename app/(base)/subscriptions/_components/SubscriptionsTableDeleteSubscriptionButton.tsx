@@ -2,14 +2,14 @@
 
 import toast from 'react-hot-toast';
 import { useTransition } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Trash, RefreshCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { getUSDFormatter } from '@/lib/number.utils';
 import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
-import { deleteBillDue } from '@/server/bills/bills.server';
-import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import { deleteSubscription } from '@/server/subscriptions/subscriptions.server';
+import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import {
   Dialog,
   DialogTitle,
@@ -21,27 +21,24 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 
-const usdFormatter = getUSDFormatter();
-
-export default function SubscriptionsTableDeleteBillButton({ billDue }: { billDue: BillDueWithSubscription }) {
+export default function SubscriptionsTableDeleteSubscriptionButton({ subscription }: { subscription: SubscriptionWithBillDues }) {
   const [isPending, startTransition] = useTransition();
-  const cost = billDue.cost === undefined || billDue.cost === null ? billDue.subscription.cost : billDue.cost;
 
-  const handleOnDeleteBill = async (formData: FormData) => {
-    const billDueId = formData.get('billDueId') as string;
-    if (!billDueId) {
-      toast.error('Bill due ID is required.');
+  const handleOnDeleteSubscription = async (formData: FormData) => {
+    const subscriptionId = formData.get('subscriptionId') as string;
+    if (!subscriptionId) {
+      toast.error('Subscription ID is required.');
       return;
     }
 
     startTransition(async () => {
-      await toast.promise(deleteBillDue(billDueId), {
-        loading: 'Deleting bill...',
-        success: (res: BillDueWithSubscription) => {
-          return `Deleted ${res.subscription.name}'s bill.`;
+      await toast.promise(deleteSubscription(subscriptionId), {
+        loading: `Deleting subscription ${subscription.name}...`,
+        success: (res: SubscriptionWithBillDues) => {
+          return `Deleted subscription ${res.name}.`;
         },
         error: (error: Error) => {
-          return `Failed to delete bill. ${error.message}`;
+          return `Failed to delete subscription. ${error.message}`;
         },
       });
     });
@@ -65,16 +62,16 @@ export default function SubscriptionsTableDeleteBillButton({ billDue }: { billDu
           sm:max-w-[600px]
         ` }
       >
-        <form action={ handleOnDeleteBill } className="flex flex-col gap-y-4">
-          <input type="hidden" name="billDueId" value={ billDue.id } />
+        <form action={ handleOnDeleteSubscription } className="flex flex-col gap-y-4">
+          <input type="hidden" name="subscriptionId" value={ subscription.id } />
           <DialogHeader className="px-4">
-            <DialogTitle>Delete Bill</DialogTitle>
-            <DialogDescription>Are you sure you want to delete this bill? This action cannot be undone.</DialogDescription>
+            <DialogTitle>Delete Subscription</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this subscription? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <Separator />
           <div className="flex flex-col gap-y-2 px-6">
-            <Typography variant="body1">Subscription: { billDue.subscription.name }</Typography>
-            <Typography variant="body1">Bill Amount: { usdFormatter.format(cost ?? 0) }</Typography>
+            <Typography variant="body1">Subscription: { subscription.name }</Typography>
+            <Typography variant="body1">Bills count: { subscription.billDues.length }</Typography>
           </div>
 
           <DialogFooter className={ `
@@ -86,14 +83,22 @@ export default function SubscriptionsTableDeleteBillButton({ billDue }: { billDu
                 Cancel
               </Button>
             </DialogClose>
-            <DialogClose asChild>
-              <Button type="submit" variant="destructive">
-                Delete
-              </Button>
-            </DialogClose>
+            <DeleteButton />
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function DeleteButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" variant="destructive" disabled={ pending }>
+      { pending ?
+        <RefreshCcw className="size-4 animate-spin" />
+      : <Trash /> }
+      Delete
+    </Button>
   );
 }
