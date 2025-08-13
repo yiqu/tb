@@ -45,6 +45,7 @@ export const CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR = 'subscription-bills-
 export const SORT_DATA_PAGE_IDS = {
   search: 'search',
   subscriptions: 'subscriptions',
+  outstanding: 'outstanding',
 } as const;
 
 // pagination
@@ -63,4 +64,5 @@ export const APP_TITLE_GRADIENT_COLORS = {
   login: ['#00a3e2', '#1ba548', '#fdc800', '#f1860e', '#e41b13'],
   dashboard: ['#005493', '#e31837', '#489cd4', '#2774a6'],
   subscriptions: ['#005493', '#f5aa1c', '#c63527', '#002754'],
+  outstanding: ['#005493', '#f5aa1c', '#c63527', '#002754'],
 };

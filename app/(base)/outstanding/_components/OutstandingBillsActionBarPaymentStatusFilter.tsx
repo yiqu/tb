@@ -16,9 +16,9 @@ import {
   SelectSeparator,
 } from '@/components/ui/select';
 
-const DEFAULT_PAYMENT_STATUS = '';
+const DEFAULT_PAYMENT_STATUS = 'need-payment-or-reimbursement';
 
-export default function BillsActionBarPaymentStatusFilter() {
+export default function OutstandingBillsActionBarPaymentStatusFilter() {
   const [paymentStatus, setPaymentStatus] = useQueryStates(
     {
       paymentStatus: parseAsString
@@ -64,7 +64,8 @@ export default function BillsActionBarPaymentStatusFilter() {
     });
   };
 
-  const isStatusValueSelected: boolean = paymentStatus.paymentStatus !== null && paymentStatus.paymentStatus !== '';
+  const isStatusValueSelected: boolean =
+    paymentStatus.paymentStatus !== null && paymentStatus.paymentStatus !== '' && paymentStatus.paymentStatus !== DEFAULT_PAYMENT_STATUS;
   const isDefaultValueSelected: boolean = paymentStatus.paymentStatus === DEFAULT_PAYMENT_STATUS;
 
   return (
@@ -83,7 +84,6 @@ export default function BillsActionBarPaymentStatusFilter() {
                     Clear status
                   </SelectItem>
                 </SelectGroup>
-
                 <SelectSeparator />
               </>
             ) }

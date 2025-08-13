@@ -54,7 +54,7 @@ const MONTH_OPTIONS = [
 const DEFAULT_YEAR = '';
 const DEFAULT_MONTH = '';
 
-export default function BillsActionBarDueDateFilter() {
+export default function OutstandingBillsActionBarDueDateFilter() {
   const [selectedDueDate, setSelectedDueDate] = useQueryStates(
     {
       year: parseAsString
@@ -141,7 +141,7 @@ export default function BillsActionBarDueDateFilter() {
                     Clear year
                   </SelectItem>
                 </SelectGroup>
-                <SelectSeparator />
+                <SelectSeparator />{ ' ' }
               </>
             ) }
 

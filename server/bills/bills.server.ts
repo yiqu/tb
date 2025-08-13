@@ -14,8 +14,8 @@ import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
-import { billAddableSchema, billEditableSchema, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
+import { billAddableSchema, billEditableSchema, billSearchParamsSchema, AutoSelectedDefaultStatus } from '@/validators/bills/bill.schema';
 import {
   DEFAULT_PAGE_SIZE,
   SORT_DATA_PAGE_IDS,
@@ -61,6 +61,17 @@ export const getAllBillsCached = cache(
   },
 );
 
+export const getAllOutstandingBillsCached = cache(
+  async (
+    sortData: SortDataModel | null,
+    paginationData: PaginationDataModel | null,
+    searchParams?: z.infer<typeof billSearchParamsSchema>,
+  ) => {
+    const res = await getAllBills(sortData, paginationData, searchParams, 'need-payment-or-reimbursement');
+    return res;
+  },
+);
+
 export const getAllBillsCountCached = cache(async () => {
   const res = await getAllBillsCount();
   return res;
@@ -70,6 +81,7 @@ export async function getAllBills(
   sortData: SortDataModel | null,
   paginationData: PaginationDataModel | null,
   searchParams?: z.infer<typeof billSearchParamsSchema>,
+  autoSelectedDefaultStatus?: AutoSelectedDefaultStatus,
 ): Promise<BillDueWithSubscriptionAndSortData> {
   'use cache';
   cacheLife('weeks');
@@ -78,6 +90,12 @@ export async function getAllBills(
   const whereClause: any = {
     AND: [],
   };
+
+  if (autoSelectedDefaultStatus === 'need-payment-or-reimbursement') {
+    whereClause.AND.push({
+      OR: [{ paid: false }, { reimbursed: false }],
+    });
+  }
 
   if (searchParams?.subscriptions && searchParams.subscriptions.trim() !== '') {
     // subscriptions is a string of ids separated by commas

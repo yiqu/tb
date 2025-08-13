@@ -3,12 +3,6 @@
 /* eslint-disable better-tailwindcss/multiline */
 import ReactScan from '@/providers/ReactScan';
 
-import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
-import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   Lora,
   Geist,
@@ -22,6 +16,7 @@ import {
   Geist_Mono,
   Lilita_One,
   Montserrat,
+  Space_Mono,
   Roboto_Mono,
   Merriweather,
   Source_Sans_3,
@@ -29,27 +24,17 @@ import {
   Cherry_Bomb_One,
   Source_Code_Pro,
   Plus_Jakarta_Sans,
-  Architects_Daughter,Space_Mono
+  Architects_Daughter,
 } from 'next/font/google';
 
 import { appName } from '@/constants/constants';
-import theme from '@/components/ui-mui/mui/theme';
-import AppLayout from '@/components/layout/AppLayout';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import CustomToaster from '@/components/toaster/CustomToaster';
-import AppTopLoader from '@/components/top-loader/AppTopLoader';
-import { ThemeProvider } from '@/components/theme/ThemeProvider';
-import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider';
-
 import type { Metadata } from 'next';
 
 import './globals.css';
 import './scrollbar.css';
 import './tailwind-config.css';
 
-import VibeProviderWrapper from '@/providers/VibeProviderWrapper';
-import { getSettingsApplicationVibe } from '@/server/settings/vibe-select';
-import { getVibeStylesheetHref } from '@/lib/vibes-css-map';
+import BodyParent from './BodyParent';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -192,7 +177,6 @@ const outfit = Outfit({
   preload: true,
 });
 
-
 export const metadata: Metadata = {
   title: {
     template: `%s | ${appName}`, // child pages will use this template
@@ -203,53 +187,19 @@ export const metadata: Metadata = {
 
 export const experimental_ppr = true;
 
-export default async function BaseRootLayout({
+export default function BaseRootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Preload and apply the saved vibe stylesheet on the server to avoid flash
-  const vibe = await getSettingsApplicationVibe();
-  const vibeHref = getVibeStylesheetHref(vibe);
   return (
     <html
       lang="en"
       suppressHydrationWarning
       className={ `${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} ${architectsDaughter.variable} ${inter.variable} ${lora.variable} ${dmSans.variable} ${poppins.variable} ${plusJakartaSans.variable} ${oxanium.variable} ${sourceCodePro.variable} ${robotoMono.variable} ${merriweather.variable} ${sourceSans3.variable} ${sourceSerif4.variable} ${montserrat.variable} ${outfit.variable} ${spaceMono.variable}` }
     >
-      <head>
-        { /* Preload and apply vibe CSS early to prevent theme flash on first paint */ }
-        <link rel="preload" href={ vibeHref } as="style" />
-        <link id="vibe-theme-stylesheet" rel="stylesheet" href={ vibeHref } />
-      </head>
       <ReactScan />
-      <body className="font-sans antialiased" id="base-root-layout">
-        <AppTopLoader />
-        <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
-        <VibeProviderWrapper>
-          <AppRouterCacheProvider options={ { enableCssLayer: true } }>
-            <MuiThemeProvider theme={ theme } defaultMode="light">
-              <NuqsAdapter>
-                <TanstackQueryClientProvider>
-                  <ReactQueryDevtools initialIsOpen={ false } />
-                  <ThemeProvider
-                    attribute="class"
-                    defaultTheme="light"
-                    enableSystem={ false }
-                    disableTransitionOnChange
-                    storageKey="app-theme"
-                  >
-                    <TooltipProvider delayDuration={ 0 }>
-                      <AppLayout>{ children }</AppLayout>
-                      <CustomToaster />
-                    </TooltipProvider>
-                  </ThemeProvider>
-                </TanstackQueryClientProvider>
-              </NuqsAdapter>
-            </MuiThemeProvider>
-          </AppRouterCacheProvider>
-        </VibeProviderWrapper>
-      </body>
+      <BodyParent>{ children }</BodyParent>
     </html>
   );
 }
