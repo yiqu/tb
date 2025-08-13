@@ -1,4 +1,3 @@
-/* eslint-disable better-tailwindcss/multiline */
 import Typography from '@/components/typography/Typography';
 import { SparklesText } from '@/components/magicui/sparkles-text';
 import { getAvatarNameById, getAvatarImgUrlById } from '@/lib/utils';
@@ -33,7 +32,10 @@ function OverLayContent({ avatarId }: { avatarId: string }) {
   return (
     <SparklesText sparklesCount={ 5 }>
       <Typography
-        className={ `logo-text-color font-fun m-[10px] rounded-2xl bg-accent px-[0.5rem] py-[0.5rem] tracking-wider shadow-[0_5px_30px_#06060659] dark:shadow-[0_5px_30px_#ccc]` }
+        className={ `
+          logo-text-color font-fun m-[10px] rounded-2xl bg-accent/50 px-[0.5rem] py-[0.5rem] tracking-wider shadow-[0_5px_30px_#06060659]
+          dark:shadow-[0_5px_30px_#ccc]
+        ` }
         variant="h5"
       >
         { getAvatarNameById(avatarId) }

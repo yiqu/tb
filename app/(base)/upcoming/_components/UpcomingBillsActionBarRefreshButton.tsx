@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
 import { revalidateBillDue, revalidateSubscriptions, revalidatePaginationForAllPages } from '@/server/bills/bills.server';
 
-export default function OutstandingBillsActionBarRefreshButton() {
+export default function UpcomingBillsActionBarRefreshButton() {
   const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
 

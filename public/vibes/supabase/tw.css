@@ -34,7 +34,7 @@
 
   --font-sans: var(--font-outfit), sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: monospace;
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.5rem;
@@ -86,7 +86,7 @@
 
   --font-sans: var(--font-outfit), sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: monospace;
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.5rem;

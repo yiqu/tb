@@ -33,8 +33,8 @@
   --sidebar-ring: oklch(0.7058 0 0);
 
   --font-sans: var(--font-architects-daughter);
-  --font-serif: var(--font-architects-daughter);
-  --font-mono: var(--font-geist-mono);
+  --font-serif: "Times New Roman", Times, serif;
+  --font-mono: "Courier New", Courier, monospace;
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.625rem;
@@ -85,8 +85,8 @@
   --sidebar-ring: oklch(0.8078 0 0);
 
   --font-sans: var(--font-architects-daughter);
-  --font-serif: var(--font-architects-daughter);
-  --font-mono: var(--font-geist-mono);
+  --font-serif: "Times New Roman", Times, serif;
+  --font-mono: "Courier New", Courier, monospace;
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.625rem;
@@ -134,9 +134,9 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: var(--font-architects-daughter);
-  --font-serif: var(--font-architects-daughter);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
   --font-fun: var(--font-fun);
 
   --radius-sm: calc(var(--radius) - 4px);

@@ -6,8 +6,8 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { revalidateBillDue } from '@/server/bills/bills.server';
 import { TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
+import { revalidateBillDue, revalidateSubscriptions, revalidatePaginationForAllPages } from '@/server/bills/bills.server';
 
 export default function BillsActionBarRefreshButton() {
   const queryClient = useQueryClient();
@@ -19,6 +19,8 @@ export default function BillsActionBarRefreshButton() {
         queryKey: [TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS],
       });
       await revalidateBillDue();
+      await revalidatePaginationForAllPages();
+      await revalidateSubscriptions();
     });
   };
 

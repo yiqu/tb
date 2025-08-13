@@ -33,7 +33,7 @@
   --sidebar-ring: oklch(0.7686 0.1647 70.0804);
 
   --font-sans: var(--font-inter);
-  --font-serif: var(--font-inter);
+  --font-serif: var(--font-source-serif-4);
   --font-mono: var(--font-geist-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
@@ -85,7 +85,7 @@
   --sidebar-ring: oklch(0.7686 0.1647 70.0804);
 
   --font-sans: var(--font-inter);
-  --font-serif: var(--font-inter);
+  --font-serif: var(--font-source-serif-4);
   --font-mono: var(--font-geist-mono);
   --font-fun: var(--font-cherry-bomb-one);
 

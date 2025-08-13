@@ -65,6 +65,6 @@ export const newBillDueSchema = z.object({
   reimbursed: z.boolean().optional(),
 });
 
-export const autoSelectedDefaultStatus = z.enum(['need-payment-or-reimbursement', 'future']);
+export const autoSelectedDefaultStatus = z.enum(['need-payment-or-reimbursement', 'future-include-today']);
 
 export type AutoSelectedDefaultStatus = z.infer<typeof autoSelectedDefaultStatus>;

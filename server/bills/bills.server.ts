@@ -22,10 +22,10 @@ import {
   CACHE_TAG_BILL_DUES_ALL,
   CACHE_TAG_SUBSCRIPTIONS_ALL,
   CACHE_TAG_SUBSCRIPTION_DETAILS,
+  CACHE_TAG_PAGINATION_DATA_PREFIX,
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
-import { revalidatePaginationForPage } from '../pagination-data/pagination-data.server';
 import {
   getSortedBillDues,
   getFilteredBillDuesByYear,
@@ -33,6 +33,17 @@ import {
   getFilteredBillDuesBySpecialYear,
   getFilteredBillDuesBySpecialYearAndMonth,
 } from './bills.server.utils';
+
+export async function revalidatePaginationForPage(pageId: string) {
+  revalidateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${pageId}`);
+}
+
+export async function revalidatePaginationForAllPages() {
+  revalidateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${SORT_DATA_PAGE_IDS.search}`);
+  revalidateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${SORT_DATA_PAGE_IDS.outstanding}`);
+  revalidateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${SORT_DATA_PAGE_IDS.upcoming}`);
+  revalidateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${SORT_DATA_PAGE_IDS.subscriptions}`);
+}
 
 export async function revalidateSubscriptionDetails(subscriptionId: string) {
   revalidateTag(`${CACHE_TAG_SUBSCRIPTION_DETAILS}${subscriptionId}`);
@@ -68,6 +79,17 @@ export const getAllOutstandingBillsCached = cache(
     searchParams?: z.infer<typeof billSearchParamsSchema>,
   ) => {
     const res = await getAllBills(sortData, paginationData, searchParams, 'need-payment-or-reimbursement');
+    return res;
+  },
+);
+
+export const getAllUpcomingBillsCached = cache(
+  async (
+    sortData: SortDataModel | null,
+    paginationData: PaginationDataModel | null,
+    searchParams?: z.infer<typeof billSearchParamsSchema>,
+  ) => {
+    const res = await getAllBills(sortData, paginationData, searchParams, 'future-include-today');
     return res;
   },
 );
@@ -163,6 +185,10 @@ export async function getAllBills(
     const yearParams: string | undefined = searchParams?.year;
     const monthParams: string | undefined = searchParams?.month;
 
+    if (autoSelectedDefaultStatus === 'future-include-today') {
+      billDues = getFilteredBillDuesBySpecialYear(billDues, 'future-include-today');
+    }
+
     if ((yearParams && yearParams.trim() !== '') || (monthParams && monthParams.trim() !== '')) {
       const doesMonthExist: boolean = !!(monthParams && monthParams.trim() !== '');
       const doesYearExist: boolean = !!(yearParams && yearParams.trim() !== '');
@@ -250,7 +276,7 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, su
       data: { paid: isPaid },
     });
 
-    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
+    revalidatePaginationForAllPages();
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
@@ -270,7 +296,7 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
       data: { reimbursed: isReimbursed },
     });
 
-    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
+    revalidatePaginationForAllPages();
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
@@ -300,7 +326,7 @@ export async function updateBillDue(billDueId: string, data: z.infer<typeof bill
       },
     });
 
-    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
+    revalidatePaginationForAllPages();
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(billDue.subscriptionId);
     revalidateSubscriptionDetails(billDue.subscriptionId);
@@ -338,7 +364,7 @@ export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubsc
       },
     });
 
-    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
+    revalidatePaginationForAllPages();
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(billDue.subscriptionId);
     revalidateSubscriptionDetails(billDue.subscriptionId);
@@ -370,7 +396,7 @@ export async function addBillDue(subscriptionId: string, payload: z.infer<typeof
       },
     });
 
-    revalidatePaginationForPage(SORT_DATA_PAGE_IDS.search);
+    revalidatePaginationForAllPages();
     revalidateBillDue();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);

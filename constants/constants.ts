@@ -46,6 +46,7 @@ export const SORT_DATA_PAGE_IDS = {
   search: 'search',
   subscriptions: 'subscriptions',
   outstanding: 'outstanding',
+  upcoming: 'upcoming',
 } as const;
 
 // pagination
@@ -64,5 +65,6 @@ export const APP_TITLE_GRADIENT_COLORS = {
   login: ['#00a3e2', '#1ba548', '#fdc800', '#f1860e', '#e41b13'],
   dashboard: ['#005493', '#e31837', '#489cd4', '#2774a6'],
   subscriptions: ['#005493', '#f5aa1c', '#c63527', '#002754'],
-  outstanding: ['#005493', '#f5aa1c', '#c63527', '#002754'],
+  outstanding: ['#A18CD1', '#FBC2EB', '#FEE140', '#FA709A'],
+  upcoming: ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF'],
 };
