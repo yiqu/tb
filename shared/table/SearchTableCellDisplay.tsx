@@ -104,7 +104,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
               ` }
             >
               <SearchTableCellDisplayDueDateDateDisplay date={ billDue.dueDate } billDue={ billDue } />
-              <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis />
+              <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis={ false } />
             </div>
           </PopoverTrigger>
           <PopoverContent>

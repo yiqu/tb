@@ -8,9 +8,11 @@ import {
   Calendar,
   UserRound,
   CirclePlus,
+  ClockAlert,
   ReceiptText,
   UserRoundPen,
   CalendarSync,
+  CalendarArrowUp,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -48,6 +50,12 @@ export function BreadcrumbSegmentIcon({ path }: { path: string; params: Params; 
   }
   if (path === 'security') {
     return <Shield size={ 14 } />;
+  }
+  if (path === 'outstanding') {
+    return <ClockAlert size={ 14 } />;
+  }
+  if (path === 'upcoming') {
+    return <CalendarArrowUp size={ 14 } />;
   }
   return <Link size={ 14 } />;
 }
@@ -121,6 +129,30 @@ export function BreadcrumbSegmentTitle({ path, isLast }: { path: string; isLast?
         }) }
       >
         <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Bills' } />
+      </Typography>
+    );
+  }
+
+  if (path === 'outstanding') {
+    return (
+      <Typography
+        className={ cn({
+          'text-muted-foreground': isLast,
+        }) }
+      >
+        <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Outstanding Bills' } />
+      </Typography>
+    );
+  }
+
+  if (path === 'upcoming') {
+    return (
+      <Typography
+        className={ cn({
+          'text-muted-foreground': isLast,
+        }) }
+      >
+        <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Upcoming Bills' } />
       </Typography>
     );
   }

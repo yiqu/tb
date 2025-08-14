@@ -19,15 +19,20 @@ export default function SearchTableCellDisplayDueDateDateDisplay({ date, billDue
     const dueDateLuxon = DateTime.fromMillis(Number.parseInt(date)).setZone(EST_TIME_ZONE);
     const dueDateMonth = dueDateLuxon.month;
     const dueDateYear = dueDateLuxon.year;
+
     isDueDateInCurrentMonth = dueDateMonth === currentMonth && dueDateYear === currentYear;
   } else if (billDue.subscription.billCycleDuration === 'yearly') {
     const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+    const currentMonth = currentDateLuxon.month;
     const currentYear = currentDateLuxon.year;
     const dueDateLuxon = DateTime.fromMillis(Number.parseInt(date)).setZone(EST_TIME_ZONE);
     const dueDateYear = dueDateLuxon.year;
-    isDueDateInCurrentMonth = dueDateYear === currentYear;
+    const dueDateMonth = dueDateLuxon.month;
+
+    // isDueDateInCurrentMonth = dueDateYear === currentYear;
+    isDueDateInCurrentMonth = dueDateMonth === currentMonth && dueDateYear === currentYear;
   } else if (billDue.subscription.billCycleDuration === 'once') {
-    isDueDateInCurrentMonth = true;
+    isDueDateInCurrentMonth = false;
   }
 
   const isPaidAndReimbursed: boolean = !!billDue.paid && !!billDue.reimbursed;

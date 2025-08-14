@@ -81,6 +81,7 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
             'font-bold': isColumnSorted,
             'font-normal': !isColumnSorted,
           }) }
+          title={ SEARCH_TABLE_COLUMN_TEXT[columnId] ?? columnId }
         >
           { SEARCH_TABLE_COLUMN_TEXT[columnId] ?? columnId }
         </Typography>
