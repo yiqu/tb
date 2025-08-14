@@ -5,30 +5,25 @@ import ReactScan from '@/providers/ReactScan';
 
 import {
   Lora,
+  Lato,
   Geist,
   Borel,
   Inter,
-  Caveat,
   Outfit,
   DM_Sans,
   Poppins,
   Oxanium,
+  Open_Sans,
   Geist_Mono,
   Lilita_One,
   Montserrat,
-  Space_Mono,
-  Roboto_Mono,
   Merriweather,
   Source_Sans_3,
   Source_Serif_4,
   Cherry_Bomb_One,
-  Source_Code_Pro,
   Plus_Jakarta_Sans,
-  Architects_Daughter,
   Libre_Baskerville,
-  Open_Sans,
-  Noto_Sans,
-  Lato
+  Architects_Daughter,
 } from 'next/font/google';
 
 import { appName } from '@/constants/constants';
@@ -44,19 +39,14 @@ const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
   preload: true,
-  weight: ['400', '500', '600', '700', '800', '900', '200', '300', '100'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
 });
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
   preload: false,
-  weight: ['400', '500', '600', '700', '800', '900', '200', '300', '100'],
-});
-
-const caveat = Caveat({
-  variable: '--font-caveat',
-  subsets: ['latin'],
+  weight: ['400'],
 });
 
 const lilitaOne = Lilita_One({
@@ -88,14 +78,14 @@ const architectsDaughter = Architects_Daughter({
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
-  weight: ['400', '700', '500', '600', '300', '200', '800', '100'],
+  weight: ['400'],
   preload: true,
 });
 
 const lora = Lora({
   variable: '--font-lora',
   subsets: ['latin'],
-  weight: ['400', '700', '500', '600'],
+  weight: ['400'],
   preload: false,
 });
 
@@ -106,108 +96,80 @@ const dmSans = DM_Sans({
   preload: false,
 });
 
-const spaceMono = Space_Mono({
-  variable: '--font-space-mono',
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  preload: false,
-});
-
 const poppins = Poppins({
   variable: '--font-poppins',
   subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '200', '800'],
+  weight: ['400'],
   preload: false,
 });
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta-sans',
   subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '200', '800'],
+  weight: ['400'],
   preload: false,
 });
 
 const oxanium = Oxanium({
   variable: '--font-oxanium',
   subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '200', '800'],
-  preload: false,
-});
-
-const robotoMono = Roboto_Mono({
-  variable: '--font-roboto-mono',
-  subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '100', '200'],
-  preload: false,
-});
-
-const sourceCodePro = Source_Code_Pro({
-  variable: '--font-source-code-pro',
-  subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '800'],
+  weight: ['400'],
   preload: false,
 });
 
 const merriweather = Merriweather({
   variable: '--font-merriweather',
   subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '800'],
+  weight: ['400'],
   preload: false,
 });
 
 const sourceSans3 = Source_Sans_3({
   variable: '--font-source-sans-3',
   subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '800'],
+  weight: ['400'],
   preload: false,
 });
 
 const sourceSerif4 = Source_Serif_4({
   variable: '--font-source-serif-4',
   subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '800'],
+  weight: ['400'],
   preload: false,
 });
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
   subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '800'],
+  weight: ['400'],
   preload: false,
 });
 
 const outfit = Outfit({
   variable: '--font-outfit',
   subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '800'],
+  weight: ['400'],
   preload: false,
 });
 
 const libreBaskerville = Libre_Baskerville({
   variable: '--font-libre-baskerville',
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['400'],
   preload: false,
 });
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  preload: false,
-});
-
-const notoSans = Noto_Sans({
-  variable: '--font-noto-sans',
-  subsets: ['latin'],
-  weight: ['400', '700', '300', '500', '600', '800'],
+  weight: ['400'],
   preload: false,
 });
 
 const lato = Lato({
   variable: '--font-lato',
   subsets: ['latin'],
-  weight: ['400', '700', '300', '900'],
+  weight: ['300', '400', '700'],
   preload: true,
 });
 
@@ -230,10 +192,10 @@ export default function BaseRootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} ${architectsDaughter.variable} ${inter.variable} ${lora.variable} ${dmSans.variable} ${poppins.variable} ${plusJakartaSans.variable} ${oxanium.variable} ${sourceCodePro.variable} ${robotoMono.variable} ${merriweather.variable} ${sourceSans3.variable} ${sourceSerif4.variable} ${montserrat.variable} ${outfit.variable} ${spaceMono.variable} ${libreBaskerville.variable} ${openSans.variable} ${notoSans.variable} ${lato.variable}`}
+      className={ `${geistSans.variable} ${geistMono.variable} ${lilitaOne.variable} ${borel.variable} ${cherryBombOne.variable} ${architectsDaughter.variable} ${inter.variable} ${lora.variable} ${dmSans.variable} ${poppins.variable} ${plusJakartaSans.variable} ${oxanium.variable} ${merriweather.variable} ${sourceSans3.variable} ${sourceSerif4.variable} ${montserrat.variable} ${outfit.variable} ${lato.variable} ${libreBaskerville.variable} ${openSans.variable}` }
     >
       <ReactScan />
-      <BodyParent>{children}</BodyParent>
+      <BodyParent>{ children }</BodyParent>
     </html>
   );
 }

@@ -162,3 +162,128 @@ export const indieFlowerFont = Indie_Flower({
   subsets: ['latin'],
   preload: true,
 });
+
+export const latoFont: NextFontWithVariable = localFont({
+  src: [
+    {
+      path: '../node_modules/@fontsource/lato/files/lato-latin-300-normal.woff2',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: '../node_modules/@fontsource/lato/files/lato-latin-400-normal.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+
+    {
+      path: '../node_modules/@fontsource/lato/files/lato-latin-700-normal.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
+  variable: '--lato-font', // Optional: Define a CSS variable name
+  display: 'swap',
+  preload: false,
+  fallback: ['system-ui', 'sans-serif'],
+});
+
+export const openSansFont: NextFontWithVariable = localFont({
+  src: [
+    {
+      path: '../node_modules/@fontsource/open-sans/files/open-sans-latin-300-normal.woff2',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: '../node_modules/@fontsource/open-sans/files/open-sans-latin-400-normal.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../node_modules/@fontsource/open-sans/files/open-sans-latin-500-normal.woff2',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../node_modules/@fontsource/open-sans/files/open-sans-latin-600-normal.woff2',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: '../node_modules/@fontsource/open-sans/files/open-sans-latin-700-normal.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../node_modules/@fontsource/open-sans/files/open-sans-latin-800-normal.woff2',
+      weight: '800',
+      style: 'normal',
+    },
+  ],
+  variable: '--open-sans-font', // Optional: Define a CSS variable name
+  display: 'swap',
+  preload: false,
+  fallback: ['system-ui', 'sans-serif'],
+});
+
+export const notoSansFont: NextFontWithVariable = localFont({
+  src: [
+    {
+      path: '../node_modules/@fontsource/noto-sans/files/noto-sans-latin-300-normal.woff2',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: '../node_modules/@fontsource/noto-sans/files/noto-sans-latin-400-normal.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../node_modules/@fontsource/noto-sans/files/noto-sans-latin-500-normal.woff2',
+      weight: '500',
+      style: 'normal',
+    },
+
+    {
+      path: '../node_modules/@fontsource/noto-sans/files/noto-sans-latin-600-normal.woff2',
+      weight: '600',
+      style: 'normal',
+    },
+
+    {
+      path: '../node_modules/@fontsource/noto-sans/files/noto-sans-latin-700-normal.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+
+    {
+      path: '../node_modules/@fontsource/noto-sans/files/noto-sans-latin-800-normal.woff2',
+      weight: '800',
+      style: 'normal',
+    },
+  ],
+  variable: '--noto-sans-font', // Optional: Define a CSS variable name
+  display: 'swap',
+  preload: false,
+  fallback: ['system-ui', 'sans-serif'],
+});
+
+export const libreBaskervilleFont: NextFontWithVariable = localFont({
+  src: [
+    {
+      path: '../node_modules/@fontsource/libre-baskerville/files/libre-baskerville-latin-400-normal.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../node_modules/@fontsource/libre-baskerville/files/libre-baskerville-latin-700-normal.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
+  variable: '--libre-baskerville-font', // Optional: Define a CSS variable name
+  display: 'swap',
+  preload: false,
+  fallback: ['system-ui', 'serif'],
+});
