@@ -225,7 +225,7 @@
 
 @layer link-color-utils {
   :root {
-    --link-internal: #549259;
+    --link-internal: #38613b;
     --link-external-foreground: #2c58a8;
   }
   .dark {

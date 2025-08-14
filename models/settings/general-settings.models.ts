@@ -18,6 +18,12 @@ export const APP_VIBE_OPTIONS = [
   'notebook',
   'solar-dusk',
   'supabase',
+  'pastel-dreams',
+  'softpop',
+  'retro-arcade',
+  'mocha-mousse',
+  'elegant',
+  'cyberpunk',
 ] as const;
 
 export type AppVibe = (typeof APP_VIBE_OPTIONS)[number];
@@ -40,6 +46,12 @@ export const APP_VIBE_OPTIONS_MAP: Record<AppVibe, string> = {
   notebook: 'Notebook',
   'solar-dusk': 'Solar Dusk',
   supabase: 'Supabase',
+  'pastel-dreams': 'Pastel Dreams',
+  softpop: 'Softpop',
+  'retro-arcade': 'Retro Arcade',
+  'mocha-mousse': 'Mocha Mousse',
+  elegant: 'Elegant Luxury',
+  cyberpunk: 'Cyberpunk',
 };
 
 export const APP_VIBE_OPTIONS_LIST: HFSelectOption[] = APP_VIBE_OPTIONS.map((vibe) => ({

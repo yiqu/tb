@@ -18,9 +18,14 @@ const VIBE_CSS_MAP: Record<AppVibe, string> = {
   notebook: '/vibes/notebook/tw.css',
   'solar-dusk': '/vibes/solar-dusk/tw.css',
   supabase: '/vibes/supabase/tw.css',
+  'pastel-dreams': '/vibes/pastel-dreams/tw.css',
+  softpop: '/vibes/softpop/tw.css',
+  'retro-arcade': '/vibes/retro-arcade/tw.css',
+  'mocha-mousse': '/vibes/mocha-mousse/tw.css',
+  elegant: '/vibes/elegant/tw.css',
+  cyberpunk: '/vibes/cyberpunk/tw.css',
 };
 
 export function getVibeStylesheetHref(vibe: AppVibe): string {
   return VIBE_CSS_MAP[vibe] ?? VIBE_CSS_MAP.vintage;
 }
-
