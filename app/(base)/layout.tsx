@@ -50,7 +50,7 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
-  preload: true,
+  preload: false,
   weight: ['400', '500', '600', '700', '800', '900', '200', '300', '100'],
 });
 
@@ -75,14 +75,14 @@ const cherryBombOne = Cherry_Bomb_One({
   variable: '--font-cherry-bomb-one',
   subsets: ['latin'],
   weight: '400',
-  preload: true,
+  preload: false,
 });
 
 const architectsDaughter = Architects_Daughter({
   variable: '--font-architects-daughter',
   subsets: ['latin'],
   weight: '400',
-  preload: true,
+  preload: false,
 });
 
 const inter = Inter({
@@ -96,112 +96,112 @@ const lora = Lora({
   variable: '--font-lora',
   subsets: ['latin'],
   weight: ['400', '700', '500', '600'],
-  preload: true,
+  preload: false,
 });
 
 const dmSans = DM_Sans({
   variable: '--font-dm-sans',
   subsets: ['latin'],
   weight: '400',
-  preload: true,
+  preload: false,
 });
 
 const spaceMono = Space_Mono({
   variable: '--font-space-mono',
   subsets: ['latin'],
   weight: ['400', '700'],
-  preload: true,
+  preload: false,
 });
 
 const poppins = Poppins({
   variable: '--font-poppins',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '200', '800'],
-  preload: true,
+  preload: false,
 });
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta-sans',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '200', '800'],
-  preload: true,
+  preload: false,
 });
 
 const oxanium = Oxanium({
   variable: '--font-oxanium',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '200', '800'],
-  preload: true,
+  preload: false,
 });
 
 const robotoMono = Roboto_Mono({
   variable: '--font-roboto-mono',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '100', '200'],
-  preload: true,
+  preload: false,
 });
 
 const sourceCodePro = Source_Code_Pro({
   variable: '--font-source-code-pro',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '800'],
-  preload: true,
+  preload: false,
 });
 
 const merriweather = Merriweather({
   variable: '--font-merriweather',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '800'],
-  preload: true,
+  preload: false,
 });
 
 const sourceSans3 = Source_Sans_3({
   variable: '--font-source-sans-3',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '800'],
-  preload: true,
+  preload: false,
 });
 
 const sourceSerif4 = Source_Serif_4({
   variable: '--font-source-serif-4',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '800'],
-  preload: true,
+  preload: false,
 });
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '800'],
-  preload: true,
+  preload: false,
 });
 
 const outfit = Outfit({
   variable: '--font-outfit',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '800'],
-  preload: true,
+  preload: false,
 });
 
 const libreBaskerville = Libre_Baskerville({
   variable: '--font-libre-baskerville',
   subsets: ['latin'],
   weight: ['400', '700'],
-  preload: true,
+  preload: false,
 });
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
-  preload: true,
+  preload: false,
 });
 
 const notoSans = Noto_Sans({
   variable: '--font-noto-sans',
   subsets: ['latin'],
   weight: ['400', '700', '300', '500', '600', '800'],
-  preload: true,
+  preload: false,
 });
 
 const lato = Lato({

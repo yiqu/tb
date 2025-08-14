@@ -15,7 +15,7 @@ import AccountContentTabsParent from '../_components/AccountContentTabsParent';
 
 interface AccountContentLayoutProps {
   children: React.ReactNode;
-  params: Promise<{ any: string }>;
+  params: Promise<{}>;
 }
 
 export default function AccountContentLayout({ children }: AccountContentLayoutProps) {
