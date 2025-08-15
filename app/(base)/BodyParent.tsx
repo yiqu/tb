@@ -8,18 +8,19 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import theme from '@/components/ui-mui/mui/theme';
 import AppLayout from '@/components/layout/AppLayout';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { getVibeStylesheetHref } from '@/lib/vibes-css-map';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import VibeProviderWrapper from '@/providers/VibeProviderWrapper';
-import { getSettingsApplicationVibe } from '@/server/settings/vibe-select';
 import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider';
+import { getFontStylesheetHref, getVibeStylesheetHref } from '@/lib/vibes-css-map';
+import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server/settings/vibe-select';
 
 export default async function BodyParent({ children }: { children: React.ReactNode }) {
-  // Preload and apply the saved vibe stylesheet on the server to avoid flash
-  const vibe = await getSettingsApplicationVibe();
+  // Preload and apply the saved vibe and font stylesheets on the server to avoid flash
+  const [vibe, fontOverride] = await Promise.all([getSettingsApplicationVibe(), getSettingsApplicationFont()]);
   const vibeHref = getVibeStylesheetHref(vibe);
+  const fontHref = getFontStylesheetHref(fontOverride);
 
   return (
     <>
@@ -27,6 +28,14 @@ export default async function BodyParent({ children }: { children: React.ReactNo
         { /* Preload and apply vibe CSS early to prevent theme flash on first paint */ }
         <link rel="preload" href={ vibeHref } as="style" />
         <link id="vibe-theme-stylesheet" rel="stylesheet" href={ vibeHref } />
+        
+        { /* Preload and apply font CSS early to prevent font flash on first paint */ }
+        { fontOverride ? (
+          <>
+            <link rel="preload" href={ fontHref } as="style" />
+            <link id="vibe-font-stylesheet" rel="stylesheet" href={ fontHref } />
+          </>
+        ) : null }
       </head>
 
       <body className="font-sans antialiased" id="base-root-layout">

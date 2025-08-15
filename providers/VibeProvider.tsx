@@ -29,9 +29,9 @@ export default function VibeProvider({
       link = document.createElement('link');
       link.rel = 'stylesheet';
       link.id = LINK_ID;
+      // Ensure the vibe link is the last stylesheet in <head> so it wins cascade
+      document.head.appendChild(link);
     }
-    // Ensure the vibe link is the last stylesheet in <head> so it wins cascade
-    document.head.appendChild(link);
 
     // Update href when season changes
     if (link.href !== new URL(cssHref, window.location.origin).href) {
@@ -44,13 +44,19 @@ export default function VibeProvider({
         link2 = document.createElement('link');
         link2.id = FONT_LINK_ID;
         link2.rel = 'stylesheet';
+        document.head.appendChild(link2);
       }
 
+      // Update href when font override changes
       if (link2.href !== new URL(fontOverrideCssHref, window.location.origin).href) {
         link2.href = fontOverrideCssHref;
       }
-
-      document.head.appendChild(link2);
+    } else {
+      // Remove font override stylesheet if no font override is specified
+      const existingFontLink = document.getElementById(FONT_LINK_ID);
+      if (existingFontLink) {
+        existingFontLink.remove();
+      }
     }
   }, [cssHref, fontOverrideCssHref, vibe]);
 
