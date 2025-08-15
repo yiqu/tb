@@ -34,7 +34,7 @@
 
   --font-sans: var(--font-inter);
   --font-serif: var(--font-source-serif-4);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-jetbrains-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.375rem;
@@ -86,7 +86,7 @@
 
   --font-sans: var(--font-inter);
   --font-serif: var(--font-source-serif-4);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-jetbrains-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.375rem;

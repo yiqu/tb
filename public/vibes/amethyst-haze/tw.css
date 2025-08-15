@@ -34,7 +34,7 @@
 
   --font-sans: var(--font-geist);
   --font-serif: var(--font-lora);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-fira-code);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.5rem;
@@ -86,7 +86,7 @@
 
   --font-sans: var(--font-geist);
   --font-serif: var(--font-lora);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-fira-code);
   --font-fun: var(--font-cherry-bomb-one);
   
   --radius: 0.5rem;

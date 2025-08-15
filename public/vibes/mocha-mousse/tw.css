@@ -34,7 +34,7 @@
 
   --font-sans: var(--font-dm-sans), sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: monospace;
+  --font-mono: var(--font-geist-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.5rem;
@@ -86,7 +86,7 @@
 
   --font-sans: var(--font-dm-sans), sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: monospace;
+  --font-mono: var(--font-geist-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.5rem;

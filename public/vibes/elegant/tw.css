@@ -34,7 +34,7 @@
 
   --font-sans: var(--font-poppins), sans-serif;
   --font-serif: var(--font-libre-baskerville), serif;
-  --font-mono: monospace;
+  --font-mono: var(--font-ibm-plex-mono), monospace;
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.375rem;
@@ -86,7 +86,7 @@
 
   --font-sans: var(--font-poppins), sans-serif;
   --font-serif: var(--font-libre-baskerville), serif;
-  --font-mono: monospace;
+  --font-mono: var(--font-ibm-plex-mono), monospace;
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.375rem;
