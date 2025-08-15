@@ -1,0 +1,11 @@
+:root {
+  --font-sans: var(--font-oxanium);
+}
+
+.dark {
+  --font-sans: var(--font-oxanium);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+}

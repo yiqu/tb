@@ -11,8 +11,17 @@ import './scrollbar.css';
 import './tailwind-config.css';
 
 import BodyParent from './BodyParent';
-import { getSettingsApplicationVibe } from '@/server/settings/vibe-select';
-import { getFontVariableByVibe } from '@/lib/vibes-css-map';
+import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server/settings/vibe-select';
+import { getFontVariableByFont, getFontVariableByVibe } from '@/lib/vibes-css-map';
+import { cn } from '@/lib/utils';
+import { Cherry_Bomb_One } from 'next/font/google';
+
+const cherryBombOne = Cherry_Bomb_One({
+  variable: '--font-cherry-bomb-one',
+  subsets: ['latin'],
+  weight: ['400'],
+  preload: false,
+});
 
 export const metadata: Metadata = {
   title: {
@@ -29,11 +38,17 @@ export default async function BaseRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const vibe = await getSettingsApplicationVibe();
+  const [vibe, fontOverride] = await Promise.all([getSettingsApplicationVibe(), getSettingsApplicationFont()]);
+
   const cssVariables = getFontVariableByVibe(vibe);
+  const fontOverrideCssVariables: string | undefined = getFontVariableByFont(fontOverride);
 
   return (
-    <html lang="en" className={ cssVariables } suppressHydrationWarning>
+    <html
+      lang="en"
+      className={ cn(fontOverrideCssVariables ? `${fontOverrideCssVariables} ${cherryBombOne.variable}` : cssVariables) }
+      suppressHydrationWarning
+    >
       <ReactScan />
       <BodyParent>{ children }</BodyParent>
     </html>

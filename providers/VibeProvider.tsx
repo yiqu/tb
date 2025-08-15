@@ -2,17 +2,25 @@
 
 import { ReactNode, useEffect } from 'react';
 
-import { getVibeStylesheetHref } from '@/lib/vibes-css-map';
-import { AppVibe } from '@/models/settings/general-settings.models';
+import { AppFont, AppVibe } from '@/models/settings/general-settings.models';
+import { getFontStylesheetHref, getVibeStylesheetHref } from '@/lib/vibes-css-map';
 
 const LINK_ID = 'vibe-theme-stylesheet';
+const FONT_LINK_ID = 'vibe-font-stylesheet';
 
-
-export default function VibeProvider({ vibe = 'vintage', children }: { vibe: AppVibe; children: ReactNode }) {
-
+export default function VibeProvider({
+  vibe = 'vintage',
+  fontOverride,
+  children,
+}: {
+  vibe: AppVibe;
+  fontOverride: AppFont | undefined;
+  children: ReactNode;
+}) {
   const cssHref = getVibeStylesheetHref(vibe);
+  const fontOverrideCssHref = getFontStylesheetHref(fontOverride);
 
-  // Ensure a dedicated <link> tag exists, and always point it to the active season CSS
+  // Ensure a dedicated <link> tag exists, and always point it to the active vibe CSS
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
@@ -29,7 +37,22 @@ export default function VibeProvider({ vibe = 'vintage', children }: { vibe: App
     if (link.href !== new URL(cssHref, window.location.origin).href) {
       link.href = cssHref;
     }
-  }, [cssHref, vibe]);
+
+    if (fontOverrideCssHref) {
+      let link2 = document.getElementById(FONT_LINK_ID) as HTMLLinkElement | null;
+      if (!link2) {
+        link2 = document.createElement('link');
+        link2.id = FONT_LINK_ID;
+        link2.rel = 'stylesheet';
+      }
+
+      if (link2.href !== new URL(fontOverrideCssHref, window.location.origin).href) {
+        link2.href = fontOverrideCssHref;
+      }
+
+      document.head.appendChild(link2);
+    }
+  }, [cssHref, fontOverrideCssHref, vibe]);
 
   return <div id="vibe-provider">{ children }</div>;
 }

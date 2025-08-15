@@ -23,7 +23,7 @@ import {
   Architects_Daughter,
 } from 'next/font/google';
 
-import { AppVibe } from '@/models/settings/general-settings.models';
+import { AppFont, AppVibe } from '@/models/settings/general-settings.models';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -205,8 +205,19 @@ const VIBE_CSS_MAP: Record<AppVibe, string> = {
   cyberpunk: '/vibes/cyberpunk/tw.css',
 };
 
+const FONT_CSS_MAP: Record<string, string> = {
+  'architects-daughter': '/font-css/architects-daughter/tw.css',
+  geist: '/font-css/geist/tw.css',
+  poppins: '/font-css/poppins/tw.css',
+  oxanium: '/font-css/oxanium/tw.css',
+};
+
 export function getVibeStylesheetHref(vibe: AppVibe): string {
   return VIBE_CSS_MAP[vibe] ?? VIBE_CSS_MAP.vintage;
+}
+
+export function getFontStylesheetHref(font: string | undefined): string {
+  return FONT_CSS_MAP[font ?? ''] ?? FONT_CSS_MAP['geist'];
 }
 
 export function getFontVariableByVibe(vibe: AppVibe): string {
@@ -285,5 +296,71 @@ export function getFontVariableByVibe(vibe: AppVibe): string {
   }
 
   result = `${result} ${cherryBombOne.variable}`;
+  return result;
+}
+
+export function getFontVariableByFont(font: AppFont | undefined): string | undefined {
+  let result: string | undefined = undefined;
+
+  switch (font) {
+    case 'geist':
+      result = `${geistSans.variable}`;
+      break;
+    case 'poppins':
+      result = `${poppins.variable}`;
+      break;
+    case 'outfit':
+      result = `${outfit.variable}`;
+      break;
+    case 'dm-sans':
+      result = `${dmSans.variable}`;
+      break;
+    case 'architects-daughter':
+      result = `${architectsDaughter.variable}`;
+      break;
+    case 'inter':
+      result = `${inter.variable}`;
+      break;
+    case 'lora':
+      result = `${lora.variable}`;
+      break;
+    case 'merriweather':
+      result = `${merriweather.variable}`;
+      break;
+    case 'montserrat':
+      result = `${montserrat.variable}`;
+      break;
+    case 'libre-baskerville':
+      result = `${libreBaskerville.variable}`;
+      break;
+    case 'open-sans':
+      result = `${openSans.variable}`;
+      break;
+    case 'source-code-pro':
+      result = `${sourceCodePro.variable}`;
+      break;
+    case 'space-mono':
+      result = `${spaceMono.variable}`;
+      break;
+    case 'fira-code':
+      result = `${firaCode.variable}`;
+      break;
+    case 'ibm-plex-mono':
+      result = `${ibmPlexMono.variable}`;
+      break;
+    case 'jetbrains-mono':
+      result = `${jetBrainsMono.variable}`;
+      break;
+    case 'roboto-mono':
+      result = `${robotoMono.variable}`;
+      break;
+    case 'oxanium':
+      result = `${oxanium.variable}`;
+      break;
+    default:
+      result = undefined;
+      break;
+  }
+
   return result;
 }

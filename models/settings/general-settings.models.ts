@@ -26,7 +26,29 @@ export const APP_VIBE_OPTIONS = [
   'cyberpunk',
 ] as const;
 
+export const APP_FONT_OPTIONS = [
+  'geist',
+  'poppins',
+  'outfit',
+  'dm-sans',
+  'architects-daughter',
+  'inter',
+  'lora',
+  'merriweather',
+  'montserrat',
+  'libre-baskerville',
+  'open-sans',
+  'source-code-pro',
+  'space-mono',
+  'fira-code',
+  'ibm-plex-mono',
+  'jetbrains-mono',
+  'roboto-mono',
+  'oxanium',
+] as const;
+
 export type AppVibe = (typeof APP_VIBE_OPTIONS)[number];
+export type AppFont = (typeof APP_FONT_OPTIONS)[number];
 
 export const APP_VIBE_OPTIONS_MAP: Record<AppVibe, string> = {
   'amber-minimal': 'Amber Minimal',
@@ -54,9 +76,37 @@ export const APP_VIBE_OPTIONS_MAP: Record<AppVibe, string> = {
   cyberpunk: 'Cyberpunk',
 };
 
+export const APP_FONT_OPTIONS_MAP: Record<AppFont, string> = {
+  geist: 'Geist',
+  poppins: 'Poppins',
+  outfit: 'Outfit',
+  'dm-sans': 'DM Sans',
+  'architects-daughter': 'Architects Daughter',
+  inter: 'Inter',
+  lora: 'Lora',
+  merriweather: 'Merriweather',
+  montserrat: 'Montserrat',
+  'libre-baskerville': 'Libre Baskerville',
+  'open-sans': 'Open Sans',
+  'source-code-pro': 'Source Code Pro',
+  'space-mono': 'Space Mono',
+  'fira-code': 'Fira Code',
+  'ibm-plex-mono': 'IBM Plex Mono',
+  'jetbrains-mono': 'JetBrains Mono',
+  'roboto-mono': 'Roboto Mono',
+  oxanium: 'Oxanium',
+};
+
 export const APP_VIBE_OPTIONS_LIST: HFSelectOption[] = APP_VIBE_OPTIONS.map((vibe) => ({
   label: APP_VIBE_OPTIONS_MAP[vibe],
   value: vibe,
+})).toSorted((a, b) => {
+  return a.value.toLowerCase() > b.value.toLowerCase() ? 1 : -1;
+});
+
+export const APP_FONT_OPTIONS_LIST: HFSelectOption[] = APP_FONT_OPTIONS.map((font) => ({
+  label: APP_FONT_OPTIONS_MAP[font],
+  value: font,
 })).toSorted((a, b) => {
   return a.value.toLowerCase() > b.value.toLowerCase() ? 1 : -1;
 });

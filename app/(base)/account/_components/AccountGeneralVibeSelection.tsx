@@ -5,6 +5,7 @@ import Typography from '@/components/typography/Typography';
 import { CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
 import DisplayCard from '../@content/personal-info/_components/DisplayCard';
+import AccountGeneralVibeFontWrapper from './AccountGeneralVibeFontWrapper';
 import AccountGeneralVibeSelectionWrapper from './AccountGeneralVibeSelectionWrapper';
 
 export default function AccountGeneralVibeSelection() {
@@ -18,9 +19,12 @@ export default function AccountGeneralVibeSelection() {
           <Typography variant="body1">Pick a mood to set the tone for your visit.</Typography>
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-y-4">
         <Suspense fallback={ <VibeSelectionSkeleton /> }>
           <AccountGeneralVibeSelectionWrapper />
+        </Suspense>
+        <Suspense fallback={ <VibeSelectionSkeleton /> }>
+          <AccountGeneralVibeFontWrapper />
         </Suspense>
       </CardContent>
     </DisplayCard>
@@ -29,7 +33,7 @@ export default function AccountGeneralVibeSelection() {
 
 function VibeSelectionSkeleton() {
   return (
-    <section className="h-[58px] w-full">
+    <section className="h-[58px] w-[50%]">
       <Skeleton className="h-full w-full" />
     </section>
   );

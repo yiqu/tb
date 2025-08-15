@@ -1,0 +1,11 @@
+:root {
+  --font-sans: var(--font-architects-daughter);
+}
+
+.dark {
+  --font-sans: var(--font-architects-daughter);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+}
