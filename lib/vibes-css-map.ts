@@ -36,7 +36,7 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
   preload: false,
-  weight: ['400'],
+  weight: ['400', '500', '600', '700'],
 });
 
 const cherryBombOne = Cherry_Bomb_One({
@@ -56,126 +56,126 @@ const architectsDaughter = Architects_Daughter({
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
   preload: true,
 });
 
 const lora = Lora({
   variable: '--font-lora',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['400', '500', '600', '700'],
   preload: false,
 });
 
 const dmSans = DM_Sans({
   variable: '--font-dm-sans',
   subsets: ['latin'],
-  weight: '400',
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
   preload: false,
 });
 
 const poppins = Poppins({
   variable: '--font-poppins',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
   preload: false,
 });
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta-sans',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   preload: false,
 });
 
 const oxanium = Oxanium({
   variable: '--font-oxanium',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   preload: false,
 });
 
 const merriweather = Merriweather({
   variable: '--font-merriweather',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   preload: false,
 });
 
 const sourceSerif4 = Source_Serif_4({
   variable: '--font-source-serif-4',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   preload: false,
 });
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   preload: false,
 });
 
 const outfit = Outfit({
   variable: '--font-outfit',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   preload: false,
 });
 
 const libreBaskerville = Libre_Baskerville({
   variable: '--font-libre-baskerville',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['400', '700'],
   preload: false,
 });
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   preload: false,
 });
 
 const sourceCodePro = Source_Code_Pro({
   variable: '--font-source-code-pro',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   preload: false,
 });
 
 const spaceMono = Space_Mono({
   variable: '--font-space-mono',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['400', '700'],
   preload: false,
 });
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
   variable: '--font-ibm-plex-mono',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
 const jetBrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   preload: false,
 });
 
 const robotoMono = Roboto_Mono({
   variable: '--font-roboto-mono',
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
