@@ -2,6 +2,8 @@ import {
   Lora,
   Geist,
   Inter,
+  Kanit,
+  Rubik,
   Outfit,
   DM_Sans,
   Poppins,
@@ -20,7 +22,7 @@ import {
   Cherry_Bomb_One,
   Plus_Jakarta_Sans,
   Libre_Baskerville,
-  Architects_Daughter,
+  Architects_Daughter
 } from 'next/font/google';
 
 import { AppFont, AppVibe } from '@/models/settings/general-settings.models';
@@ -37,6 +39,20 @@ export const geistMono = Geist_Mono({
   subsets: ['latin'],
   preload: false,
   weight: ['400', '500', '600', '700'],
+});
+
+export const kanit = Kanit({
+  variable: '--font-kanit',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  preload: false,
+});
+
+export const rubik = Rubik({
+  variable: '--font-rubik',
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  preload: false,
 });
 
 const cherryBombOne = Cherry_Bomb_One({

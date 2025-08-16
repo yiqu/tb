@@ -1,8 +1,4 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
-/*
-	Installed from https://reactbits.dev/ts/tailwind/
-*/
-
 import React, { ReactNode } from 'react';
 
 interface GradientTextProps {
@@ -28,8 +24,8 @@ export default function GradientText({
   return (
     <div
       className={ `
-        relative mx-auto flex max-w-fit cursor-pointer flex-row items-center justify-center overflow-hidden rounded-[1.25rem] font-medium backdrop-blur transition-shadow
-        duration-500
+        relative mx-auto flex max-w-fit cursor-pointer flex-row items-center justify-center overflow-hidden rounded-[1.25rem] font-medium
+        backdrop-blur transition-shadow duration-500
         ${className}
       ` }
     >
@@ -54,7 +50,7 @@ export default function GradientText({
         </div>
       : null }
       <div
-        className="animate-gradient z-2 relative inline-block bg-cover text-transparent"
+        className="animate-gradient relative z-2 inline-block bg-cover text-transparent"
         style={ {
           ...gradientStyle,
           backgroundClip: 'text',

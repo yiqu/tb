@@ -42,12 +42,27 @@ function useScrollAnimation() {
 // Animated section component
 interface AnimatedSectionProps {
   children: React.ReactNode;
-  direction?: 'left' | 'right';
+  direction?: 'left' | 'right' | 'top' | 'bottom';
   delay?: number;
 }
 
 export function AnimatedSection({ children, direction = 'left', delay = 0 }: AnimatedSectionProps) {
   const [ref, isVisible] = useScrollAnimation();
+
+  const getInitialTransform = () => {
+    switch (direction) {
+      case 'left':
+        return '-translate-x-32 translate-y-16';
+      case 'right':
+        return 'translate-x-32 translate-y-16';
+      case 'top':
+        return 'translate-y-32';
+      case 'bottom':
+        return '-translate-y-32';
+      default:
+        return '-translate-x-32 translate-y-16';
+    }
+  };
 
   return (
     <div
@@ -59,8 +74,7 @@ export function AnimatedSection({ children, direction = 'left', delay = 0 }: Ani
           'translate-x-0 translate-y-0 opacity-100'
         : `
           opacity-0
-          ${direction === 'left' ? '-translate-x-32' : 'translate-x-32'}
-          translate-y-16
+          ${getInitialTransform()}
         `
       }
       ` }

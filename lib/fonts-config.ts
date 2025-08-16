@@ -287,3 +287,59 @@ export const libreBaskervilleFont: NextFontWithVariable = localFont({
   preload: false,
   fallback: ['system-ui', 'serif'],
 });
+
+export const dinoColorFont: NextFontWithVariable = localFont({
+  src: [
+    {
+      path: '../public/fonts/dino-color/DinoRegular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-dino-color',
+  display: 'swap',
+  preload: false,
+  fallback: ['system-ui', 'serif'],
+});
+
+export const dinoFossilFont: NextFontWithVariable = localFont({
+  src: [
+    {
+      path: '../public/fonts/dino-fossil/DinosaurFossil.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-dino-fossil',
+  display: 'swap',
+  preload: false,
+  fallback: ['system-ui', 'serif'],
+});
+
+export const historyFont: NextFontWithVariable = localFont({
+  src: [
+    {
+      path: '../public/fonts/history/HistoyStaco.otf',
+      weight: '400',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-history-staco',
+  display: 'swap',
+  preload: false,
+  fallback: ['system-ui', 'serif'],
+});
+
+export const stoneAgeFont: NextFontWithVariable = localFont({
+  src: [
+    {
+      path: '../public/fonts/stone-age/StoneAge.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-stone-age',
+  display: 'swap',
+  preload: false,
+  fallback: ['system-ui', 'serif'],
+});

@@ -9,7 +9,7 @@ import { AnimatedSection } from './animated-section';
 
 export function FinalCtaSection() {
   return (
-    <section className={ `py-20md:py-32 bg-gradient-to-r from-blue-600 to-purple-600` }>
+    <section className={ `bg-gradient-to-r from-blue-600 to-purple-600 py-20 md:py-32` }>
       <div className={ `container mx-auto max-w-7xl px-4 md:px-6` }>
         <AnimatedSection direction="left">
           <div className="mx-auto max-w-3xl text-center text-white">

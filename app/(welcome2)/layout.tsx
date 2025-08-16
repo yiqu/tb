@@ -9,9 +9,8 @@ import './tailwind-config.css';
 import { geistMono, geistSans } from '@/lib/vibes-css-map';
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Welcome | KQPRO',
+  description: 'Welcome to KQPRO',
 };
 
 export default function RootLayout({
@@ -20,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={ ` ${geistSans.variable} ${geistMono.variable} ` }>{ children }</body>
     </html>
   );

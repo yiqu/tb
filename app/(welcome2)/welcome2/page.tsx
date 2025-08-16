@@ -12,7 +12,7 @@ import { TestimonialsSection } from './_components/testimonials-section';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-white">
+    <div className="min-h-screen bg-white">
       <HeroSection />
       <FeaturesSection />
       <TestimonialsSection />

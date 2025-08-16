@@ -62,3 +62,5 @@ export const contentSections = [
     imageQuery: 'team+collaboration+workspace',
   },
 ];
+
+export const APP_TITLE = 'DILIGENTNOTION';
