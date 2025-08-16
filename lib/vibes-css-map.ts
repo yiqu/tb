@@ -25,14 +25,14 @@ import {
 
 import { AppFont, AppVibe } from '@/models/settings/general-settings.models';
 
-const geistSans = Geist({
+export const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
   preload: true,
   weight: ['300', '400', '500', '600', '700', '800', '900'],
 });
 
-const geistMono = Geist_Mono({
+export const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
   preload: false,

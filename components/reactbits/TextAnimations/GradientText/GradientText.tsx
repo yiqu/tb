@@ -1,4 +1,4 @@
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
 */

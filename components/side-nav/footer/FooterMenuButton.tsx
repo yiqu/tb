@@ -1,4 +1,4 @@
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { Suspense } from 'react';
 import { ChevronsUpDown } from 'lucide-react';
 

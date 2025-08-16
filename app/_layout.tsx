@@ -1,5 +1,5 @@
 /* eslint-disable better-tailwindcss/no-unnecessary-whitespace */
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 
 //import { geistFont, geistMonoFont } from '@/lib/fonts-config';
 

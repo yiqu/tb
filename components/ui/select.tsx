@@ -1,6 +1,6 @@
 'use client';
 
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 
 import * as React from 'react';
 import { Select as SelectPrimitive } from 'radix-ui';
@@ -98,7 +98,7 @@ function SelectContent({
           className={ cn(
             'p-1',
             position === 'popper' &&
-              `h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1`,
+              `h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width) scroll-my-1`,
           ) }
         >
           { children }

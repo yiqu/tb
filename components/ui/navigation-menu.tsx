@@ -1,4 +1,4 @@
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 
 import * as React from 'react';
 import { cva } from 'class-variance-authority';
@@ -132,8 +132,8 @@ function NavigationMenuViewport({
             origin-top-center bg-popover text-popover-foreground
             data-[state=closed]:animate-out data-[state=closed]:zoom-out-95
             data-[state=open]:animate-in data-[state=open]:zoom-in-90
-            relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow
-            md:w-[var(--radix-navigation-menu-viewport-width)]
+            relative mt-1.5 h-(--radix-navigation-menu-viewport-height) w-full overflow-hidden rounded-md border shadow
+            md:w-(--radix-navigation-menu-viewport-width)
           `,
           className,
         ) }

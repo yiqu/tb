@@ -1,4 +1,4 @@
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { ReactNode } from 'react';
 import { cva, VariantProps } from 'class-variance-authority';
 

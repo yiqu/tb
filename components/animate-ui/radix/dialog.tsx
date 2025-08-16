@@ -1,5 +1,5 @@
 'use client';
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import * as React from 'react';
 import { X } from 'lucide-react';
 import { Dialog as DialogPrimitive } from 'radix-ui';

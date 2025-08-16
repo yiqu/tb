@@ -1,6 +1,6 @@
 'use client';
 
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 
 import * as React from 'react';
 import { ContextMenu as ContextMenuPrimitive } from 'radix-ui';

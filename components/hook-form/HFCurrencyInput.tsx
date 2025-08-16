@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
 
 import omit from 'lodash/omit';

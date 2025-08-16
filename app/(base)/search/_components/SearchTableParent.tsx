@@ -1,4 +1,4 @@
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { CardContent } from '@/components/ui/card';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';

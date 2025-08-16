@@ -1,5 +1,5 @@
 'use client';
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import * as React from 'react';
 import { Popover as PopoverPrimitive } from 'radix-ui';
 import { motion, AnimatePresence, type Transition, type HTMLMotionProps } from 'motion/react';

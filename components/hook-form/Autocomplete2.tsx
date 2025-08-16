@@ -1,5 +1,7 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-unused-vars */
+/* eslint-disable better-tailwindcss/enforce-consistent-variable-syntax */
+
 'use client';
 
 import * as React from 'react';

@@ -1,5 +1,5 @@
 /* eslint-disable quote-props */
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import Image from 'next/image';
 import { ReactNode } from 'react';
 

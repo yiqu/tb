@@ -1,6 +1,6 @@
 /* eslint-disable perfectionist/sort-imports */
 /* eslint-disable better-tailwindcss/no-unnecessary-whitespace */
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import ReactScan from '@/providers/ReactScan';
 
 import { appName } from '@/constants/constants';

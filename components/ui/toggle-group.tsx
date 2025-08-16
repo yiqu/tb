@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/explicit-length-check */
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
 
 import * as React from 'react';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useOptimistic, useTransition } from 'react';
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { ChevronUp, ChevronDown, LoaderCircle, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';

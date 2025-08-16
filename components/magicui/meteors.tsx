@@ -1,4 +1,5 @@
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-variable-syntax */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable unicorn/no-useless-spread */
 'use client';

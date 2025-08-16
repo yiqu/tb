@@ -1,4 +1,4 @@
-/* eslint-disable better-tailwindcss/multiline */
+/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 /* eslint-disable no-param-reassign */
 'use client';
 import { useRef, useEffect } from 'react';
