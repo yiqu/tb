@@ -205,6 +205,17 @@
   }
 }
 
+/* Custom utility classes */
+@layer layout-utilities {
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  body[data-scroll-locked] {
+    margin-right: 0px !important;
+  }
+}
+
 @layer other-colors {
   :root {
     --color-kq-shadow: rgba(0, 0, 0, 0.1);
@@ -435,54 +446,36 @@
   }
 }
 
-/* Custom utility classes */
-@layer layout-utilities {
-  html {
-    scrollbar-gutter: stable;
-  }
-
-  body[data-scroll-locked] {
-    margin-right: 0px !important;
-  }
-
-  .gap-mui-1 {
-    gap: calc(var(--spacing) * 2);
-  }
-  .gap-mui-2 {
-    gap: calc(var(--spacing) * 4);
-  }
-  .gap-mui-3 {
-    gap: calc(var(--spacing) * 6);
-  }
-  .gap-mui-4 {
-    gap: calc(var(--spacing) * 8);
-  }
-  .gap-mui-5 {
-    gap: calc(var(--spacing) * 10);
-  }
-  .gap-mui-6 {
-    gap: calc(var(--spacing) * 12);
-  }
-  .gap-mui-7 {
-    gap: calc(var(--spacing) * 14);
-  }
-  .gap-mui-8 {
-    gap: calc(var(--spacing) * 16);
-  }
-  .gap-mui-9 {
-    gap: calc(var(--spacing) * 18);
-  }
-  .gap-mui-10 {
-    gap: calc(var(--spacing) * 20);
-  }
-}
-
 /* Custom font utilities */
 @layer utilities {
   .font-fun {
-    font-family: var(--font-fun), var(--font-sans, ui-sans-serif), system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    font-family:
+      var(--font-fun),
+      var(--font-sans, ui-sans-serif),
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Helvetica,
+      Arial,
+      'Apple Color Emoji',
+      'Segoe UI Emoji',
+      'Segoe UI Symbol',
+      sans-serif;
   }
   .font-fun-important {
-    font-family: var(--font-fun), var(--font-sans, ui-sans-serif), system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif !important;
+    font-family:
+      var(--font-fun),
+      var(--font-sans, ui-sans-serif),
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Helvetica,
+      Arial,
+      'Apple Color Emoji',
+      'Segoe UI Emoji',
+      'Segoe UI Symbol',
+      sans-serif !important;
   }
 }
