@@ -75,6 +75,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // DO not match the route: /consent, and /welcome
-  matcher: ['/((?!.*\\..*|_next|welcome).*)', '/', '/(api|trpc)(.*)'],
+  // DO not match the route: /consent, and /welcome and /welcome2
+  matcher: ['/((?!.*\\..*|_next|welcome|welcome2).*)', '/', '/(api|trpc)(.*)'],
 };
