@@ -9,6 +9,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import './scrollbar.css';
 import './tailwind-config.css';
+import './animations.css';
 
 import BodyParent from './BodyParent';
 import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server/settings/vibe-select';

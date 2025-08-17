@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
-
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
@@ -46,7 +45,7 @@ interface AnimatedSectionProps {
   delay?: number;
 }
 
-export function AnimatedSection({ children, direction = 'left', delay = 0 }: AnimatedSectionProps) {
+export function AnimatedWrapper({ children, direction = 'left', delay = 0 }: AnimatedSectionProps) {
   const [ref, isVisible] = useScrollAnimation();
 
   const getInitialTransform = () => {

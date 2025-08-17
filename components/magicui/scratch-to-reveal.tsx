@@ -14,6 +14,7 @@ interface ScratchToRevealProps {
   className?: string;
   onComplete?: () => void;
   gradientColors?: [string, string, string];
+  brushSize?: number;
 }
 
 export const ScratchToReveal: React.FC<ScratchToRevealProps> = ({
@@ -24,6 +25,7 @@ export const ScratchToReveal: React.FC<ScratchToRevealProps> = ({
   children,
   className,
   gradientColors = ['#A97CF8', '#F38CB8', '#FDCC92'],
+  brushSize = 30,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isScratching, setIsScratching] = useState(false);
@@ -100,7 +102,7 @@ export const ScratchToReveal: React.FC<ScratchToRevealProps> = ({
       const y = clientY - rect.top + 16;
       ctx.globalCompositeOperation = 'destination-out';
       ctx.beginPath();
-      ctx.arc(x, y, 30, 0, Math.PI * 2);
+      ctx.arc(x, y, brushSize, 0, Math.PI * 2);
       ctx.fill();
     }
   };
@@ -149,8 +151,11 @@ export const ScratchToReveal: React.FC<ScratchToRevealProps> = ({
       style={ {
         width,
         height,
-        cursor:
-          "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4KICA8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNSIgc3R5bGU9ImZpbGw6I2ZmZjtzdHJva2U6IzAwMDtzdHJva2Utd2lkdGg6MXB4OyIgLz4KPC9zdmc+'), auto",
+        cursor: `url('data:image/svg+xml;base64,${btoa(
+          `<svg xmlns="http://www.w3.org/2000/svg" width="${brushSize * 2}" height="${brushSize * 2}" viewBox="0 0 ${brushSize * 2} ${brushSize * 2}">
+            <circle cx="${brushSize}" cy="${brushSize}" r="${brushSize - 1}" style="fill:#fff;stroke:#000;stroke-width:1px;" />
+          </svg>`
+        )}') ${brushSize} ${brushSize}, auto`,
       } }
       animate={ controls }
     >

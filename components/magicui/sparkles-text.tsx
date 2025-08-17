@@ -123,7 +123,7 @@ export const SparklesText: React.FC<SparklesTextProps> = ({
     };
 
     initializeStars();
-    const interval = setInterval(updateStars, 100);
+    const interval = setInterval(updateStars, 500);
 
     return () => clearInterval(interval);
   }, [colors.first, colors.second, sparklesCount]);

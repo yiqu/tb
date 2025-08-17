@@ -1,35 +1,22 @@
 /* eslint-disable react/no-array-index-key */
-'use client';
-
 import type React from 'react';
 
-import { HeroSection } from './_components/hero-section';
-import { contentSections } from './_components/welcome.utils';
-import { ContentSection } from './_components/content-section';
-import { FeaturesSection } from './_components/features-section';
-import { FinalCtaSection } from './_components/final-cta-section';
-import { TestimonialsSection } from './_components/testimonials-section';
+import { HeroSection } from './_components/HeroSection';
+import WelcomeTopNav from './_components/WelcomeTopNav';
+import { FooterSectionSection } from './_components/FooterSection';
+import ContentSectionParent from './_components/ContentSectionParent';
+import { SubTeamsSectionParent } from './_components/SubTeamsSectionParent';
+import { MilestoneTimeLineSection } from './_components/MilestoneTimelineSection';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
+      <WelcomeTopNav />
       <HeroSection />
-      <FeaturesSection />
-      <TestimonialsSection />
-
-      { /* Content Sections */ }
-      { contentSections.map((section, index) => (
-        <ContentSection
-          key={ index }
-          title={ section.title }
-          icon={ section.icon }
-          text={ section.text }
-          imageQuery={ section.imageQuery }
-          index={ index }
-        />
-      )) }
-
-      <FinalCtaSection />
+      <SubTeamsSectionParent />
+      <ContentSectionParent />
+      <MilestoneTimeLineSection />
+      <FooterSectionSection />
     </div>
   );
 }

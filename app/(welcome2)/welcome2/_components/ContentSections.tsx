@@ -1,29 +1,27 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
-
 'use client';
 
-import Image from 'next/image';
+import { ReactNode } from 'react';
 import { ArrowRight, type LucideIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-import { AnimatedSection } from './animated-section';
+import { AnimatedWrapper } from './AnimatedWrapper';
 
 interface ContentSectionProps {
   title: string;
   icon: LucideIcon;
   text: string;
-  imageQuery: string;
   index: number;
+  imageComponent: ReactNode;
 }
 
-export function ContentSection({ title, icon: Icon, text, imageQuery, index }: ContentSectionProps) {
+export function ContentSections({ title, icon: Icon, text, imageComponent, index }: ContentSectionProps) {
   return (
-    <section className={ `py-20 md:py-32 ${index % 2 === 1 ? 'bg-gray-50' : 'bg-white'}` }>
+    <section className={ `py-20 md:py-32 ${index % 2 === 1 ? 'bg-gray-50 dark:bg-[#000]' : 'bg-white dark:bg-gray-900'}` }>
       <div className={ `container mx-auto max-w-7xl px-4 md:px-6` }>
         <div className={ `grid items-center gap-12 lg:grid-cols-2 ${index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''}` }>
-          { /* Text Content */ }
-          <AnimatedSection direction={ index % 2 === 0 ? 'left' : 'right' }>
+          <AnimatedWrapper direction={ index % 2 === 0 ? 'left' : 'right' }>
             <div className={ `space-y-6 ${index % 2 === 1 ? 'lg:col-start-2' : ''}` }>
               <div className="flex items-center space-x-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
@@ -31,7 +29,7 @@ export function ContentSection({ title, icon: Icon, text, imageQuery, index }: C
                 </div>
                 <h2 className={ `text-3xl font-bold tracking-tight sm:text-4xl` }>{ title }</h2>
               </div>
-              <p className="text-lg leading-relaxed text-gray-600">{ text }</p>
+              <p className="text-lg leading-relaxed text-gray-600 dark:text-gray-300">{ text }</p>
               <div className={ `flex flex-col gap-4 sm:flex-row` }>
                 <Button size="lg">
                   Learn More
@@ -42,20 +40,11 @@ export function ContentSection({ title, icon: Icon, text, imageQuery, index }: C
                 </Button>
               </div>
             </div>
-          </AnimatedSection>
+          </AnimatedWrapper>
 
-          { /* Image */ }
-          <AnimatedSection direction={ index % 2 === 0 ? 'right' : 'left' } delay={ 200 }>
-            <div className={ `${index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}` }>
-              <Image
-                src={ `/placeholder.svg?height=500&width=600&text=${imageQuery}` }
-                alt={ title }
-                width={ 600 }
-                height={ 500 }
-                className="w-full rounded-xl border shadow-2xl"
-              />
-            </div>
-          </AnimatedSection>
+          <AnimatedWrapper direction={ index % 2 === 0 ? 'right' : 'left' } delay={ 200 }>
+            <div className={ `${index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}` }>{ imageComponent }</div>
+          </AnimatedWrapper>
         </div>
       </div>
     </section>

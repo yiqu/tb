@@ -6,14 +6,12 @@ import { useState } from 'react';
 import { Sun } from 'lucide-react';
 import { Moon } from 'lucide-react';
 import { useTheme, UseThemeProps } from 'next-themes';
-import { VariantProps } from 'class-variance-authority';
 
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
-import { Button, buttonVariants } from '@/components/ui/button';
 
-import { Skeleton } from '../ui/skeleton';
-
-export default function ThemeToggleButton({ ...btnProps }: React.ComponentProps<'button'> & VariantProps<typeof buttonVariants>) {
+export default function ThemeToggleButton() {
   const isClient = useClientOnly();
   const [rotationDegree, setRotationDegree] = useState(0);
   const { setTheme, theme }: UseThemeProps = useTheme();
@@ -45,7 +43,7 @@ export default function ThemeToggleButton({ ...btnProps }: React.ComponentProps<
   }
 
   return (
-    <Button variant="outline" size="icon" onClick={ handleOnThemeUpdate } { ...btnProps }>
+    <Button variant="outline" size="icon" onClick={ handleOnThemeUpdate }>
       <div className="transition-transform duration-200" style={ { transform: `rotate(${rotationDegree}deg)` } }>
         { currentIcon === 'dark' ?
           <Sun />

@@ -15,6 +15,7 @@ import {
   Space_Mono,
   Roboto_Mono,
   Merriweather,
+  Indie_Flower,
   IBM_Plex_Mono,
   Source_Serif_4,
   JetBrains_Mono,
@@ -32,6 +33,13 @@ export const geistSans = Geist({
   subsets: ['latin'],
   preload: true,
   weight: ['300', '400', '500', '600', '700', '800', '900'],
+});
+
+export const indieFlower = Indie_Flower({
+  variable: '--font-indie-flower',
+  subsets: ['latin'],
+  weight: ['400'],
+  preload: false,
 });
 
 export const geistMono = Geist_Mono({

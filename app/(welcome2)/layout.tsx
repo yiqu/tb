@@ -6,7 +6,10 @@ import type { Metadata } from 'next';
 
 import './globals.css';
 import './tailwind-config.css';
+import './animations.css';
+
 import { geistMono, geistSans } from '@/lib/vibes-css-map';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'Welcome | KQPRO',
@@ -20,7 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={ ` ${geistSans.variable} ${geistMono.variable} ` }>{ children }</body>
+      <body className={ ` ${geistSans.variable} ${geistMono.variable} ` }>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={ false } disableTransitionOnChange storageKey="welcome-page-theme">
+          { children }
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

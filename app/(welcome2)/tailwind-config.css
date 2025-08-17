@@ -168,6 +168,7 @@
   --animate-rainbow: rainbow var(--speed, 2s) infinite linear;
   --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
   --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+  --animate-shine: shine var(--duration) infinite linear;
 }
 
 @layer base {
@@ -230,5 +231,17 @@
   }
   100% {
     transform: translateZ(0) rotate(360deg);
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  to {
+    background-position: 0% 0%;
   }
 }

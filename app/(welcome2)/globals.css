@@ -10,6 +10,7 @@ body {
 
   --animate-shine: shine var(--duration) infinite linear;
   --animate-aurora: aurora 8s ease-in-out infinite alternate;
+  scrollbar-gutter: stable;
 }
 
 :root {
@@ -18,4 +19,9 @@ body {
   --color-3: 210 100% 63%;
   --color-4: 195 100% 63%;
   --color-5: 90 100% 63%;
+}
+
+html.dark [data-hide-on-theme='dark'],
+html:not(.dark) [data-hide-on-theme='light'] {
+  display: none;
 }

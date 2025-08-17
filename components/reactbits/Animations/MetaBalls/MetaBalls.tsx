@@ -1,6 +1,7 @@
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
 */
+'use client';
 
 import React, { useRef, useEffect } from 'react';
 import { Mesh, Vec3, Camera, Program, Renderer, Triangle, Transform } from 'ogl';
