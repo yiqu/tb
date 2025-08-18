@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import type React from 'react';
 
+import FooterLinks from './_components/FooterLinks';
 import { HeroSection } from './_components/HeroSection';
 import WelcomeTopNav from './_components/WelcomeTopNav';
 import { FooterSectionSection } from './_components/FooterSection';
@@ -17,6 +18,7 @@ export default function LandingPage() {
       <ContentSectionParent />
       <MilestoneTimeLineSection />
       <FooterSectionSection />
+      <FooterLinks />
     </div>
   );
 }

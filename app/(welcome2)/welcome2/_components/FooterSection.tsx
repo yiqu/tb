@@ -5,7 +5,9 @@ import { ArrowRight } from 'lucide-react';
 import { useTheme, UseThemeProps } from 'next-themes';
 
 import { cn } from '@/lib/utils';
+import useIsClient from '@/hooks/useIsClient';
 import { geistFont } from '@/lib/fonts-config';
+import { useClientOnly } from '@/hooks/useClientOnly';
 import { SparklesText } from '@/components/magicui/sparkles-text';
 import { ShimmerButton } from '@/components/magicui/shimmer-button';
 import MetaBalls from '@/components/reactbits/Animations/MetaBalls/MetaBalls';
@@ -15,9 +17,15 @@ import { AnimatedWrapper } from './AnimatedWrapper';
 
 export function FooterSectionSection() {
   const { theme }: UseThemeProps = useTheme();
+  const isClient = useClientOnly();
+
+  if (!isClient) {
+    return <div className={ cn(`py-10 md:pt-32 md:pb-2 ${geistFont.className}`) }></div>;
+  }
+
   return (
     <GradientOgBackground
-      className={ cn(`py-20 md:py-32 ${geistFont.className}`, {
+      className={ cn(`py-10 md:pt-32 md:pb-2 ${geistFont.className}`, {
         'from-[#3b82f6] via-[#8b5cf6] to-[#ec4899]': theme === 'light',
         'from-[#1e3a8a] via-[#4c1d95] to-[#9d174d]': theme === 'dark',
       }) }
@@ -27,8 +35,8 @@ export function FooterSectionSection() {
           <div className="mx-auto max-w-3xl text-center text-white">
             <h2 className={ `mb-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl` }>Hatch Into the DINO-terface</h2>
             <p className="mb-8 text-xl opacity-90">
-              Our UI is the gateway to everything KQPRO offers — powerful features wrapped in an intuitive design. Step in and see
-              how easily you can bring it all together.
+              Our UI is the gateway to everything KQPRO offers — powerful features wrapped in an intuitive design. Step in and see how
+              easily you can bring it all together.
             </p>
             <div className={ `flex flex-col gap-4 sm:flex-row sm:justify-center` }>
               <ShimmerButton shimmerColor={ '#008837' } shimmerSize="0.25em">
