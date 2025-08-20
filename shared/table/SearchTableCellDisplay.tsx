@@ -18,6 +18,7 @@ import DateDisplay from './DateDisplay';
 import { getFrequencyImageUrl } from './table.utils';
 import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
+import { TableCellHoverWrapper } from './TableCellHoverWrapper';
 import BillsTableEditBillButton from './BillsTableEditBillButton';
 import BillsTableTogglePaidButton from './BillsTableTogglePaidButton';
 import BillsTableDeleteBillButton from './BillsTableDeleteBillButton';
@@ -63,21 +64,22 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const freq: string = billDue.subscription.billCycleDuration;
     return (
       <TableCell>
-        <div className={ `
-          flex flex-row items-center justify-start gap-x-1
-          sec:gap-x-1
-          two:gap-x-2
-        ` }>
-          <Image
-            src={ getFrequencyImageUrl(billDue.subscription.billCycleDuration) }
-            alt="Frequency"
-            width={ 22 }
-            height={ 22 }
-            className="opacity-90"
-          />
-
-          <Typography className="truncate">{ startCase(freq) }</Typography>
-        </div>
+        <TableCellHoverWrapper payload={ freq } columnId={ colId }>
+          <div className={ `
+            flex flex-row items-center justify-start gap-x-1
+            sec:gap-x-1
+            two:gap-x-2
+          ` }>
+            <Image
+              src={ getFrequencyImageUrl(billDue.subscription.billCycleDuration) }
+              alt="Frequency"
+              width={ 22 }
+              height={ 22 }
+              className="opacity-90 select-none"
+            />
+            <Typography className="truncate">{ startCase(freq) }</Typography>
+          </div>
+        </TableCellHoverWrapper>
       </TableCell>
     );
   }
@@ -137,12 +139,14 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const subName = billDue.subscription.name;
     return (
       <TableCell>
-        <Link href={ `/subscriptions/${billDue.subscription.id}` } prefetch={ true }>
-          <div className="flex flex-row items-center justify-start gap-x-2">
-            <SubscriptionLogo subscriptionName={ subName } height={ 20 } />
-            <CenterUnderline label={ subName } />
-          </div>
-        </Link>
+        <TableCellHoverWrapper payload={ subName } columnId={ colId }>
+          <Link href={ `/subscriptions/${billDue.subscription.id}` } prefetch={ true } className="inline-block">
+            <div className="flex flex-row items-center justify-start gap-x-2">
+              <SubscriptionLogo subscriptionName={ subName } height={ 20 } />
+              <CenterUnderline label={ subName } />
+            </div>
+          </Link>
+        </TableCellHoverWrapper>
       </TableCell>
     );
   }

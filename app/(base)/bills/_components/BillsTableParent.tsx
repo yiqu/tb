@@ -30,15 +30,15 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
 
   if (billDues.billDues.length === 0) {
     return (
-      <div className="mt-6 gap-y-2 flex w-full flex-col items-center justify-center">
+      <div className="mt-6 flex w-full flex-col items-center justify-center gap-y-2">
         <NoResultsCard blendBg={ true } blendTextAreaBorder={ true } />
       </div>
     );
   }
 
   return (
-    <DisplayCard className="py-0 w-full">
-      <CardContent className="px-0 overflow-x-auto">
+    <DisplayCard className="w-full py-0">
+      <CardContent className="overflow-x-auto px-0">
         <Table className={ `
           table-auto
           two:table-fixed
