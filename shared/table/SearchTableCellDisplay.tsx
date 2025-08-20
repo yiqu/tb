@@ -139,7 +139,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
     const subName = billDue.subscription.name;
     return (
       <TableCell>
-        <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ colId }>
+        <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' }>
           <Link href={ `/subscriptions/${billDue.subscription.id}` } prefetch={ true } className="inline-block">
             <div className="flex flex-row items-center justify-start gap-x-2">
               <SubscriptionLogo subscriptionName={ subName } height={ 20 } />
