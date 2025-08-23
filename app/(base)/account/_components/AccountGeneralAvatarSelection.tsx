@@ -56,7 +56,7 @@ export default function AccountGeneralAvatarSelection({ avatarId }: AccountGener
             return (
               <div key={ option.id } className="col-span-4">
                 <div className={ `flex w-full flex-col items-center justify-start gap-y-4` }>
-                  <Typography className={ `logo-text-color text-center font-fun` } variant="h3">
+                  <Typography className={ `logo-text-color font-fun text-center` } variant="h3">
                     <SplitText
                       text={ option.name }
                       className=""

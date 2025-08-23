@@ -23,7 +23,7 @@ export default function ConsentDisplay() {
       <div className="fixed">
         <div className="flex flex-row items-center justify-start gap-x-2">
           <NavHeaderLogo size={ 50 } />
-          <Typography variant="h3" className="text-border font-fun tracking-widest text-3xl">
+          <Typography variant="h3" className="font-fun text-3xl tracking-widest text-border">
             <AuroraText colors={ WEST_D }>{ appName }</AuroraText>
           </Typography>
         </div>

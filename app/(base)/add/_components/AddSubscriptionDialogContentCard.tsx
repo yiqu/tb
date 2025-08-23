@@ -12,7 +12,7 @@ import EditSubscriptionCycleDuration from './form-fields/EditSubscriptionCycleDu
 
 export default function AddSubscriptionDialogContentCard() {
   return (
-    <div className="px-4 overflow-y-auto">
+    <div className="overflow-y-auto px-4">
       <DisplayCard>
         <CardContent className="flex w-full flex-col items-start justify-start gap-y-4">
           <EditSubscriptionName />

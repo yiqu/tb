@@ -1,17 +1,15 @@
 import Link from 'next/link';
 
-import { TabListItem } from '@/models/NavItem.models';
-//import { TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { AccountTabListItem } from './account.utils';
 import AccountContentTabsListTabs from './AccountContentTabsListTabs';
 
 export default function AccountContentTabsListHeader() {
   return (
     <AccountContentTabsListTabs>
       <TabsList className={ `grid w-full grid-cols-4` }>
-        { TAB_OPTIONS.map((tab: TabListItem) => {
+        { TAB_OPTIONS.map((tab: AccountTabListItem) => {
           return (
             <TabsTrigger key={ tab.id } value={ tab.url } asChild>
               <Link href={ `/account${tab.url}` } prefetch={ true }>
@@ -25,7 +23,7 @@ export default function AccountContentTabsListHeader() {
   );
 }
 
-const TAB_OPTIONS: TabListItem[] = [
+const TAB_OPTIONS: AccountTabListItem[] = [
   {
     id: 'general',
     displayText: 'General',

@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Cpu, Lock, Globe, Cloud, Users, Layers, Target, Rocket, BarChart3, Smartphone } from 'lucide-react';
+import { Cpu, Lock, Globe, Cloud, Layers, Smartphone } from 'lucide-react';
 
 import { ScratchToReveal } from '@/components/magicui/scratch-to-reveal';
 

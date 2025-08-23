@@ -131,7 +131,7 @@ function MenuSubParent({ item }: { item: NestNavListItem }) {
       { item.items?.map((subItem) => (
         <SidebarMenuSubItem key={ subItem.name }>
           <SidebarMenuSubButton asChild>
-            <Link href={ subItem.url } prefetch>
+            <Link href={ subItem.url as any } prefetch>
               <span>{ subItem.name }</span>
             </Link>
           </SidebarMenuSubButton>
@@ -167,7 +167,7 @@ function CollapsedMenuContentMenuItems({ items }: { items?: LinkItem[] }) {
       { items?.map((subItem) => (
         <Link
           key={ subItem.name }
-          href={ subItem.url }
+          href={ subItem.url as any }
           className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }
         >
           { subItem.name }

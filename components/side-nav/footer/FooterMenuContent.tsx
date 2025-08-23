@@ -49,7 +49,7 @@ export default function FooterMenuContent() {
 
       <DropdownMenuGroup>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/changelog` } prefetch={ true }>
+          <Link href={ `/` } prefetch={ true }>
             <ScrollText />
             Changelog
           </Link>

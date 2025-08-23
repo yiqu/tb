@@ -26,7 +26,7 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
             { subscription.name }
           </Typography>
           { subscription.url ?
-            <Link href={ subscription.url ?? '' } target="_blank" rel="noopener noreferrer">
+            <Link href={ (subscription.url ?? '') as any } target="_blank" rel="noopener noreferrer">
               <div className="flex flex-row items-center justify-start gap-x-1">
                 <Typography variant="labelvalue1" className="font-semibold">
                   { subscription.url }

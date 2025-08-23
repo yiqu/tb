@@ -19,7 +19,7 @@ export default function CollapsedMenuButton({
 
   return (
     <SidebarMenuButton asChild isActive={ isActive } { ...props }>
-      <Link href={ `/${item.url}` }>
+      <Link href={ `/${item.url}` as any }>
         <SideBarLucideIcon url={ item.url } />
       </Link>
     </SidebarMenuButton>

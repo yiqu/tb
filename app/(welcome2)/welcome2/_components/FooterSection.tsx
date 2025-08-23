@@ -1,11 +1,12 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
+/* eslint-disable better-tailwindcss/enforce-consistent-class-order */
+
 'use client';
 
 import { ArrowRight } from 'lucide-react';
 import { useTheme, UseThemeProps } from 'next-themes';
 
 import { cn } from '@/lib/utils';
-import useIsClient from '@/hooks/useIsClient';
 import { geistFont } from '@/lib/fonts-config';
 import { useClientOnly } from '@/hooks/useClientOnly';
 import { SparklesText } from '@/components/magicui/sparkles-text';

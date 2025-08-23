@@ -13,7 +13,7 @@ export async function acceptConsent(redirectUrl: string | null) {
     maxAge: 60 * 1 * 60 * 24 * 7, // 1 week
   });
   if (redirectUrl) {
-    redirect(redirectUrl, RedirectType.replace);
+    redirect(redirectUrl as any, RedirectType.replace);
   } else {
     redirect('/', RedirectType.replace);
   }

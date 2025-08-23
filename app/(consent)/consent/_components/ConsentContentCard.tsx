@@ -18,7 +18,7 @@ const GOOG = ['#4285f4', '#34a853', '#fbbc05', '#ea4335'];
 
 export default function ConsentContentCard() {
   return (
-    <DisplayCard className="bg-background relative z-10 max-w-[40rem] overflow-hidden">
+    <DisplayCard className="relative z-10 max-w-[40rem] overflow-hidden bg-background">
       <ShineBorder shineColor={ GOOG } borderWidth={ 2 } />
       <CardHeader>
         <CardTitle>
@@ -34,7 +34,7 @@ export default function ConsentContentCard() {
         </CardTitle>
         <CardDescription>
           <HyperText
-            className={ cn('py-0 font-sans text-[0.875rem] font-normal leading-6 tracking-normal') }
+            className={ cn('py-0 font-sans text-[0.875rem] leading-6 font-normal tracking-normal') }
             letterClassName="font-sans text-[0.875rem] "
             duration={ 1200 }
             delay={ 1500 }
@@ -45,9 +45,8 @@ export default function ConsentContentCard() {
       </CardHeader>
       <CardContent>
         <Typography variant="p">
-          We use cookies to ensure you get the best experience on our website. By clicking &quot;Accept&quot;, you agree
-          to the storing of cookies on your device to enhance site navigation, analyze site usage, and assist in our
-          marketing efforts.
+          We use cookies to ensure you get the best experience on our website. By clicking &quot;Accept&quot;, you agree to the storing of
+          cookies on your device to enhance site navigation, analyze site usage, and assist in our marketing efforts.
         </Typography>
       </CardContent>
       <Suspense fallback={ <Skeleton className="h-9 w-full" /> }>

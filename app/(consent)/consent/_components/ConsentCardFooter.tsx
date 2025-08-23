@@ -46,7 +46,7 @@ export default function ConsentCardFooter() {
         </div>
       : <InteractiveHoverButton
           onClick={ handleOnAccept }
-          className="bg-primary text-background text-sm"
+          className="bg-primary text-sm text-background"
           dotClassName="bg-card"
           postAnimationClassName="text-foreground bg-gradient-to-r from-white to-green-500"
           postAnimationIcon={ <Handshake size={ 18 } /> }

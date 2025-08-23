@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable better-tailwindcss/enforce-consistent-class-order */
 'use client';
 
 import { motion, useAnimation } from 'motion/react';

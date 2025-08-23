@@ -86,7 +86,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     // wrap text to next line if it is too long
     return (
       <TableCell>
-        <Link href={ subscription.url ?? '' } target="_blank" rel="noopener noreferrer">
+        <Link href={ (subscription.url ?? '') as any } target="_blank" rel="noopener noreferrer">
           <div className="flex flex-row items-start justify-start gap-x-1 text-wrap">
             <Typography className="break-all" title={ subscription.url ?? 'N/A' }>
               { subscription.url }

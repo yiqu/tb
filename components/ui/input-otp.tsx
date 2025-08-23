@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/enforce-consistent-class-order */
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 
 'use client';

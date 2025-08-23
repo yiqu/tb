@@ -1,4 +1,5 @@
 /* eslint-disable react/no-array-index-key */
+/* eslint-disable better-tailwindcss/enforce-consistent-class-order */
 'use client';
 
 import { motion } from 'framer-motion';

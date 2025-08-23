@@ -14,10 +14,9 @@ import { useClientOnly } from '@/hooks/useClientOnly';
 import { rubik, indieFlower } from '@/lib/vibes-css-map';
 import { Particles } from '@/components/magicui/particles';
 import Typography from '@/components/typography/Typography';
-import { Highlighter } from '@/components/magicui/highlighter';
 import { AuroraText2 } from '@/components/magicui/aurora-text2';
+import { MS_PALETTE, CODE_CAMP_PALETTE } from '@/lib/color-palettes';
 import { GradientOgBackground } from '@/components/animate-ui/backgrounds/gradient-og';
-import { MS_PALETTE, CODE_CAMP_PALETTE, MASTERCARD_PALETTE, UNI_VICTORIA_PALETTE } from '@/lib/color-palettes';
 
 import { APP_TITLE } from './welcome.utils';
 import { AnimatedWrapper } from './AnimatedWrapper';

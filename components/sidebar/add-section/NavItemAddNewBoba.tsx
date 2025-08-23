@@ -122,7 +122,7 @@ export default function NavItemAddNewBoba() {
               { BOBA_TEA_CATEGORIES.map((item) => {
                 return (
                   <DropdownMenuItem asChild key={ item.name } className="cursor-pointer">
-                    <Link href={ item.url }>
+                    <Link href={ '/' }>
                       <Folder className="mr-2 h-4 w-4" />
                       <span>{ item.name }</span>
                     </Link>

@@ -18,7 +18,7 @@ export default function SidebarMenuButtonWithActive({
 
   return (
     <SidebarMenuButton asChild tooltip={ item.tooltip } isActive={ isActive }>
-      <Link href={ `/${item.url}` } prefetch={ true }>
+      <Link href={ `/${item.url}` as any } prefetch={ true }>
         <SideBarLucideIcon url={ item.url } />
         <span>{ item.name }</span>
       </Link>

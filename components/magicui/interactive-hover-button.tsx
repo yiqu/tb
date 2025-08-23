@@ -1,4 +1,6 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
+/* eslint-disable better-tailwindcss/enforce-consistent-class-order */
+
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 

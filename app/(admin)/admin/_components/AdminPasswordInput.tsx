@@ -43,11 +43,11 @@ export default function AdminPasswordInput() {
         maxLength={ 6 }
         value={ value }
         onChange={ handleOnInputChange }
-        className="bg-black font-cherry-bomb-one text-white"
+        className="font-cherry-bomb-one bg-black text-white"
         ref={ inputRef }
         spellCheck={ false }
       >
-        <InputOTPGroup className="flex w-full flex-row justify-center font-cherry-bomb-one" spellCheck={ false }>
+        <InputOTPGroup className="font-cherry-bomb-one flex w-full flex-row justify-center" spellCheck={ false }>
           <InputSlot index={ 0 } />
           <InputSlot index={ 1 } />
           <InputSlot index={ 2 } />
@@ -61,30 +61,18 @@ export default function AdminPasswordInput() {
   );
 }
 
-function PasswordStatusMessage({
-  isPasswordCorrect,
-  isPasswordFinished,
-}: {
-  isPasswordCorrect: boolean;
-  isPasswordFinished: boolean;
-}) {
+function PasswordStatusMessage({ isPasswordCorrect, isPasswordFinished }: { isPasswordCorrect: boolean; isPasswordFinished: boolean }) {
   if (isPasswordFinished) {
     if (isPasswordCorrect) {
       return (
-        <Typography
-          variant="h5"
-          className="flex flex-row items-center gap-2 font-cherry-bomb-one text-2xl tracking-wider text-green-400"
-        >
+        <Typography variant="h5" className="font-cherry-bomb-one flex flex-row items-center gap-2 text-2xl tracking-wider text-green-400">
           Password is correct
           <Check size={ 20 } className="text-green-500" />
         </Typography>
       );
     } else {
       return (
-        <Typography
-          variant="h5"
-          className="flex flex-row items-center gap-2 font-cherry-bomb-one text-2xl tracking-wider text-destructive"
-        >
+        <Typography variant="h5" className="font-cherry-bomb-one flex flex-row items-center gap-2 text-2xl tracking-wider text-destructive">
           Password is incorrect
           <Frown size={ 26 } className="text-destructive" />
         </Typography>

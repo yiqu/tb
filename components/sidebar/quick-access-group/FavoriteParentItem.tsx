@@ -130,7 +130,7 @@ function MenuSubParent() {
     <>
       <SidebarMenuSubItem>
         <SidebarMenuSubButtonFavoritesParentWithActive favoriteId="1">
-          <Link href={ '/favorites/type-subscription/1' } prefetch className="flex items-center">
+          <Link href={ '/' } prefetch className="flex items-center">
             <CalendarSync />
             <span>{ '1' }</span>
           </Link>
@@ -138,7 +138,7 @@ function MenuSubParent() {
       </SidebarMenuSubItem>
       <SidebarMenuSubItem>
         <SidebarMenuSubButtonFavoritesParentWithActive favoriteId="2">
-          <Link href={ '/favorites/type-subscription/2' } prefetch className="flex items-center">
+          <Link href={ '/' } prefetch className="flex items-center">
             <Calendar />
             <span>{ '2' }</span>
           </Link>
@@ -155,7 +155,7 @@ function CollapsedMenuContent() {
       <Separator className="my-1" />
       <div className="space-y-1">
         <Link
-          href={ '' }
+          href={ '/' }
           className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }
         >
           1

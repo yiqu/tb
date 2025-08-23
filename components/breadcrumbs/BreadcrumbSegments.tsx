@@ -33,7 +33,7 @@ export default function BreadcrumbSegments() {
             : <>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={ href } prefetch>
+                  <Link href={ href as any } prefetch>
                     <section className={ `flex flex-row items-center justify-start gap-x-1` }>
                       <BreadcrumbSegmentIcon path={ path } params={ params } isLast={ isLast } />
                       <BreadcrumbSegmentTitle path={ path } isLast={ isLast } />

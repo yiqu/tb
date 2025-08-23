@@ -61,7 +61,7 @@ export function HFCurrencyInput({
         return (
           <FormItem className={ cn(formItemClassName) }>
             { label ?
-              <FormLabel className="text-gray-600 dark:text-gray-300 font-normal">{ label }</FormLabel>
+              <FormLabel className="font-normal text-gray-600 dark:text-gray-300">{ label }</FormLabel>
             : null }
             <div className="relative">
               { startAdornment ?

@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable better-tailwindcss/enforce-consistent-class-order */
+
 'use client';
 
 import * as React from 'react';
@@ -349,15 +352,15 @@ function FireworksBackground({
 
   return (
     <div
-      ref={containerRef}
+      ref={ containerRef }
       data-slot="fireworks-background"
-      className={cn('relative size-full overflow-hidden', className)}
-      {...props}
+      className={ cn('relative size-full overflow-hidden', className) }
+      { ...props }
     >
       <canvas
-        {...canvasProps}
-        ref={canvasRef}
-        className={cn('absolute inset-0 size-full', canvasProps?.className)}
+        { ...canvasProps }
+        ref={ canvasRef }
+        className={ cn('absolute inset-0 size-full', canvasProps?.className) }
       />
     </div>
   );

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
+
 /*
 	Installed from https://reactbits.dev/ts/tailwind/
 */
@@ -126,8 +127,7 @@ export default function SplashCursor({
       let gl = canvas.getContext('webgl2', params) as WebGL2RenderingContext | null;
 
       if (!gl) {
-        gl = (canvas.getContext('webgl', params) ||
-          canvas.getContext('experimental-webgl', params)) as WebGL2RenderingContext | null;
+        gl = (canvas.getContext('webgl', params) || canvas.getContext('experimental-webgl', params)) as WebGL2RenderingContext | null;
       }
 
       if (!gl) {
@@ -151,8 +151,7 @@ export default function SplashCursor({
 
       gl.clearColor(0, 0, 0, 1);
 
-      const halfFloatTexType =
-        isWebGL2 ? (gl as WebGL2RenderingContext).HALF_FLOAT : (halfFloat && (halfFloat as any).HALF_FLOAT_OES) || 0;
+      const halfFloatTexType = isWebGL2 ? (gl as WebGL2RenderingContext).HALF_FLOAT : (halfFloat && (halfFloat as any).HALF_FLOAT_OES) || 0;
 
       let formatRGBA: any;
       let formatRG: any;
@@ -160,18 +159,8 @@ export default function SplashCursor({
 
       if (isWebGL2) {
         formatRGBA = getSupportedFormat(gl, (gl as WebGL2RenderingContext).RGBA16F, gl.RGBA, halfFloatTexType);
-        formatRG = getSupportedFormat(
-          gl,
-          (gl as WebGL2RenderingContext).RG16F,
-          (gl as WebGL2RenderingContext).RG,
-          halfFloatTexType,
-        );
-        formatR = getSupportedFormat(
-          gl,
-          (gl as WebGL2RenderingContext).R16F,
-          (gl as WebGL2RenderingContext).RED,
-          halfFloatTexType,
-        );
+        formatRG = getSupportedFormat(gl, (gl as WebGL2RenderingContext).RG16F, (gl as WebGL2RenderingContext).RG, halfFloatTexType);
+        formatR = getSupportedFormat(gl, (gl as WebGL2RenderingContext).R16F, (gl as WebGL2RenderingContext).RED, halfFloatTexType);
       } else {
         formatRGBA = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
         formatRG = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
@@ -747,14 +736,7 @@ export default function SplashCursor({
       };
     }
 
-    function createDoubleFBO(
-      w: number,
-      h: number,
-      internalFormat: number,
-      format: number,
-      type: number,
-      param: number,
-    ): DoubleFBO {
+    function createDoubleFBO(w: number, h: number, internalFormat: number, format: number, type: number, param: number): DoubleFBO {
       const fbo1 = createFBO(w, h, internalFormat, format, type, param);
       const fbo2 = createFBO(w, h, internalFormat, format, type, param);
       return {
@@ -772,15 +754,7 @@ export default function SplashCursor({
       };
     }
 
-    function resizeFBO(
-      target: FBO,
-      w: number,
-      h: number,
-      internalFormat: number,
-      format: number,
-      type: number,
-      param: number,
-    ) {
+    function resizeFBO(target: FBO, w: number, h: number, internalFormat: number, format: number, type: number, param: number) {
       const newFBO = createFBO(w, h, internalFormat, format, type, param);
       copyProgram.bind();
       if (copyProgram.uniforms.uTexture) gl.uniform1i(copyProgram.uniforms.uTexture, target.attach(0));
@@ -788,15 +762,7 @@ export default function SplashCursor({
       return newFBO;
     }
 
-    function resizeDoubleFBO(
-      target: DoubleFBO,
-      w: number,
-      h: number,
-      internalFormat: number,
-      format: number,
-      type: number,
-      param: number,
-    ) {
+    function resizeDoubleFBO(target: DoubleFBO, w: number, h: number, internalFormat: number, format: number, type: number, param: number) {
       if (target.width === w && target.height === h) return target;
       target.read = resizeFBO(target.read, w, h, internalFormat, format, type, param);
       target.write = createFBO(w, h, internalFormat, format, type, param);
@@ -827,15 +793,7 @@ export default function SplashCursor({
       if (!velocity) {
         velocity = createDoubleFBO(simRes.width, simRes.height, rg.internalFormat, rg.format, texType, filtering);
       } else {
-        velocity = resizeDoubleFBO(
-          velocity,
-          simRes.width,
-          simRes.height,
-          rg.internalFormat,
-          rg.format,
-          texType,
-          filtering,
-        );
+        velocity = resizeDoubleFBO(velocity, simRes.width, simRes.height, rg.internalFormat, rg.format, texType, filtering);
       }
 
       divergence = createFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
@@ -1316,7 +1274,7 @@ export default function SplashCursor({
   ]);
 
   return (
-    <div className="pointer-events-none fixed left-0 top-0 z-50 h-full w-full">
+    <div className="pointer-events-none fixed top-0 left-0 z-50 h-full w-full">
       <canvas ref={ canvasRef } id="fluid" className="block h-screen w-screen"></canvas>
     </div>
   );

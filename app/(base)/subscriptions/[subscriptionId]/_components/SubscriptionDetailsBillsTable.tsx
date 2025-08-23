@@ -15,8 +15,8 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
   const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
   return (
-    <DisplayCard className="py-0 w-full">
-      <CardContent className="px-0 overflow-x-auto">
+    <DisplayCard className="w-full py-0">
+      <CardContent className="overflow-x-auto px-0">
         <Table className={ `
           table-auto
           two:table-fixed

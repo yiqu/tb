@@ -118,7 +118,7 @@ function MenuSubParent() {
     <>
       <SidebarMenuSubItem>
         <SidebarMenuSubButtonHistoryParentWithActive historyId="1">
-          <Link href={ '/history/type-bill/1' } prefetch className="flex items-center">
+          <Link href={ '/' } prefetch className="flex items-center">
             <History />
             <span>{ '1' }</span>
           </Link>
@@ -126,7 +126,7 @@ function MenuSubParent() {
       </SidebarMenuSubItem>
       <SidebarMenuSubItem>
         <SidebarMenuSubButtonHistoryParentWithActive historyId="2">
-          <Link href={ '/history/type-subscription/2' } prefetch className="flex items-center">
+          <Link href={ '/' } prefetch className="flex items-center">
             <History />
             <span>{ '2' }</span>
           </Link>
@@ -142,7 +142,7 @@ function CollapsedMenuContent() {
       <div className="mb-2 text-sm font-medium">Add New</div>
       <Separator className="my-1" />
       <div className="space-y-1">
-        <Link href={ '' } className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }>
+        <Link href={ '/' } className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }>
           1
         </Link>
       </div>

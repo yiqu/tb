@@ -53,13 +53,11 @@ export function HFInputField({
       render={ ({ field }: { field: ControllerRenderProps<FieldValues, string> }) => (
         <FormItem className={ cn(formItemClassName) }>
           { label ?
-            <FormLabel className="text-gray-600 dark:text-gray-300 font-normal">{ label }</FormLabel>
+            <FormLabel className="font-normal text-gray-600 dark:text-gray-300">{ label }</FormLabel>
           : null }
           <div className="relative">
             { startAdornment ?
-              <div className={ `pointer-events-none absolute top-0 left-0 flex h-full items-center pl-3` }>
-                { startAdornment }
-              </div>
+              <div className={ `pointer-events-none absolute top-0 left-0 flex h-full items-center pl-3` }>{ startAdornment }</div>
             : null }
 
             <FormControl>

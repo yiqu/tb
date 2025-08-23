@@ -1,4 +1,6 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable better-tailwindcss/enforce-consistent-class-order */
+
 import Link from 'next/link';
 import { useRef, useState, useEffect, useCallback } from 'react';
 

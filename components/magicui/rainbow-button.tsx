@@ -1,3 +1,5 @@
+/* eslint-disable better-tailwindcss/enforce-consistent-class-order */
+
 import React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, VariantProps } from 'class-variance-authority';
