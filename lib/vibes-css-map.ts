@@ -23,7 +23,7 @@ import {
   Cherry_Bomb_One,
   Plus_Jakarta_Sans,
   Libre_Baskerville,
-  Architects_Daughter
+  Architects_Daughter,
 } from 'next/font/google';
 
 import { AppFont, AppVibe } from '@/models/settings/general-settings.models';
@@ -147,7 +147,7 @@ const outfit = Outfit({
   preload: false,
 });
 
-const libreBaskerville = Libre_Baskerville({
+export const libreBaskerville = Libre_Baskerville({
   variable: '--font-libre-baskerville',
   subsets: ['latin'],
   weight: ['400', '700'],
@@ -234,6 +234,20 @@ const FONT_CSS_MAP: Record<string, string> = {
   geist: '/font-css/geist/tw.css',
   poppins: '/font-css/poppins/tw.css',
   oxanium: '/font-css/oxanium/tw.css',
+  'dm-sans': '/font-css/dm-sans/tw.css',
+  'fira-code': '/font-css/fira-code/tw.css',
+  'ibm-plex-mono': '/font-css/ibm-plex-mono/tw.css',
+  inter: '/font-css/inter/tw.css',
+  'jetbrains-mono': '/font-css/jetbrains-mono/tw.css',
+  'libre-baskerville': '/font-css/libre-baskerville/tw.css',
+  lora: '/font-css/lora/tw.css',
+  merriweather: '/font-css/merriweather/tw.css',
+  montserrat: '/font-css/montserrat/tw.css',
+  'open-sans': '/font-css/open-sans/tw.css',
+  outfit: '/font-css/outfit/tw.css',
+  'roboto-mono': '/font-css/roboto-mono/tw.css',
+  'source-code-pro': '/font-css/source-code-pro/tw.css',
+  'space-mono': '/font-css/space-mono/tw.css',
 };
 
 export function getVibeStylesheetHref(vibe: AppVibe): string {
@@ -246,7 +260,6 @@ export function getFontStylesheetHref(font: string | undefined): string {
 
 export function getFontVariableByVibe(vibe: AppVibe): string {
   let result = `${geistSans.variable} ${geistMono.variable}`;
-
   switch (vibe) {
     case 'vintage':
       result = `${libreBaskerville.variable} ${lora.variable} ${ibmPlexMono.variable}`;

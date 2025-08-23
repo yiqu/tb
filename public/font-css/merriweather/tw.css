@@ -1,0 +1,11 @@
+:root {
+  --font-sans: var(--font-merriweather);
+}
+
+.dark {
+  --font-sans: var(--font-merriweather);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+}

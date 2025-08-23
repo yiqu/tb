@@ -14,6 +14,7 @@ import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
+import LinkClient from './LinkClient';
 import DateDisplay from './DateDisplay';
 import { getFrequencyImageUrl } from './table.utils';
 import DateDialogContent from '../dialogs/DateDialog';
@@ -63,8 +64,8 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
   if (colId === 'frequency') {
     const freq: string = billDue.subscription.billCycleDuration;
     return (
-      <TableCell>
-        <TableCellHoverWrapper payload={ freq } columnId={ colId }>
+      <TableCellHoverWrapper payload={ freq } columnId={ colId }>
+        <TableCell>
           <div className={ `
             flex flex-row items-center justify-start gap-x-1
             sec:gap-x-1
@@ -79,8 +80,8 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
             />
             <Typography className="truncate">{ startCase(freq) }</Typography>
           </div>
-        </TableCellHoverWrapper>
-      </TableCell>
+        </TableCell>
+      </TableCellHoverWrapper>
     );
   }
 
@@ -138,16 +139,20 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
   if (colId === 'subscription') {
     const subName = billDue.subscription.name;
     return (
-      <TableCell>
-        <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' }>
-          <Link href={ `/subscriptions/${billDue.subscription.id}` } prefetch={ true } className="inline-block">
+      <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' }>
+        <TableCell>
+          <LinkClient
+            href={ `/subscriptions/${billDue.subscription.id}` as any }
+            prefetch={ true }
+            className="inline-block"
+          >
             <div className="flex flex-row items-center justify-start gap-x-2">
               <SubscriptionLogo subscriptionName={ subName } height={ 20 } />
               <CenterUnderline label={ subName } />
             </div>
-          </Link>
-        </TableCellHoverWrapper>
-      </TableCell>
+          </LinkClient>
+        </TableCell>
+      </TableCellHoverWrapper>
     );
   }
 

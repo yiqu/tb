@@ -1,0 +1,11 @@
+:root {
+  --font-sans: var(--font-montserrat);
+}
+
+.dark {
+  --font-sans: var(--font-montserrat);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+}

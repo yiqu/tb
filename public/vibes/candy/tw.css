@@ -34,7 +34,7 @@
 
   --font-sans: var(--font-poppins);
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-roboto-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.5rem;
@@ -86,7 +86,7 @@
 
   --font-sans: var(--font-poppins);
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-roboto-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.5rem;
@@ -152,4 +152,28 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-sans {
+    font-family:
+      var(--font-poppins), ui-sans-serif, system-ui;
+  }
+  .font-serif {
+    font-family:
+      ui-serif, Georgia;
+  }
+  .font-mono {
+    font-family:
+      var(--font-roboto-mono), ui-monospace, monospace;
+  }
 }

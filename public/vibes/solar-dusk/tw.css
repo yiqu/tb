@@ -34,7 +34,7 @@
 
   --font-sans: var(--font-oxanium), sans-serif;
   --font-serif: var(--font-merriweather), serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-fira-code);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.3rem;
@@ -86,7 +86,7 @@
 
   --font-sans: var(--font-oxanium), sans-serif;
   --font-serif: var(--font-merriweather), serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-fira-code);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.3rem;
@@ -152,4 +152,29 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+}
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-sans {
+    font-family:
+      var(--font-oxanium), ui-sans-serif, system-ui;
+  }
+  .font-serif {
+    font-family:
+      var(--font-merriweather), ui-serif, Georgia;
+  }
+  .font-mono {
+    font-family:
+      var(--font-fira-code), ui-monospace, monospace;
+  }
 }

@@ -1,0 +1,11 @@
+:root {
+  --font-sans: var(--font-libre-baskerville);
+}
+
+.dark {
+  --font-sans: var(--font-libre-baskerville);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+}

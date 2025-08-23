@@ -153,3 +153,27 @@
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
 }
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-sans {
+    font-family:
+      var(--font-dm-sans), ui-sans-serif, system-ui;
+  }
+  .font-serif {
+    font-family:
+      Georgia, ui-serif;
+  }
+  .font-mono {
+    font-family:
+      var(--font-geist-mono), ui-monospace, monospace;
+  }
+}

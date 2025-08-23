@@ -451,7 +451,6 @@
   .font-fun {
     font-family:
       var(--font-fun),
-      var(--font-sans, ui-sans-serif),
       system-ui,
       -apple-system,
       Segoe UI,
@@ -466,7 +465,6 @@
   .font-fun-important {
     font-family:
       var(--font-fun),
-      var(--font-sans, ui-sans-serif),
       system-ui,
       -apple-system,
       Segoe UI,

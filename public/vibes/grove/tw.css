@@ -34,7 +34,7 @@
 
   --font-sans: var(--font-merriweather), serif;
   --font-serif: var(--font-source-serif-4), serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-jetbrains-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.425rem;
@@ -86,7 +86,7 @@
 
   --font-sans: var(--font-merriweather), serif;
   --font-serif: var(--font-source-serif-4), serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-jetbrains-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 0.425rem;
@@ -160,5 +160,20 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-sans {
+    font-family:
+      var(--font-merriweather), ui-sans-serif, system-ui;
+  }
+  .font-serif {
+    font-family:
+      var(--font-source-serif-4), ui-serif, Georgia;
+  }
+  .font-mono {
+    font-family:
+      var(--font-jetbrains-mono), ui-monospace, monospace;
   }
 }

@@ -54,9 +54,10 @@
 
   --breakpoint-two: 2000px;
 
-  --font-sans: var(--font-geist-sans);
-  --font-serif: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-libre-baskerville);
+  --font-serif: var(--font-lora);
+  --font-mono: var(--font-ibm-plex-mono);
+
   --font-caveat: var(--font-caveat);
   --font-lilita-one: var(--font-lilita-one);
   --font-fun: var(--font-cherry-bomb-one);
@@ -108,6 +109,10 @@
 
   --grey-1: oklch(0.38 0.02 57.13);
 
+  --font-sans: var(--font-libre-baskerville);
+  --font-serif: var(--font-lora);
+  --font-mono: var(--font-ibm-plex-mono);
+
   /* lg: max size of secondary monitor */
   --breakpoint-lg: 1920px;
   --breakpoint-sec: 1920px;
@@ -152,9 +157,10 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: var(--font-sans);
-  --font-serif: var(--font-serif);
-  --font-mono: var(--font-mono);
+  --font-sans: var(--font-libre-baskerville);
+  --font-serif: var(--font-lora);
+  --font-mono: var(--font-ibm-plex-mono);
+  
   --font-caveat: var(--font-caveat);
   --font-lilita-one: var(--font-lilita-one);
   --font-fun: var(--font-fun);
@@ -197,5 +203,50 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-sans {
+    font-family:
+      var(--font-libre-baskerville),
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Helvetica,
+      Arial,
+      'Apple Color Emoji',
+      'Segoe UI Emoji',
+      'Segoe UI Symbol',
+      sans-serif;
+  }
+  .font-serif {
+    font-family:
+      var(--font-lora),
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Helvetica,
+      Arial,
+      'Apple Color Emoji',
+      'Segoe UI Emoji',
+      'Segoe UI Symbol',
+      sans-serif;
+  }
+  .font-mono {
+    font-family:
+      var(--font-ibm-plex-mono),
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Helvetica,
+      Arial,
+      'Apple Color Emoji',
+      'Segoe UI Emoji',
+      'Segoe UI Symbol',
+      sans-serif;
   }
 }

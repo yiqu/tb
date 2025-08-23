@@ -34,7 +34,7 @@
 
   --font-sans: var(--font-open-sans), sans-serif;
   --font-serif: var(--font-source-serif-4), serif;
-  --font-mono: monospace;
+  --font-mono: var(--font-ibm-plex-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 1.5rem;
@@ -86,7 +86,7 @@
 
   --font-sans: var(--font-open-sans), sans-serif;
   --font-serif: var(--font-source-serif-4), serif;
-  --font-mono: monospace;
+  --font-mono: var(--font-ibm-plex-mono);
   --font-fun: var(--font-cherry-bomb-one);
 
   --radius: 1.5rem;
@@ -152,4 +152,28 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-sans {
+    font-family:
+      var(--font-open-sans), ui-sans-serif, system-ui;
+  }
+  .font-serif {
+    font-family:
+      var(--font-source-serif-4), ui-serif, Georgia;
+  }
+  .font-mono {
+    font-family:
+      var(--font-ibm-plex-mono), ui-monospace, monospace;
+  }
 }

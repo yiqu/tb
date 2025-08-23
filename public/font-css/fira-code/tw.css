@@ -1,0 +1,11 @@
+:root {
+  --font-sans: var(--font-fira-code);
+}
+
+.dark {
+  --font-sans: var(--font-fira-code);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+}

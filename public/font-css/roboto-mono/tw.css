@@ -1,0 +1,11 @@
+:root {
+  --font-sans: var(--font-roboto-mono);
+}
+
+.dark {
+  --font-sans: var(--font-roboto-mono);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+}

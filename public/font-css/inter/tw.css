@@ -1,0 +1,11 @@
+:root {
+  --font-sans: var(--font-inter);
+}
+
+.dark {
+  --font-sans: var(--font-inter);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+}

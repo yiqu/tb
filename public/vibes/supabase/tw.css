@@ -161,6 +161,26 @@
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
 }
 
-body {
-  letter-spacing: var(--tracking-normal);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-sans {
+    font-family:
+      var(--font-outfit), ui-sans-serif, system-ui;
+  }
+  .font-serif {
+    font-family:
+      ui-serif, system-ui;
+  }
+  .font-mono {
+    font-family:
+      ui-monospace, monospace;
+  }
 }

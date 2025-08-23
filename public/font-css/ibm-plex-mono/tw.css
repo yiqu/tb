@@ -1,0 +1,11 @@
+:root {
+  --font-sans: var(--font-ibm-plex-mono);
+}
+
+.dark {
+  --font-sans: var(--font-ibm-plex-mono);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+}
