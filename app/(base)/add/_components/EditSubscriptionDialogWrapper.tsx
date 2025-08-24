@@ -3,7 +3,9 @@
 import { ReactNode } from 'react';
 import { useQueryState } from 'nuqs';
 
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog } from '@/components/ui/dialog';
+import Typography from '@/components/typography/Typography';
+import StyledDialogContent from '@/shared/dialogs/StyledDialogContent';
 
 export default function EditSubscriptionDialogWrapper({ children }: { children: ReactNode }) {
   const [editSubscriptionId, setEditSubscriptionId] = useQueryState('editSubscriptionId', {
@@ -24,16 +26,18 @@ export default function EditSubscriptionDialogWrapper({ children }: { children: 
 
   return (
     <Dialog open={ !!editSubscriptionId } onOpenChange={ handleOnOpenChange }>
-      <DialogContent
-        className={ `
-          max-h-[90vh] overflow-x-auto overflow-y-auto px-0 pb-0
-          two:w-[800px] two:max-w-[1000px]!
-          main:w-[1000px] main:max-w-[1200px]!
-          sm:max-w-[600px]
-        ` }
+      <StyledDialogContent
+        headerTitle="Edit Subscription"
+        headerDescription={
+          <div className="flex w-full flex-row items-center justify-between gap-x-1">
+            <div className="flex flex-row items-center justify-start gap-x-1">
+              <Typography>Make changes to your subscription.</Typography>
+            </div>
+          </div>
+        }
       >
         { children }
-      </DialogContent>
+      </StyledDialogContent>
     </Dialog>
   );
 }

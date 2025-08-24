@@ -108,7 +108,7 @@ export default function BillsActionBarPaymentStatusFilter() {
             </SelectGroup>
             <SelectSeparator />
             <SelectGroup>
-              <SelectLabel>Only</SelectLabel>
+              <SelectLabel>Contains</SelectLabel>
               { STATUS_OPTIONS_1.map((option) => (
                 <SelectItem key={ option.value } value={ option.value }>
                   { option.label }
@@ -137,8 +137,8 @@ export default function BillsActionBarPaymentStatusFilter() {
 }
 
 const STATUS_OPTIONS_1 = [
-  { label: 'Paid only', value: 'paid-only' },
-  { label: 'Reimbursed only', value: 'reimbursed-only' },
+  { label: 'Paid', value: 'paid-only' },
+  { label: 'Reimbursed', value: 'reimbursed-only' },
 ];
 
 const STATUS_OPTIONS_2 = [

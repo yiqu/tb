@@ -24,13 +24,15 @@ export default function UpcomingBillsTablePaginationPageSelect({ pageCount }: { 
     setSelectedPage(page);
   };
 
+  const onlyHasOnePage = pageCount < 2;
+
   return (
     <Pagination
       count={ pageCount }
       shape="rounded"
       size="medium"
-      showFirstButton={ true }
-      showLastButton={ true }
+      showFirstButton={ onlyHasOnePage ? false : true }
+      showLastButton={ onlyHasOnePage ? false : true }
       page={ selectedPage }
       siblingCount={ 2 }
       onChange={ handlePageChange }

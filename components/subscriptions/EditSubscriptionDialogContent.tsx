@@ -7,13 +7,12 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import DateRelativeDisplay from '@/shared/table/DateRelativeDisplay';
+import StyledDialogContent from '@/shared/dialogs/StyledDialogContent';
 import { getSubscriptionByIdQueryOptions } from '@/server/subscriptions/query/subscription.query';
-import { DialogTitle, DialogHeader, DialogContent, DialogDescription } from '@/components/ui/dialog';
 import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_SUBSCRIPTION_DETAILS } from '@/constants/constants';
 
 import { Alert } from '../alerts/Alert';
 import { Skeleton } from '../ui/skeleton';
-import { Separator } from '../ui/separator';
 import Typography from '../typography/Typography';
 import EditSubscriptionDialogContentFooter from './EditSubscriptionDialogContentFooter';
 import EditSubscriptionDialogContentFormWrapper from './EditSubscriptionDialogContentFormWrapper';
@@ -39,33 +38,24 @@ export default function EditSubscriptionDialogContent({ subscriptionId, children
   };
 
   return (
-    <DialogContent
-      className={ `
-        overflow-x-auto px-0 pb-0
-        two:w-[800px] two:max-w-[1000px]!
-        main:w-[1000px] main:max-w-[1200px]!
-        sm:max-w-[600px]
-      ` }
-    >
-      <DialogHeader className="px-4">
-        <DialogTitle>Edit Subscription</DialogTitle>
-        <DialogDescription asChild>
-          <div className="flex w-full flex-row items-center justify-between gap-x-1">
-            <div className="flex flex-row items-center justify-start gap-x-1">
-              <Typography>Make changes to your subscription.</Typography>
-              <Button variant="ghost" size="icon" onClick={ handleOnRefetch }>
-                <RefreshCcw className={ cn({ 'animate-spin': isFetching }) } />
-              </Button>
-            </div>
-            <div className="flex flex-row items-center justify-end gap-x-2">
-              { data ?
-                <DateRelativeDisplay time={ `${data?.updatedAt}` } includeParenthesis={ false } prefixText="Last updated:" />
-              : null }
-            </div>
+    <StyledDialogContent
+      headerTitle="Edit Subscription"
+      headerDescription={
+        <div className="flex w-full flex-row items-center justify-between gap-x-1">
+          <div className="flex flex-row items-center justify-start gap-x-1">
+            <Typography>Make changes to your subscription.</Typography>
+            <Button variant="ghost" size="icon" onClick={ handleOnRefetch }>
+              <RefreshCcw className={ cn({ 'animate-spin': isFetching }) } />
+            </Button>
           </div>
-        </DialogDescription>
-      </DialogHeader>
-      <Separator />
+          <div className="flex flex-row items-center justify-end gap-x-2">
+            { data ?
+              <DateRelativeDisplay time={ `${data?.updatedAt}` } includeParenthesis={ false } prefixText="Last updated:" />
+            : null }
+          </div>
+        </div>
+      }
+    >
       { isError ?
         <div className="flex w-full flex-col">
           <Alert description={ <Typography>{ error.message }</Typography> } variant="danger" />
@@ -84,6 +74,6 @@ export default function EditSubscriptionDialogContent({ subscriptionId, children
         <Skeleton className="h-[10.5rem] w-full" />
       </div>
       }
-    </DialogContent>
+    </StyledDialogContent>
   );
 }

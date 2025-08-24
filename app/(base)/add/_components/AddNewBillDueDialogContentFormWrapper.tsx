@@ -14,6 +14,7 @@ import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { addBillDue } from '@/server/bills/bills.server';
 import { billAddableSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import subscriptionsTableViewStore from '@/store/subscriptions/subscriptions.store';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 
 export default function AddNewBillDueDialogContentFormWrapper({
@@ -25,6 +26,9 @@ export default function AddNewBillDueDialogContentFormWrapper({
   subscriptionId: string;
   subscriptionPromise: Promise<SubscriptionWithBillDues | null>;
 }) {
+  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
+  const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
+
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const currentDateLuxonMidDay12pm: string = currentDateLuxon.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toMillis().toString();
 
@@ -50,6 +54,8 @@ export default function AddNewBillDueDialogContentFormWrapper({
   });
 
   const onSubmit = async (data: z.infer<typeof billAddableSchema>) => {
+    setSubscriptionIdBeingEdited(subscriptionId);
+
     toast.promise(addBillDue(subscriptionId, data), {
       loading: 'Adding bill due...',
       success: (res: BillDueWithSubscription) => {
@@ -76,9 +82,12 @@ export default function AddNewBillDueDialogContentFormWrapper({
             scroll: false,
           });
         }
+
+        clearSubscriptionIdBeingEdited(subscriptionId);
         return `Added new bill due for ${res.subscription.name}.`;
       },
       error: (error: Error) => {
+        clearSubscriptionIdBeingEdited(subscriptionId);
         return `Failed to add bill due. ${error.message}`;
       },
     });

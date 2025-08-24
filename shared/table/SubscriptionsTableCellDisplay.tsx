@@ -14,6 +14,7 @@ import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
 import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
+import SubscriptionsTableAddDueBillButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableAddDueBillButton';
 import SubscriptionsTableEditSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableEditSubscriptionButton';
 import SubscriptionsTableDeleteSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableDeleteSubscriptionButton';
 
@@ -216,6 +217,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     return (
       <TableCell className="">
         <div className="flex w-full flex-row items-center justify-start gap-x-1">
+          <SubscriptionsTableAddDueBillButton subscription={ subscription } />
           <SubscriptionsTableEditSubscriptionButton subscription={ subscription } />
           <SubscriptionsTableDeleteSubscriptionButton subscription={ subscription } />
         </div>

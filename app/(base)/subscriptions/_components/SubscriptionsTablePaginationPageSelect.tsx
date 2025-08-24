@@ -5,7 +5,7 @@ import Pagination from '@mui/material/Pagination';
 import { ChangeEvent } from 'react';
 import { useQueryState, parseAsInteger } from 'nuqs';
 
-export default function SubscriptionsTablePaginationPageSelect({ pageCount }: { pageCount: number }) {
+export default function SubscriptionsTablePaginationPageSelect({ totalPages }: { totalPages: number }) {
   const [selectedPage, setSelectedPage] = useQueryState(
     'page',
     parseAsInteger
@@ -24,13 +24,15 @@ export default function SubscriptionsTablePaginationPageSelect({ pageCount }: { 
     setSelectedPage(page);
   };
 
+  const onlyHasOnePage = totalPages < 2;
+  
   return (
     <Pagination
-      count={ pageCount }
+      count={ totalPages }
       shape="rounded"
       size="medium"
-      showFirstButton={ true }
-      showLastButton={ true }
+      showFirstButton={ onlyHasOnePage ? false : true }
+      showLastButton={ onlyHasOnePage ? false : true }
       page={ selectedPage }
       siblingCount={ 2 }
       onChange={ handlePageChange }

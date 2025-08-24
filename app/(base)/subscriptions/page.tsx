@@ -10,9 +10,11 @@ import SubscriptionsTableParent from './_components/SubscriptionsTableParent';
 import SubscriptionsTableSkeleton from './_components/SubscriptionsTableSkeleton';
 import SubscriptionsTableActionBar from './_components/SubscriptionsTableActionBar';
 import SubscriptionsTableActionDialog from './_components/SubscriptionsTableActionDialog';
+import AddNewBillDueDialogStandalone from '../add/_components/AddNewBillDueDialogStandalone';
 import AddSubscriptionDialogContentCard from '../add/_components/AddSubscriptionDialogContentCard';
 import SubscriptionsTablePaginationWrapper from './_components/SubscriptionsTablePaginationWrapper';
 import EditSubscriptionDialogContentCard from '../add/_components/EditSubscriptionDialogContentCard';
+import AddNewBillDueDialogContentStandalone from '../add/_components/AddNewBillDueDialogContentStandalone';
 import SubscriptionsTableAddSubscriptionDialog from './_components/SubscriptionsTableAddSubscriptionDialog';
 
 interface SubscriptionsPageProps {
@@ -39,6 +41,11 @@ export default function SubscriptionsPage({ searchParams }: SubscriptionsPagePro
         <SubscriptionsTableAddSubscriptionDialog>
           <AddSubscriptionDialogContentCard />
         </SubscriptionsTableAddSubscriptionDialog>
+      </Suspense>
+      <Suspense>
+        <AddNewBillDueDialogStandalone>
+          <AddNewBillDueDialogContentStandalone searchParams={ searchParams } />
+        </AddNewBillDueDialogStandalone>
       </Suspense>
     </div>
   );

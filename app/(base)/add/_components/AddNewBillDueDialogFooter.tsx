@@ -1,37 +1,47 @@
 'use client';
 
+import { useQueryState } from 'nuqs';
 import { X, Plus } from 'lucide-react';
 import { RotateCcw } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { DialogClose, DialogFooter } from '@/components/ui/dialog';
+import { DialogClose } from '@/components/ui/dialog';
+import StyledDialogFooter from '@/shared/dialogs/StyledDialogFooter';
+import subscriptionsTableViewStore, { SubscriptionIdBeingEdited } from '@/store/subscriptions/subscriptions.store';
 
 import AddBillConsecutiveAdd from './form-fields/AddBillConsecutiveAdd';
 
 export default function AddNewBillDueDialogFooter() {
+  const [addBillDueSubscriptionId] = useQueryState('addBillDueSubscriptionId', {});
+  const subscriptionIdBeingEdited: SubscriptionIdBeingEdited = subscriptionsTableViewStore.use.subscriptionIdBeingEdited();
+
   return (
-    <DialogFooter className={ `
-      mt-4 flex w-full flex-row bg-sidebar p-4
-      sm:items-center sm:justify-between
-    ` }>
-      <div className="flex flex-row items-center justify-start gap-x-2">
-        <DialogClose asChild>
-          <Button variant="outline" type="button">
-            <X />
-            Cancel
+    <StyledDialogFooter>
+      <div className="flex w-full flex-row items-center justify-between gap-x-2">
+        <div className="flex flex-row items-center justify-start gap-x-2">
+          <DialogClose asChild>
+            <Button variant="outline" type="button">
+              <X />
+              Cancel
+            </Button>
+          </DialogClose>
+          <ResetButton />
+        </div>
+        <div className="flex flex-row items-center justify-end gap-x-2">
+          <AddBillConsecutiveAdd />
+          <Button
+            type="submit"
+            id="add-new-bill-due-dialog-save-button"
+            disabled={ subscriptionIdBeingEdited[addBillDueSubscriptionId ?? ''] === true }
+            form="add-new-bill-due-dialog-form"
+          >
+            <Plus />
+            Add Bill Due
           </Button>
-        </DialogClose>
-        <ResetButton />
+        </div>
       </div>
-      <div className="flex flex-row items-center justify-end gap-x-2">
-        <AddBillConsecutiveAdd />
-        <Button type="submit" id="add-new-bill-due-dialog-save-button" disabled={ false } form="add-new-bill-due-dialog-form">
-          <Plus />
-          Add Bill Due
-        </Button>
-      </div>
-    </DialogFooter>
+    </StyledDialogFooter>
   );
 }
 

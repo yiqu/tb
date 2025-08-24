@@ -7,7 +7,8 @@ import { useFormContext } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { DialogClose, DialogFooter } from '@/components/ui/dialog';
+import { DialogClose } from '@/components/ui/dialog';
+import StyledDialogFooter from '@/shared/dialogs/StyledDialogFooter';
 import { subscriptionEditableSchema } from '@/validators/subscriptions/subscriptions.schema';
 
 export default function EditSubscriptionDialogFooter() {
@@ -16,34 +17,33 @@ export default function EditSubscriptionDialogFooter() {
   } = useFormContext<z.infer<typeof subscriptionEditableSchema>>();
 
   return (
-    <DialogFooter className={ `
-      mt-4 flex w-full flex-row bg-sidebar p-4
-      sm:items-center sm:justify-between
-    ` }>
-      <div className="flex flex-row items-center justify-start gap-x-2">
-        <DialogClose asChild>
-          <Button variant="outline" type="button">
-            <X />
-            Cancel
+    <StyledDialogFooter>
+      <div className="flex w-full flex-row items-center justify-between gap-x-2">
+        <div className="flex flex-row items-center justify-start gap-x-2">
+          <DialogClose asChild>
+            <Button variant="outline" type="button">
+              <X />
+              Cancel
+            </Button>
+          </DialogClose>
+          <ResetButton />
+        </div>
+        <div className="flex flex-row items-center justify-end gap-x-2">
+          <Button
+            type="submit"
+            id="edit-subscription-dialog-save-button"
+            disabled={ false }
+            form="edit-subscription-dialog-form"
+            className={ cn({
+              'border-1 border-red-600': !isValid,
+            }) }
+          >
+            <Save />
+            Save
           </Button>
-        </DialogClose>
-        <ResetButton />
+        </div>
       </div>
-      <div className="flex flex-row items-center justify-end gap-x-2">
-        <Button
-          type="submit"
-          id="edit-subscription-dialog-save-button"
-          disabled={ false }
-          form="edit-subscription-dialog-form"
-          className={ cn({
-            'border-1 border-red-600': !isValid,
-          }) }
-        >
-          <Save />
-          Save
-        </Button>
-      </div>
-    </DialogFooter>
+    </StyledDialogFooter>
   );
 }
 

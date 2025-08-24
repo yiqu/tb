@@ -1,0 +1,13 @@
+/* [data-slot='table-container']:has(#bills-table) {
+  max-height: calc(90vh - 15.7rem);
+  overflow-y: auto;
+} */
+
+/* Sticky table header cells for bills table */
+/* [data-slot='table-container']:has(#bills-table) [data-slot='table-header'] th,
+[data-slot='table-container']:has(#bills-table) [data-slot='table-header'] [data-slot='table-head'] {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: inherit;
+} */

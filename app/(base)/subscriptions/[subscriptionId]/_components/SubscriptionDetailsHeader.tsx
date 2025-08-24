@@ -22,7 +22,7 @@ export default async function SubscriptionDetailsHeader({
   }
 
   return (
-    <div className="flex w-full flex-row items-center justify-between">
+    <div className="flex w-full flex-row items-center justify-between py-2">
       <div className="flex flex-row items-center justify-start gap-x-2">
         <Link href={ `/subscriptions/${subscription.id}` } prefetch>
           <div className="flex flex-row items-center justify-start gap-x-2">

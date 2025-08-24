@@ -1,10 +1,8 @@
 import { Suspense } from 'react';
 
-import { Separator } from '@/components/ui/separator';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
-import EditSubscriptionDialogTitle from './EditSubscriptionDialogTitle';
 import EditSubscriptionDialogFooter from './EditSubscriptionDialogFooter';
 import EditSubscriptionDialogWrapper from './EditSubscriptionDialogWrapper';
 import EditSubscriptionDialogContentCard from './EditSubscriptionDialogContentCard';
@@ -15,8 +13,6 @@ export default function EditSubscriptionDialog({ subscriptionId }: { subscriptio
 
   return (
     <EditSubscriptionDialogWrapper>
-      <EditSubscriptionDialogTitle />
-      <Separator />
       <Suspense fallback={ <Loading /> }>
         <EditSubscriptionDialogContentFormWrapper subscriptionId={ subscriptionId } subscriptionPromise={ subscriptionPromise }>
           <EditSubscriptionDialogContentCard />

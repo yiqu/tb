@@ -1,4 +1,7 @@
+import { Suspense } from 'react';
+
 import { CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import DisplayCard from '@/shared/components/DisplayCard';
 import DisplayCardContentDivider from '@/shared/components/DisplayCardContentDivider';
 
@@ -6,12 +9,16 @@ import AddBillIsPaid from './form-fields/AddBillIsPaid';
 import AddBillDueDate from './form-fields/AddBillDueDate';
 import AddBillCurrency from './form-fields/AddBillCurrency';
 import AddBillIsReimbursed from './form-fields/AddBillIsReimbursed';
+import AddBillSubscriptionName from './form-fields/AddBillSubscriptionName';
 
-export default function AddNewBillDueDialogContentCard() {
+export default function AddNewBillDueDialogContentCard({ subscriptionId }: { subscriptionId?: string }) {
   return (
     <div className="px-4">
       <DisplayCard>
         <CardContent className="flex w-full flex-col items-start justify-start gap-y-4">
+          <Suspense fallback={ <AddBillSubscriptionNameSkeleton /> }>
+            <AddBillSubscriptionName subscriptionId={ subscriptionId } />
+          </Suspense>
           <AddBillDueDate />
           <DisplayCardContentDivider />
           <AddBillCurrency />
@@ -23,4 +30,8 @@ export default function AddNewBillDueDialogContentCard() {
       </DisplayCard>
     </div>
   );
+}
+
+function AddBillSubscriptionNameSkeleton() {
+  return <Skeleton className="h-6 w-[6rem]" />;
 }

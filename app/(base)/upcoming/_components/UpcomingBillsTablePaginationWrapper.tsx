@@ -25,7 +25,7 @@ export default function UpcomingBillsTablePaginationWrapper({ searchParams }: Up
 
 function BillsTablePaginationSkeleton() {
   return (
-    <div className="flex w-full flex-row items-center justify-between">
+    <div className="flex h-13 w-full flex-row items-center justify-between">
       <div>{ `` }</div>
       <div className="flex flex-row items-center justify-end gap-x-4">
         <Skeleton className="h-9 w-[500px]" />

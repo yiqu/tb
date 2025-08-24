@@ -145,12 +145,10 @@ export async function getAllBills(
     if (searchParams.paymentStatus === 'paid-only') {
       whereClause.AND.push({
         paid: true,
-        reimbursed: false,
       });
     } else if (searchParams.paymentStatus === 'reimbursed-only') {
       whereClause.AND.push({
         reimbursed: true,
-        paid: false,
       });
     } else if (searchParams.paymentStatus === 'paid-or-reimbursed') {
       whereClause.AND.push({

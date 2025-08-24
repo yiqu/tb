@@ -39,7 +39,7 @@ export default async function OutstandingBillsTablePagination({
   const hasSearchParams: boolean = isSearchParamsExist(searchParams);
 
   return (
-    <div className="flex w-full flex-row items-center justify-between">
+    <div className={ `sticky top-[7.2rem] z-10 flex w-full flex-row items-center justify-between bg-background py-2` }>
       <div>{ `` }</div>
       <div className="flex flex-row items-center justify-end gap-x-4">
         { hasSearchParams ?
@@ -51,7 +51,7 @@ export default async function OutstandingBillsTablePagination({
           </>
         : null }
 
-        <div>
+        <div className="h-9">
           <OutstandingBillsTablePaginationPageCountSelect>
             <Typography>
               { startIndex } - { endIndex } of { billsCount }{ ' ' }

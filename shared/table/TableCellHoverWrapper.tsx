@@ -8,13 +8,22 @@ interface HoverFilterDialogProps {
   payload: string;
   columnId: string;
   children: ReactNode;
+  showHoverFilter?: boolean;
 }
 
-export function TableCellHoverWrapper({ payload, columnId, children }: HoverFilterDialogProps) {
+export function TableCellHoverWrapper({ payload, columnId, children, showHoverFilter }: HoverFilterDialogProps) {
+  if (!showHoverFilter) {
+    return children;
+  }
+
   return (
-    <HoverCard openDelay={ 100 } closeDelay={ 50 }>
+    <HoverCard openDelay={ 150 } closeDelay={ 100 }>
       <HoverCardTrigger asChild>{ children }</HoverCardTrigger>
-      <HoverCardContent className="flex h-3 w-20 flex-col items-center justify-center" side="top" align="start">
+      <HoverCardContent
+        className="flex h-3 w-20 flex-col items-center justify-center bg-background/50 backdrop-blur-lg"
+        side="top"
+        align="end"
+      >
         <TableCellHoverFilterAddButton payload={ payload } columnId={ columnId } />
       </HoverCardContent>
     </HoverCard>

@@ -42,7 +42,7 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
         <Table className={ `
           table-auto
           two:table-fixed
-        ` }>
+        ` } id="bills-table">
           <TableHeader className={ `bg-muted` }>
             <TableRow className="hover:bg-transparent">
               { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {

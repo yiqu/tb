@@ -36,6 +36,7 @@ const subscriptionsTableViewStoreBase = create<SubscriptionsTableViewState>()(
               ...state.subscriptionIdBeingEdited,
               [subscriptionId]: true,
             },
+            lastEdited: Date.now(),
           };
         });
       },

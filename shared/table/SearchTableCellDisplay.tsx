@@ -28,7 +28,15 @@ import SearchTableCellDisplayDueDateDateDisplay from './SearchTableCellDisplayDu
 
 const useFormatter = getUSDFormatter(2, 2);
 
-export default function BillsTableCell({ colId, billDue }: { colId: string; billDue: BillDueWithSubscription }) {
+export default function BillsTableCell({
+  colId,
+  billDue,
+  showHoverFilter,
+}: {
+  colId: string;
+  billDue: BillDueWithSubscription;
+  showHoverFilter?: boolean;
+}) {
   if (colId === 'cost') {
     let { cost } = billDue;
 
@@ -64,7 +72,7 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
   if (colId === 'frequency') {
     const freq: string = billDue.subscription.billCycleDuration;
     return (
-      <TableCellHoverWrapper payload={ freq } columnId={ colId }>
+      <TableCellHoverWrapper payload={ freq } columnId={ colId } showHoverFilter={ showHoverFilter }>
         <TableCell>
           <div className={ `
             flex flex-row items-center justify-start gap-x-1
@@ -139,13 +147,9 @@ export default function BillsTableCell({ colId, billDue }: { colId: string; bill
   if (colId === 'subscription') {
     const subName = billDue.subscription.name;
     return (
-      <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' }>
+      <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' } showHoverFilter={ showHoverFilter }>
         <TableCell>
-          <LinkClient
-            href={ `/subscriptions/${billDue.subscription.id}` as any }
-            prefetch={ true }
-            className="inline-block"
-          >
+          <LinkClient href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true } className="inline-block">
             <div className="flex flex-row items-center justify-start gap-x-2">
               <SubscriptionLogo subscriptionName={ subName } height={ 20 } />
               <CenterUnderline label={ subName } />

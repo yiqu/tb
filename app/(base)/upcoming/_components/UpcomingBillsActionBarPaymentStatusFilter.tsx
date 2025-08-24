@@ -137,8 +137,8 @@ export default function UpcomingBillsActionBarPaymentStatusFilter() {
 }
 
 const STATUS_OPTIONS_1 = [
-  { label: 'Paid only', value: 'paid-only' },
-  { label: 'Reimbursed only', value: 'reimbursed-only' },
+  { label: 'Paid', value: 'paid-only' },
+  { label: 'Reimbursed', value: 'reimbursed-only' },
 ];
 
 const STATUS_OPTIONS_2 = [

@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { subscriptionSearchParamsSchema } from '@/validators/subscriptions/subscriptions.schema';
 
-const paramsToIgnore = ['editSubscriptionId', 'page', 'addNewSubscription'];
+const paramsToIgnore = ['editSubscriptionId', 'page', 'addNewSubscription', 'addBillDueSubscriptionId'];
 
 /**
  * Check if there are search params. If it's only 'page', it's not considered as search params.
