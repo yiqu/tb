@@ -42,9 +42,9 @@ export function HFInputField({
   formItemClassName,
   ...inputProps
 }: HFInputFieldProps) {
-  const lineHeight = 3;
-  const minHeight = minLines * lineHeight;
-  const maxHeight = maxLines * lineHeight;
+  const estimatedLineHeightPx = 24;
+  const minHeight = minLines * estimatedLineHeightPx;
+  const maxHeight = maxLines ? maxLines * estimatedLineHeightPx : undefined;
 
   return (
     <FormField
@@ -66,7 +66,14 @@ export function HFInputField({
                   { ...field }
                   placeholder={ placeholder }
                   disabled={ disabled }
-                  className={ cn(`w-full resize-y overflow-y-auto pr-10`, inputProps.className) }
+                  rows={ minLines }
+                  className={ cn(
+                    `w-full resize-y overflow-y-auto pr-10`,
+                    {
+                      'pl-10': !!startAdornment,
+                    },
+                    inputProps.className,
+                  ) }
                   style={ {
                     minHeight: `${minHeight}px`,
                     maxHeight: maxHeight ? `${maxHeight}px` : undefined,

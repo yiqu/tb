@@ -45,6 +45,9 @@ export function BreadcrumbSegmentIcon({ path }: { path: string; params: Params; 
   if (path === 'bills') {
     return <Calendar size={ 14 } />;
   }
+  if (path === 'bill') {
+    return <Calendar size={ 14 } />;
+  }
   if (path === 'subscriptions') {
     return <ReceiptText size={ 14 } />;
   }
@@ -60,7 +63,33 @@ export function BreadcrumbSegmentIcon({ path }: { path: string; params: Params; 
   return <Link size={ 14 } />;
 }
 
-export function BreadcrumbSegmentTitle({ path, isLast }: { path: string; isLast?: boolean }) {
+export function BreadcrumbSegmentTitle({ path, isLast, paths }: { path: string; isLast?: boolean; paths: string[] }) {
+  if (paths.includes('add')) {
+    if (path === 'subscription') {
+      return (
+        <Typography
+          className={ cn({
+            'text-muted-foreground': isLast,
+          }) }
+        >
+          <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'New Subscription' } />
+        </Typography>
+      );
+    }
+
+    if (path === 'bill') {
+      return (
+        <Typography
+          className={ cn({
+            'text-muted-foreground': isLast,
+          }) }
+        >
+          <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'New Bill' } />
+        </Typography>
+      );
+    }
+  }
+
   if (path === 'account') {
     return (
       <Typography

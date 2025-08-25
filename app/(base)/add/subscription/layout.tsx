@@ -1,5 +1,9 @@
-import PageLayout from '@/shared/PageLayout';
+export const experimental_ppr = true;
 
-export default function AddNewSubscriptionLayout({ children }: { children: React.ReactNode }) {
-  return <PageLayout>{ children }</PageLayout>;
+export default function AddNewEntitySubscriptionLayout({ children }: LayoutProps<'/add/subscription'>) {
+  return (
+    <div id="add-new-entity-subscription-layout-parent" className="flex w-full flex-col items-start justify-start">
+      { children }
+    </div>
+  );
 }

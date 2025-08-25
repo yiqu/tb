@@ -1,5 +1,9 @@
-import PageLayout from '@/shared/PageLayout';
+export const experimental_ppr = true;
 
-export default function AddNewBillLayout({ children }: { children: React.ReactNode }) {
-  return <PageLayout>{ children }</PageLayout>;
+export default function AddNewEntityDueBillLayout({ children }: LayoutProps<'/add/bill'>) {
+  return (
+    <div id="add-new-entity-due-bill-layout-parent" className="flex w-full flex-col items-start justify-start">
+      { children }
+    </div>
+  );
 }

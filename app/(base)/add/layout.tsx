@@ -1,12 +1,30 @@
-import { Metadata } from 'next';
+import { Separator } from '@/components/ui/separator';
+import PageTitle from '@/components/headings/PageTitle';
+import LayoutParent from '@/components/layout/LayoutParent';
+import { AuroraText } from '@/components/magicui/aurora-text';
+import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
+import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
+import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
-import PageLayout from '@/shared/PageLayout';
-import { getLayoutMetadata } from '@/lib/utils';
+export const experimental_ppr = true;
 
-const layoutMetadata = getLayoutMetadata('Add', 'Add new subscription or bill');
-
-export const metadata: Metadata = layoutMetadata;
-
-export default function SearchLayout({ children }: { children: React.ReactNode }) {
-  return <PageLayout>{ children }</PageLayout>;
+export default function AddNewEntityLayout({ children }: LayoutProps<'/add'>) {
+  return (
+    <div id="add-new-entity-layout-parent">
+      <LayoutParent>
+        <LayoutWithGutter size="wider">
+          <section className="w-full">
+            <PageTitle
+              title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.add }>Add New</AuroraText> }
+              subText="Add a new subscription or due bill."
+            />
+          </section>
+        </LayoutWithGutter>
+      </LayoutParent>
+      <Separator />
+      <LayoutChildrenParent>
+        <LayoutWithGutter size="wider">{ children }</LayoutWithGutter>
+      </LayoutChildrenParent>
+    </div>
+  );
 }

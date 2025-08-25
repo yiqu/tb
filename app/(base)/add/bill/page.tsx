@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Bill',
-  description: 'Add new bill',
+  title: 'Add New Bill',
+  description: 'Add a new bill.',
 };
 
 export default function AddNewBillPage() {

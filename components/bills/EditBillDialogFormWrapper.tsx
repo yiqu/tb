@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { updateBillDue } from '@/server/bills/bills.server';
+import billsTableViewStore from '@/store/bills/bills.store';
 import { billEditableSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
@@ -17,6 +18,8 @@ import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_BILL_DUE_
 import { Form } from '../ui/form';
 
 export default function EditBillDialogFormWrapper({ children, billDue }: { children: ReactNode; billDue: BillDueWithSubscription }) {
+  const setBillDueIdBeingEdited = billsTableViewStore.use.setBillDueIdBeingEdited();
+  const clearBillDueIdBeingEdited = billsTableViewStore.use.clearBillDueIdBeingEdited();
   const [, setEditBillId] = useQueryState('editBillId', {
     history: 'push',
     scroll: false,
@@ -43,6 +46,7 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
       return;
     }
 
+    setBillDueIdBeingEdited(billDue.id);
     const submitButton: HTMLButtonElement | null = document.getElementById('edit-bill-dialog-save-button') as HTMLButtonElement;
 
     if (submitButton) {
@@ -76,6 +80,7 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
           particleCount: 50,
         });
 
+        clearBillDueIdBeingEdited(billDue.id);
         setEditBillId(null, {
           history: 'replace',
           scroll: false,
@@ -87,6 +92,7 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
         if (submitButton) {
           submitButton.disabled = false;
         }
+        clearBillDueIdBeingEdited(billDue.id);
         return `Failed to update bill. ${error.message}`;
       },
     });

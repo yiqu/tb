@@ -68,4 +68,5 @@ export const APP_TITLE_GRADIENT_COLORS = {
   subscriptions: ['#005493', '#f5aa1c', '#c63527', '#002754'],
   outstanding: ['#FF4757', '#FF6B35', '#FFA726', '#0070F3'],
   upcoming: ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF'],
+  add: ['#ed6b06', '#9d1348', '#008b5d', '#364395']
 };

@@ -16,6 +16,9 @@ export default function EditSubscriptionDescription() {
       control={ control }
       formItemClassName="w-full"
       placeholder="A description of the subscription (optional)"
+      isTextArea
+      minLines={ 3 }
+      maxLines={ 10 }
     />
   );
 }

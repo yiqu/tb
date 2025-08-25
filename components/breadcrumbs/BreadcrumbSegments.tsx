@@ -10,9 +10,9 @@ import { BreadcrumbSegmentIcon, BreadcrumbSegmentTitle } from './BreadCrumbsUtil
 import { BreadcrumbItem, BreadcrumbPage, BreadcrumbLink, BreadcrumbSeparator } from '../ui/breadcrumb';
 
 export default function BreadcrumbSegments() {
-  const pathname = usePathname();
+  const pathname: string = usePathname();
   const params: Params = useParams();
-  const paths = pathname.split('/').filter(Boolean);
+  const paths: string[] = pathname.split('/').filter(Boolean);
 
   return (
     <>
@@ -26,7 +26,7 @@ export default function BreadcrumbSegments() {
                 <BreadcrumbPage>
                   <section className={ `flex flex-row items-center justify-start gap-x-1` }>
                     <BreadcrumbSegmentIcon path={ path } params={ params } isLast={ isLast } />
-                    <BreadcrumbSegmentTitle path={ path } isLast={ isLast } />
+                    <BreadcrumbSegmentTitle path={ path } isLast={ isLast } paths={ paths } />
                   </section>
                 </BreadcrumbPage>
               </BreadcrumbItem>
@@ -36,7 +36,7 @@ export default function BreadcrumbSegments() {
                   <Link href={ href as any } prefetch>
                     <section className={ `flex flex-row items-center justify-start gap-x-1` }>
                       <BreadcrumbSegmentIcon path={ path } params={ params } isLast={ isLast } />
-                      <BreadcrumbSegmentTitle path={ path } isLast={ isLast } />
+                      <BreadcrumbSegmentTitle path={ path } isLast={ isLast } paths={ paths } />
                     </section>
                   </Link>
                 </BreadcrumbLink>
