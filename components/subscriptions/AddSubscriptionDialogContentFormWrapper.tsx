@@ -6,16 +6,27 @@ import toast from 'react-hot-toast';
 import { useQueryState } from 'nuqs';
 import confetti from 'canvas-confetti';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Form } from '@/components/ui/form';
 import { TANSTACK_MUTATION_KEY_SUBSCRIPTION_CREATE } from '@/constants/constants';
 import { createNewSubscription } from '@/server/subscriptions/subscriptions.server';
+import subscriptionsTableViewStore from '@/store/subscriptions/subscriptions.store';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { subscriptionAddableSchema } from '@/validators/subscriptions/subscriptions.schema';
 
-export default function AddSubscriptionDialogContentFormWrapper({ children }: { children: ReactNode }) {
+export default function AddSubscriptionDialogContentFormWrapper({
+  children,
+  redirectToNewSubscriptionAfterCreation,
+}: {
+  children: ReactNode;
+  redirectToNewSubscriptionAfterCreation?: boolean;
+}) {
+  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
+  const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
+  const nav = useRouter();
   const [, setAddNewSubscription] = useQueryState('addNewSubscription', {
     scroll: false,
   });
@@ -35,13 +46,20 @@ export default function AddSubscriptionDialogContentFormWrapper({ children }: { 
       confetti({
         particleCount: 80,
       });
-      setAddNewSubscription(null, {
-        scroll: false,
-      });
+      clearSubscriptionIdBeingEdited('new-subscription');
+
+      if (redirectToNewSubscriptionAfterCreation) {
+        nav.push(`/subscriptions/${data.id}`);
+      } else {
+        setAddNewSubscription(null, {
+          scroll: false,
+        });
+      }
     },
     onError: (error: Error) => {
       toast.remove();
       toast.error(`Failed to create subscription. ${error.message}`);
+      clearSubscriptionIdBeingEdited('new-subscription');
     },
     gcTime: 1,
   });
@@ -63,6 +81,7 @@ export default function AddSubscriptionDialogContentFormWrapper({ children }: { 
   });
 
   const onSubmit = async (data: z.infer<typeof subscriptionAddableSchema>) => {
+    setSubscriptionIdBeingEdited('new-subscription');
     mutate(data);
   };
 

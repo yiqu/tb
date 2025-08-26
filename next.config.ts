@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     turbopackPersistentCaching: true,
     devtoolSegmentExplorer: true,
   },
-  typedRoutes: true
+  // typedRoutes: true
 };
 
 export default nextConfig;

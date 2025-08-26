@@ -1,12 +1,11 @@
 import { Metadata } from 'next';
-import { Plus } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { CardFooter, CardContent } from '@/components/ui/card';
 import AddSubscriptionDialogContentFormWrapper from '@/components/subscriptions/AddSubscriptionDialogContentFormWrapper';
 
 import AddNewEntityHeader from '../_components/AddNewEntityHeader';
+import AddNewEntityActions from '../_components/AddNewEntityActions';
 import EditSubscriptionUrl from '../_components/form-fields/EditSubscriptionUrl';
 import EditSubscriptionName from '../_components/form-fields/EditSubscriptionName';
 import EditSubscriptionCost from '../_components/form-fields/EditSubscriptionCost';
@@ -26,7 +25,7 @@ export default function AddNewSubscriptionPage() {
       <AddNewEntityHeader />
       <DisplayCard className="w-full">
         <CardContent>
-          <AddSubscriptionDialogContentFormWrapper>
+          <AddSubscriptionDialogContentFormWrapper redirectToNewSubscriptionAfterCreation>
             <div className="flex w-full flex-col items-start justify-start gap-y-4">
               <EditSubscriptionName />
               <EditSubscriptionCost />
@@ -39,12 +38,7 @@ export default function AddNewSubscriptionPage() {
           </AddSubscriptionDialogContentFormWrapper>
         </CardContent>
         <CardFooter>
-          <div className="flex w-full flex-col">
-            <Button variant="default" type="submit" className="w-full">
-              <Plus />
-              Create Subscription
-            </Button>
-          </div>
+          <AddNewEntityActions />
         </CardFooter>
       </DisplayCard>
     </div>

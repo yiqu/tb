@@ -1,16 +1,14 @@
 import { X, Save } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { DialogClose, DialogFooter } from '@/components/ui/dialog';
+import { DialogClose } from '@/components/ui/dialog';
+import StyledDialogFooter from '@/shared/dialogs/StyledDialogFooter';
 
 import AddSubscriptionDialogResetButton from './AddSubscriptionDialogResetButton';
 
 export default function AddSubscriptionDialogContentFooter() {
   return (
-    <DialogFooter className={ `
-      mt-4 flex w-full flex-row bg-sidebar p-4
-      sm:items-center sm:justify-between
-    ` }>
+    <StyledDialogFooter>
       <DialogClose asChild>
         <Button variant="outline" type="button">
           <X />
@@ -30,6 +28,6 @@ export default function AddSubscriptionDialogContentFooter() {
           Create
         </Button>
       </div>
-    </DialogFooter>
+    </StyledDialogFooter>
   );
 }

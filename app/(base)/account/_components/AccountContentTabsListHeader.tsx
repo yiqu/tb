@@ -8,7 +8,7 @@ import AccountContentTabsListTabs from './AccountContentTabsListTabs';
 export default function AccountContentTabsListHeader() {
   return (
     <AccountContentTabsListTabs>
-      <TabsList className={ `grid w-full grid-cols-4` }>
+      <TabsList className={ `grid w-full grid-cols-5` }>
         { TAB_OPTIONS.map((tab: AccountTabListItem) => {
           return (
             <TabsTrigger key={ tab.id } value={ tab.url } asChild>
@@ -43,5 +43,10 @@ const TAB_OPTIONS: AccountTabListItem[] = [
     id: 'security',
     displayText: 'Security',
     url: '/security',
+  },
+  {
+    id: 'fun',
+    displayText: 'Fun',
+    url: '/fun',
   },
 ];

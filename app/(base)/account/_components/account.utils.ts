@@ -61,7 +61,7 @@ export function getAchievementImgUrl(achievementId: string, level: number) {
   return imgUrl;
 }
 
-export type AccountTabUrl = '/privacy' | '/personal-info' | '/settings' | '/security' | '';
+export type AccountTabUrl = '/privacy' | '/personal-info' | '/settings' | '/security' | '/fun' | '';
 
 export type AccountTabListItem = {
   id: string;
