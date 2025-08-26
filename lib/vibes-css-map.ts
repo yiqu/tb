@@ -251,11 +251,11 @@ const FONT_CSS_MAP: Record<string, string> = {
 };
 
 export function getVibeStylesheetHref(vibe: AppVibe): string {
-  return VIBE_CSS_MAP[vibe] ?? VIBE_CSS_MAP.vintage;
+  return VIBE_CSS_MAP[vibe] ?? VIBE_CSS_MAP.vercel;
 }
 
 export function getFontStylesheetHref(font: string | undefined): string {
-  return FONT_CSS_MAP[font ?? ''] ?? FONT_CSS_MAP['geist'];
+  return FONT_CSS_MAP[font ?? ''] ?? '';
 }
 
 export function getFontVariableByVibe(vibe: AppVibe): string {

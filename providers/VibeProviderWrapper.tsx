@@ -5,7 +5,6 @@ import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server
 import VibeProvider from './VibeProvider';
 
 export default async function VibeProviderWrapper({ children }: { children: ReactNode }) {
-  // const vibe = await getSettingsApplicationVibe();
   const [vibe, fontOverride] = await Promise.all([getSettingsApplicationVibe(), getSettingsApplicationFont()]);
 
   return (

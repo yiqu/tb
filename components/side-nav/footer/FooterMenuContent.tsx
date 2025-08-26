@@ -27,13 +27,13 @@ export default function FooterMenuContent() {
 
       <DropdownMenuGroup>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/account/settings` } prefetch={ true }>
+          <Link href={ `/account` } prefetch={ true }>
             <Settings />
             Settings
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/account` } prefetch={ true }>
+          <Link href={ `/account/personal-info` } prefetch={ true }>
             <UserRound />
             Account
           </Link>
