@@ -24,12 +24,13 @@ export default function AddSubscriptionDialogContentFormWrapper({
   children: ReactNode;
   redirectToNewSubscriptionAfterCreation?: boolean;
 }) {
+  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
+  //const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
+
   const [, setAddNewSubscription] = useQueryState('addNewSubscription', {
     scroll: false,
   });
   const nav = useRouter();
-  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
-  const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
 
   const { mutate } = useMutation({
     mutationFn: (data: z.infer<typeof subscriptionAddableSchema>) => {
@@ -46,20 +47,19 @@ export default function AddSubscriptionDialogContentFormWrapper({
       confetti({
         particleCount: 80,
       });
-      clearSubscriptionIdBeingEdited('new-subscription');
 
-      // if (redirectToNewSubscriptionAfterCreation) {
-      //   nav.push(`/subscriptions/${data.id}`);
-      // } else {
-      //   setAddNewSubscription(null, {
-      //     scroll: false,
-      //   });
-      // }
+      if (redirectToNewSubscriptionAfterCreation) {
+        nav.push(`/subscriptions/${data.id}`);
+      } else {
+        setAddNewSubscription(null, {
+          scroll: false,
+        });
+      }
     },
     onError: (error: Error) => {
       toast.remove();
       toast.error(`Failed to create subscription. ${error.message}`);
-      clearSubscriptionIdBeingEdited('new-subscription');
+      //clearSubscriptionIdBeingEdited('new-subscription');
     },
     gcTime: 1,
   });
