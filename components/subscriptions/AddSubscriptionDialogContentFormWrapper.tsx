@@ -48,13 +48,13 @@ export default function AddSubscriptionDialogContentFormWrapper({
       });
       clearSubscriptionIdBeingEdited('new-subscription');
 
-      if (redirectToNewSubscriptionAfterCreation) {
-        nav.push(`/subscriptions/${data.id}`);
-      } else {
-        setAddNewSubscription(null, {
-          scroll: false,
-        });
-      }
+      // if (redirectToNewSubscriptionAfterCreation) {
+      //   nav.push(`/subscriptions/${data.id}`);
+      // } else {
+      //   setAddNewSubscription(null, {
+      //     scroll: false,
+      //   });
+      // }
     },
     onError: (error: Error) => {
       toast.remove();
