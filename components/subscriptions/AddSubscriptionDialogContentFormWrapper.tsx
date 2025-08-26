@@ -24,12 +24,12 @@ export default function AddSubscriptionDialogContentFormWrapper({
   children: ReactNode;
   redirectToNewSubscriptionAfterCreation?: boolean;
 }) {
-  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
-  const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
-  const nav = useRouter();
   const [, setAddNewSubscription] = useQueryState('addNewSubscription', {
     scroll: false,
   });
+  const nav = useRouter();
+  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
+  const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
 
   const { mutate } = useMutation({
     mutationFn: (data: z.infer<typeof subscriptionAddableSchema>) => {
