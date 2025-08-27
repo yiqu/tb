@@ -12,6 +12,16 @@ import { cn } from '@/lib/utils';
 // 1.75rem = 28px
 // 2rem = 32px
 
+// thin = 100
+// extralight = 200
+// light = 300
+// normal = 400
+// medium = 500 
+// semibold = 600
+// bold = 700
+// extrabold = 800
+// black = 900
+
 const typographyVariants = cva('scroll-m-20 tracking-tight', {
   variants: {
     variant: {

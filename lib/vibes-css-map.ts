@@ -52,14 +52,14 @@ export const geistMono = Geist_Mono({
 export const kanit = Kanit({
   variable: '--font-kanit',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
 export const rubik = Rubik({
   variable: '--font-rubik',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
@@ -67,20 +67,20 @@ const cherryBombOne = Cherry_Bomb_One({
   variable: '--font-cherry-bomb-one',
   subsets: ['latin'],
   weight: ['400'],
-  preload: false,
+  preload: true,
 });
 
 const architectsDaughter = Architects_Daughter({
   variable: '--font-architects-daughter',
   subsets: ['latin'],
   weight: '400',
-  preload: false,
+  preload: true,
 });
 
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: true,
 });
 
@@ -94,57 +94,57 @@ const lora = Lora({
 const dmSans = DM_Sans({
   variable: '--font-dm-sans',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
-  preload: false,
+  weight: ['300', '400', '500', '600', '700'],
+  preload: true,
 });
 
 const poppins = Poppins({
   variable: '--font-poppins',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
-  preload: false,
+  weight: ['300', '400', '500', '600', '700'],
+  preload: true,
 });
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta-sans',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
 const oxanium = Oxanium({
   variable: '--font-oxanium',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  preload: false,
+  weight: ['300', '400', '500', '600', '700'],
+  preload: true,
 });
 
 const merriweather = Merriweather({
   variable: '--font-merriweather',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  preload: false,
+  weight: ['300', '400', '500', '600', '700'],
+  preload: true,
 });
 
 const sourceSerif4 = Source_Serif_4({
   variable: '--font-source-serif-4',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
 const outfit = Outfit({
   variable: '--font-outfit',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  preload: false,
+  weight: ['300', '400', '500', '600', '700'],
+  preload: true,
 });
 
 export const libreBaskerville = Libre_Baskerville({
@@ -157,14 +157,14 @@ export const libreBaskerville = Libre_Baskerville({
 const openSans = Open_Sans({
   variable: '--font-open-sans',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  preload: false,
+  weight: ['300', '400', '500', '600', '700'],
+  preload: true,
 });
 
 const sourceCodePro = Source_Code_Pro({
   variable: '--font-source-code-pro',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
@@ -192,7 +192,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 const jetBrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700'],
   preload: false,
 });
 
