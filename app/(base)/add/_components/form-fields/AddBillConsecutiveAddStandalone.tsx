@@ -3,11 +3,10 @@
 import { z } from 'zod';
 import { useFormContext } from 'react-hook-form';
 
-import { cn } from '@/lib/utils';
 import { HFCheckbox } from '@/components/hook-form/HFCheckbox';
 import { billAddableSchema } from '@/validators/bills/bill.schema';
 
-export default function AddBillConsecutiveAdd({ className }: { className?: string }) {
+export default function AddBillConsecutiveAddStandalone() {
   const { control } = useFormContext<z.infer<typeof billAddableSchema>>();
 
   return (
@@ -15,12 +14,8 @@ export default function AddBillConsecutiveAdd({ className }: { className?: strin
       name="consecutiveAdd"
       label="Consecutive Add"
       control={ control }
-      helperText={ undefined }
-      formItemClassName={ cn('', className) }
-      labelClassName={ cn(`
-        border-none bg-background py-2.5
-        hover:bg-background
-      `) }
+      helperText={ 'Add another bill due after this one.' }
+      formItemClassName="w-full"
     />
   );
 }

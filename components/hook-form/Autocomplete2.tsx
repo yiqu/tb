@@ -30,6 +30,8 @@ interface BaseAutocompleteProps {
   labelClassName?: string;
   badgeTextMaxLength?: number;
   label?: string;
+  hasError?: boolean;
+  errorMessage?: string;
 }
 
 interface ControlledAutocompleteProps extends BaseAutocompleteProps {
@@ -65,6 +67,8 @@ function AutocompleteInputBase({
   onClearAll,
   badgeTextMaxLength,
   label,
+  hasError,
+  errorMessage,
 }: BaseAutocompleteProps & {
   currentValues: string[];
   onSelect: (value: string) => void;
@@ -116,7 +120,20 @@ function AutocompleteInputBase({
       : null }
       <Popover open={ open } onOpenChange={ setOpen }>
         <PopoverTrigger asChild>
-          <Button variant="outline" role="combobox" aria-expanded={ open } className={ cn('w-full justify-between bg-transparent', className) }>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={ open }
+            aria-invalid={ hasError ? true : undefined }
+            className={ cn(
+              'w-full justify-between bg-transparent',
+              hasError && `
+                border-red-500
+                focus-visible:ring-red-500
+              `,
+              className,
+            ) }
+          >
             <div className="flex flex-wrap items-center gap-1.5">
               { currentValues.length === 0 ?
                 <span className={ cn('text-muted-foreground/50', labelClassName) }>{ placeholder }</span>
@@ -232,6 +249,9 @@ function AutocompleteInputBase({
           </Command>
         </PopoverContent>
       </Popover>
+      { hasError && errorMessage ? (
+        <p className="text-sm text-red-600">{ errorMessage }</p>
+      ) : null }
     </div>
   );
 }
@@ -246,7 +266,7 @@ function ControlledAutocompleteInput({
   className,
   ...props
 }: ControlledAutocompleteProps) {
-  const { field } = useController({
+  const { field, fieldState } = useController({
     name,
     control,
     rules,
@@ -300,6 +320,8 @@ function ControlledAutocompleteInput({
       multi={ multi }
       searchBy={ searchBy }
       className={ className }
+      hasError={ !!fieldState.error }
+      errorMessage={ fieldState.error?.message }
       currentValues={ currentValues }
       onSelect={ handleSelect }
       onRemove={ handleRemove }

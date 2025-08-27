@@ -4,7 +4,7 @@ import AddNewDueBillActionsAddSubButton from './AddNewDueBillActionsAddSubButton
 
 export default function AddNewDueBillActions() {
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-row items-center justify-start">
       <AddNewDueBillActionsAddSubButton>
         <AddNewEntityActionsAddDueBillButtonContent />
       </AddNewDueBillActionsAddSubButton>

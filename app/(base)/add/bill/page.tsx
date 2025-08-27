@@ -15,6 +15,7 @@ import AddNewBillFormWrapper from '../_components/AddNewBillFormWrapper';
 import AddBillCurrency from '../_components/form-fields/AddBillCurrency';
 import AddBillIsReimbursed from '../_components/form-fields/AddBillIsReimbursed';
 import AddBillSubscriptionSelect from '../_components/form-fields/AddBillSubscriptionSelect';
+import AddBillConsecutiveAddStandalone from '../_components/form-fields/AddBillConsecutiveAddStandalone';
 
 export const metadata: Metadata = {
   title: 'Add New Bill',
@@ -38,6 +39,7 @@ export default function AddNewBillPage() {
               <AddBillCurrency />
               <AddBillIsPaid />
               <AddBillIsReimbursed />
+              <AddBillConsecutiveAddStandalone />
             </div>
           </AddNewBillFormWrapper>
         </CardContent>
