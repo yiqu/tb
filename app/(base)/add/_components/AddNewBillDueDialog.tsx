@@ -1,10 +1,8 @@
 import { Suspense } from 'react';
 
-import { Separator } from '@/components/ui/separator';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
-import AddNewBillDueDialogTitle from './AddNewBillDueDialogTitle';
 import AddNewBillDueDialogFooter from './AddNewBillDueDialogFooter';
 import AddNewBillDueDialogWrapper from './AddNewBillDueDialogWrapper';
 import AddNewBillDueDialogContentCard from './AddNewBillDueDialogContentCard';
@@ -15,8 +13,6 @@ export default function AddNewBillDueDialog({ subscriptionId }: { subscriptionId
 
   return (
     <AddNewBillDueDialogWrapper>
-      <AddNewBillDueDialogTitle />
-      <Separator />
       <Suspense fallback={ <Loading /> }>
         <AddNewBillDueDialogContentFormWrapper subscriptionId={ subscriptionId } subscriptionPromise={ subscriptionPromise }>
           <AddNewBillDueDialogContentCard />

@@ -345,8 +345,6 @@ export async function updateSubscription(
   subscriptionId: string,
   payload: z.infer<typeof subscriptionEditableSchema>,
 ): Promise<SubscriptionWithBillDues> {
-  // delay 2 seconds
-  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
     const subscription: SubscriptionWithBillDues = await prisma.subscription.update({
@@ -480,9 +478,6 @@ export async function createNewSubscription(payload: z.infer<typeof subscription
 }
 
 export async function deleteSubscription(subscriptionId: string): Promise<SubscriptionWithBillDues> {
-  // delay 2 seconds
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     const subscription: SubscriptionWithBillDues = await prisma.subscription.delete({
       where: { id: subscriptionId },

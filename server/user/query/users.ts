@@ -16,9 +16,6 @@ const userFirebaseAxiosInstance = axios.create({
 
 // Fetch functions
 async function getUserFirebase(): Promise<User> {
-  //delay
-  await new Promise((resolve) => setTimeout(resolve, 2_000));
-  
   const res: AxiosResponse<User, any> = await userFirebaseAxiosInstance.get<User>('.json');
   return res.data;
 }

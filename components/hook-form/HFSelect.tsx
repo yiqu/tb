@@ -5,6 +5,7 @@ import { Control } from 'react-hook-form';
 import { cn } from '@/lib/utils';
 
 import { Button } from '../ui/button';
+import { Skeleton } from '../ui/skeleton';
 import { Select, SelectItem, SelectValue, SelectContent, SelectTrigger } from '../ui/select';
 import { FormItem, FormField, FormLabel, FormControl, FormMessage, FormDescription } from '../ui/form';
 
@@ -42,6 +43,7 @@ export default function HFSelect({
   formItemClassName,
   onChanged,
 }: HFSelectProps) {
+  const hasOptions = options.length > 0;
   return (
     <FormField
       control={ control }
@@ -82,13 +84,17 @@ export default function HFSelect({
                 <SelectContent>
                   { isLoading ?
                     <ListLoading />
-                  : options.map((opt) => {
+                  : hasOptions ?
+                    options.map((opt) => {
                       return (
                         <SelectItem key={ opt.value } value={ opt.value }>
                           { opt.label }
                         </SelectItem>
                       );
                     })
+                  : <SelectItem value="No options" className="text-muted-foreground" disabled>
+                    No options
+                  </SelectItem>
                   }
                 </SelectContent>
               </Select>
@@ -117,5 +123,11 @@ export default function HFSelect({
 }
 
 function ListLoading() {
-  return <div>Loading...</div>;
+  return (
+    <div className="flex w-full flex-col gap-y-2 py-2">
+      <Skeleton className="h-8 w-full" />
+      <Skeleton className="h-8 w-full" />
+      <Skeleton className="h-8 w-full" />
+    </div>
+  );
 }

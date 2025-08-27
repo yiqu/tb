@@ -1,10 +1,54 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
+
+import { Skeleton } from '@/components/ui/skeleton';
+import DisplayCard from '@/shared/components/DisplayCard';
+import { CardFooter, CardContent } from '@/components/ui/card';
+import { SubscriptionOriginal } from '@/models/subscriptions/subscriptions.model';
+import { getAllSubscriptionsCached } from '@/server/subscriptions/subscriptions.server';
+
+import AddNewEntityHeader from '../_components/AddNewEntityHeader';
+import AddBillIsPaid from '../_components/form-fields/AddBillIsPaid';
+import AddBillDueDate from '../_components/form-fields/AddBillDueDate';
+import AddNewDueBillActions from '../_components/AddNewDueBillActions';
+import AddNewBillFormWrapper from '../_components/AddNewBillFormWrapper';
+import AddBillCurrency from '../_components/form-fields/AddBillCurrency';
+import AddBillIsReimbursed from '../_components/form-fields/AddBillIsReimbursed';
+import AddBillSubscriptionSelect from '../_components/form-fields/AddBillSubscriptionSelect';
 
 export const metadata: Metadata = {
   title: 'Add New Bill',
-  description: 'Add a new bill.',
+  description: 'Add a new due bill.',
 };
 
 export default function AddNewBillPage() {
-  return <div>Add New Bill</div>;
+  const allSubscriptionsPromise: Promise<SubscriptionOriginal[]> = getAllSubscriptionsCached();
+
+  return (
+    <div className="flex w-full flex-col items-start justify-start gap-y-9">
+      <AddNewEntityHeader type="bill" />
+      <DisplayCard className="w-full">
+        <CardContent>
+          <AddNewBillFormWrapper>
+            <div className="flex w-full flex-col items-start justify-start gap-y-4">
+              <Suspense fallback={ <AddBillSubscriptionSelectSuspense /> }>
+                <AddBillSubscriptionSelect allSubscriptionsPromise={ allSubscriptionsPromise } />
+              </Suspense>
+              <AddBillDueDate />
+              <AddBillCurrency />
+              <AddBillIsPaid />
+              <AddBillIsReimbursed />
+            </div>
+          </AddNewBillFormWrapper>
+        </CardContent>
+        <CardFooter>
+          <AddNewDueBillActions />
+        </CardFooter>
+      </DisplayCard>
+    </div>
+  );
+}
+
+function AddBillSubscriptionSelectSuspense() {
+  return <Skeleton className="h-9 w-full" />;
 }

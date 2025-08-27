@@ -376,8 +376,6 @@ export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubsc
 }
 
 export async function addBillDue(subscriptionId: string, payload: z.infer<typeof billAddableSchema>): Promise<BillDueWithSubscription> {
-  // delay
-  await new Promise((resolve) => setTimeout(resolve, 3_000));
   const billCost: number = Number.parseFloat(`${payload.cost}`);
 
   try {

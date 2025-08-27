@@ -15,6 +15,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandItem, CommandList, CommandEmpty, CommandGroup, CommandInput } from '@/components/ui/command';
 
+import { FormLabel } from '../ui/form';
+
 export type Autocomplete2Option = { label: string; value: string };
 
 interface BaseAutocompleteProps {
@@ -27,6 +29,7 @@ interface BaseAutocompleteProps {
   className?: string;
   labelClassName?: string;
   badgeTextMaxLength?: number;
+  label?: string;
 }
 
 interface ControlledAutocompleteProps extends BaseAutocompleteProps {
@@ -50,7 +53,7 @@ type AutocompleteInputProps = ControlledAutocompleteProps | UncontrolledAutocomp
 function AutocompleteInputBase({
   options,
   placeholder = 'Select items...',
-  emptyMessage = 'No results found.',
+  emptyMessage = 'No options found.',
   multi = true,
   isLoading = false,
   searchBy = 'label',
@@ -61,6 +64,7 @@ function AutocompleteInputBase({
   onRemove,
   onClearAll,
   badgeTextMaxLength,
+  label,
 }: BaseAutocompleteProps & {
   currentValues: string[];
   onSelect: (value: string) => void;
@@ -103,7 +107,13 @@ function AutocompleteInputBase({
   };
 
   return (
-    <div className="flex w-full flex-col gap-1.5">
+    <div className="flex w-full flex-col gap-y-2">
+      { label ?
+        <FormLabel className={ `
+          font-normal text-gray-600
+          dark:text-gray-300
+        ` }>{ label }</FormLabel>
+      : null }
       <Popover open={ open } onOpenChange={ setOpen }>
         <PopoverTrigger asChild>
           <Button variant="outline" role="combobox" aria-expanded={ open } className={ cn('w-full justify-between bg-transparent', className) }>
@@ -184,15 +194,13 @@ function AutocompleteInputBase({
             <CommandInput placeholder="Search..." value={ inputValue } onValueChange={ setInputValue } />
             <CommandList ref={ listRef }>
               { isLoading ?
-                <div className="space-y-1 p-2">
-                  <Skeleton className="h-8 w-full rounded" />
-                  <Skeleton className="h-8 w-full rounded" />
+                <div className="flex flex-col gap-y-2 p-2">
                   <Skeleton className="h-8 w-full rounded" />
                   <Skeleton className="h-8 w-full rounded" />
                   <Skeleton className="h-8 w-full rounded" />
                 </div>
               : <>
-                <CommandEmpty>{ emptyMessage }</CommandEmpty>
+                <CommandEmpty className="">{ emptyMessage }</CommandEmpty>
                 <CommandGroup className="">
                   { options.map((option) => {
                       return (

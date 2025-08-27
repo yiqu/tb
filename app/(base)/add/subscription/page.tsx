@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function AddNewSubscriptionPage() {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-9">
-      <AddNewEntityHeader />
+      <AddNewEntityHeader type="subscription" />
       <DisplayCard className="w-full">
         <CardContent>
           <AddSubscriptionDialogContentFormWrapper redirectToNewSubscriptionAfterCreation>

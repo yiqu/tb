@@ -39,6 +39,7 @@ export default function AddBillDueDate() {
             addSuffix={ false }
             postFixText={ isDueInFuture ? '' : 'past due!' }
             prefixText={ isDueInFuture ? 'Due in' : '' }
+            clientLoadingClassName="w-[10rem]"
           />
         </div>
       : null }

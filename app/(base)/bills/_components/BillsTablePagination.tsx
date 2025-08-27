@@ -36,8 +36,7 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
   const hasSearchParams: boolean = isSearchParamsExist(searchParams);
 
   return (
-    <div className={ `sticky top-[7.2rem] z-50 flex w-full flex-row items-center justify-between bg-background py-2` }>
-      <div>{ `` }</div>
+    <div className={ `sticky top-[7.2rem] z-20 flex w-full flex-row items-center justify-between bg-background py-2` }>
       <div className="flex flex-row items-center justify-end gap-x-4">
         { hasSearchParams ?
           <>
