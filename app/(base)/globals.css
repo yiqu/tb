@@ -123,3 +123,8 @@ html:not(.dark) [data-hide-on-theme='light'] {
   box-shadow: 0 5px 30px #06060659;
 }
 
+/* .app-toast-container {
+  .app-toast {
+    padding: 0 !important;
+  }
+} */

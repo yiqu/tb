@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { useRef, useState, useEffect } from 'react';
 import { useOptimistic, useTransition } from 'react';
-import { Plus, Calendar, ChevronRight, CalendarSync } from 'lucide-react';
+import { Plus, Calendar, ReceiptText, ChevronRight } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import useSideBarState from '@/hooks/useSideBarState';
@@ -116,18 +116,18 @@ function AddNewItemsList() {
   return (
     <>
       <SidebarMenuSubItem>
-        <SidebarMenuSubButtonParentWithActive url="subscription">
-          <Link href={ '/add/subscription' } prefetch className="flex items-center">
-            <CalendarSync />
-            <span>{ 'Subscription' }</span>
-          </Link>
-        </SidebarMenuSubButtonParentWithActive>
-      </SidebarMenuSubItem>
-      <SidebarMenuSubItem>
         <SidebarMenuSubButtonParentWithActive url="bill">
           <Link href={ '/add/bill' } prefetch className="flex items-center">
             <Calendar />
             <span>{ 'Due Bill' }</span>
+          </Link>
+        </SidebarMenuSubButtonParentWithActive>
+      </SidebarMenuSubItem>
+      <SidebarMenuSubItem>
+        <SidebarMenuSubButtonParentWithActive url="subscription">
+          <Link href={ '/add/subscription' } prefetch className="flex items-center">
+            <ReceiptText />
+            <span>{ 'Subscription' }</span>
           </Link>
         </SidebarMenuSubButtonParentWithActive>
       </SidebarMenuSubItem>

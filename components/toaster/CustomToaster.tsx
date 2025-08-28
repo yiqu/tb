@@ -19,14 +19,14 @@ function CustomToaster() {
           duration: 11_000,
         },
         style: {
-          maxWidth: '28rem',
+          maxWidth: '40rem',
         },
       } }
     >
       { (t) => (
         <ToastBar toast={ t }>
           { ({ icon, message }) => (
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-between font-sans">
               <div className="flex flex-row items-center justify-start">
                 { icon }
                 <div>{ message }</div>

@@ -14,7 +14,7 @@ export default function BreadcrumbCopyUrl() {
   const isClient = useIsClient();
 
   if (!isClient) {
-    return <Skeleton className="h-4 w-4 rounded-full" />;
+    return <Skeleton className="size-6 rounded-full" />;
   }
 
   const url = `${window.location.protocol}//${window.location.host}${pathName}${searchParams.size > 0 ? `?${searchParams.toString()}` : ''}`;

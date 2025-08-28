@@ -12,9 +12,13 @@ type BillsTableViewState = {
   lastEdited: number | null;
 
   // Actions
-  setBillDueIdBeingEdited: (billDueId: string) => void;
+  setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
   clearBillDueIdBeingEdited: (billDueId: string) => void;
   setLastEdited: (lastEdited: number) => void;
+
+  actions: {
+    setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
+  };
 };
 
 type BillsTableViewPersist = PersistOptions<BillsTableViewState, Omit<BillsTableViewState, 'setBillDueIdBeingEdited' | 'setLastEdited'>>;
@@ -26,12 +30,25 @@ const billsTableViewStoreBase = create<BillsTableViewState>()(
       billDueIdBeingEdited: {},
       lastEdited: null,
 
-      setBillDueIdBeingEdited: (billDueId: string) => {
+      actions: {
+        setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => {
+          set((state: BillsTableViewState) => {
+            return {
+              billDueIdBeingEdited: {
+                ...state.billDueIdBeingEdited,
+                [billDueId]: setEmpty ? false : true,
+              },
+            };
+          });
+        },
+      },
+
+      setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => {
         set((state: BillsTableViewState) => {
           return {
             billDueIdBeingEdited: {
               ...state.billDueIdBeingEdited,
-              [billDueId]: true,
+              [billDueId]: setEmpty ? false : true,
             },
           };
         });
@@ -81,5 +98,8 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_store: S) =
 };
 
 const billsTableViewStore = createSelectors(billsTableViewStoreBase);
+
+// Non-selectors want to be exported for use in other files
+export const useBillStoreActions = () => billsTableViewStoreBase((state) => state.actions);
 
 export default billsTableViewStore;

@@ -35,8 +35,8 @@ export const billAddableSchema = z.object({
     if (Number.isNaN(num)) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Cost is not a number' });
     }
-    if (num < 0) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Cost can not be less than 0' });
+    if (num <= 0) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Cost can not be less than or equal to 0' });
     }
   }),
 });

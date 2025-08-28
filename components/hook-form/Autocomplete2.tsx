@@ -32,6 +32,9 @@ interface BaseAutocompleteProps {
   label?: string;
   hasError?: boolean;
   errorMessage?: string;
+  autoOpenOnMount?: boolean;
+  autoOpenDelayMs?: number;
+  reopenKey?: string | number;
 }
 
 interface ControlledAutocompleteProps extends BaseAutocompleteProps {
@@ -54,7 +57,7 @@ type AutocompleteInputProps = ControlledAutocompleteProps | UncontrolledAutocomp
 
 function AutocompleteInputBase({
   options,
-  placeholder = 'Select items...',
+  placeholder = 'Select an option',
   emptyMessage = 'No options found.',
   multi = true,
   isLoading = false,
@@ -69,6 +72,9 @@ function AutocompleteInputBase({
   label,
   hasError,
   errorMessage,
+  autoOpenOnMount,
+  autoOpenDelayMs,
+  reopenKey,
 }: BaseAutocompleteProps & {
   currentValues: string[];
   onSelect: (value: string) => void;
@@ -79,6 +85,7 @@ function AutocompleteInputBase({
   const [inputValue, setInputValue] = React.useState('');
   const listRef = React.useRef<HTMLDivElement>(null);
   const wasOpenRef = React.useRef(false);
+  const hasAutoOpenedRef = React.useRef(false);
 
   // Effect to scroll to selected item when dropdown opens
   React.useEffect(() => {
@@ -96,6 +103,21 @@ function AutocompleteInputBase({
     }
     wasOpenRef.current = open;
   }, [open, currentValues, isLoading]);
+
+  // Reset auto-open guard when reopenKey changes
+  React.useEffect(() => {
+    hasAutoOpenedRef.current = false;
+  }, [reopenKey]);
+
+  // Auto open on mount or when reopenKey changes if requested
+  React.useEffect(() => {
+    if (autoOpenOnMount && !hasAutoOpenedRef.current) {
+      hasAutoOpenedRef.current = true;
+      const delay = typeof autoOpenDelayMs === 'number' ? autoOpenDelayMs : 200;
+      const t = setTimeout(() => setOpen(true), delay);
+      return () => clearTimeout(t);
+    }
+  }, [autoOpenOnMount, autoOpenDelayMs, reopenKey]);
 
   const handleSelect = (value: string) => {
     onSelect(value);
@@ -125,58 +147,56 @@ function AutocompleteInputBase({
             role="combobox"
             aria-expanded={ open }
             aria-invalid={ hasError ? true : undefined }
-            className={ cn(
-              'w-full justify-between bg-transparent',
-              hasError && `
-                border-red-500
-                focus-visible:ring-red-500
-              `,
-              className,
-            ) }
+            className={ cn('w-full justify-between bg-transparent', hasError && `
+              border-red-500 font-normal
+              focus-visible:ring-red-500
+            `, className) }
           >
             <div className="flex flex-wrap items-center gap-1.5">
               { currentValues.length === 0 ?
                 <span className={ cn('text-muted-foreground/50', labelClassName) }>{ placeholder }</span>
               : multi ?
-                currentValues.map((value) => {
-                  const option = options.find((opt) => opt.value === value);
-                  let labelDisplay: string | undefined = option?.label;
-                  if (badgeTextMaxLength !== undefined) {
-                    if ((option?.label ?? '')?.length > badgeTextMaxLength) {
-                      labelDisplay = option?.label?.slice(0, badgeTextMaxLength) + '..';
-                    } else {
-                      labelDisplay = option?.label;
+                <>
+                  { currentValues.map((value) => {
+                    const option = options.find((opt) => opt.value === value);
+                    let labelDisplay: string | undefined = option?.label;
+                    if (badgeTextMaxLength !== undefined) {
+                      if ((option?.label ?? '')?.length > badgeTextMaxLength) {
+                        labelDisplay = option?.label?.slice(0, badgeTextMaxLength) + '..';
+                      } else {
+                        labelDisplay = option?.label;
+                      }
                     }
-                  }
-                  return (
-                    <Badge key={ value } variant="secondary" className="flex items-center gap-1">
-                      { labelDisplay }
-                      <div
-                        className={ `
-                          flex h-3 w-3 cursor-pointer items-center justify-center rounded-sm
-                          hover:bg-muted-foreground/20
-                        ` }
-                        onClick={ (e) => {
-                          e.stopPropagation();
-                          onRemove(value);
-                        } }
-                        role="button"
-                        tabIndex={ 0 }
-                        aria-label={ `Remove ${option?.label}` }
-                        onKeyDown={ (e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
+                    return (
+                      <Badge key={ value } variant="secondary" className="flex items-center gap-1">
+                        { labelDisplay }
+                        <div
+                          className={ `
+                            flex h-3 w-3 cursor-pointer items-center justify-center rounded-sm
+                            hover:bg-muted-foreground/20
+                          ` }
+                          onClick={ (e) => {
                             e.stopPropagation();
                             onRemove(value);
-                          }
-                        } }
-                      >
-                        <X className="size-3" />
-                      </div>
-                    </Badge>
-                  );
-                })
-              : <span>{ getSingleSelectedLabel() }</span> }
+                          } }
+                          role="button"
+                          tabIndex={ 0 }
+                          aria-label={ `Remove ${option?.label}` }
+                          onKeyDown={ (e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              onRemove(value);
+                            }
+                          } }
+                        >
+                          <X className="size-3" />
+                        </div>
+                      </Badge>
+                    );
+                  }) }
+                </>
+              : <span className="font-normal">{ getSingleSelectedLabel() }</span> }
             </div>
             <div className="flex items-end">
               { currentValues.length > 0 ?
@@ -249,9 +269,9 @@ function AutocompleteInputBase({
           </Command>
         </PopoverContent>
       </Popover>
-      { hasError && errorMessage ? (
-        <p className="text-sm text-red-600">{ errorMessage }</p>
-      ) : null }
+      { hasError && errorMessage ?
+        <p className="text-sm text-destructive">{ errorMessage }</p>
+      : null }
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import z from 'zod';
 import { use } from 'react';
+import { usePathname } from 'next/navigation';
 import { useFormContext } from 'react-hook-form';
 
 import { billAddableSchema } from '@/validators/bills/bill.schema';
@@ -14,6 +15,7 @@ export default function AddBillSubscriptionSelect({
   allSubscriptionsPromise: Promise<SubscriptionOriginal[]>;
 }) {
   const subscriptions: SubscriptionOriginal[] = use(allSubscriptionsPromise);
+  const pathname = usePathname();
 
   const options = subscriptions.map((subscription) => ({
     label: subscription.name,
@@ -34,6 +36,8 @@ export default function AddBillSubscriptionSelect({
         name="subscriptionId"
         control={ control }
         label="Subscription"
+        autoOpenOnMount
+        reopenKey={ pathname }
       />
     </>
   );
