@@ -1,7 +1,7 @@
 {
-  "name": "techbudget",
-  "version": "0.1.0",
-  "private": true,
+  "name": "subscription-manager",
+  "version": "1.0.0",
+  "private": false,
   "scripts": {
     "dev2": "next dev",
     "dev": "next dev --turbopack",
