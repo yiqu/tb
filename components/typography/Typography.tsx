@@ -64,7 +64,7 @@ const typographyVariants = cva('scroll-m-20 tracking-tight', {
 
 export interface TypographyProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof typographyVariants> {
   as?: React.ElementType;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export default function Typography({ children, variant = 'body1', as, className, ...props }: TypographyProps) {

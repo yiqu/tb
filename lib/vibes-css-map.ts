@@ -204,38 +204,36 @@ const robotoMono = Roboto_Mono({
 });
 
 const VIBE_CSS_MAP: Record<AppVibe, string> = {
-  vintage: '/vibes/vintage/tw.css',
-  vercel: '/vibes/vercel/tw.css',
-  t3: '/vibes/t3/tw.css',
-  grove: '/vibes/grove/tw.css',
-  doom64: '/vibes/doom/tw.css',
-  claude: '/vibes/claude/tw.css',
-  'bubble-gum': '/vibes/bubble-gum/tw.css',
-  'neo-brutalism': '/vibes/brutalism/tw.css',
   'amber-minimal': '/vibes/amber-minimal/tw.css',
   'amethyst-haze': '/vibes/amethyst-haze/tw.css',
+  'bubble-gum': '/vibes/bubble-gum/tw.css',
   caffeine: '/vibes/caffeine/tw.css',
   candy: '/vibes/candy/tw.css',
+  claude: '/vibes/claude/tw.css',
   claymorphism: '/vibes/claymorphism/tw.css',
+  cyberpunk: '/vibes/cyberpunk/tw.css',
+  doom64: '/vibes/doom/tw.css',
+  elegant: '/vibes/elegant/tw.css',
+  grove: '/vibes/grove/tw.css',
+  'mocha-mousse': '/vibes/mocha-mousse/tw.css',
   nature: '/vibes/nature/tw.css',
+  'neo-brutalism': '/vibes/brutalism/tw.css',
   notebook: '/vibes/notebook/tw.css',
+  'pastel-dreams': '/vibes/pastel-dreams/tw.css',
+  'retro-arcade': '/vibes/retro-arcade/tw.css',
+  softpop: '/vibes/softpop/tw.css',
   'solar-dusk': '/vibes/solar-dusk/tw.css',
   supabase: '/vibes/supabase/tw.css',
-  'pastel-dreams': '/vibes/pastel-dreams/tw.css',
-  softpop: '/vibes/softpop/tw.css',
-  'retro-arcade': '/vibes/retro-arcade/tw.css',
-  'mocha-mousse': '/vibes/mocha-mousse/tw.css',
-  elegant: '/vibes/elegant/tw.css',
-  cyberpunk: '/vibes/cyberpunk/tw.css',
+  t3: '/vibes/t3/tw.css',
+  vercel: '/vibes/vercel/tw.css',
+  vintage: '/vibes/vintage/tw.css',
 };
 
-const FONT_CSS_MAP: Record<string, string> = {
+const FONT_CSS_MAP: Record<AppFont, string> = {
   'architects-daughter': '/font-css/architects-daughter/tw.css',
-  geist: '/font-css/geist/tw.css',
-  poppins: '/font-css/poppins/tw.css',
-  oxanium: '/font-css/oxanium/tw.css',
   'dm-sans': '/font-css/dm-sans/tw.css',
   'fira-code': '/font-css/fira-code/tw.css',
+  geist: '/font-css/geist/tw.css',
   'ibm-plex-mono': '/font-css/ibm-plex-mono/tw.css',
   inter: '/font-css/inter/tw.css',
   'jetbrains-mono': '/font-css/jetbrains-mono/tw.css',
@@ -245,16 +243,39 @@ const FONT_CSS_MAP: Record<string, string> = {
   montserrat: '/font-css/montserrat/tw.css',
   'open-sans': '/font-css/open-sans/tw.css',
   outfit: '/font-css/outfit/tw.css',
+  oxanium: '/font-css/oxanium/tw.css',
+  poppins: '/font-css/poppins/tw.css',
   'roboto-mono': '/font-css/roboto-mono/tw.css',
   'source-code-pro': '/font-css/source-code-pro/tw.css',
   'space-mono': '/font-css/space-mono/tw.css',
+};
+
+export const FONT_CSS_CLASSNAME: Record<AppFont, string> = {
+  'architects-daughter': architectsDaughter.className,
+  'dm-sans': dmSans.className,
+  'fira-code': firaCode.className,
+  geist: geistSans.className,
+  'ibm-plex-mono': ibmPlexMono.className,
+  inter: inter.className,
+  'jetbrains-mono': jetBrainsMono.className,
+  'libre-baskerville': libreBaskerville.className,
+  lora: lora.className,
+  merriweather: merriweather.className,
+  montserrat: montserrat.className,
+  'open-sans': openSans.className,
+  outfit: outfit.className,
+  oxanium: oxanium.className,
+  poppins: poppins.className,
+  'roboto-mono': robotoMono.className,
+  'source-code-pro': sourceCodePro.className,
+  'space-mono': spaceMono.className,
 };
 
 export function getVibeStylesheetHref(vibe: AppVibe): string {
   return VIBE_CSS_MAP[vibe] ?? VIBE_CSS_MAP.vercel;
 }
 
-export function getFontStylesheetHref(font: string | undefined): string {
+export function getFontStylesheetHref(font: AppFont | undefined): string {
   return FONT_CSS_MAP[font ?? ''] ?? '';
 }
 

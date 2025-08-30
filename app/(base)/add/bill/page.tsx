@@ -7,6 +7,7 @@ import { CardFooter, CardContent } from '@/components/ui/card';
 import { SubscriptionOriginal } from '@/models/subscriptions/subscriptions.model';
 import { getAllSubscriptionsCached } from '@/server/subscriptions/subscriptions.server';
 
+import AddedBillDues from '../_components/AddedBillDues';
 import AddNewEntityHeader from '../_components/AddNewEntityHeader';
 import AddBillIsPaid from '../_components/form-fields/AddBillIsPaid';
 import AddBillDueDate from '../_components/form-fields/AddBillDueDate';
@@ -15,7 +16,6 @@ import AddNewBillFormWrapper from '../_components/AddNewBillFormWrapper';
 import AddBillCurrency from '../_components/form-fields/AddBillCurrency';
 import AddBillIsReimbursed from '../_components/form-fields/AddBillIsReimbursed';
 import AddBillSubscriptionSelect from '../_components/form-fields/AddBillSubscriptionSelect';
-import AddBillConsecutiveAddStandalone from '../_components/form-fields/AddBillConsecutiveAddStandalone';
 
 export const metadata: Metadata = {
   title: 'Add New Bill',
@@ -39,7 +39,6 @@ export default function AddNewBillPage() {
               <AddBillCurrency />
               <AddBillIsPaid />
               <AddBillIsReimbursed />
-              <AddBillConsecutiveAddStandalone />
             </div>
           </AddNewBillFormWrapper>
         </CardContent>
@@ -47,6 +46,8 @@ export default function AddNewBillPage() {
           <AddNewDueBillActions />
         </CardFooter>
       </DisplayCard>
+
+      <AddedBillDues />
     </div>
   );
 }

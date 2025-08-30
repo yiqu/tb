@@ -19,3 +19,19 @@ export type SortDataUpsertable = {
 };
 
 export type SortDataPageId = (typeof SORT_DATA_PAGE_IDS)[keyof typeof SORT_DATA_PAGE_IDS];
+
+export const DEFAULT_SORT_DATA: SortDataModel = {
+  id: '',
+  pageId: '',
+  sortDirection: 'desc',
+  sortField: 'dateAdded',
+  dateAdded: new Date(),
+  updatedAt: null,
+};
+
+export const getSortDataWithPageId = (pageId: SortDataPageId): SortDataModel => {
+  return {
+    ...DEFAULT_SORT_DATA,
+    pageId,
+  };
+};

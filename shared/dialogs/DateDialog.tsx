@@ -1,13 +1,13 @@
 import { DateTime } from 'luxon';
-import { connection } from 'next/server';
+//import { connection } from 'next/server';
 import { formatDistanceToNow } from 'date-fns';
 
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import Typography from '@/components/typography/Typography';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 
-export default async function DateDialogContent({ dateString, isIso = false }: { dateString: string; isIso?: boolean }) {
-  await connection();
+export default function DateDialogContent({ dateString, isIso = false }: { dateString: string; isIso?: boolean }) {
+  // await connection();
   const dateDisplay =
     isIso ?
       DateTime.fromJSDate(new Date(dateString)).setZone(EST_TIME_ZONE).toLocaleString(DateTime.DATETIME_MED)

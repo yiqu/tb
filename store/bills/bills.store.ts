@@ -1,7 +1,11 @@
 /* eslint-disable no-unused-vars */
+import z from 'zod';
 import { create } from 'zustand';
 import { StoreApi, UseBoundStore } from 'zustand';
 import { persist, PersistOptions, createJSONStorage } from 'zustand/middleware';
+
+import { billAddableSchema } from '@/validators/bills/bill.schema';
+import { BillDueWithSubscription } from '@/models/bills/bills.model';
 
 export type BillDueIdBeingEdited = {
   [key: string]: boolean;
@@ -10,6 +14,7 @@ export type BillDueIdBeingEdited = {
 type BillsTableViewState = {
   billDueIdBeingEdited: BillDueIdBeingEdited;
   lastEdited: number | null;
+  recentlyAddedBillDues: BillDueWithSubscription[];
 
   // Actions
   setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
@@ -18,6 +23,7 @@ type BillsTableViewState = {
 
   actions: {
     setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
+    appendRecentlyAddedBillDues: (billDues: BillDueWithSubscription) => void;
   };
 };
 
@@ -29,8 +35,17 @@ const billsTableViewStoreBase = create<BillsTableViewState>()(
     (set, get) => ({
       billDueIdBeingEdited: {},
       lastEdited: null,
+      recentlyAddedBillDues: [],
 
       actions: {
+        appendRecentlyAddedBillDues: (billDues: BillDueWithSubscription) => {
+          set((state: BillsTableViewState) => {
+            return {
+              recentlyAddedBillDues: [billDues, ...state.recentlyAddedBillDues],
+            };
+          });
+        },
+
         setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => {
           set((state: BillsTableViewState) => {
             return {
@@ -101,5 +116,6 @@ const billsTableViewStore = createSelectors(billsTableViewStoreBase);
 
 // Non-selectors want to be exported for use in other files
 export const useBillStoreActions = () => billsTableViewStoreBase((state) => state.actions);
+export const useGetRecentlyAddedBillDues = () => billsTableViewStoreBase((state) => state.recentlyAddedBillDues);
 
 export default billsTableViewStore;

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { DateTime } from 'luxon';
+import { Suspense } from 'react';
 import startCase from 'lodash/startCase';
 
 import { TableCell } from '@/components/ui/table';
@@ -140,7 +141,9 @@ export default function BillsTableCell({
             </div>
           </PopoverTrigger>
           <PopoverContent>
-            <DateDialogContent dateString={ billDue.dueDate } />
+            <Suspense>
+              <DateDialogContent dateString={ billDue.dueDate } />
+            </Suspense>
           </PopoverContent>
         </Popover>
       </TableCell>

@@ -16,7 +16,7 @@ import { billAddableSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 
 export default function AddNewBillFormWrapper({ children }: { children: ReactNode }) {
-  const { setBillDueIdBeingEdited } = useBillStoreActions();
+  const { setBillDueIdBeingEdited, appendRecentlyAddedBillDues } = useBillStoreActions();
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const currentDateLuxonMidDay12pm: string = currentDateLuxon.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toMillis().toString();
 
@@ -49,13 +49,14 @@ export default function AddNewBillFormWrapper({ children }: { children: ReactNod
       }),
       {
         loading: 'Adding bill due...',
-        success: (data: BillDueWithSubscription) => {
+        success: (resultData: BillDueWithSubscription) => {
           const dateFormat = DateTime.fromMillis(Number.parseInt(data.dueDate)).toLocaleString(DateTime.DATETIME_SHORT);
           confetti({
             particleCount: 80,
           });
           setBillDueIdBeingEdited('new-bill-due', true);
-          return `Added bill due for ${data.subscription.name} on ${dateFormat}.`;
+          appendRecentlyAddedBillDues(resultData);
+          return `Added bill due for ${resultData.subscription.name} on ${dateFormat}.`;
         },
         error: (error: Error) => {
           setBillDueIdBeingEdited('new-bill-due', true);

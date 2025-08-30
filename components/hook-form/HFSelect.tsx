@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { Control } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
+import { FONT_CSS_CLASSNAME } from '@/lib/vibes-css-map';
 
 import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
@@ -73,7 +74,7 @@ export default function HFSelect({
               <Select onValueChange={ handleOnValueChange } defaultValue={ field.value } value={ field.value } disabled={ disabled }>
                 <FormControl className="w-full">
                   <SelectTrigger
-                    className={ cn({
+                    className={ cn('cursor-pointer', {
                       'pr-10': field.value,
                       'pl-10': startAdornment,
                     }) }
@@ -87,7 +88,7 @@ export default function HFSelect({
                   : hasOptions ?
                     options.map((opt) => {
                       return (
-                        <SelectItem key={ opt.value } value={ opt.value }>
+                        <SelectItem key={ opt.value } value={ opt.value } className={ `${FONT_CSS_CLASSNAME[opt.value]}` }>
                           { opt.label }
                         </SelectItem>
                       );
