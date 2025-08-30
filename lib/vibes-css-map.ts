@@ -109,7 +109,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta-sans',
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
-  preload: false,
+  preload: true,
 });
 
 const oxanium = Oxanium({
