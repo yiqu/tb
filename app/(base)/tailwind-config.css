@@ -302,13 +302,13 @@
 }
 
 @layer app-sidebar-menu {
-  .app-sidebar-group {
-    a[data-active='true'] {
-      @apply bg-transparent font-bold text-amber-700;
-    }
-    button[data-active='true'] {
-      @apply bg-transparent font-bold text-amber-700;
-    }
+  .app-sidebar-menu a[data-active='true'] {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  .app-sidebar-menu a[data-active='true']:hover {
+    background-color: color-mix(in oklch, var(--primary) 90%, transparent);
   }
 }
 

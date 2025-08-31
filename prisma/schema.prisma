@@ -16,32 +16,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum EntityType {
+  SUBSCRIPTION
+  BILL_DUE
+}
+
 model Subscription {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
-  name              String    @unique
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
+  name              String           @unique
   description       String?
   url               String?
-  approved          Boolean   @default(false)
-  signed            Boolean   @default(false)
-  dateAdded         DateTime  @default(now())
-  updatedAt         DateTime? @updatedAt
-  cost              Float     @default(0)
-  billCycleInDays   Int?      @default(0)
-  billCycleDuration String    @default("yearly") // yearly, monthly
-  billStartDate     String?   @default("2024-01-01")
+  approved          Boolean          @default(false)
+  signed            Boolean          @default(false)
+  dateAdded         DateTime         @default(now())
+  updatedAt         DateTime?        @updatedAt
+  cost              Float            @default(0)
+  billCycleInDays   Int?             @default(0)
+  billCycleDuration String           @default("yearly") // yearly, monthly
+  billStartDate     String?          @default("2024-01-01")
   billDues          BillDue[]
+  favorites         FavoriteEntity[]
+
+  @@index([approved])
+  @@index([signed])
+  @@index([dateAdded(sort: Desc)])
 }
 
 model BillDue {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
-  subscriptionId String       @db.ObjectId
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  subscription   Subscription     @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String           @db.ObjectId
   dueDate        String
-  paid           Boolean      @default(false)
-  reimbursed     Boolean      @default(false)
+  paid           Boolean          @default(false)
+  reimbursed     Boolean          @default(false)
   cost           Float?
-  dateAdded      DateTime     @default(now())
-  updatedAt      DateTime?    @updatedAt
+  dateAdded      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
+  favorites      FavoriteEntity[]
+
+  @@index([subscriptionId, paid, dueDate(sort: Asc)])
+  @@index([paid, dueDate(sort: Asc)])
+  @@index([dueDate(sort: Desc)])
+}
+
+model FavoriteEntity {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  entityType     EntityType
+  url            String?
+  billDue        BillDue?      @relation(fields: [billDueId], references: [id])
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  billDueId      String?       @db.ObjectId
+  subscriptionId String?       @db.ObjectId
+  dateAdded      DateTime      @default(now())
+  updatedAt      DateTime?     @updatedAt
+
+  @@index([billDueId])
+  @@index([subscriptionId])
+  @@index([entityType])
+  @@index([dateAdded(sort: Desc)])
 }
 
 model SortData {
@@ -51,6 +84,8 @@ model SortData {
   sortField     String
   dateAdded     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
+
+  @@index([pageId])
 }
 
 model PaginationData {
@@ -60,6 +95,8 @@ model PaginationData {
   pageSize   Int       @default(10)
   dateAdded  DateTime  @default(now())
   updatedAt  DateTime? @updatedAt
+
+  @@index([pageId])
 }
 
 model UserProfile {
@@ -75,4 +112,6 @@ model UserProfile {
   dateAdded DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   isAdmin   Boolean   @default(false)
+
+  @@index([email])
 }

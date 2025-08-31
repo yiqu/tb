@@ -19,7 +19,7 @@ export const experimental_ppr = true;
 
 export default function SubscriptionDetailsLayout({ children, params }: SubscriptionDetailsLayoutProps) {
   return (
-    <div id="subscription-details-layout-parent" className="flex w-full flex-col items-start justify-start gap-y-9">
+    <div id="subscription-details-layout-parent" className="flex w-full flex-col items-start justify-start gap-y-3">
       <Suspense fallback={ <HeaderSkeleton /> }>
         <SubscriptionDetailsHeader subscriptionPromise={ params } />
       </Suspense>

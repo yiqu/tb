@@ -21,7 +21,7 @@ export default function ResourcesDropdownMenuButton() {
           <MessageCircleQuestion />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-50" align="end">
+      <DropdownMenuContent className="min-w-50" align="end" sideOffset={ 16 }>
         <DropdownMenuLabel>Resources</DropdownMenuLabel>
 
         <DropdownMenuSeparator />

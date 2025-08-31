@@ -5,7 +5,7 @@ import SubscriptionDetailsMetadataFooterCurrentYearBills from './SubscriptionDet
 
 export default function SubscriptionDetailsMetadataFooter({ subscription }: { subscription: SubscriptionWithBillDues }) {
   return (
-    <div className="flex w-full flex-row items-center justify-between gap-x-2">
+    <div className="flex w-full flex-row items-start justify-between gap-x-2">
       <SubscriptionDetailsMetadataFooterCurrentYearBills subscription={ subscription } />
       <SubscriptionDetailsMetadataFooterTotalBills subscription={ subscription } />
     </div>
