@@ -50,8 +50,8 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
     }
 
     const nextSortData: SortData = getNextSortDirection(optimisticSortData, columnId as SortField);
+    upsertOptimisticSortData(nextSortData);
     startTransition(() => {
-      upsertOptimisticSortData(nextSortData);
       const sortDataToUpdate: SortDataUpsertable = {
         id: sortData?.id ?? undefined,
         pageId,

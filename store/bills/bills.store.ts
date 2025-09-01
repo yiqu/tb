@@ -24,6 +24,7 @@ type BillsTableViewState = {
   actions: {
     setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
     appendRecentlyAddedBillDues: (billDues: BillDueWithSubscription) => void;
+    setLastEditedTimestamp: (lastEdited: number) => void;
   };
 };
 
@@ -53,6 +54,14 @@ const billsTableViewStoreBase = create<BillsTableViewState>()(
                 ...state.billDueIdBeingEdited,
                 [billDueId]: setEmpty ? false : true,
               },
+            };
+          });
+        },
+
+        setLastEditedTimestamp: (lastEdited: number) => {
+          set((state: BillsTableViewState) => {
+            return {
+              lastEdited: lastEdited,
             };
           });
         },

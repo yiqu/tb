@@ -8,8 +8,8 @@ import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
-import { CACHE_TAG_SORT_DATA_PREFIX } from '@/constants/constants';
-import { SortDataModel, SortDataAddable, SortDataEditable, SortDataUpsertable } from '@/models/sort-data/SortData.model';
+import { SortDataModel, SortDataUpsertable } from '@/models/sort-data/SortData.model';
+import { CACHE_TAG_BILL_DUES_ALL, CACHE_TAG_SORT_DATA_PREFIX, CACHE_TAG_SUBSCRIPTIONS_ALL } from '@/constants/constants';
 
 export const getSortDataForPageIdCached = cache(async (pageId: string) => {
   const res = await getSortDataForPageId(pageId);
@@ -47,6 +47,8 @@ export async function upsertSortData2(sortData: SortDataUpsertable): Promise<Sor
       });
 
       revalidateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
+      revalidateTag(CACHE_TAG_BILL_DUES_ALL);
+      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
       return updatedSortData;
     } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -61,35 +63,8 @@ export async function upsertSortData2(sortData: SortDataUpsertable): Promise<Sor
       });
 
       revalidateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
-
-      return newSortData;
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-      console.error('Server error at adding sort data(): ', JSON.stringify(error));
-      throw new Error(`Error creating sort data. Code: ${error.code}`);
-    }
-  }
-}
-
-export async function upsertSortData(sortData: SortDataAddable | SortDataEditable): Promise<SortDataModel> {
-  if ('id' in sortData) {
-    try {
-      const updatedSortData = await prisma.sortData.upsert({
-        where: { id: sortData.id },
-        update: sortData,
-        create: sortData,
-      });
-
-      return updatedSortData;
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-      console.error('Server error at updating sort data(): ', JSON.stringify(error));
-      throw new Error(`Error updating sort data. Code: ${error.code}`);
-    }
-  } else {
-    // create new sort data
-    try {
-      const newSortData = await prisma.sortData.create({
-        data: sortData,
-      });
+      revalidateTag(CACHE_TAG_BILL_DUES_ALL);
+      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
       return newSortData;
     } catch (error: Prisma.PrismaClientKnownRequestError | any) {

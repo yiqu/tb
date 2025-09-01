@@ -7,7 +7,7 @@ import { useQueryState, parseAsInteger } from 'nuqs';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import billsTableViewStore from '@/store/bills/bills.store';
+import { useBillStoreActions } from '@/store/bills/bills.store';
 import { updateIsBillDueReimbursed } from '@/server/bills/bills.server';
 
 export default function BillsTableToggleReimbursedButton({
@@ -19,9 +19,8 @@ export default function BillsTableToggleReimbursedButton({
   isReimbursed: boolean;
   subscriptionId: string;
 }) {
-  const setBillDueIdBeingEdited = billsTableViewStore.use.setBillDueIdBeingEdited();
-  const setLastEdited = billsTableViewStore.use.setLastEdited();
-  const clearBillDueIdBeingEdited = billsTableViewStore.use.clearBillDueIdBeingEdited();
+  const [isPending, startTransition] = useTransition();
+  const { setBillDueIdBeingEdited, setLastEditedTimestamp } = useBillStoreActions();
 
   const [page, setPage] = useQueryState(
     'page',
@@ -31,24 +30,23 @@ export default function BillsTableToggleReimbursedButton({
       })
       .withDefault(1),
   );
-  const [isPending, startTransition] = useTransition();
 
   const [optimisticIsReimbursed, setOptimisticIsReimbursed] = useOptimistic(isReimbursed, (curr: boolean, optimisticValue: boolean) => {
     return optimisticValue;
   });
 
   const handleOnClick = (isReimbursed: boolean) => {
+    setOptimisticIsReimbursed(!isReimbursed);
     setBillDueIdBeingEdited(billDueId);
-    setLastEdited(Date.now());
 
     setPage(page);
     startTransition(async () => {
-      setOptimisticIsReimbursed(!isReimbursed);
       const res = await updateIsBillDueReimbursed(billDueId, !isReimbursed, subscriptionId);
       setPage(page);
       toast.remove();
       toast.success(`${res.reimbursed ? 'Marked as reimbursed.' : 'Marked as not reimbursed.'}`);
-      clearBillDueIdBeingEdited(billDueId);
+      setBillDueIdBeingEdited(billDueId, true);
+      setLastEditedTimestamp(Date.now());
     });
   };
 

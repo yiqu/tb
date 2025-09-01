@@ -8,6 +8,7 @@
     "il": "npm install --legacy-peer-deps",
     "build": "npx prisma generate && npx prisma db push && next build",
     "build2": "next build",
+    "build-nl": "next build --no-lint",
     "build-turbo": "next build --turbopack",
     "start": "next start",
     "lint": "next lint",

@@ -7,7 +7,7 @@ import { useQueryState, parseAsInteger } from 'nuqs';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import billsTableViewStore from '@/store/bills/bills.store';
+import { useBillStoreActions } from '@/store/bills/bills.store';
 import { updateIsBillDuePaid } from '@/server/bills/bills.server';
 
 export default function BillsTableTogglePaidButton({
@@ -19,9 +19,8 @@ export default function BillsTableTogglePaidButton({
   isPaid: boolean;
   subscriptionId: string;
 }) {
-  const setBillDueIdBeingEdited = billsTableViewStore.use.setBillDueIdBeingEdited();
-  const setLastEdited = billsTableViewStore.use.setLastEdited();
-  const clearBillDueIdBeingEdited = billsTableViewStore.use.clearBillDueIdBeingEdited();
+  const [isPending, startTransition] = useTransition();
+  const { setBillDueIdBeingEdited, setLastEditedTimestamp } = useBillStoreActions();
 
   const [page, setPage] = useQueryState(
     'page',
@@ -32,24 +31,22 @@ export default function BillsTableTogglePaidButton({
       .withDefault(1),
   );
 
-  const [isPending, startTransition] = useTransition();
-
   const [optimisticIsPaid, setOptimisticIsPaid] = useOptimistic(isPaid, (curr: boolean, optimisticValue: boolean) => {
     return optimisticValue;
   });
 
   const handleOnClick = (isPaid: boolean) => {
+    setOptimisticIsPaid(!isPaid);
     setBillDueIdBeingEdited(billDueId);
-    setLastEdited(Date.now());
 
     setPage(page);
     startTransition(async () => {
-      setOptimisticIsPaid(!isPaid);
       const res = await updateIsBillDuePaid(billDueId, !isPaid, subscriptionId);
       setPage(page);
       toast.remove();
       toast.success(`${res.paid ? 'Marked as paid.' : 'Marked as unpaid.'}`);
-      clearBillDueIdBeingEdited(billDueId);
+      setBillDueIdBeingEdited(billDueId, true);
+      setLastEditedTimestamp(Date.now());
     });
   };
 

@@ -6,7 +6,6 @@ import Typography from '@/components/typography/Typography';
 import { CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
 export default function DateServer({ date }: { date: number }) {
-  console.log('date', date);
   const dateDisplay = DateTime.fromMillis(date);
 
   return (

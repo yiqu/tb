@@ -9,7 +9,7 @@ import { getUSDFormatter } from '@/lib/number.utils';
 import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
 import { deleteBillDue } from '@/server/bills/bills.server';
-import billsTableViewStore from '@/store/bills/bills.store';
+import { useBillStoreActions } from '@/store/bills/bills.store';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import {
   Dialog,
@@ -25,9 +25,9 @@ import {
 const usdFormatter = getUSDFormatter();
 
 export default function BillsTableDeleteBillButton({ billDue }: { billDue: BillDueWithSubscription }) {
-  const setBillDueIdBeingEdited = billsTableViewStore.use.setBillDueIdBeingEdited();
-  const clearBillDueIdBeingEdited = billsTableViewStore.use.clearBillDueIdBeingEdited();
   const [isPending, startTransition] = useTransition();
+  const { setBillDueIdBeingEdited } = useBillStoreActions();
+
   const cost = billDue.cost === undefined || billDue.cost === null ? billDue.subscription.cost : billDue.cost;
 
   const handleOnDeleteBill = async (formData: FormData) => {
@@ -42,11 +42,11 @@ export default function BillsTableDeleteBillButton({ billDue }: { billDue: BillD
       await toast.promise(deleteBillDue(billDueId), {
         loading: 'Deleting bill...',
         success: (res: BillDueWithSubscription) => {
-          clearBillDueIdBeingEdited(billDueId);
+          setBillDueIdBeingEdited(billDueId, true);
           return `Deleted ${res.subscription.name}'s bill.`;
         },
         error: (error: Error) => {
-          clearBillDueIdBeingEdited(billDueId);
+          setBillDueIdBeingEdited(billDueId, true);
           return `Failed to delete bill. ${error.message}`;
         },
       });
