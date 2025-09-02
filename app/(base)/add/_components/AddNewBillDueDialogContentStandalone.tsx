@@ -1,6 +1,7 @@
 'use client';
 
 import z from 'zod';
+import { useQueryState } from 'nuqs';
 import { use, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -22,8 +23,10 @@ export default function AddNewBillDueDialogContentStandalone({
 }: {
   searchParams: Promise<z.infer<typeof subscriptionSearchParamsSchema>>;
 }) {
-  const searchParamValue = use(searchParams);
-  const { addBillDueSubscriptionId } = searchParamValue;
+  // const searchParamValue = use(searchParams);
+  const [addBillDueSubscriptionId] = useQueryState('addBillDueSubscriptionId', {
+    scroll: false,
+  });
   const { data, isLoading, isError, error } = useQuery({
     ...getSubscriptionByIdQueryOptions(addBillDueSubscriptionId ?? ''),
     enabled: !!addBillDueSubscriptionId,
@@ -48,7 +51,7 @@ export default function AddNewBillDueDialogContentStandalone({
   return (
     <Suspense fallback={ <Loading /> }>
       <AddNewBillDueDialogContentFormWrapper subscriptionId={ addBillDueSubscriptionId } subscription={ data } key={ addBillDueSubscriptionId }>
-        <AddNewBillDueDialogContentCard subscriptionId={ addBillDueSubscriptionId } />
+        <AddNewBillDueDialogContentCard subscription={ data } />
         <AddNewBillDueDialogFooter />
       </AddNewBillDueDialogContentFormWrapper>
     </Suspense>
