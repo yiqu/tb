@@ -11,6 +11,7 @@ import { getSubscriptionByIdQueryOptions } from '@/server/subscriptions/query/su
 export default function AddBillCostWatcher() {
   const { watch, setValue } = useFormContext<z.infer<typeof billAddableSchema>>();
   const subscriptionId = watch('subscriptionId');
+  console.log("subscriptionId", subscriptionId);
   const { data, isError } = useQuery({
     ...getSubscriptionByIdQueryOptions(subscriptionId),
     enabled: !!subscriptionId,
