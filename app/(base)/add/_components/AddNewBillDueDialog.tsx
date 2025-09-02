@@ -14,10 +14,10 @@ export default function AddNewBillDueDialog({ subscriptionId }: { subscriptionId
   return (
     <AddNewBillDueDialogWrapper>
       <Suspense fallback={ <Loading /> }>
-        <AddNewBillDueDialogContentFormWrapper subscriptionId={ subscriptionId } subscriptionPromise={ subscriptionPromise }>
+        { /* <AddNewBillDueDialogContentFormWrapper subscriptionId={ subscriptionId } subscriptionPromise={ subscriptionPromise }>
           <AddNewBillDueDialogContentCard />
           <AddNewBillDueDialogFooter />
-        </AddNewBillDueDialogContentFormWrapper>
+        </AddNewBillDueDialogContentFormWrapper> */ }
       </Suspense>
     </AddNewBillDueDialogWrapper>
   );
