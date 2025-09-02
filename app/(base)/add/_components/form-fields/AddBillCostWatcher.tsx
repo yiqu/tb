@@ -18,6 +18,7 @@ export default function AddBillCostWatcher() {
 
   useEffect(() => {
     if (data && !isError) {
+      console.log("setting cost to ", data.cost);
       setValue('cost', data.cost);
     }
   }, [data, isError, setValue]);

@@ -22,17 +22,17 @@ import { useSubscriptionStoreActions } from '@/store/subscriptions/subscriptions
 export default function AddNewBillDueDialogContentFormWrapper({
   children,
   subscriptionId,
-  subscriptionPromise,
+  subscription,
 }: {
   children: ReactNode;
-  subscriptionId?: string;
-  subscriptionPromise: Promise<SubscriptionWithBillDues | null>;
+  subscriptionId: string;
+  subscription: SubscriptionWithBillDues;
 }) {
   const { setSubscriptionIdBeingEdited } = useSubscriptionStoreActions();
   const [, setAddBillDueSubscriptionId] = useQueryState('addBillDueSubscriptionId', {
     scroll: false,
   });
-  const subscription: SubscriptionWithBillDues | null = use(subscriptionPromise);
+  // const subscription: SubscriptionWithBillDues | null = use(subscriptionPromise);
 
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const currentDateLuxonMidDay12pm: string = currentDateLuxon.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toMillis().toString();
@@ -51,10 +51,6 @@ export default function AddNewBillDueDialogContentFormWrapper({
     reValidateMode: 'onChange',
     shouldFocusError: true,
   });
-
-  if (!subscriptionId) {
-    return <Loading2 />;
-  }
 
   const onSubmit = async (data: z.infer<typeof billAddableSchema>) => {
     setSubscriptionIdBeingEdited(subscriptionId);
