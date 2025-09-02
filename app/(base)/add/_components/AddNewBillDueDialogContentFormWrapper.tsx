@@ -2,20 +2,18 @@
 
 import z from 'zod';
 import { DateTime } from 'luxon';
+import { ReactNode } from 'react';
 import toast from 'react-hot-toast';
 import { useQueryState } from 'nuqs';
-import { use, ReactNode } from 'react';
 import confetti from 'canvas-confetti';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Form } from '@/components/ui/form';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
-import { Skeleton } from '@/components/ui/skeleton';
 import { addBillDue } from '@/server/bills/bills.server';
 import { billAddableSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
-import StyledDialogFooter from '@/shared/dialogs/StyledDialogFooter';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { useSubscriptionStoreActions } from '@/store/subscriptions/subscriptions.store';
 
@@ -32,8 +30,6 @@ export default function AddNewBillDueDialogContentFormWrapper({
   const [, setAddBillDueSubscriptionId] = useQueryState('addBillDueSubscriptionId', {
     scroll: false,
   });
-  // const subscription: SubscriptionWithBillDues | null = use(subscriptionPromise);
-
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const currentDateLuxonMidDay12pm: string = currentDateLuxon.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toMillis().toString();
 
@@ -98,16 +94,5 @@ export default function AddNewBillDueDialogContentFormWrapper({
         { children }
       </form>
     </Form>
-  );
-}
-
-function Loading2() {
-  return (
-    <>
-      <div className="flex h-[450px] w-full flex-col items-start justify-start gap-y-2 px-4">
-        <Skeleton className="h-10 w-full" />
-      </div>
-      <StyledDialogFooter />
-    </>
   );
 }

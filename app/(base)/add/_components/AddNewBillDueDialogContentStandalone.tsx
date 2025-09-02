@@ -1,29 +1,24 @@
 'use client';
 
 import z from 'zod';
+import { Suspense } from 'react';
 import { useQueryState } from 'nuqs';
-import { use, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import ErrorCard from '@/components/status-cards/ErrorCard';
 import Typography from '@/components/typography/Typography';
 import StyledDialogFooter from '@/shared/dialogs/StyledDialogFooter';
-import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { subscriptionSearchParamsSchema } from '@/validators/subscriptions/subscriptions.schema';
 import { getSubscriptionByIdQueryOptions } from '@/server/subscriptions/query/subscription.query';
-import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
 import AddNewBillDueDialogFooter from './AddNewBillDueDialogFooter';
 import AddNewBillDueDialogContentCard from './AddNewBillDueDialogContentCard';
 import AddNewBillDueDialogContentFormWrapper from './AddNewBillDueDialogContentFormWrapper';
 
-export default function AddNewBillDueDialogContentStandalone({
-  searchParams,
-}: {
+export default function AddNewBillDueDialogContentStandalone({}: {
   searchParams: Promise<z.infer<typeof subscriptionSearchParamsSchema>>;
 }) {
-  // const searchParamValue = use(searchParams);
   const [addBillDueSubscriptionId] = useQueryState('addBillDueSubscriptionId', {
     scroll: false,
   });
