@@ -14,8 +14,8 @@ import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { addBillDue } from '@/server/bills/bills.server';
 import { billAddableSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
-import subscriptionsTableViewStore from '@/store/subscriptions/subscriptions.store';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
+import { useSubscriptionStoreActions } from '@/store/subscriptions/subscriptions.store';
 
 export default function AddNewBillDueDialogContentFormWrapper({
   children,
@@ -26,17 +26,14 @@ export default function AddNewBillDueDialogContentFormWrapper({
   subscriptionId: string;
   subscriptionPromise: Promise<SubscriptionWithBillDues | null>;
 }) {
-  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
-  const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
-
-  const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
-  const currentDateLuxonMidDay12pm: string = currentDateLuxon.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toMillis().toString();
-
-  const subscription: SubscriptionWithBillDues | null = use(subscriptionPromise);
-
+  const { setSubscriptionIdBeingEdited } = useSubscriptionStoreActions();
   const [, setAddBillDueSubscriptionId] = useQueryState('addBillDueSubscriptionId', {
     scroll: false,
   });
+  const subscription: SubscriptionWithBillDues | null = use(subscriptionPromise);
+
+  const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+  const currentDateLuxonMidDay12pm: string = currentDateLuxon.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toMillis().toString();
 
   const methods = useForm<z.infer<typeof billAddableSchema>>({
     defaultValues: {
@@ -55,7 +52,7 @@ export default function AddNewBillDueDialogContentFormWrapper({
 
   const onSubmit = async (data: z.infer<typeof billAddableSchema>) => {
     setSubscriptionIdBeingEdited(subscriptionId);
-
+    toast.remove();
     toast.promise(addBillDue(subscriptionId, data), {
       loading: 'Adding bill due...',
       success: (res: BillDueWithSubscription) => {
@@ -65,7 +62,7 @@ export default function AddNewBillDueDialogContentFormWrapper({
 
         if (data.consecutiveAdd) {
           // get the next month's 1st day in luxon date
-          const dateLuxonFromData = DateTime.fromMillis(Number.parseInt(data.dueDate)).set({ day: 1 });
+          const dateLuxonFromData = DateTime.fromMillis(Number.parseInt(data.dueDate));
           const nextMonthLuxon = dateLuxonFromData.plus({ month: 1 });
           // reset the form with the next month's 1st day
           methods.reset({
@@ -76,6 +73,7 @@ export default function AddNewBillDueDialogContentFormWrapper({
             subscriptionId,
             consecutiveAdd: data.consecutiveAdd,
           });
+
         } else {
           setAddBillDueSubscriptionId(null, {
             history: 'replace',
@@ -83,11 +81,11 @@ export default function AddNewBillDueDialogContentFormWrapper({
           });
         }
 
-        clearSubscriptionIdBeingEdited(subscriptionId);
+        setSubscriptionIdBeingEdited(subscriptionId, true);
         return `Added new bill due for ${res.subscription.name}.`;
       },
       error: (error: Error) => {
-        clearSubscriptionIdBeingEdited(subscriptionId);
+        (setSubscriptionIdBeingEdited(subscriptionId), true);
         return `Failed to add bill due. ${error.message}`;
       },
     });

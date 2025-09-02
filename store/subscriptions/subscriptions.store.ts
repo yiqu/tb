@@ -15,6 +15,11 @@ type SubscriptionsTableViewState = {
   setSubscriptionIdBeingEdited: (subscriptionId: string) => void;
   clearSubscriptionIdBeingEdited: (subscriptionId: string) => void;
   setLastEdited: (lastEdited: number) => void;
+
+  actions: {
+    setSubscriptionIdBeingEdited: (subscriptionId: string, setEmpty?: boolean) => void;
+    setLastEdited: (lastEdited: number) => void;
+  };
 };
 
 type SubscriptionsTableViewPersist = PersistOptions<
@@ -28,6 +33,27 @@ const subscriptionsTableViewStoreBase = create<SubscriptionsTableViewState>()(
     (set, get) => ({
       subscriptionIdBeingEdited: {},
       lastEdited: null,
+
+      actions: {
+        setSubscriptionIdBeingEdited: (subscriptionId: string, setEmpty?: boolean) => {
+          set((state: SubscriptionsTableViewState) => {
+            return {
+              subscriptionIdBeingEdited: {
+                ...state.subscriptionIdBeingEdited,
+                [subscriptionId]: setEmpty ? false : true,
+              },
+            };
+          });
+        },
+
+        setLastEdited: (lastEdited: number) => {
+          set((state: SubscriptionsTableViewState) => {
+            return {
+              lastEdited: lastEdited,
+            };
+          });
+        },
+      },
 
       setSubscriptionIdBeingEdited: (subscriptionId: string) => {
         set((state: SubscriptionsTableViewState) => {
@@ -85,5 +111,9 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_store: S) =
 };
 
 const subscriptionsTableViewStore = createSelectors(subscriptionsTableViewStoreBase);
+
+// Non-selectors want to be exported for use in other files
+export const useSubscriptionStoreActions = () => subscriptionsTableViewStoreBase((state) => state.actions);
+export const useGetSubscriptionBeingEdited = () => subscriptionsTableViewStoreBase((state) => state.subscriptionIdBeingEdited);
 
 export default subscriptionsTableViewStore;

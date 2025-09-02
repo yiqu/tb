@@ -20,7 +20,7 @@ export default async function AddNewBillDueDialogContentStandalone({
   const { addBillDueSubscriptionId } = searchParamValue;
 
   if (!addBillDueSubscriptionId) {
-    return <Loading />;
+    return <Loading2 />;
   }
 
   const subscriptionPromise: Promise<SubscriptionWithBillDues | null> = getSubscriptionWithBillDuesByIdCached(
@@ -47,6 +47,19 @@ function Loading() {
       <div className="flex h-[450px] w-full flex-col items-start justify-start gap-y-2 px-4">
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+      <StyledDialogFooter />
+    </>
+  );
+}
+
+function Loading2() {
+  return (
+    <>
+      <div className="flex h-[450px] w-full flex-col items-start justify-start gap-y-2 px-4">
         <Skeleton className="h-10 w-full" />
       </div>
       <StyledDialogFooter />

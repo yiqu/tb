@@ -42,6 +42,7 @@ interface ControlledAutocompleteProps extends BaseAutocompleteProps {
   control: Control<any>;
   rules?: Record<string, any>;
   onChange?: never;
+  onSelectChange?: (values: string[] | string) => void;
   defaultValues?: never;
 }
 
@@ -284,6 +285,7 @@ function ControlledAutocompleteInput({
   multi = true,
   searchBy = 'label',
   className,
+  onSelectChange,
   ...props
 }: ControlledAutocompleteProps) {
   const { field, fieldState } = useController({
@@ -314,8 +316,13 @@ function ControlledAutocompleteInput({
         : newValues.length > 0 ? newValues[0]
         : '',
       );
+      onSelectChange?.(
+        multi ? newValues
+        : newValues.length > 0 ? newValues[0]
+        : '',
+      );
     },
-    [currentValues, field, multi],
+    [currentValues, field, multi, onSelectChange],
   );
 
   const handleRemove = React.useCallback(
@@ -326,13 +333,19 @@ function ControlledAutocompleteInput({
         : newValues.length > 0 ? newValues[0]
         : '',
       );
+      onSelectChange?.(
+        multi ? newValues
+        : newValues.length > 0 ? newValues[0]
+        : '',
+      );
     },
-    [currentValues, field, multi],
+    [currentValues, field, multi, onSelectChange],
   );
 
   const handleClearAll = React.useCallback(() => {
     field.onChange(multi ? [] : '');
-  }, [field, multi]);
+    onSelectChange?.(multi ? [] : '');
+  }, [field, multi, onSelectChange]);
 
   return (
     <AutocompleteInputBase

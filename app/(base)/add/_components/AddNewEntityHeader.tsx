@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import startCase from 'lodash/startCase';
 import { EllipsisVerticalIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ export default function AddNewEntityHeader({ type }: AddNewEntityHeaderProps) {
             { type === 'subscription' ?
               <SubscriptionLogo subscriptionName={ '' } height={ 30 } />
             : <BillLogo height={ 30 } /> }
-            <Typography variant="h3">Add New { type }</Typography>
+            <Typography variant="h3">Add New { startCase(type) }</Typography>
           </div>
         </Link>
       </div>

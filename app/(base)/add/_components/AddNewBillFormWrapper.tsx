@@ -27,7 +27,7 @@ export default function AddNewBillFormWrapper({ children }: { children: ReactNod
       reimbursed: false,
       cost: 0,
       subscriptionId: '',
-      consecutiveAdd: false,
+      consecutiveAdd: true,
     },
     resolver: zodResolver(billAddableSchema),
     mode: 'onSubmit',
@@ -56,6 +56,21 @@ export default function AddNewBillFormWrapper({ children }: { children: ReactNod
           });
           setBillDueIdBeingEdited('new-bill-due', true);
           appendRecentlyAddedBillDues(resultData);
+          if (data.consecutiveAdd) {
+            // get the next month's 1st day in luxon date
+            const dateLuxonFromData = DateTime.fromMillis(Number.parseInt(data.dueDate));
+            const nextMonthLuxon = dateLuxonFromData.plus({ month: 1 });
+            // reset the form with the next month's 1st day
+            methods.reset({
+              dueDate: nextMonthLuxon.toMillis().toString(),
+              paid: false,
+              reimbursed: false,
+              cost: data?.cost ?? 0,
+              subscriptionId,
+              consecutiveAdd: data.consecutiveAdd,
+            });
+          }
+
           return `Added bill due for ${resultData.subscription.name} on ${dateFormat}.`;
         },
         error: (error: Error) => {
