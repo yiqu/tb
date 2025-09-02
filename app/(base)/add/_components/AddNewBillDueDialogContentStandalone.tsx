@@ -11,17 +11,21 @@ import AddNewBillDueDialogFooter from './AddNewBillDueDialogFooter';
 import AddNewBillDueDialogContentCard from './AddNewBillDueDialogContentCard';
 import AddNewBillDueDialogContentFormWrapper from './AddNewBillDueDialogContentFormWrapper';
 
-export default async function AddNewBillDueDialogContentStandalone({
-  searchParams,
+export default function AddNewBillDueDialogContentStandalone({
+  //searchParams,
+  addBillDueSubscriptionId,
 }: {
-  searchParams: Promise<z.infer<typeof subscriptionSearchParamsSchema>>;
+  addBillDueSubscriptionId?: string;
+  //searchParams: Promise<z.infer<typeof subscriptionSearchParamsSchema>>;
 }) {
-  const searchParamValue = await searchParams;
-  const { addBillDueSubscriptionId } = searchParamValue;
+  //const searchParamValue = await searchParams;
+  //const { addBillDueSubscriptionId } = searchParamValue;
 
-  if (!addBillDueSubscriptionId) {
-    return <Loading2 />;
-  }
+  console.log('addBillDueSubscriptionId', addBillDueSubscriptionId);
+
+  // if (!addBillDueSubscriptionId) {
+  //   return <Loading2 />;
+  // }
 
   const subscriptionPromise: Promise<SubscriptionWithBillDues | null> = getSubscriptionWithBillDuesByIdCached(
     addBillDueSubscriptionId ?? '',

@@ -22,7 +22,9 @@ interface SubscriptionsPageProps {
   searchParams: Promise<z.infer<typeof subscriptionSearchParamsSchema>>;
 }
 
-export default function SubscriptionsPage({ searchParams }: SubscriptionsPageProps) {
+export default async function SubscriptionsPage({ searchParams }: SubscriptionsPageProps) {
+  const searchParamValue = await searchParams;
+  const { addBillDueSubscriptionId } = searchParamValue;
   const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions);
 
   return (
@@ -42,11 +44,9 @@ export default function SubscriptionsPage({ searchParams }: SubscriptionsPagePro
           <AddSubscriptionDialogContentCard />
         </SubscriptionsTableAddSubscriptionDialog>
       </Suspense>
-      <Suspense>
-        <AddNewBillDueDialogStandalone>
-          <AddNewBillDueDialogContentStandalone searchParams={ searchParams } />
-        </AddNewBillDueDialogStandalone>
-      </Suspense>
+      <AddNewBillDueDialogStandalone>
+        <AddNewBillDueDialogContentStandalone addBillDueSubscriptionId={ addBillDueSubscriptionId } />
+      </AddNewBillDueDialogStandalone>
     </div>
   );
 }

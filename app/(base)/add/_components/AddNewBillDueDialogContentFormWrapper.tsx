@@ -11,9 +11,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Form } from '@/components/ui/form';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { addBillDue } from '@/server/bills/bills.server';
 import { billAddableSchema } from '@/validators/bills/bill.schema';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import StyledDialogFooter from '@/shared/dialogs/StyledDialogFooter';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { useSubscriptionStoreActions } from '@/store/subscriptions/subscriptions.store';
 
@@ -23,7 +25,7 @@ export default function AddNewBillDueDialogContentFormWrapper({
   subscriptionPromise,
 }: {
   children: ReactNode;
-  subscriptionId: string;
+  subscriptionId?: string;
   subscriptionPromise: Promise<SubscriptionWithBillDues | null>;
 }) {
   const { setSubscriptionIdBeingEdited } = useSubscriptionStoreActions();
@@ -50,6 +52,10 @@ export default function AddNewBillDueDialogContentFormWrapper({
     shouldFocusError: true,
   });
 
+  if (!subscriptionId) {
+    return <Loading2 />;
+  }
+
   const onSubmit = async (data: z.infer<typeof billAddableSchema>) => {
     setSubscriptionIdBeingEdited(subscriptionId);
     toast.remove();
@@ -73,7 +79,6 @@ export default function AddNewBillDueDialogContentFormWrapper({
             subscriptionId,
             consecutiveAdd: data.consecutiveAdd,
           });
-
         } else {
           setAddBillDueSubscriptionId(null, {
             history: 'replace',
@@ -97,5 +102,16 @@ export default function AddNewBillDueDialogContentFormWrapper({
         { children }
       </form>
     </Form>
+  );
+}
+
+function Loading2() {
+  return (
+    <>
+      <div className="flex h-[450px] w-full flex-col items-start justify-start gap-y-2 px-4">
+        <Skeleton className="h-10 w-full" />
+      </div>
+      <StyledDialogFooter />
+    </>
   );
 }
