@@ -11,6 +11,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import { ScrollToTop } from '@/components/scroll-up/ScrollToTop';
 import VibeProviderWrapper from '@/providers/VibeProviderWrapper';
 import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider';
 import { getFontStylesheetHref, getVibeStylesheetHref } from '@/lib/vibes-css-map';
@@ -28,14 +29,14 @@ export default async function BodyParent({ children }: { children: React.ReactNo
         { /* Preload and apply vibe CSS early to prevent theme flash on first paint */ }
         <link rel="preload" href={ vibeHref } as="style" />
         <link id="vibe-theme-stylesheet" rel="stylesheet" href={ vibeHref } />
-        
+
         { /* Preload and apply font CSS early to prevent font flash on first paint */ }
-        { fontOverride ? (
+        { fontOverride ?
           <>
             <link rel="preload" href={ fontHref } as="style" />
             <link id="vibe-font-stylesheet" rel="stylesheet" href={ fontHref } />
           </>
-        ) : null }
+        : null }
       </head>
 
       <body className="font-sans antialiased" id="base-root-layout">
@@ -46,7 +47,7 @@ export default async function BodyParent({ children }: { children: React.ReactNo
             <MuiThemeProvider theme={ theme } defaultMode="light">
               <NuqsAdapter>
                 <TanstackQueryClientProvider>
-                  <ReactQueryDevtools initialIsOpen={ false } />
+                  <ReactQueryDevtools initialIsOpen={ false } buttonPosition="top-right" />
                   <ThemeProvider
                     attribute="class"
                     defaultTheme="light"
@@ -64,6 +65,7 @@ export default async function BodyParent({ children }: { children: React.ReactNo
             </MuiThemeProvider>
           </AppRouterCacheProvider>
         </VibeProviderWrapper>
+        <ScrollToTop onlyShowWhenScrolledUp />
       </body>
     </>
   );
