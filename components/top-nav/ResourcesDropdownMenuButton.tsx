@@ -1,6 +1,5 @@
 import { ExternalLink, MessageCircleQuestion } from 'lucide-react';
 
-import CenterUnderline from '@/fancy/components/text/underline-center';
 import {
   DropdownMenu,
   DropdownMenuGroup,
@@ -32,9 +31,9 @@ export default function ResourcesDropdownMenuButton() {
               href={ `https://google.com` }
               target="_blank"
               rel="noreferrer"
-              className="flex w-full flex-row items-center justify-between gap-x-1"
+              className="external flex w-full flex-row items-center justify-between gap-x-1"
             >
-              <CenterUnderline label="Documentation" className="" />
+              Documentation
               <ExternalLink />
             </a>
           </DropdownMenuItem>
@@ -43,9 +42,9 @@ export default function ResourcesDropdownMenuButton() {
               href={ `https://google.com` }
               target="_blank"
               rel="noreferrer"
-              className="flex w-full flex-row items-center justify-between gap-x-1"
+              className="external flex w-full flex-row items-center justify-between gap-x-1"
             >
-              <CenterUnderline label="Discord" className="" />
+              Discord
               <ExternalLink />
             </a>
           </DropdownMenuItem>

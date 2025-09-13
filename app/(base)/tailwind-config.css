@@ -248,16 +248,16 @@
 @layer text-color-utils {
   :root {
     a.external {
-      color: var(--link-external-foreground);
+      color: var(--color-accent-foreground);
       text-decoration: underline;
-      text-underline-offset: 2px;
+      text-underline-offset: 1px;
       text-decoration-thickness: 1px;
     }
 
     a:not([role='menuitem']):not([data-slot='sidebar-menu-button']):not([data-slot='sidebar-menu-sub-button']):not([role='tab']):not(
         [data-slot='popover-trigger']
       ) {
-      color: var(--link-internal);
+      /* color: var(--link-internal); */
       font-weight: 500;
     }
 
@@ -475,5 +475,38 @@
       'Segoe UI Emoji',
       'Segoe UI Symbol',
       sans-serif !important;
+  }
+}
+
+@layer typography-utils {
+  .h1 {
+    @apply text-4xl leading-10 font-semibold tracking-normal;
+  }
+  .h2 {
+    @apply text-3xl leading-9 font-semibold tracking-normal;
+  }
+  .h3 {
+    @apply text-2xl leading-8 font-semibold tracking-normal;
+  }
+  .h4 {
+    @apply text-xl leading-7 font-semibold tracking-normal;
+  }
+  .h5 {
+    @apply text-lg leading-7 font-semibold tracking-normal;
+  }
+  .h6 {
+    @apply text-base leading-6 font-semibold tracking-normal;
+  }
+  .p {
+    @apply text-[0.875rem] leading-5 tracking-normal [&:not(:first-child)]:mt-6;
+  }
+  .body0 {
+    @apply text-[0.75rem] leading-4 tracking-normal;
+  }
+  .body1 {
+    @apply text-[0.875rem] leading-5 tracking-normal;
+  }
+  .body2 {
+    @apply text-[1rem] leading-6 tracking-normal;
   }
 }

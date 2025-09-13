@@ -1,11 +1,14 @@
-import Link from 'next/link';
+import { Suspense } from 'react';
 
-import Typography from '@/components/typography/Typography';
+import { Skeleton } from '@/components/ui/skeleton';
+import LinkAnimated from '@/shared/components/LinkAnimated';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
+import SubscriptionDetailsHeaderFavoriteName from './SubscriptionDetailsHeaderFavoriteName';
 import { SubscriptionDetailsHeaderActionButton } from './SubscriptionDetailsHeaderActionButton';
+import SubscriptionDetailsHeaderFavoriteToggleButtonParent from './SubscriptionDetailsHeaderFavoriteToggleButtonParent';
 
 export default async function SubscriptionDetailsHeader({
   subscriptionPromise,
@@ -24,14 +27,25 @@ export default async function SubscriptionDetailsHeader({
   return (
     <div className="flex w-full flex-row items-center justify-between py-2">
       <div className="flex flex-row items-center justify-start gap-x-2">
-        <Link href={ `/subscriptions/${subscription.id}` } prefetch>
-          <div className="flex flex-row items-center justify-start gap-x-2">
-            <SubscriptionLogo subscriptionName={ subscription.name } height={ 30 } />
-            <Typography variant="h3">{ subscription.name }</Typography>
-          </div>
-        </Link>
+        <LinkAnimated
+          label={ subscription.name }
+          href={ `/subscriptions/${subscription.id}` }
+          prefetch
+          startAdornment={ <SubscriptionLogo subscriptionName={ subscription.name } height={ 30 } /> }
+          textClassName="h3"
+        />
+        <Suspense fallback={ <Loading /> }>
+          <SubscriptionDetailsHeaderFavoriteName subscriptionId={ subscription.id } />
+        </Suspense>
       </div>
-      <SubscriptionDetailsHeaderActionButton subscription={ subscription } />
+      <div className="flex flex-row items-center justify-end gap-x-2">
+        <SubscriptionDetailsHeaderFavoriteToggleButtonParent subscription={ subscription } />
+        <SubscriptionDetailsHeaderActionButton subscription={ subscription } />
+      </div>
     </div>
   );
+}
+
+function Loading() {
+  return <Skeleton className="h-8 w-[300px]" />;
 }

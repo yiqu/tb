@@ -76,8 +76,8 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
                 hover:border-border hover:bg-accent
               ` }
             >
-              <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" />
-              <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis />
+              <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" clientLoadingClassName="h-[20px] w-[153px]" />
+              <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis clientLoadingClassName="h-[20px] w-[40px]" />
             </div>
           </PopoverTrigger>
           <PopoverContent className="min-w-96">
@@ -99,8 +99,8 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
                 hover:border-border hover:bg-accent
               ` }
             >
-              <DateDisplay date={ subscription.dateAdded } dateFormat="MM/dd/yy" />
-              <DateRelativeDisplay time={ subscription.dateAdded } includeParenthesis />
+              <DateDisplay date={ subscription.dateAdded } dateFormat="MM/dd/yy" clientLoadingClassName="h-[20px] w-[153px]" />
+              <DateRelativeDisplay time={ subscription.dateAdded } includeParenthesis clientLoadingClassName="h-[20px] w-[40px]" />
             </div>
           </PopoverTrigger>
           <PopoverContent className="min-w-96">

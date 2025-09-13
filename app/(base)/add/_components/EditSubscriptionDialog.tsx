@@ -24,5 +24,5 @@ export default function EditSubscriptionDialog({ subscriptionId }: { subscriptio
 }
 
 function Loading() {
-  return <div>Loading...</div>;
+  return <div>Loading edit subscription dialog...</div>;
 }

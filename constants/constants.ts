@@ -39,6 +39,8 @@ export const CACHE_TAG_USER_ACHIEVEMENTS = 'user-achievements';
 export const CACHE_TAG_SORT_DATA_PREFIX = 'sort-data-page-';
 export const CACHE_TAG_PAGINATION_DATA_PREFIX = 'pagination-data-page-';
 
+export const CACHE_TAG_FAVORITES_PREFIX = 'favorites-';
+
 export const CACHE_TAG_SUBSCRIPTIONS_ALL = 'subscriptions-all';
 export const CACHE_TAG_SUBSCRIPTION_DETAILS = 'subscription-by-id-';
 export const CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR = 'subscription-bills-grouped-by-year-';

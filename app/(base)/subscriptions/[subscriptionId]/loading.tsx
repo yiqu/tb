@@ -10,10 +10,6 @@ export default function SubscriptionDetailsLoading() {
 function LoadingMask() {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-9">
-      <div className="flex w-full flex-row items-center justify-between">
-        <Skeleton className="h-9 w-[10rem]" />
-        <Skeleton className="h-9 w-[10rem]" />
-      </div>
       <div className="flex w-full flex-col items-start justify-start gap-y-6">
         <DisplayCard className="h-[535px] w-full">
           <CardContent className="overflow-hidden">

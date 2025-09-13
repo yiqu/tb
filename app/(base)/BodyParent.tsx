@@ -6,6 +6,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import theme from '@/components/ui-mui/mui/theme';
+import Preloads from '@/components/preload/Preloads';
 import AppLayout from '@/components/layout/AppLayout';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import CustomToaster from '@/components/toaster/CustomToaster';
@@ -42,12 +43,13 @@ export default async function BodyParent({ children }: { children: React.ReactNo
       <body className="font-sans antialiased" id="base-root-layout">
         <AppTopLoader />
         <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
+        <Preloads />
         <VibeProviderWrapper>
           <AppRouterCacheProvider options={ { enableCssLayer: true } }>
             <MuiThemeProvider theme={ theme } defaultMode="light">
               <NuqsAdapter>
                 <TanstackQueryClientProvider>
-                  <ReactQueryDevtools initialIsOpen={ false } buttonPosition="top-right" />
+                  <ReactQueryDevtools initialIsOpen={ false } buttonPosition="bottom-right" />
                   <ThemeProvider
                     attribute="class"
                     defaultTheme="light"
@@ -65,7 +67,7 @@ export default async function BodyParent({ children }: { children: React.ReactNo
             </MuiThemeProvider>
           </AppRouterCacheProvider>
         </VibeProviderWrapper>
-        <ScrollToTop onlyShowWhenScrolledUp />
+        <ScrollToTop onlyShowWhenScrolledUp={ false } />
       </body>
     </>
   );

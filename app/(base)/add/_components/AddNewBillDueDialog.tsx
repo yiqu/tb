@@ -18,7 +18,7 @@ export default function AddNewBillDueDialog({ subscriptionId }: { subscriptionId
   });
 
   if (isLoading) {
-    return <Loading />;
+    return null;
   }
 
   if (!data) {
@@ -46,5 +46,5 @@ export default function AddNewBillDueDialog({ subscriptionId }: { subscriptionId
 }
 
 function Loading() {
-  return <div>Loading...</div>;
+  return <div>Loading add new bill due dialog...</div>;
 }

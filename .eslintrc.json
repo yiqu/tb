@@ -21,7 +21,13 @@
     "@next/next/no-img-element": 1,
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "no-unused-vars": "warn",
+    "no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
     "computed-property-spacing": [1, "never"],
     "import/no-cycle": 1,
     "import/no-duplicates": "off",

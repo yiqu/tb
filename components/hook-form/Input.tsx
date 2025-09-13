@@ -4,6 +4,7 @@
 import { X } from 'lucide-react';
 import { type Control, useController } from 'react-hook-form';
 
+import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormItem, FormField, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
@@ -19,6 +20,8 @@ interface FormInputProps {
   clearField?: (name: string) => void;
   description?: React.ReactNode;
   disabled?: boolean;
+  formItemClassName?: string;
+  clearButtonClassName?: string;
 }
 
 export function FormInput({
@@ -30,6 +33,8 @@ export function FormInput({
   clearField,
   description,
   disabled = false,
+  formItemClassName,
+  clearButtonClassName,
 }: FormInputProps) {
   const { field } = useController({
     name,
@@ -41,28 +46,24 @@ export function FormInput({
       control={ control }
       name={ name }
       render={ ({ field: formField }) => (
-        <FormItem>
+        <FormItem className={ cn('', formItemClassName) }>
           <FormLabel>{ label }</FormLabel>
           <div className="relative">
             <FormControl>
-              <Input
-                { ...formField }
-                type={ type }
-                placeholder={ placeholder }
-                disabled={ disabled }
-                className={ clearField ? 'pr-10' : '' }
-              />
+              <Input { ...formField } type={ type } placeholder={ placeholder } disabled={ disabled } className={ clearField ? 'pr-10' : '' } />
             </FormControl>
-            { clearField && formField.value ? <Button
+            { clearField && formField.value ?
+              <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute top-0 right-0 h-full px-3 py-0"
+                className={ cn('absolute top-1 right-1 h-7 px-3', clearButtonClassName) }
                 onClick={ () => clearField(name) }
                 aria-label={ `Clear ${label}` }
               >
-              <X className="h-4 w-4" />
-            </Button> : null }
+                <X className="size-4" />
+              </Button>
+            : null }
           </div>
           { description }
           <FormMessage />

@@ -31,7 +31,7 @@ export default function SubscriptionDetailsLayout({ children, params }: Subscrip
 function HeaderSkeleton() {
   return (
     <div className="flex w-full flex-row items-center justify-start">
-      <Skeleton className="h-9 w-full" />
+      <Skeleton className="h-13 w-full" />
     </div>
   );
 }
