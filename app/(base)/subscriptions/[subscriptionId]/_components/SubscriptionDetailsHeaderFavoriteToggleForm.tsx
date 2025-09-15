@@ -44,6 +44,7 @@ export default function SubscriptionDetailsHeaderFavoriteToggleForm({
 
   const isFavorited = !!favoriteEntity;
   const actionType: FavoriteActionType = isFavorited ? 'EDIT' : 'CREATE';
+  const isFormDirty = form.formState.isDirty;
 
   function onSubmit(data: z.infer<typeof addNewFavoriteNameInputSchema>) {
     onFormSubmitAction(
@@ -106,10 +107,12 @@ export default function SubscriptionDetailsHeaderFavoriteToggleForm({
                   Cancel
                 </Button>
               </DialogClose>
-              <Button variant={ 'outline' } onClick={ handleOnReset } type="button">
-                <RotateCcw />
-                Reset
-              </Button>
+              { isFormDirty ?
+                <Button variant={ 'outline' } onClick={ handleOnReset } type="button">
+                  <RotateCcw />
+                  Reset
+                </Button>
+              : null }
               { isFavorited ?
                 <Button variant={ 'outline' } onClick={ handleOnDelete } type="button" className="text-destructive" disabled={ disableButton }>
                   <Trash />
