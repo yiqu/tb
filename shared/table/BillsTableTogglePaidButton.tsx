@@ -36,11 +36,11 @@ export default function BillsTableTogglePaidButton({
   });
 
   const handleOnClick = (isPaid: boolean) => {
-    setOptimisticIsPaid(!isPaid);
     setBillDueIdBeingEdited(billDueId);
 
     setPage(page);
     startTransition(async () => {
+      setOptimisticIsPaid(!isPaid);
       const res = await updateIsBillDuePaid(billDueId, !isPaid, subscriptionId);
       setPage(page);
       toast.remove();

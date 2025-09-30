@@ -1,7 +1,6 @@
 'use client';
 
 import { useOptimistic, useTransition } from 'react';
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { ChevronUp, ChevronDown, LoaderCircle, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -50,8 +49,9 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
     }
 
     const nextSortData: SortData = getNextSortDirection(optimisticSortData, columnId as SortField);
-    upsertOptimisticSortData(nextSortData);
+
     startTransition(() => {
+      upsertOptimisticSortData(nextSortData);
       const sortDataToUpdate: SortDataUpsertable = {
         id: sortData?.id ?? undefined,
         pageId,
@@ -87,7 +87,10 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
         </Typography>
         <div className="flex flex-row items-center justify-end gap-x-1">
           { isPending ?
-            <LoaderCircle className="size-3 animate-spin text-gray-500/70 dark:text-gray-200/30" />
+            <LoaderCircle className={ `
+              size-3 animate-spin text-gray-500/70
+              dark:text-gray-200/30
+            ` } />
           : null }
           { isColumnSorted ?
             <>
@@ -105,7 +108,10 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
               }
             </>
           : sortable ?
-            <ChevronsUpDown className="size-4 min-w-4 text-gray-400/60 dark:text-gray-500/30" />
+            <ChevronsUpDown className={ `
+              size-4 min-w-4 text-gray-400/60
+              dark:text-gray-500/30
+            ` } />
           : null }
         </div>
       </span>

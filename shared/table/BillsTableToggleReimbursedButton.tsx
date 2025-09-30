@@ -36,11 +36,11 @@ export default function BillsTableToggleReimbursedButton({
   });
 
   const handleOnClick = (isReimbursed: boolean) => {
-    setOptimisticIsReimbursed(!isReimbursed);
     setBillDueIdBeingEdited(billDueId);
 
     setPage(page);
     startTransition(async () => {
+      setOptimisticIsReimbursed(!isReimbursed);
       const res = await updateIsBillDueReimbursed(billDueId, !isReimbursed, subscriptionId);
       setPage(page);
       toast.remove();

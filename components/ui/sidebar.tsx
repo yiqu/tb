@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-unused-vars */
 'use client';
 
 import * as React from 'react';
@@ -8,13 +6,14 @@ import { PanelLeftIcon } from 'lucide-react';
 import { cva, VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { Sheet, SheetTitle, SheetHeader, SheetContent, SheetDescription } from '@/components/ui/sheet';
+
+import { Input } from './input';
+import { Button } from './button';
+import { Skeleton } from './skeleton';
+import { Separator } from './separator';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from './tooltip';
+import { Sheet, SheetTitle, SheetHeader, SheetContent, SheetDescription } from './sheet';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 1 * 60 * 24 * 365;
@@ -471,11 +470,10 @@ const sidebarMenuButtonVariants = cva(
     variants: {
       variant: {
         default: 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-        outline:
-          `
-            bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))]
-            hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]
-          `,
+        outline: `
+          bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))]
+          hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]
+        `,
       },
       size: {
         default: 'h-8 text-sm',
@@ -739,5 +737,5 @@ export {
   SidebarGroupContent,
   SidebarMenuSkeleton,
   SidebarMenuSubButton,
-  sidebarMenuButtonVariants,
+  sidebarMenuButtonVariants
 };

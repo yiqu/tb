@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Tooltip as TooltipPrimitive } from 'radix-ui';
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 
 import { cn } from '@/lib/utils';
 
@@ -29,8 +29,8 @@ function TooltipContent({ className, sideOffset = 0, children, ...props }: React
         sideOffset={ sideOffset }
         className={ cn(
           `
-            z-50 w-fit origin-(--radix-tooltip-content-transform-origin) animate-in rounded-md bg-primary px-3 py-1.5 text-xs text-balance
-            text-primary-foreground fade-in-0 zoom-in-95
+            z-50 w-fit origin-(--radix-tooltip-content-transform-origin) animate-in rounded-md bg-foreground px-3 py-1.5 text-xs
+            text-balance text-background fade-in-0 zoom-in-95
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2
             data-[side=right]:slide-in-from-left-2
@@ -42,9 +42,9 @@ function TooltipContent({ className, sideOffset = 0, children, ...props }: React
         { ...props }
       >
         { children }
-        <TooltipPrimitive.Arrow
-          className={ `z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] bg-primary fill-primary` }
-        />
+        <TooltipPrimitive.Arrow className={ `
+          z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground
+        ` } />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   );
