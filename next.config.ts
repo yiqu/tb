@@ -6,11 +6,12 @@ const nextConfig: NextConfig = {
     //dynamicIO: true,
     //viewTransition: true,
     useCache: true,
-    reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
     ppr: 'incremental',
     clientSegmentCache: true,
-    turbopackPersistentCaching: true,
+    turbopackPersistentCachingForBuild: true,
+    turbopackPersistentCachingForDev: true,
   },
+  reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
   // typedRoutes: true
 };
 
