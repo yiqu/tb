@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     ppr: 'incremental',
     clientSegmentCache: true,
     turbopackPersistentCachingForBuild: true,
-    turbopackPersistentCachingForDev: true,
+    // turbopackPersistentCachingForDev: true,
   },
   reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
   // typedRoutes: true
