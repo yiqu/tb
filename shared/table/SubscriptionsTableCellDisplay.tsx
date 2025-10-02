@@ -19,9 +19,9 @@ import SubscriptionsTableEditSubscriptionButton from '@/app/(base)/subscriptions
 import SubscriptionsTableDeleteSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableDeleteSubscriptionButton';
 
 import DateDisplay from './DateDisplay';
-import { getFrequencyImageUrl } from './table.utils';
 import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
+import { getFrequencyImageUrl, getSubscriptionLogoSize } from './table.utils';
 import SubscriptionsTableToggleSignedButton from './SubscriptionsTableToggleSignedButton';
 import SubscriptionsTableToggleApprovedButton from './SubscriptionsTableToggleApprovedButton';
 import SubscriptionsTableCellDisplayCurrentYearCount from './SubscriptionsTableCellDisplayCurrentYearCount';
@@ -156,7 +156,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
       <TableCell>
         <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
           <div className="flex flex-row items-center justify-start gap-x-2 text-wrap">
-            <SubscriptionLogo subscriptionName={ subName } height={ 20 } />
+            <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
             <CenterUnderline label={ subName } className="break-all" />
           </div>
         </Link>

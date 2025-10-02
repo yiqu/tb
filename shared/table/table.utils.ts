@@ -246,10 +246,52 @@ export function getSubscriptionLogoUrl(subscriptionName: string) {
       logoDarkUrl = 'shield';
       break;
     }
+
+    case 'MongoDB Atlas Flex': {
+      logoLightUrl = 'mongodb';
+      logoDarkUrl = 'mongodb';
+      break;
+    }
   }
 
   return {
     light: `/subs/${logoLightUrl}.png`,
     dark: `/subs/${logoDarkUrl}.png`,
   };
+}
+
+export function getSubscriptionLogoSize(subscriptionName: string) {
+  const name = subscriptionName.trim();
+  switch (name) {
+    case 'MongoDB Atlas Flex': {
+      return 10;
+    }
+    default: {
+      return 20;
+    }
+  }
+}
+
+export function getSubscriptionDetailsHeaderLogoSize(subscriptionName: string) {
+  const name = subscriptionName.trim();
+  switch (name) {
+    case 'MongoDB Atlas Flex': {
+      return 15;
+    }
+    default: {
+      return 30;
+    }
+  }
+}
+
+export function getSubscriptionDetailsTiltCardLogoSize(subscriptionName: string) {
+  const name = subscriptionName.trim();
+  switch (name) {
+    case 'MongoDB Atlas Flex': {
+      return 300;
+    }
+    default: {
+      return 250;
+    }
+  }
 }

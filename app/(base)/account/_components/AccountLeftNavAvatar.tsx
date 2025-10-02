@@ -23,7 +23,7 @@ export default async function AccountLeftNavAvatar() {
       showTooltip={ false }
       displayOverlayContent={ true }
       overlayContent={ <OverLayContent avatarId={ avatarId } /> }
-      imgClassName="-top-[20px] -left-[60px]"
+      overlayContentClassName="-top-[20px] -left-[60px]"
     />
   );
 }

@@ -1,4 +1,3 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
 
 import { useRef, useState } from 'react';
@@ -22,6 +21,7 @@ interface TiltedCardProps {
   showTooltip?: boolean;
   overlayContent?: React.ReactNode;
   displayOverlayContent?: boolean;
+  overlayContentClassName?: string;
   imgClassName?: string;
 }
 
@@ -45,6 +45,7 @@ export default function TiltedCard({
   showTooltip = true,
   overlayContent = null,
   displayOverlayContent = false,
+  overlayContentClassName = '',
   imgClassName = '',
 }: TiltedCardProps) {
   const ref = useRef<HTMLElement>(null);
@@ -136,13 +137,11 @@ export default function TiltedCard({
         <motion.img
           src={ imageSrc }
           alt={ altText }
-          className={ cn(
-            `
-              absolute top-0 left-0
-              [transform:translateZ(0)]
-              rounded-[15px] object-cover will-change-transform
-            `,
-          ) }
+          className={ cn(`
+            absolute top-0 left-0
+            [transform:translateZ(0)]
+            rounded-[15px] object-cover will-change-transform
+          `, imgClassName) }
           style={ {
             width: imageWidth,
             height: imageHeight,
@@ -151,14 +150,11 @@ export default function TiltedCard({
 
         { displayOverlayContent && overlayContent ?
           <motion.div
-            className={ cn(
-              `
-                absolute top-0 left-0 z-[2]
-                [transform:translateZ(30px)]
-                will-change-transform
-              `,
-              imgClassName,
-            ) }
+            className={ cn(`
+              absolute top-0 left-0 z-[2]
+              [transform:translateZ(30px)]
+              will-change-transform
+            `, overlayContentClassName) }
           >
             { overlayContent }
           </motion.div>
@@ -168,8 +164,8 @@ export default function TiltedCard({
       { showTooltip ?
         <motion.figcaption
           className={ `
-            pointer-events-none absolute top-0 left-0 z-[3] hidden rounded-[4px] bg-white px-[10px] py-[4px]
-            text-[10px] text-[#2d2d2d] opacity-0
+            pointer-events-none absolute top-0 left-0 z-[3] hidden rounded-[4px] bg-white px-[10px] py-[4px] text-[10px] text-[#2d2d2d]
+            opacity-0
             sm:block
           ` }
           style={ {

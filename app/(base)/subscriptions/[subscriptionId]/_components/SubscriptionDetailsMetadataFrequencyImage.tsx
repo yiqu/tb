@@ -23,7 +23,7 @@ export default async function SubscriptionDetailsMetadataFrequencyImage({ freque
       showTooltip={ false }
       displayOverlayContent={ true }
       overlayContent={ <OverLayContent frequency={ frequency } /> }
-      imgClassName="-top-[20px] -left-[60px] select-none"
+      overlayContentClassName="-top-[20px] -left-[60px] select-none"
     />
   );
 }

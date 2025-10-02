@@ -2,8 +2,8 @@ import startCase from 'lodash/startCase';
 
 import Typography from '@/components/typography/Typography';
 import { SparklesText } from '@/components/magicui/sparkles-text';
-import { getSubscriptionLogoUrl } from '@/shared/table/table.utils';
 import TiltedCard from '@/components/reactbits/Components/TiltedCard/TiltedCard';
+import { getSubscriptionLogoUrl, getSubscriptionDetailsTiltCardLogoSize } from '@/shared/table/table.utils';
 
 const IMAGE_WIDTH = 250;
 
@@ -25,15 +25,16 @@ export default function SubscriptionDetailsMetadataSubscriptionImage({
           captionText="Avatar"
           containerHeight={ `${IMAGE_WIDTH}px` }
           containerWidth={ `${IMAGE_WIDTH}px` }
-          imageHeight={ `${IMAGE_WIDTH}px` }
-          imageWidth={ `${IMAGE_WIDTH}px` }
+          imageHeight={ `${getSubscriptionDetailsTiltCardLogoSize(subscriptionName)}px` }
+          imageWidth={ `${getSubscriptionDetailsTiltCardLogoSize(subscriptionName)}px` }
           rotateAmplitude={ 28 }
           scaleOnHover={ 1.06 }
           showMobileWarning={ false }
           showTooltip={ false }
           displayOverlayContent={ true }
           overlayContent={ <OverLayContent frequency={ frequency } /> }
-          imgClassName="-top-[20px] -left-[60px] select-none"
+          overlayContentClassName="-top-[20px] -left-[60px] select-none"
+          imgClassName="object-contain"
         />
       </div>
       <div data-hide-on-theme="light">
@@ -43,15 +44,16 @@ export default function SubscriptionDetailsMetadataSubscriptionImage({
           captionText="Avatar"
           containerHeight={ `${IMAGE_WIDTH}px` }
           containerWidth={ `${IMAGE_WIDTH}px` }
-          imageHeight={ `${IMAGE_WIDTH}px` }
-          imageWidth={ `${IMAGE_WIDTH}px` }
+          imageHeight={ `${getSubscriptionDetailsTiltCardLogoSize(subscriptionName)}px` }
+          imageWidth={ `${getSubscriptionDetailsTiltCardLogoSize(subscriptionName)}px` }
           rotateAmplitude={ 28 }
           scaleOnHover={ 1.06 }
           showMobileWarning={ false }
           showTooltip={ false }
           displayOverlayContent={ true }
           overlayContent={ <OverLayContent frequency={ frequency } /> }
-          imgClassName="-top-[20px] -left-[60px] select-none"
+          overlayContentClassName="-top-[20px] -left-[60px] select-none"
+          imgClassName="object-contain"
         />
       </div>
     </>

@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import LinkAnimated from '@/shared/components/LinkAnimated';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
+import { getSubscriptionDetailsHeaderLogoSize } from '@/shared/table/table.utils';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
@@ -31,7 +32,9 @@ export default async function SubscriptionDetailsHeader({
           label={ subscription.name }
           href={ `/subscriptions/${subscription.id}` }
           prefetch
-          startAdornment={ <SubscriptionLogo subscriptionName={ subscription.name } height={ 30 } /> }
+          startAdornment={
+            <SubscriptionLogo subscriptionName={ subscription.name } height={ getSubscriptionDetailsHeaderLogoSize(subscription.name) } />
+          }
           textClassName="h3"
         />
         <Suspense fallback={ <Loading /> }>

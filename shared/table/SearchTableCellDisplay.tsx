@@ -17,13 +17,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 import LinkClient from './LinkClient';
 import DateDisplay from './DateDisplay';
-import { getFrequencyImageUrl } from './table.utils';
 import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import { TableCellHoverWrapper } from './TableCellHoverWrapper';
 import BillsTableEditBillButton from './BillsTableEditBillButton';
 import BillsTableTogglePaidButton from './BillsTableTogglePaidButton';
 import BillsTableDeleteBillButton from './BillsTableDeleteBillButton';
+import { getFrequencyImageUrl, getSubscriptionLogoSize } from './table.utils';
 import BillsTableToggleReimbursedButton from './BillsTableToggleReimbursedButton';
 import SearchTableCellDisplayDueDateDateDisplay from './SearchTableCellDisplayDueDateDateDisplay';
 
@@ -175,7 +175,7 @@ export default function BillsTableCell({
         <TableCell>
           <LinkClient href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true } className="inline-block">
             <div className="flex flex-row items-center justify-start gap-x-2">
-              <SubscriptionLogo subscriptionName={ subName } height={ 20 } />
+              <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
               <CenterUnderline label={ subName } />
             </div>
           </LinkClient>
