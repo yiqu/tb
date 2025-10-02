@@ -118,6 +118,12 @@ export default function SubscriptionLogo({ subscriptionName, height = 100 }: Sub
       logoDarkUrl = 'shield';
       break;
     }
+
+    case 'MongoDB Atlas Flex': {
+      logoLightUrl = 'mongodb';
+      logoDarkUrl = 'mongodb';
+      break;
+    }
   }
   return (
     <>
