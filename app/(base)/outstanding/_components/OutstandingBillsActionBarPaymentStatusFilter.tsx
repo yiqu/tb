@@ -108,7 +108,7 @@ export default function OutstandingBillsActionBarPaymentStatusFilter() {
             </SelectGroup>
             <SelectSeparator />
             <SelectGroup>
-              <SelectLabel>Only</SelectLabel>
+              <SelectLabel>Contains</SelectLabel>
               { STATUS_OPTIONS_1.map((option) => (
                 <SelectItem key={ option.value } value={ option.value }>
                   { option.label }

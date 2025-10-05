@@ -31,7 +31,6 @@ export default function ToggleFavoriteDialog({ isOpen, handleOnOpenEditDialog, c
               <Typography>{ getFavoriteActionLabel(action, false, true) }</Typography>
               <Typography>{ getFavoriteEntityEntityTypeLabel(type) }.</Typography>
             </div>
-            <div className="flex flex-row items-center justify-end gap-x-2"></div>
           </div>
         }
       >

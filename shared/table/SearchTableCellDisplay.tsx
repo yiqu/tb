@@ -153,18 +153,22 @@ export default function BillsTableCell({
   if (colId === 'paid') {
     const isPaid = !!billDue.paid;
     return (
-      <TableCell>
-        <BillsTableTogglePaidButton isPaid={ isPaid } billDueId={ billDue.id } subscriptionId={ billDue.subscriptionId } />
-      </TableCell>
+      <TableCellHoverWrapper payload={ 'paid-only' } columnId={ 'paymentStatus' } showHoverFilter={ showHoverFilter }>
+        <TableCell>
+          <BillsTableTogglePaidButton isPaid={ isPaid } billDueId={ billDue.id } subscriptionId={ billDue.subscriptionId } />
+        </TableCell>
+      </TableCellHoverWrapper>
     );
   }
 
   if (colId === 'reimbursed') {
     const isReimbursed = !!billDue.reimbursed;
     return (
-      <TableCell>
-        <BillsTableToggleReimbursedButton isReimbursed={ isReimbursed } billDueId={ billDue.id } subscriptionId={ billDue.subscriptionId } />
-      </TableCell>
+      <TableCellHoverWrapper payload={ 'reimbursed-only' } columnId={ 'paymentStatus' } showHoverFilter={ showHoverFilter }>
+        <TableCell>
+          <BillsTableToggleReimbursedButton isReimbursed={ isReimbursed } billDueId={ billDue.id } subscriptionId={ billDue.subscriptionId } />
+        </TableCell>
+      </TableCellHoverWrapper>
     );
   }
 
@@ -198,8 +202,13 @@ export default function BillsTableCell({
                 hover:border-border hover:bg-accent
               ` }
             >
-              <DateDisplay date={ billDue.updatedAt } dateFormat="MM/dd/yy" />
-              <DateRelativeDisplay time={ billDue.updatedAt } includeParenthesis className="truncate" />
+              { `${billDue.updatedAt}` === `${billDue.dateAdded}` ?
+                <Typography variant="nodata1">N/A</Typography>
+              : <>
+                <DateDisplay date={ billDue.updatedAt } dateFormat="MM/dd/yy" />
+                <DateRelativeDisplay time={ billDue.updatedAt } includeParenthesis className="truncate" />
+              </>
+              }
             </div>
           </PopoverTrigger>
           <PopoverContent>

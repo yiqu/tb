@@ -15,6 +15,7 @@ import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import SubscriptionsTableAddDueBillButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableAddDueBillButton';
+import SubscriptionsTableEditFavoriteButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableEditFavoriteButton';
 import SubscriptionsTableEditSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableEditSubscriptionButton';
 import SubscriptionsTableDeleteSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableDeleteSubscriptionButton';
 
@@ -152,14 +153,23 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
 
   if (colId === 'name') {
     const subName = subscription.name;
+    const isFavorited: boolean = (subscription.favorites ?? []).length > 0;
+
     return (
       <TableCell>
-        <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
-          <div className="flex flex-row items-center justify-start gap-x-2 text-wrap">
-            <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
-            <CenterUnderline label={ subName } className="break-all" />
+        <div className="flex h-full flex-row items-center justify-between gap-x-2">
+          <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
+            <div className="flex flex-row items-center justify-start gap-x-2 text-wrap">
+              <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
+              <CenterUnderline label={ subName } className="break-all" />
+            </div>
+          </Link>
+          <div>
+            { isFavorited ?
+              <SubscriptionsTableEditFavoriteButton subscription={ subscription } />
+            : null }
           </div>
-        </Link>
+        </div>
       </TableCell>
     );
   }
@@ -175,7 +185,11 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
   if (colId === 'billDuesCurrentYearTotalCost') {
     return (
       <TableCell>
-        <Typography className="truncate" variant={ subscription.billDuesCurrentYearTotalCost ? 'labelvalue1' : 'nodata1' }>
+        <Typography
+          className="truncate"
+          variant={ subscription.billDuesCurrentYearTotalCost ? 'labelvalue1' : 'nodata1' }
+          title={ `Outstanding cost this year: ${subscription.billDuesCurrentYearTotalCost}` }
+        >
           { useFormatter.format(subscription.billDuesCurrentYearTotalCost ?? 0) }
         </Typography>
       </TableCell>
@@ -196,8 +210,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
                 hover:border-border hover:bg-accent
               ` }
             >
-              <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" />
-              <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis className="truncate" />
+              { `${subscription.updatedAt}` === `${subscription.dateAdded}` ?
+                <Typography variant="nodata1">N/A</Typography>
+              : <>
+                <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" />
+                <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis className="truncate" />
+              </>
+              }
             </div>
           </PopoverTrigger>
           <PopoverContent>

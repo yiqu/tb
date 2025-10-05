@@ -8,7 +8,7 @@ export default function BillsTableParentRow({ billDue }: { billDue: BillDueWithS
   return (
     <BillsTableParentRowWrapper key={ billDue.id } billDue={ billDue }>
       { SEARCH_TABLE_COLUMN_IDS.map((column: SearchTableColumn) => (
-        <BillsTableCell key={ column.headerId } colId={ column.headerId } billDue={ billDue } />
+        <BillsTableCell key={ column.headerId } colId={ column.headerId } billDue={ billDue } showHoverFilter />
       )) }
     </BillsTableParentRowWrapper>
   );

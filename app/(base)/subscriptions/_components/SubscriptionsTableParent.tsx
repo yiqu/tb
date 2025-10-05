@@ -11,7 +11,7 @@ import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server'
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { SearchTableColumn, SUBSCRIPTIONS_TABLE_COLUMN_IDS } from '@/shared/table/table.utils';
 import { subscriptionSearchParamsSchema } from '@/validators/subscriptions/subscriptions.schema';
-import { getAllSubscriptionsWithBillDuesPaginated } from '@/server/subscriptions/subscriptions.server';
+import { getAllSubscriptionsWithBillDuesPaginatedCached } from '@/server/subscriptions/subscriptions.server';
 import { SubscriptionWithBillDues, SubscriptionWithBillDuesAndSortData } from '@/models/subscriptions/subscriptions.model';
 
 import SubscriptionsTableParentRow from './SubscriptionsTableParentRow';
@@ -25,7 +25,7 @@ export default async function SubscriptionsTableParent({ searchParamsPromise, pa
   const searchParams: z.infer<typeof subscriptionSearchParamsSchema> = await searchParamsPromise;
   const pagination: PaginationDataModel | null = await paginationPromise;
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions);
-  const subscriptions: SubscriptionWithBillDuesAndSortData = await getAllSubscriptionsWithBillDuesPaginated(
+  const subscriptions: SubscriptionWithBillDuesAndSortData = await getAllSubscriptionsWithBillDuesPaginatedCached(
     sortData,
     pagination,
     searchParams,

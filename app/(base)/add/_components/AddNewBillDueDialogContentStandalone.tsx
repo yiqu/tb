@@ -1,7 +1,6 @@
 'use client';
 
 import z from 'zod';
-import { Suspense } from 'react';
 import { useQueryState } from 'nuqs';
 import { useQuery } from '@tanstack/react-query';
 
@@ -44,15 +43,14 @@ export default function AddNewBillDueDialogContentStandalone({}: {
   }
 
   return (
-    <Suspense fallback={ <Loading /> }>
-      <AddNewBillDueDialogContentFormWrapper subscriptionId={ addBillDueSubscriptionId } subscription={ data } key={ addBillDueSubscriptionId }>
-        <AddNewBillDueDialogContentCard subscription={ data } />
-        <AddNewBillDueDialogFooter />
-      </AddNewBillDueDialogContentFormWrapper>
-    </Suspense>
+    <AddNewBillDueDialogContentFormWrapper subscriptionId={ addBillDueSubscriptionId } subscription={ data } key={ addBillDueSubscriptionId }>
+      <AddNewBillDueDialogContentCard subscription={ data } />
+      <AddNewBillDueDialogFooter />
+    </AddNewBillDueDialogContentFormWrapper>
   );
 }
 
+// eslint-disable-next-line no-unused-vars
 function Loading() {
   return (
     <>

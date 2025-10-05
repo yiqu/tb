@@ -14,6 +14,7 @@ export function TableCellHoverFilterAddButton({ payload, columnId }: TableCellHo
   const [filterValue, setFilter] = useQueryState(columnId, {
     scroll: false,
     shallow: false,
+    history: 'push',
   });
   const isPayloadAlreadyInFilter: boolean = (filterValue ?? '').includes(payload);
 
@@ -23,15 +24,9 @@ export function TableCellHoverFilterAddButton({ payload, columnId }: TableCellHo
       const filters: string[] = (filterValue ?? '').trim().split(',');
       const newFilters = filters.filter((filter) => filter !== payload);
       const newFilterValue = newFilters.join(',');
-      setFilter(newFilterValue === '' ? null : newFilterValue, {
-        scroll: false,
-        shallow: false,
-      });
+      setFilter(newFilterValue === '' ? null : newFilterValue);
     } else {
-      setFilter(payload, {
-        scroll: false,
-        shallow: false,
-      });
+      setFilter(payload);
     }
   };
 

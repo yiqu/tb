@@ -1,4 +1,5 @@
 import { SortDataModel } from '../sort-data/SortData.model';
+import { FavoriteEntity } from '../favorites/favorite.model';
 import { BillDueWithSubscription } from '../bills/bills.model';
 
 export interface SubscriptionPostBody {
@@ -32,6 +33,7 @@ export interface SubscriptionWithBillDues extends SubscriptionOriginal {
   billDues: BillDueWithSubscription[];
   billDuesCurrentYearCount?: number;
   billDuesCurrentYearTotalCost?: number;
+  favorites?: FavoriteEntity[];
 }
 
 export const BILL_CYCLE_DURATION_OPTIONS = [

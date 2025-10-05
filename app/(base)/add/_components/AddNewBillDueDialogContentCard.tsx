@@ -1,7 +1,4 @@
-import { Suspense } from 'react';
-
 import { CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import DisplayCard from '@/shared/components/DisplayCard';
 import DisplayCardContentDivider from '@/shared/components/DisplayCardContentDivider';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
@@ -17,9 +14,7 @@ export default function AddNewBillDueDialogContentCard({ subscription }: { subsc
     <div className="px-4">
       <DisplayCard>
         <CardContent className="flex w-full flex-col items-start justify-start gap-y-4">
-          <Suspense fallback={ <AddBillSubscriptionNameSkeleton /> }>
-            <AddBillSubscriptionName subscriptionName={ subscription.name } />
-          </Suspense>
+          <AddBillSubscriptionName subscriptionName={ subscription.name } />
           <AddBillDueDate />
           <DisplayCardContentDivider />
           <AddBillCurrency />
@@ -31,8 +26,4 @@ export default function AddNewBillDueDialogContentCard({ subscription }: { subsc
       </DisplayCard>
     </div>
   );
-}
-
-function AddBillSubscriptionNameSkeleton() {
-  return <Skeleton className="h-6 w-[6rem]" />;
 }

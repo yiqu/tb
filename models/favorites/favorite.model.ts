@@ -54,3 +54,14 @@ export const getFavoriteActionLabel = (action: FavoriteActionType, isWorking: bo
   }
   return res;
 };
+
+export type FavoriteEntity = {
+  billDueId: string | null;
+  entityType: FavoriteEntityEntityTypeType;
+  id: string;
+  name: string;
+  subscriptionId: string | null;
+  dateAdded: Date;
+  updatedAt: Date | null;
+  url: string | null;
+};

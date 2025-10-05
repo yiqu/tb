@@ -9,7 +9,7 @@ import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
-import { CACHE_TAG_FAVORITES_PREFIX } from '@/constants/constants';
+import { CACHE_TAG_FAVORITES_PREFIX, CACHE_TAG_SUBSCRIPTIONS_ALL } from '@/constants/constants';
 import { FavoriteActionType, FavoriteEntityResponse, FavoriteEntityEntityTypeType } from '@/models/favorites/favorite.model';
 
 export async function revalidateIsFavoriteByEntityTypeAndId(entityType: FavoriteEntityEntityTypeType, id: string) {
@@ -75,6 +75,7 @@ export async function toggleFavoriteBySubscriptionId(
       });
 
       revalidateIsFavoriteByEntityTypeAndId('SUBSCRIPTION', subscriptionId);
+      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
       return res;
     } else if (status === 'EDIT') {
       const res = await prisma.favoriteEntity.update({
@@ -83,6 +84,7 @@ export async function toggleFavoriteBySubscriptionId(
       });
 
       revalidateIsFavoriteByEntityTypeAndId('SUBSCRIPTION', subscriptionId);
+      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
       return res;
     } else if (status === 'DELETE') {
       const res = await prisma.favoriteEntity.delete({
@@ -90,6 +92,7 @@ export async function toggleFavoriteBySubscriptionId(
       });
 
       revalidateIsFavoriteByEntityTypeAndId('SUBSCRIPTION', subscriptionId);
+      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
       return res;
     }
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {

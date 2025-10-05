@@ -152,6 +152,7 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
             subscription: true,
           },
         },
+        favorites: true,
       },
       where: whereClause.AND.length > 0 ? whereClause : {},
     });
@@ -345,7 +346,6 @@ export async function updateSubscription(
   subscriptionId: string,
   payload: z.infer<typeof subscriptionEditableSchema>,
 ): Promise<SubscriptionWithBillDues> {
-
   try {
     const subscription: SubscriptionWithBillDues = await prisma.subscription.update({
       where: { id: subscriptionId },
