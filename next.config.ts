@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     useCache: true,
     ppr: 'incremental',
     clientSegmentCache: true,
-    turbopackPersistentCachingForBuild: true,
+    //turbopackPersistentCachingForBuild: true,
     // turbopackPersistentCachingForDev: true,
   },
   reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
