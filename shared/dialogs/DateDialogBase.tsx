@@ -7,13 +7,8 @@ import { EST_TIME_ZONE } from '@/lib/general.utils';
 import Typography from '@/components/typography/Typography';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 
-export default async function DateDialogContent({ dateTime, isIso = false }: { isIso?: boolean; dateTime: any }) {
+export default async function DateDialogContentBase({ dateString, isIso = false }: { dateString: string; isIso?: boolean }) {
   await connection();
-
-  const dateString = DateTime.fromISO(new Date(dateTime ?? '').toISOString())
-    .setZone(EST_TIME_ZONE)
-    .toMillis()
-    .toString();
 
   const dateDisplay =
     isIso ?

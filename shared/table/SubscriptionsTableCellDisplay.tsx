@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { DateTime } from 'luxon';
+import { Suspense } from 'react';
 import startCase from 'lodash/startCase';
 import { ExternalLinkIcon } from 'lucide-react';
 
@@ -220,12 +221,9 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
             </div>
           </PopoverTrigger>
           <PopoverContent>
-            <DateDialogContent
-              dateString={ DateTime.fromISO(new Date(subscription.updatedAt ?? '').toISOString())
-                .setZone(EST_TIME_ZONE)
-                .toMillis()
-                .toString() }
-            />
+            <Suspense>
+              <DateDialogContent dateTime={ subscription.updatedAt } />
+            </Suspense>
           </PopoverContent>
         </Popover>
       </TableCell>

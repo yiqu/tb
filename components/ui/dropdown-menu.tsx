@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/enforce-consistent-important-position */
 'use client';
 
 import * as React from 'react';

@@ -23,7 +23,7 @@ export default function DateDisplay({
   const isClient = useIsClient();
 
   if (!isClient) {
-    return <Skeleton className={ cn('h-6 w-[50%]', clientLoadingClassName) } />;
+    return <Skeleton className={ cn('h-5 w-[50%]', clientLoadingClassName) } />;
   }
 
   if (!date) {

@@ -2,12 +2,11 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { DateTime } from 'luxon';
 import { Suspense } from 'react';
 import startCase from 'lodash/startCase';
 
 import { TableCell } from '@/components/ui/table';
-import { EST_TIME_ZONE } from '@/lib/general.utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
@@ -19,6 +18,7 @@ import LinkClient from './LinkClient';
 import DateDisplay from './DateDisplay';
 import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
+import DateDialogContentBase from '../dialogs/DateDialogBase';
 import { TableCellHoverWrapper } from './TableCellHoverWrapper';
 import BillsTableEditBillButton from './BillsTableEditBillButton';
 import BillsTableTogglePaidButton from './BillsTableTogglePaidButton';
@@ -100,9 +100,7 @@ export default function BillsTableCell({
         <Popover>
           <PopoverTrigger asChild>
             <div
-              title={ `${DateTime.fromISO(new Date(billDue.dateAdded ?? '').toISOString())
-                .setZone(EST_TIME_ZONE)
-                .toLocaleString(DateTime.DATETIME_MED)}` }
+              title={ `${billDue.dateAdded}` }
               className={ `
                 flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
                 hover:border-border hover:bg-accent
@@ -113,12 +111,9 @@ export default function BillsTableCell({
             </div>
           </PopoverTrigger>
           <PopoverContent>
-            <DateDialogContent
-              dateString={ DateTime.fromISO(new Date(billDue.dateAdded ?? '').toISOString())
-                .setZone(EST_TIME_ZONE)
-                .toMillis()
-                .toString() }
-            />
+            <Suspense>
+              <DateDialogContent dateTime={ billDue.dateAdded } />
+            </Suspense>
           </PopoverContent>
         </Popover>
       </TableCell>
@@ -136,13 +131,15 @@ export default function BillsTableCell({
                 hover:border-border hover:bg-accent
               ` }
             >
-              <SearchTableCellDisplayDueDateDateDisplay date={ billDue.dueDate } billDue={ billDue } />
+              <Suspense fallback={ <Skeleton className="size-5 rounded-full" /> }>
+                <SearchTableCellDisplayDueDateDateDisplay date={ billDue.dueDate } billDue={ billDue } />
+              </Suspense>
               <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis={ false } />
             </div>
           </PopoverTrigger>
           <PopoverContent>
             <Suspense>
-              <DateDialogContent dateString={ billDue.dueDate } />
+              <DateDialogContentBase dateString={ billDue.dueDate } />
             </Suspense>
           </PopoverContent>
         </Popover>
@@ -194,9 +191,7 @@ export default function BillsTableCell({
         <Popover>
           <PopoverTrigger asChild>
             <div
-              title={ `${DateTime.fromISO(new Date(billDue.updatedAt ?? '').toISOString())
-                .setZone(EST_TIME_ZONE)
-                .toLocaleString(DateTime.DATETIME_MED)}` }
+              title={ `${billDue.updatedAt}` }
               className={ `
                 flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
                 hover:border-border hover:bg-accent
@@ -212,12 +207,9 @@ export default function BillsTableCell({
             </div>
           </PopoverTrigger>
           <PopoverContent>
-            <DateDialogContent
-              dateString={ DateTime.fromISO(new Date(billDue.updatedAt ?? '').toISOString())
-                .setZone(EST_TIME_ZONE)
-                .toMillis()
-                .toString() }
-            />
+            <Suspense>
+              <DateDialogContent dateTime={ billDue.updatedAt } />
+            </Suspense>
           </PopoverContent>
         </Popover>
       </TableCell>

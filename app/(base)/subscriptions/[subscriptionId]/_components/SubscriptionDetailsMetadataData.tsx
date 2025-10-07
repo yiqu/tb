@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { DateTime } from 'luxon';
+import { Suspense } from 'react';
 import startCase from 'lodash/startCase';
 import { ExternalLinkIcon } from 'lucide-react';
 
@@ -8,8 +9,8 @@ import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { getUSDFormatter } from '@/lib/number.utils';
 import DateDisplay from '@/shared/table/DateDisplay';
 import Typography from '@/components/typography/Typography';
-import DateDialogContent from '@/shared/dialogs/DateDialog';
 import { getFrequencyImageUrl } from '@/shared/table/table.utils';
+import DateDialogContentBase from '@/shared/dialogs/DateDialogBase';
 import DateRelativeDisplay from '@/shared/table/DateRelativeDisplay';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
@@ -81,7 +82,9 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
             </div>
           </PopoverTrigger>
           <PopoverContent className="min-w-96">
-            <DateDialogContent dateString={ `${subscription.updatedAt}` } isIso />
+            <Suspense>
+              <DateDialogContentBase dateString={ `${subscription.updatedAt}` } isIso />
+            </Suspense>
           </PopoverContent>
         </Popover>
       </div>
@@ -104,7 +107,9 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
             </div>
           </PopoverTrigger>
           <PopoverContent className="min-w-96">
-            <DateDialogContent dateString={ `${subscription.dateAdded}` } isIso />
+            <Suspense>
+              <DateDialogContentBase dateString={ `${subscription.dateAdded}` } isIso />
+            </Suspense>
           </PopoverContent>
         </Popover>
       </div>

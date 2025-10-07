@@ -11,6 +11,7 @@
     "build2": "next build",
     "build-nl": "next build --no-lint",
     "build-turbo": "next build --turbopack",
+    "build-debug-ppr": "next build --debug-prerender",
     "start": "next start",
     "lint": "next lint",
     "prettier-check": "npx prettier --check app",

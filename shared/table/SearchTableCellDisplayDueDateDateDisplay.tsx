@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { connection } from 'next/server';
 import { AlarmClock, CircleAlert, CircleCheck } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -7,7 +8,14 @@ import { BillDueWithSubscription } from '@/models/bills/bills.model';
 
 import DateDisplay from './DateDisplay';
 
-export default function SearchTableCellDisplayDueDateDateDisplay({ date, billDue }: { date: string; billDue: BillDueWithSubscription }) {
+export default async function SearchTableCellDisplayDueDateDateDisplay({
+  date,
+  billDue,
+}: {
+  date: string;
+  billDue: BillDueWithSubscription;
+}) {
+  await connection();
   let isDueDateInCurrentMonth = false;
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const currentDateEpoch = currentDateLuxon.toMillis();

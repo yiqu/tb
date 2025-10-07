@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/enforce-consistent-important-position */
 'use client';
 
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */

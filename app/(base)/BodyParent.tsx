@@ -5,6 +5,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
+import { cn } from '@/lib/utils';
 import theme from '@/components/ui-mui/mui/theme';
 import Preloads from '@/components/preload/Preloads';
 import AppLayout from '@/components/layout/AppLayout';
@@ -20,7 +21,13 @@ import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server
 
 export default async function BodyParent({ children }: { children: React.ReactNode }) {
   // Preload and apply the saved vibe and font stylesheets on the server to avoid flash
+  // const [vibe, fontOverride] = await Promise.all([getSettingsApplicationVibe(), getSettingsApplicationFont()]);
+
   const [vibe, fontOverride] = await Promise.all([getSettingsApplicationVibe(), getSettingsApplicationFont()]);
+
+  // const cssVariables = getFontVariableByVibe(vibe);
+  // const fontOverrideCssVariables: string | undefined = getFontVariableByFont(fontOverride);
+
   const vibeHref = getVibeStylesheetHref(vibe);
   const fontHref = getFontStylesheetHref(fontOverride);
 
@@ -40,7 +47,7 @@ export default async function BodyParent({ children }: { children: React.ReactNo
         : null }
       </head>
 
-      <body className="font-sans antialiased" id="base-root-layout">
+      <body id="base-root-layout" className={ cn('font-sans antialiased') }>
         <AppTopLoader />
         <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
         <Preloads />

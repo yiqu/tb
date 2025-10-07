@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { connection } from 'next/server';
 
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { Separator } from '@/components/ui/separator';
@@ -9,7 +10,12 @@ import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.m
 
 import SubscriptionDetailsMetadataFooterTotalBillsChart from './SubscriptionDetailsMetadataFooterTotalBillsChart';
 
-export default function SubscriptionDetailsMetadataFooterCurrentYearBills({ subscription }: { subscription: SubscriptionWithBillDues }) {
+export default async function SubscriptionDetailsMetadataFooterCurrentYearBills({
+  subscription,
+}: {
+  subscription: SubscriptionWithBillDues;
+}) {
+  await connection();
   let billsWithInTimeRange: BillDueWithSubscription[] = [];
   const currentYearInNumber: number = DateTime.now().setZone(EST_TIME_ZONE).year;
 

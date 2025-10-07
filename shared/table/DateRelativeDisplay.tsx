@@ -15,7 +15,7 @@ export default function DateRelativeDisplay({
   postFixText = '',
   addSuffix = true,
   className = '',
-  clientLoadingClassName = 'h-6 w-[50%]',
+  clientLoadingClassName = 'h-5 w-[50%]',
 }: {
   time: Date | string | null;
   includeParenthesis?: boolean;
@@ -28,11 +28,11 @@ export default function DateRelativeDisplay({
   const isClient = useIsClient();
 
   if (!isClient) {
-    return <Skeleton className={ cn('h-6 w-[50%]', clientLoadingClassName) } />;
+    return <Skeleton className={ cn('h-5 w-[50%]', clientLoadingClassName) } />;
   }
 
   if (time === '0' || Number.parseInt(time as string) === 0) {
-    return <Skeleton className="h-6 w-[10rem]" />;
+    return <Skeleton className="h-5 w-[10rem]" />;
   }
 
   if (!time) {

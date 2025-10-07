@@ -1,3 +1,4 @@
+/* eslint-disable better-tailwindcss/enforce-consistent-important-position */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-children-prop */
 /* eslint-disable no-unused-vars */
