@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 'use server';
 
 import { cache } from 'react';
+import { Prisma } from '@prisma/client';
 import { revalidateTag } from 'next/cache';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
@@ -15,9 +17,6 @@ import {
   SettingsPersonalInfoAdminModeActionState,
   SettingsPersonalInfoDisplayNameActionState,
 } from '@/models/settings/SettingsPersonalInfo';
-
-// eslint-disable-next-line no-unused-vars
-import type { Prisma } from '@prisma/client';
 
 export async function revalidateUser() {
   revalidateTag('get-user');
