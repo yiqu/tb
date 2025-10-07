@@ -23,6 +23,7 @@ export async function revalidateUser() {
 }
 
 export const getUserCached = cache(async () => {
+  console.log("USER CACHED");
   const res = await getUser();
   return res;
 });
