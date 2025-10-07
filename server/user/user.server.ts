@@ -25,6 +25,11 @@ export async function revalidateUser() {
   revalidateTag('get-user');
 }
 
+export const getUserCached = cache(async () => {
+  const res = await getUser();
+  return res;
+});
+
 export async function addNewUser(user: UserProfileAddable): Promise<UserProfile> {
   try {
     const newUser: UserProfile = await prisma.userProfile.create({
@@ -66,8 +71,6 @@ export async function getUser(): Promise<UserProfile | null> {
     throw new Error(`Users could not be found??. Code: ${error.code}`);
   }
 }
-
-export const getUserCached = cache(getUser);
 
 export async function updateUserAction(
   prevState: SettingsPersonalInfoDisplayNameActionState,
