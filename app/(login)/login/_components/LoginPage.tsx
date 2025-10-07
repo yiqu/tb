@@ -1,17 +1,17 @@
-import { connection } from 'next/server';
+// import { connection } from 'next/server';
 
-import { getUser } from '@/server/user/user.server';
-import { UserProfile } from '@/models/user/user.model';
+// import { getUser } from '@/server/user/user.server';
+// import { UserProfile } from '@/models/user/user.model';
 import Typography from '@/components/typography/Typography';
 
 import AdminPasswordInputParent from './AdminPasswordInputParent';
 
 export default async function LoginComponentPage() {
-  await connection();
+  //await connection();
 
-  const user: UserProfile | null = await getUser();
+  // const user: UserProfile | null = await getUser();
 
-  if (!user) {
+  if (true) {
     return (
       <div>
         <Typography variant="h5">User not found</Typography>
@@ -21,7 +21,7 @@ export default async function LoginComponentPage() {
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
-      <AdminPasswordInputParent user={ user } />
+      <AdminPasswordInputParent user={ null } />
     </div>
   );
 }
