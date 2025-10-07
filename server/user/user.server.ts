@@ -48,7 +48,7 @@ export async function getUserById(id: string) {
     });
     return user;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-    console.error('Server error at getUser(): ', JSON.stringify(error));
+    console.error('Server error at getUser()!!: ', JSON.stringify(error));
     throw new Error(`User '${id}' could not be found. Code: ${error.code}`);
   }
 }
@@ -62,8 +62,8 @@ export async function getUser(): Promise<UserProfile | null> {
     const users = await prisma.userProfile.findFirst();
     return users;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-    console.error('Server error at getUser(): ', JSON.stringify(error));
-    throw new Error(`Users could not be found. Code: ${error.code}`);
+    console.error('Server error at getUser()??: ', JSON.stringify(error));
+    throw new Error(`Users could not be found??. Code: ${error.code}`);
   }
 }
 
