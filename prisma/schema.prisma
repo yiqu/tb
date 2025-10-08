@@ -7,8 +7,14 @@
 // Prisma Steps and commands to run
 // 2. npx prisma generate
 
+// 10/7/2025 commented out because it was causing errors with the prisma client initialization
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
