@@ -1,21 +1,31 @@
+'use client';
+
 import { DateTime } from 'luxon';
-import { connection } from 'next/server';
 import { AlarmClock, CircleAlert, CircleCheck } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import useIsClient from '@/hooks/useIsClient';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 
 import DateDisplay from './DateDisplay';
 
-export default async function SearchTableCellDisplayDueDateDateDisplay({
+export default function SearchTableCellDisplayDueDateDateDisplay({
   date,
   billDue,
+  clientLoadingClassName,
 }: {
   date: string;
   billDue: BillDueWithSubscription;
+  clientLoadingClassName?: string;
 }) {
-  await connection();
+  const isClient = useIsClient();
+
+  if (!isClient) {
+    return <Skeleton className={ cn('h-5 w-[58.7px]', clientLoadingClassName) } />;
+  }
+
   let isDueDateInCurrentMonth = false;
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const currentDateEpoch = currentDateLuxon.toMillis();

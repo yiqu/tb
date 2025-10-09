@@ -6,7 +6,6 @@ import { Suspense } from 'react';
 import startCase from 'lodash/startCase';
 
 import { TableCell } from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
@@ -131,9 +130,7 @@ export default function BillsTableCell({
                 hover:border-border hover:bg-accent
               ` }
             >
-              <Suspense fallback={ <Skeleton className="size-5 rounded-full" /> }>
-                <SearchTableCellDisplayDueDateDateDisplay date={ billDue.dueDate } billDue={ billDue } />
-              </Suspense>
+              <SearchTableCellDisplayDueDateDateDisplay date={ billDue.dueDate } billDue={ billDue } />
               <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis={ false } />
             </div>
           </PopoverTrigger>
