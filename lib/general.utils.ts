@@ -68,11 +68,11 @@ export function removeEmptyFromObject(obj: any): any {
     return {};
   }
   const result = JSON.parse(JSON.stringify(obj));
-  Object.keys(result).forEach((key) => {
+  for (const key of Object.keys(result)) {
     if (result[key] === null || result[key] === undefined) {
       delete result[key];
     }
-  });
+  }
   return result;
 }
 
@@ -142,47 +142,11 @@ export const getMonthNumberToShortMonthName: { [key: string]: string } = {
   12: 'December',
 };
 
-export const YEAR_OPTIONS = [
-  '2020',
-  '2021',
-  '2022',
-  '2023',
-  '2024',
-  '2025',
-  '2026',
-  '2027',
-  '2028',
-  '2029',
-  'All',
-].reverse();
+export const YEAR_OPTIONS = ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', 'All'].reverse();
 
-export const YEAR_OPTIONS_ONLY_YEARS = [
-  '2020',
-  '2021',
-  '2022',
-  '2023',
-  '2024',
-  '2025',
-  '2026',
-  '2027',
-  '2028',
-  '2029',
-  '2030',
-].reverse();
+export const YEAR_OPTIONS_ONLY_YEARS = ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'].reverse();
 
-export const YEAR_OPTIONS2 = [
-  '2020',
-  '2021',
-  '2022',
-  '2023',
-  '2024',
-  '2025',
-  '2026',
-  '2027',
-  '2028',
-  '2029',
-  'all',
-].reverse();
+export const YEAR_OPTIONS2 = ['2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029', 'all'].reverse();
 
 export const MONTHS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 export const MONTHS_REVERSE = ['12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1'];

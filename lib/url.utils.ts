@@ -3,9 +3,9 @@ export const VERCEL_PROJECT_STATUS = 'https://vercel.com/api/v1';
 
 export function getParamsAsObject(params: URLSearchParams): { [key: string]: string } {
   const currentParams: { [key: string]: string } = {};
-  params.forEach((value, key) => {
+  for (const [key, value] of params.entries()) {
     currentParams[key] = value;
-  });
+  }
   return currentParams;
 }
 

@@ -33,7 +33,7 @@ export const splitNumberByDot = (num: number): [number, string] => {
 
 export function isNumberDecimal(value: string | number): boolean {
   const valueToTest = `${value}`;
-  return valueToTest.indexOf('.') == -1;
+  return !valueToTest.includes('.');
 }
 
 export const roundNumber = (num: number, decimalPlaces: number = 2) => {
@@ -56,10 +56,7 @@ export const getRangeBetween = (start: number, end: number, step: number = 1) =>
   return output;
 };
 
-export const getUSDFormatter = (
-  minimumFractionDigits: number = 2,
-  maximumFractionDigits: number = 2,
-): Intl.NumberFormat => {
+export const getUSDFormatter = (minimumFractionDigits: number = 2, maximumFractionDigits: number = 2): Intl.NumberFormat => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -68,10 +65,7 @@ export const getUSDFormatter = (
   });
 };
 
-export const getPercentFormatter = (
-  minimumFractionDigits: number = 2,
-  maximumFractionDigits: number = 2,
-): Intl.NumberFormat => {
+export const getPercentFormatter = (minimumFractionDigits: number = 2, maximumFractionDigits: number = 2): Intl.NumberFormat => {
   return new Intl.NumberFormat('en-US', {
     style: 'percent',
     minimumFractionDigits,

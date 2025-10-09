@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-array-for-each */
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-array-index-key */

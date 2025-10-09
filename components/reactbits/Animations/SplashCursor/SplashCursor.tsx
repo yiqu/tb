@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-array-for-each */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
