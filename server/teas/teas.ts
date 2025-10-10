@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
-import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
+import { updateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 
 import { Tea } from '@/models/teas/teas.models';
 import { API_TIMEOUT } from '@/constants/constants';
@@ -30,5 +30,5 @@ export async function getTeas(): Promise<Tea[]> {
 }
 
 export async function revalidateTeaList() {
-  revalidateTag('tea-list');
+  updateTag('tea-list');
 }

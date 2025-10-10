@@ -1,9 +1,9 @@
 'use server';
 
 import { cache } from 'react';
+import { updateTag } from 'next/cache';
 // eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
-import { revalidateTag } from 'next/cache';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 
@@ -46,9 +46,9 @@ export async function upsertSortData2(sortData: SortDataUpsertable): Promise<Sor
         },
       });
 
-      revalidateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
-      revalidateTag(CACHE_TAG_BILL_DUES_ALL);
-      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
+      updateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
+      updateTag(CACHE_TAG_BILL_DUES_ALL);
+      updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
       return updatedSortData;
     } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -62,9 +62,9 @@ export async function upsertSortData2(sortData: SortDataUpsertable): Promise<Sor
         data: sortData,
       });
 
-      revalidateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
-      revalidateTag(CACHE_TAG_BILL_DUES_ALL);
-      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
+      updateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
+      updateTag(CACHE_TAG_BILL_DUES_ALL);
+      updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
       return newSortData;
     } catch (error: Prisma.PrismaClientKnownRequestError | any) {

@@ -2,9 +2,9 @@
 
 import z from 'zod';
 import { cache } from 'react';
+import { updateTag } from 'next/cache';
 // eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
-import { revalidateTag } from 'next/cache';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 
@@ -13,7 +13,7 @@ import { CACHE_TAG_FAVORITES_PREFIX, CACHE_TAG_SUBSCRIPTIONS_ALL } from '@/const
 import { FavoriteActionType, FavoriteEntityResponse, FavoriteEntityEntityTypeType } from '@/models/favorites/favorite.model';
 
 export async function revalidateIsFavoriteByEntityTypeAndId(entityType: FavoriteEntityEntityTypeType, id: string) {
-  revalidateTag(`${CACHE_TAG_FAVORITES_PREFIX}${entityType}-${id}`);
+  updateTag(`${CACHE_TAG_FAVORITES_PREFIX}${entityType}-${id}`);
 }
 
 export const getIsFavoriteByEntityTypeAndIdCached = cache(async (entityType: FavoriteEntityEntityTypeType, id: string) => {
@@ -75,7 +75,7 @@ export async function toggleFavoriteBySubscriptionId(
       });
 
       revalidateIsFavoriteByEntityTypeAndId('SUBSCRIPTION', subscriptionId);
-      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
+      updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
       return res;
     } else if (status === 'EDIT') {
       const res = await prisma.favoriteEntity.update({
@@ -84,7 +84,7 @@ export async function toggleFavoriteBySubscriptionId(
       });
 
       revalidateIsFavoriteByEntityTypeAndId('SUBSCRIPTION', subscriptionId);
-      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
+      updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
       return res;
     } else if (status === 'DELETE') {
       const res = await prisma.favoriteEntity.delete({
@@ -92,7 +92,7 @@ export async function toggleFavoriteBySubscriptionId(
       });
 
       revalidateIsFavoriteByEntityTypeAndId('SUBSCRIPTION', subscriptionId);
-      revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
+      updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
       return res;
     }
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {

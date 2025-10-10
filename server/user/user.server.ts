@@ -2,8 +2,8 @@
 'use server';
 
 import { cache } from 'react';
+import { updateTag } from 'next/cache';
 import { Prisma } from '@prisma/client';
-import { revalidateTag } from 'next/cache';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 
@@ -19,7 +19,7 @@ import {
 } from '@/models/settings/SettingsPersonalInfo';
 
 export async function revalidateUser() {
-  revalidateTag('get-user');
+  updateTag('get-user');
 }
 
 export const getUserCached = cache(async () => {

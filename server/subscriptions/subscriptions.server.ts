@@ -7,7 +7,7 @@ import { cache } from 'react';
 import { DateTime } from 'luxon';
 import { Prisma } from '@prisma/client';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
-import { revalidateTag, unstable_cacheTag as cacheTag } from 'next/cache';
+import { updateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 
 import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';
@@ -36,19 +36,19 @@ import {
 import { getSortedSubscriptions } from './subscriptions.utils';
 
 export async function revalidateBillDue() {
-  revalidateTag(CACHE_TAG_BILL_DUES_ALL);
+  updateTag(CACHE_TAG_BILL_DUES_ALL);
 }
 
 export async function revalidateSubscriptions() {
-  revalidateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
+  updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 }
 
 export async function revalidateSubscriptionDetails(subscriptionId: string) {
-  revalidateTag(`${CACHE_TAG_SUBSCRIPTION_DETAILS}${subscriptionId}`);
+  updateTag(`${CACHE_TAG_SUBSCRIPTION_DETAILS}${subscriptionId}`);
 }
 
 export async function revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId: string) {
-  revalidateTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}${subscriptionId}`);
+  updateTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}${subscriptionId}`);
 }
 
 export const getAllSubscriptionsCached = cache(async () => {

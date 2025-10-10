@@ -1,9 +1,9 @@
 'use server';
 
 import { cache } from 'react';
+import { updateTag } from 'next/cache';
 // eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
-import { revalidateTag } from 'next/cache';
 import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 
@@ -12,7 +12,7 @@ import { CACHE_TAG_PAGINATION_DATA_PREFIX } from '@/constants/constants';
 import { PaginationDataModel, PaginationDataUpsertable } from '@/models/pagination-data/pagination-data.model';
 
 export async function revalidatePaginationForPage(pageId: string) {
-  revalidateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${pageId}`);
+  updateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${pageId}`);
 }
 
 export const getPaginationDataForPageIdCached = cache(async (pageId: string) => {
@@ -61,7 +61,7 @@ export async function upsertPaginationData(paginationData: PaginationDataUpserta
         },
       });
 
-      revalidateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${paginationData.pageId}`);
+      updateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${paginationData.pageId}`);
 
       return updatedPaginationData;
     } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -75,7 +75,7 @@ export async function upsertPaginationData(paginationData: PaginationDataUpserta
         data: paginationData,
       });
 
-      revalidateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${paginationData.pageId}`);
+      updateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${paginationData.pageId}`);
 
       return newPaginationData;
     } catch (error: Prisma.PrismaClientKnownRequestError | any) {
