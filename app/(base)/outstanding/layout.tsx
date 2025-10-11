@@ -13,8 +13,6 @@ import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 const layoutMetadata = getLayoutMetadata('Outstanding', 'View outstanding bills');
 export const metadata: Metadata = layoutMetadata;
 
-export const experimental_ppr = true;
-
 export default function OutstandingLayout({ children }: { children: ReactNode; params: Promise<any> }) {
   return (
     <div id="bills-layout-parent">

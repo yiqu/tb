@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
     //turbopackPersistentCachingForBuild: true,
     // turbopackPersistentCachingForDev: true,
     cacheComponents: true,
+    turbopackFileSystemCacheForBuild: true,
+    turbopackFileSystemCacheForDev: true,
   },
   reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
   // typedRoutes: true

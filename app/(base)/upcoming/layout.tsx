@@ -13,8 +13,6 @@ import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 const layoutMetadata = getLayoutMetadata('Upcoming', 'View upcoming bills');
 export const metadata: Metadata = layoutMetadata;
 
-export const experimental_ppr = true;
-
 export default function UpcomingLayout({ children }: { children: ReactNode; params: Promise<any> }) {
   return (
     <div id="bills-layout-parent">

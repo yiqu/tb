@@ -13,8 +13,6 @@ export const metadata: Metadata = {
   description: 'View all of your dates.',
 };
 
-export const experimental_ppr = true;
-
 export default function DatesLayout({ children }: LayoutProps<'/dates'>) {
   return (
     <div id="dates-layout-parent">

@@ -6,8 +6,6 @@ import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
 import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
 import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
-export const experimental_ppr = true;
-
 export default function AddNewEntityLayout({ children }: LayoutProps<'/add'>) {
   return (
     <div id="add-new-entity-layout-parent">

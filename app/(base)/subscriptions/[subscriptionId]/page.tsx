@@ -4,7 +4,6 @@ import { getAllSubscriptionsBareCached } from '@/server/subscriptions/subscripti
 import SubscriptionDetailsParent from './_components/SubscriptionDetailsParent';
 
 //export const dynamicParams = true;
-export const experimental_ppr = true;
 interface SubscriptionDetailsPageProps {
   params: Promise<{ subscriptionId: string }>;
 }

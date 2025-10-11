@@ -14,8 +14,6 @@ export const metadata: Metadata = {
   description: 'View all subscriptions.',
 };
 
-export const experimental_ppr = true;
-
 export default function SubscriptionsLayout({ children }: { children: ReactNode; params: Promise<any> }) {
   return (
     <div id="subscriptions-layout-parent">

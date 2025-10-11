@@ -15,8 +15,6 @@ export const metadata: Metadata = {
   description: 'View the details of a subscription.',
 };
 
-export const experimental_ppr = true;
-
 export default function SubscriptionDetailsLayout({ children, params }: SubscriptionDetailsLayoutProps) {
   return (
     <div id="subscription-details-layout-parent" className="flex w-full flex-col items-start justify-start gap-y-3">

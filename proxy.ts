@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCookieByName } from './lib/cookies';
 import { CONSENT_GIVEN_COOKIE_NAME, ADMIN_PASSWORD_CORRECT_COOKIE_NAME } from './constants/constants';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const nextPath = request.nextUrl.pathname;
 
   // Skip API routes
