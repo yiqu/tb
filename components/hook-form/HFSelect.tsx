@@ -27,7 +27,7 @@ interface HFSelectProps {
   startAdornment?: React.ReactNode;
   className?: string;
   formItemClassName?: string;
-  onChanged?: () => void;
+  onChanged?: (_value: string) => void;
 }
 
 export default function HFSelect({
@@ -52,13 +52,13 @@ export default function HFSelect({
       render={ ({ field }) => {
         const handleOnValueChange = (value: string) => {
           field.onChange(value);
-          onChanged?.();
+          onChanged?.(value);
         };
 
         const clearValue = (e: React.MouseEvent<HTMLButtonElement>) => {
           e.stopPropagation();
           field.onChange('');
-          onChanged?.();
+          onChanged?.('');
         };
 
         return (
