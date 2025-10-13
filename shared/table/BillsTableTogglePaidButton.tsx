@@ -4,11 +4,13 @@ import toast from 'react-hot-toast';
 import { BanknoteArrowUp } from 'lucide-react';
 import { useOptimistic, useTransition } from 'react';
 import { useQueryState, parseAsInteger } from 'nuqs';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useBillStoreActions } from '@/store/bills/bills.store';
 import { updateIsBillDuePaid } from '@/server/bills/bills.server';
+import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
 
 export default function BillsTableTogglePaidButton({
   billDueId,
@@ -19,6 +21,7 @@ export default function BillsTableTogglePaidButton({
   isPaid: boolean;
   subscriptionId: string;
 }) {
+  const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
   const { setBillDueIdBeingEdited, setLastEditedTimestamp } = useBillStoreActions();
 
@@ -47,6 +50,14 @@ export default function BillsTableTogglePaidButton({
       toast.success(`${res.paid ? 'Marked as paid.' : 'Marked as unpaid.'}`);
       setBillDueIdBeingEdited(billDueId, true);
       setLastEditedTimestamp(Date.now());
+      queryClient.invalidateQueries({
+        queryKey: [
+          TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS,
+          {
+            [TANSTACK_QUERY_QUERY_KEY_ID_GENERAL]: billDueId,
+          },
+        ],
+      });
     });
   };
 

@@ -27,6 +27,11 @@ export interface SubscriptionOriginal {
   billCycleInDays: number | null; // deprecated
   billCycleDuration: 'yearly' | 'monthly' | 'once' | string; // yearly, monthly, once
   billStartDate: string | null; //2023-07-30  , YYYY-MM-DD
+
+  dateAddedInEst?: string;
+  dateAddedInEstRelative?: string;
+  updatedAtInEst?: string;
+  updatedAtInEstRelative?: string;
 }
 
 export interface SubscriptionWithBillDues extends SubscriptionOriginal {

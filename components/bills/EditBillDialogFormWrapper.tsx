@@ -1,11 +1,11 @@
 'use client';
 
 import z from 'zod';
-import { ReactNode } from 'react';
 import toast from 'react-hot-toast';
 import { useQueryState } from 'nuqs';
 import confetti from 'canvas-confetti';
 import { useForm } from 'react-hook-form';
+import { ReactNode, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -40,6 +40,23 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
     reValidateMode: 'onChange',
     shouldFocusError: true,
   });
+
+  /**
+   * Reset the form if the paid or reimbursed status has changed while dialog is open
+   */
+  useEffect(() => {
+    const currentValues = methods.getValues();
+    if (currentValues.paid !== billDue.paid || currentValues.reimbursed !== billDue.reimbursed) {
+      methods.reset({
+        paid: billDue.paid,
+        reimbursed: billDue.reimbursed,
+        cost: billDue.cost ?? billDue.subscription.cost,
+        subscriptionId: billDue.subscription.id,
+        dueDate: billDue.dueDate,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [billDue.updatedAt]);
 
   const onSubmit = async (data: z.infer<typeof billEditableSchema>) => {
     if (!methods.formState.isDirty) {

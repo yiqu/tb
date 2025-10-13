@@ -104,11 +104,11 @@ export default function SubscriptionDetailsHeaderFavoriteToggleForm({
               <DialogClose asChild>
                 <Button variant="outline" type="button">
                   <X />
-                  Cancel
+                  Close
                 </Button>
               </DialogClose>
               { isFormDirty ?
-                <Button variant={ 'outline' } onClick={ handleOnReset } type="button">
+                <Button variant={ 'outline' } onClick={ handleOnReset } type="button" disabled={ disableButton }>
                   <RotateCcw />
                   Reset
                 </Button>

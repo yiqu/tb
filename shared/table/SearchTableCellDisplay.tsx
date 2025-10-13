@@ -12,11 +12,10 @@ import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import EditBillDialogFavoriteBillToggleButton from '@/components/bills/EditBillDialogFavoriteBillToggleButton';
 
 import LinkClient from './LinkClient';
-import DateDisplay from './DateDisplay';
 import DateDialogContent from '../dialogs/DateDialog';
-import DateRelativeDisplay from './DateRelativeDisplay';
 import DateDialogContentBase from '../dialogs/DateDialogBase';
 import { TableCellHoverWrapper } from './TableCellHoverWrapper';
 import BillsTableEditBillButton from './BillsTableEditBillButton';
@@ -24,7 +23,7 @@ import BillsTableTogglePaidButton from './BillsTableTogglePaidButton';
 import BillsTableDeleteBillButton from './BillsTableDeleteBillButton';
 import { getFrequencyImageUrl, getSubscriptionLogoSize } from './table.utils';
 import BillsTableToggleReimbursedButton from './BillsTableToggleReimbursedButton';
-import SearchTableCellDisplayDueDateDateDisplay from './SearchTableCellDisplayDueDateDateDisplay';
+import SearchTableCellDisplayDueDateIcon from './SearchTableCellDisplayDueDateIcon';
 
 const useFormatter = getUSDFormatter(2, 2);
 
@@ -44,16 +43,23 @@ export default function BillsTableCell({
       cost = billDue.subscription.cost;
     }
 
+    const isFavorited: boolean = (billDue.favorites ?? []).length > 0;
+
     return (
       <TableCell>
         <div className={ `
-          flex flex-row items-center justify-start gap-x-1
+          flex flex-row items-center justify-between gap-x-1
           sec:gap-x-1
           two:gap-x-6
         ` }>
           <Link href={ `/bills/${billDue.id}` } prefetch={ true }>
             <CenterUnderline label={ useFormatter.format(cost) } className="truncate" />
           </Link>
+          <div>
+            { isFavorited ?
+              <EditBillDialogFavoriteBillToggleButton billDue={ billDue } buttonProps={ { variant: 'ghost' } } buttonClassName="size-6" />
+            : null }
+          </div>
         </div>
       </TableCell>
     );
@@ -105,8 +111,8 @@ export default function BillsTableCell({
                 hover:border-border hover:bg-accent
               ` }
             >
-              <DateDisplay date={ billDue.dateAdded } dateFormat="MM/dd/yy" />
-              <DateRelativeDisplay time={ billDue.dateAdded } includeParenthesis className="truncate" />
+              <Typography className="truncate">{ billDue.dateAddedInEst }</Typography>
+              <Typography className="truncate">{ billDue.dateAddedInEstRelative }</Typography>
             </div>
           </PopoverTrigger>
           <PopoverContent>
@@ -120,6 +126,8 @@ export default function BillsTableCell({
   }
 
   if (colId === 'dueDate') {
+    const dueDate: string | undefined = billDue.dueDateInEst;
+    const dueDateRelative: string | undefined = billDue.dueDateInEstRelative;
     return (
       <TableCell>
         <Popover>
@@ -130,8 +138,11 @@ export default function BillsTableCell({
                 hover:border-border hover:bg-accent
               ` }
             >
-              <SearchTableCellDisplayDueDateDateDisplay date={ billDue.dueDate } billDue={ billDue } />
-              <DateRelativeDisplay time={ billDue.dueDate } includeParenthesis={ false } />
+              <div className="flex flex-row items-center justify-start gap-x-2">
+                <Typography>{ dueDate }</Typography>
+                <SearchTableCellDisplayDueDateIcon date={ billDue.dueDate } billDue={ billDue } />
+              </div>
+              <Typography>{ dueDateRelative }</Typography>
             </div>
           </PopoverTrigger>
           <PopoverContent>
@@ -197,8 +208,8 @@ export default function BillsTableCell({
               { `${billDue.updatedAt}` === `${billDue.dateAdded}` ?
                 <Typography variant="nodata1">N/A</Typography>
               : <>
-                <DateDisplay date={ billDue.updatedAt } dateFormat="MM/dd/yy" />
-                <DateRelativeDisplay time={ billDue.updatedAt } includeParenthesis className="truncate" />
+                <Typography className="truncate">{ billDue.updatedAtInEst }</Typography>
+                <Typography className="truncate">{ billDue.updatedAtInEstRelative }</Typography>
               </>
               }
             </div>

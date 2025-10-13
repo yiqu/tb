@@ -17,7 +17,7 @@ export function TableCellHoverWrapper({ payload, columnId, children, showHoverFi
   }
 
   return (
-    <HoverCard openDelay={ 150 } closeDelay={ 100 }>
+    <HoverCard openDelay={ 650 } closeDelay={ 100 }>
       <HoverCardTrigger asChild>{ children }</HoverCardTrigger>
       <HoverCardContent
         className="flex h-3 w-20 flex-col items-start justify-center bg-background/50 backdrop-blur-lg"

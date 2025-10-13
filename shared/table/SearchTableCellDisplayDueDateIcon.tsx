@@ -1,0 +1,78 @@
+'use client';
+
+import { DateTime } from 'luxon';
+import { AlarmClock, CircleAlert, CircleCheck } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
+import useIsClient from '@/hooks/useIsClient';
+import { EST_TIME_ZONE } from '@/lib/general.utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { BillDueWithSubscription } from '@/models/bills/bills.model';
+
+export default function SearchTableCellDisplayDueDateIcon({
+  date,
+  billDue,
+  clientLoadingClassName,
+}: {
+  date: string;
+  billDue: BillDueWithSubscription;
+  clientLoadingClassName?: string;
+}) {
+  const isClient = useIsClient();
+
+  if (!isClient) {
+    return <Skeleton className={ cn('size-5 rounded-full', clientLoadingClassName) } />;
+  }
+
+  let isDueDateInCurrentMonth = false;
+  const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+  const currentDateEpoch = currentDateLuxon.toMillis();
+
+  if (billDue.subscription.billCycleDuration === 'monthly') {
+    const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+    const currentMonth = currentDateLuxon.month;
+    const currentYear = currentDateLuxon.year;
+    const dueDateLuxon = DateTime.fromMillis(Number.parseInt(date)).setZone(EST_TIME_ZONE);
+    const dueDateMonth = dueDateLuxon.month;
+    const dueDateYear = dueDateLuxon.year;
+
+    isDueDateInCurrentMonth = dueDateMonth === currentMonth && dueDateYear === currentYear;
+  } else if (billDue.subscription.billCycleDuration === 'yearly') {
+    const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+    const currentMonth = currentDateLuxon.month;
+    const currentYear = currentDateLuxon.year;
+    const dueDateLuxon = DateTime.fromMillis(Number.parseInt(date)).setZone(EST_TIME_ZONE);
+    const dueDateYear = dueDateLuxon.year;
+    const dueDateMonth = dueDateLuxon.month;
+
+    // isDueDateInCurrentMonth = dueDateYear === currentYear;
+    isDueDateInCurrentMonth = dueDateMonth === currentMonth && dueDateYear === currentYear;
+  } else if (billDue.subscription.billCycleDuration === 'once') {
+    isDueDateInCurrentMonth = false;
+  }
+
+  const isPaidAndReimbursed: boolean = !!billDue.paid && !!billDue.reimbursed;
+  //const isPaidOrReimbursed: boolean = !isPaidAndReimbursed && (!!billDue.paid || !!billDue.reimbursed);
+  const isPastDueDate: boolean = Number.parseInt(date) < currentDateEpoch;
+  const isPastAndNotPaidOrReimbursed: boolean = isPastDueDate && (!billDue.paid || !billDue.reimbursed);
+
+  return (
+    <div className="flex flex-row items-center justify-start">
+      { isDueDateInCurrentMonth && !isPaidAndReimbursed && !isPastAndNotPaidOrReimbursed ?
+        <span title={ `Due this month, not paid and not reimbursed` }>
+          <AlarmClock className={ cn('size-5 text-yellow-500') } />
+        </span>
+      : null }
+      { isDueDateInCurrentMonth && isPaidAndReimbursed ?
+        <span title={ `Due this month, paid and reimbursed` }>
+          <CircleCheck className={ cn('size-5 text-green-500') } />
+        </span>
+      : null }
+      { !isPaidAndReimbursed && isPastAndNotPaidOrReimbursed ?
+        <div className="flex flex-row items-center justify-start gap-x-2" title={ `Past due, not paid or reimbursed` }>
+          <CircleAlert className="size-5 text-amber-800" />
+        </div>
+      : null }
+    </div>
+  );
+}

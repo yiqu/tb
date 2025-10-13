@@ -7,6 +7,7 @@ import { cache } from 'react';
 import { DateTime } from 'luxon';
 import { Prisma } from '@prisma/client';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { updateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 
 import prisma from '@/lib/prisma';
@@ -193,8 +194,36 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     const endIndex: number = pageNumber === totalPages ? subscriptions.length : startIndex + pageSize;
     let subscriptionsToReturn: SubscriptionWithBillDues[] = subscriptions.slice(startIndex, endIndex);
 
+    const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = subscriptionsToReturn.map(
+      (subscription: SubscriptionWithBillDues) => {
+        const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
+          .setZone(EST_TIME_ZONE)
+          .toJSDate();
+        const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
+          .setZone(EST_TIME_ZONE)
+          .toFormat('MM/dd/yyyy');
+        const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
+
+        const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.updatedAt}`))
+          .setZone(EST_TIME_ZONE)
+          .toJSDate();
+        const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${subscription.updatedAt}`))
+          .setZone(EST_TIME_ZONE)
+          .toFormat('MM/dd/yyyy');
+        const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
+
+        return {
+          ...subscription,
+          dateAddedInEst: dateAddedInEst,
+          dateAddedInEstRelative: dateAddedRelativeDate,
+          updatedAtInEst: updatedAtInEst,
+          updatedAtInEstRelative: updatedAtRelativeDate,
+        };
+      },
+    );
+
     return {
-      subscriptions: subscriptionsToReturn,
+      subscriptions: subscriptionsToReturnWithDateInEST,
       sortData,
       totalPages,
       totalSubscriptionsCount: subscriptions.length,
@@ -313,8 +342,39 @@ export async function getSubscriptionBillsGroupedByYearById(subscriptionId: stri
     });
 
     const billDues: BillDueWithSubscription[] = subscription?.billDues ?? [];
+    const billDuesToReturnWithDateInEST: BillDueWithSubscription[] = billDues.map((billDue) => {
+      const dueDateInEstDate: Date = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toJSDate();
+      const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toFormat('MM/dd/yyyy');
+      const dueDateRelativeDate = formatDistanceToNow(dueDateInEstDate, { addSuffix: true });
 
-    const billDuesGroupedByYear: BillDueGroupedByYear = billDues.reduce((acc, billDue) => {
+      const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
+        .setZone(EST_TIME_ZONE)
+        .toJSDate();
+      const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
+        .setZone(EST_TIME_ZONE)
+        .toFormat('MM/dd/yyyy');
+      const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
+
+      const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
+        .setZone(EST_TIME_ZONE)
+        .toJSDate();
+      const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
+        .setZone(EST_TIME_ZONE)
+        .toFormat('MM/dd/yyyy');
+      const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
+
+      return {
+        ...billDue,
+        dueDateInEst: dueDateInEst,
+        dueDateInEstRelative: dueDateRelativeDate,
+        dateAddedInEst: dateAddedInEst,
+        dateAddedInEstRelative: dateAddedRelativeDate,
+        updatedAtInEst: updatedAtInEst,
+        updatedAtInEstRelative: updatedAtRelativeDate,
+      };
+    });
+
+    const billDuesGroupedByYear: BillDueGroupedByYear = billDuesToReturnWithDateInEST.reduce((acc, billDue) => {
       const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE);
       const { year } = billDueDateLuxon;
       if (!acc[year]) {

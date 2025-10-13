@@ -7,10 +7,10 @@ import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
 
+import BillsTableActionDialog from '../bills/_components/BillsTableActionDialog';
 import OutstandingBillsTableParent from './_components/OutstandingBillsTableParent';
 import OutstandingBillsTableSkeleton from './_components/OutstandingBillsTableSkeleton';
 import OutstandingBillsTableActionBar from './_components/OutstandingBillsTableActionBar';
-import OutstandingBillsTableActionDialog from './_components/OutstandingBillsTableActionDialog';
 import OutstandingBillsTablePaginationWrapper from './_components/OutstandingBillsTablePaginationWrapper';
 
 interface OutstandingBillsPageProps {
@@ -29,9 +29,9 @@ export default function OutstandingBillsPage({ searchParams }: OutstandingBillsP
         <OutstandingBillsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
       </Suspense>
       <Suspense>
-        <OutstandingBillsTableActionDialog>
+        <BillsTableActionDialog>
           <EditBillForm />
-        </OutstandingBillsTableActionDialog>
+        </BillsTableActionDialog>
       </Suspense>
     </div>
   );

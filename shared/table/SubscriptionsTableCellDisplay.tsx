@@ -2,13 +2,11 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { DateTime } from 'luxon';
 import { Suspense } from 'react';
 import startCase from 'lodash/startCase';
 import { ExternalLinkIcon } from 'lucide-react';
 
 import { TableCell } from '@/components/ui/table';
-import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
@@ -20,9 +18,7 @@ import SubscriptionsTableEditFavoriteButton from '@/app/(base)/subscriptions/_co
 import SubscriptionsTableEditSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableEditSubscriptionButton';
 import SubscriptionsTableDeleteSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableDeleteSubscriptionButton';
 
-import DateDisplay from './DateDisplay';
 import DateDialogContent from '../dialogs/DateDialog';
-import DateRelativeDisplay from './DateRelativeDisplay';
 import { getFrequencyImageUrl, getSubscriptionLogoSize } from './table.utils';
 import SubscriptionsTableToggleSignedButton from './SubscriptionsTableToggleSignedButton';
 import SubscriptionsTableToggleApprovedButton from './SubscriptionsTableToggleApprovedButton';
@@ -127,9 +123,25 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
   if (colId === 'dateAdded') {
     return (
       <TableCell>
-        <div title={ `${subscription.dateAdded}` } className="truncate">
-          <DateDisplay date={ subscription.dateAdded } dateFormat="MM/dd/yy" />
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <div
+              title={ `${subscription.dateAdded}` }
+              className={ `
+                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+                hover:border-border hover:bg-accent
+              ` }
+            >
+              <Typography className="truncate">{ subscription.dateAddedInEst }</Typography>
+              <Typography className="truncate">{ subscription.dateAddedInEstRelative }</Typography>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent>
+            <Suspense>
+              <DateDialogContent dateTime={ subscription.dateAdded } />
+            </Suspense>
+          </PopoverContent>
+        </Popover>
       </TableCell>
     );
   }
@@ -162,7 +174,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
           <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
             <div className="flex flex-row items-center justify-start gap-x-2 text-wrap">
               <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
-              <CenterUnderline label={ subName } className="break-all" />
+              <CenterUnderline label={ subName } className="break-words" />
             </div>
           </Link>
           <div>
@@ -197,15 +209,46 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     );
   }
 
+  // if (colId === 'updatedAt') {
+  //   return (
+  //     <TableCell>
+  //       <Popover>
+  //         <PopoverTrigger asChild>
+  //           <div
+  //             title={ `${DateTime.fromISO(new Date(subscription.updatedAt ?? '').toISOString())
+  //               .setZone(EST_TIME_ZONE)
+  //               .toLocaleString(DateTime.DATETIME_MED)}` }
+  //             className={ `
+  //               flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+  //               hover:border-border hover:bg-accent
+  //             ` }
+  //           >
+  //             { `${subscription.updatedAt}` === `${subscription.dateAdded}` ?
+  //               <Typography variant="nodata1">N/A</Typography>
+  //             : <>
+  //               <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" />
+  //               <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis className="truncate" />
+  //             </>
+  //             }
+  //           </div>
+  //         </PopoverTrigger>
+  //         <PopoverContent>
+  //           <Suspense>
+  //             <DateDialogContent dateTime={ subscription.updatedAt } />
+  //           </Suspense>
+  //         </PopoverContent>
+  //       </Popover>
+  //     </TableCell>
+  //   );
+  // }
+
   if (colId === 'updatedAt') {
     return (
       <TableCell>
         <Popover>
           <PopoverTrigger asChild>
             <div
-              title={ `${DateTime.fromISO(new Date(subscription.updatedAt ?? '').toISOString())
-                .setZone(EST_TIME_ZONE)
-                .toLocaleString(DateTime.DATETIME_MED)}` }
+              title={ `${subscription.updatedAt}` }
               className={ `
                 flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
                 hover:border-border hover:bg-accent
@@ -214,8 +257,8 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
               { `${subscription.updatedAt}` === `${subscription.dateAdded}` ?
                 <Typography variant="nodata1">N/A</Typography>
               : <>
-                <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" />
-                <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis className="truncate" />
+                <Typography className="truncate">{ subscription.updatedAtInEst }</Typography>
+                <Typography className="truncate">{ subscription.updatedAtInEstRelative }</Typography>
               </>
               }
             </div>

@@ -8,9 +8,9 @@ import { PaginationDataModel } from '@/models/pagination-data/pagination-data.mo
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
 
 import UpcomingBillsTableParent from './_components/UpcomingBillsTableParent';
+import BillsTableActionDialog from '../bills/_components/BillsTableActionDialog';
 import UpcomingBillsTableSkeleton from './_components/UpcomingBillsTableSkeleton';
 import UpcomingBillsTableActionBar from './_components/UpcomingBillsTableActionBar';
-import UpcomingBillsTableActionDialog from './_components/UpcomingBillsTableActionDialog';
 import UpcomingBillsTablePaginationWrapper from './_components/UpcomingBillsTablePaginationWrapper';
 
 interface UpcomingBillsPageProps {
@@ -29,9 +29,9 @@ export default function UpcomingBillsPage({ searchParams }: UpcomingBillsPagePro
         <UpcomingBillsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
       </Suspense>
       <Suspense>
-        <UpcomingBillsTableActionDialog>
+        <BillsTableActionDialog>
           <EditBillForm />
-        </UpcomingBillsTableActionDialog>
+        </BillsTableActionDialog>
       </Suspense>
     </div>
   );

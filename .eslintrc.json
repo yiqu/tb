@@ -11,7 +11,7 @@
     "prettier",
     "react-refresh",
     "unused-imports",
-    "eslint-plugin-react-compiler",
+    "react-compiler",
     "unicorn",
     "@tanstack/query",
     "mui-path-imports",

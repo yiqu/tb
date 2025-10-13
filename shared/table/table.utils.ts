@@ -43,7 +43,7 @@ export const getSearchTableColumnWidth = (columnId: string): string | undefined 
 
 export const SEARCH_TABLE_COLUMN_WIDTH = {
   id: '4rem',
-  cost: '11rem',
+  cost: '6rem',
   frequency: '7rem',
   dueDate: '14rem',
   subscription: '20rem',
@@ -52,14 +52,14 @@ export const SEARCH_TABLE_COLUMN_WIDTH = {
   dateAdded: '8rem',
   paid: '5rem',
   reimbursed: '7rem',
-  name: '11rem',
-  description: '10rem',
-  url: '10rem',
+  name: '12rem',
+  description: '13rem',
+  url: '7rem',
   billCycleDuration: '7rem',
   approved: '5rem',
   signed: '5rem',
   billDuesCurrentYearCount: '7rem',
-  billDuesCurrentYearTotalCost: '7rem',
+  billDuesCurrentYearTotalCost: '6rem',
 };
 
 export const SEARCH_TABLE_COLUMN_TEXT = {

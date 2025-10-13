@@ -1,4 +1,5 @@
 import { SortDataModel } from '../sort-data/SortData.model';
+import { FavoriteEntity } from '../favorites/favorite.model';
 
 export interface SubscriptionPostBody {
   name: string;
@@ -56,10 +57,17 @@ export interface BillDue {
   isApiLoading?: boolean;
   isInThePast?: boolean;
   cost: number | null;
+  dueDateInEst?: string;
+  dueDateInEstRelative?: string;
+  dateAddedInEst?: string;
+  dateAddedInEstRelative?: string;
+  updatedAtInEst?: string;
+  updatedAtInEstRelative?: string;
 }
 
 export type BillDueWithSubscription = BillDue & {
   subscription: SubscriptionOriginal;
+  favorites?: FavoriteEntity[];
 };
 
 export type BillDueWithSubscriptionAndSortData = {

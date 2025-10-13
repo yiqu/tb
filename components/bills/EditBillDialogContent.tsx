@@ -18,10 +18,11 @@ import { Skeleton } from '../ui/skeleton';
 import Typography from '../typography/Typography';
 import EditBillDialogFormWrapper from './EditBillDialogFormWrapper';
 import EditBillDialogResetButton from './EditBillDialogResetButton';
+import EditBillDialogFavoriteBillToggleButton from './EditBillDialogFavoriteBillToggleButton';
 
 export default function EditBillDialogContent({ billDueId, children }: { billDueId: string; children: ReactNode }) {
   const queryClient = useQueryClient();
-  const { isLoading, isError, error, data, isFetching, dataUpdatedAt } = useQuery({
+  const { isLoading, isError, error, data, isFetching } = useQuery({
     ...getBillDueByIdQueryOptions(billDueId),
   });
 
@@ -50,9 +51,11 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
               <RefreshCcw className={ cn({ 'animate-spin': isFetching }) } />
             </Button>
           </div>
-          <div className="flex flex-row items-center justify-end gap-x-2">
-            <DateRelativeDisplay time={ `${dataUpdatedAt}` } includeParenthesis={ false } prefixText="Last updated:" />
-          </div>
+          { data ?
+            <div className="flex flex-row items-center justify-end gap-x-2">
+              <DateRelativeDisplay time={ `${data?.updatedAt}` } includeParenthesis={ false } prefixText="Last edited:" />
+            </div>
+          : <Skeleton className="h-5 w-[10rem]" /> }
         </div>
       }
     >
@@ -62,7 +65,7 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
         </div>
       : null }
       { isBillLoaded && data ?
-        <EditBillDialogFormWrapper billDue={ data } key={ `${dataUpdatedAt}` }>
+        <EditBillDialogFormWrapper billDue={ data }>
           <div className="px-4">{ children }</div>
           <StyledDialogFooter>
             <div className="flex w-full flex-row items-center justify-between gap-x-2">
@@ -73,6 +76,7 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
                 </Button>
               </DialogClose>
               <div className="flex flex-row items-center justify-end gap-x-2">
+                <EditBillDialogFavoriteBillToggleButton billDue={ data } />
                 <EditBillDialogResetButton />
                 <Button
                   type="submit"

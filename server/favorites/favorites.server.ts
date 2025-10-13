@@ -9,8 +9,18 @@ import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
-import { CACHE_TAG_FAVORITES_PREFIX, CACHE_TAG_SUBSCRIPTIONS_ALL } from '@/constants/constants';
-import { FavoriteActionType, FavoriteEntityResponse, FavoriteEntityEntityTypeType } from '@/models/favorites/favorite.model';
+import {
+  FavoriteEntity,
+  FavoriteActionType,
+  FavoriteEntityResponse,
+  FavoriteEntityEntityTypeType,
+} from '@/models/favorites/favorite.model';
+import {
+  CACHE_TAG_BILL_DUES_ALL,
+  CACHE_TAG_FAVORITES_ALL,
+  CACHE_TAG_FAVORITES_PREFIX,
+  CACHE_TAG_SUBSCRIPTIONS_ALL,
+} from '@/constants/constants';
 
 export async function revalidateIsFavoriteByEntityTypeAndId(entityType: FavoriteEntityEntityTypeType, id: string) {
   updateTag(`${CACHE_TAG_FAVORITES_PREFIX}${entityType}-${id}`);
@@ -20,6 +30,25 @@ export const getIsFavoriteByEntityTypeAndIdCached = cache(async (entityType: Fav
   const res = await getIsFavoriteByEntityTypeAndId(entityType, id);
   return res;
 });
+
+export const getAllFavoritesCached = cache(async () => {
+  const res = await getAllFavoritesEntities();
+  return res;
+});
+
+export async function getAllFavoritesEntities(): Promise<FavoriteEntity[]> {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_FAVORITES_ALL);
+
+  try {
+    const favorites: FavoriteEntity[] = await prisma.favoriteEntity.findMany();
+    return favorites;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getAllFavorites(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving favorites. Code: ${error.code}`);
+  }
+}
 
 export async function getIsFavoriteByEntityTypeAndId(
   entityType: FavoriteEntityEntityTypeType,
@@ -97,6 +126,51 @@ export async function toggleFavoriteBySubscriptionId(
     }
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at toggleFavoriteBySubscriptionId(): ', JSON.stringify(error));
+    throw new Error(`Error updating favorite entity. Code: ${error.code}`);
+  }
+}
+
+export async function toggleFavoriteByBillDueId(
+  billDueId: string,
+  name: string,
+  status: FavoriteActionType,
+  favoriteEntityId?: string,
+): Promise<z.infer<typeof FavoriteEntityResponse> | undefined> {
+  // delay for 1 second
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  try {
+    if (status === 'CREATE') {
+      const res = await prisma.favoriteEntity.create({
+        data: {
+          billDueId,
+          entityType: 'BILL_DUE',
+          name,
+        },
+      });
+
+      revalidateIsFavoriteByEntityTypeAndId('BILL_DUE', billDueId);
+      updateTag(CACHE_TAG_BILL_DUES_ALL);
+      return res;
+    } else if (status === 'EDIT') {
+      const res = await prisma.favoriteEntity.update({
+        where: { id: favoriteEntityId },
+        data: { name },
+      });
+
+      revalidateIsFavoriteByEntityTypeAndId('BILL_DUE', billDueId);
+      updateTag(CACHE_TAG_BILL_DUES_ALL);
+      return res;
+    } else if (status === 'DELETE') {
+      const res = await prisma.favoriteEntity.delete({
+        where: { id: favoriteEntityId },
+      });
+
+      revalidateIsFavoriteByEntityTypeAndId('BILL_DUE', billDueId);
+      updateTag(CACHE_TAG_BILL_DUES_ALL);
+      return res;
+    }
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at toggleFavoriteByBillDueId(): ', JSON.stringify(error));
     throw new Error(`Error updating favorite entity. Code: ${error.code}`);
   }
 }

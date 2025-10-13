@@ -28,6 +28,7 @@ export const TANSTACK_QUERY_QUERY_KEY_FIREBASE_USER = 'firebase-user';
 export const TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS = 'bill-due-details';
 export const TANSTACK_QUERY_QUERY_KEY_SUBSCRIPTION_DETAILS = 'subscription-details';
 export const TANSTACK_QUERY_QUERY_KEY_ID_GENERAL = 'id';
+export const TANSTACK_QUERY_QUERY_KEY_FAVORITES_ALL = 'favorites-all';
 
 // TanStack mutation keys
 export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_UPDATE = 'subscription-details-update';
@@ -40,6 +41,7 @@ export const CACHE_TAG_SORT_DATA_PREFIX = 'sort-data-page-';
 export const CACHE_TAG_PAGINATION_DATA_PREFIX = 'pagination-data-page-';
 
 export const CACHE_TAG_FAVORITES_PREFIX = 'favorites-';
+export const CACHE_TAG_FAVORITES_ALL = 'favorites-all';
 
 export const CACHE_TAG_SUBSCRIPTIONS_ALL = 'subscriptions-all';
 export const CACHE_TAG_SUBSCRIPTION_DETAILS = 'subscription-by-id-';

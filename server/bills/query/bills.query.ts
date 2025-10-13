@@ -27,6 +27,7 @@ export function getBillDueByIdQueryOptions(billDueId: string) {
     ],
     queryFn: getBillById.bind(null, billDueId),
     staleTime: 1000 * 1 * 60 * 5, // 5 minutes
+    // gcTime: 0
   });
 }
 

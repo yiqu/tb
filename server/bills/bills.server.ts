@@ -7,6 +7,7 @@ import { cache } from 'react';
 import { DateTime } from 'luxon';
 import { Prisma } from '@prisma/client';
 import { unstable_cacheLife as cacheLife } from 'next/cache';
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { updateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 
 import prisma from '@/lib/prisma';
@@ -175,6 +176,7 @@ export async function getAllBills(
     let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
       include: {
         subscription: true,
+        favorites: true,
       },
       where: whereClause,
     });
@@ -234,8 +236,40 @@ export async function getAllBills(
     const endIndex: number = pageNumber === totalPages ? billDues.length : startIndex + pageSize;
     const billDuesToReturn: BillDueWithSubscription[] = billDues.slice(startIndex, endIndex);
 
+    const billDuesToReturnWithDateInEST: BillDueWithSubscription[] = billDuesToReturn.map((billDue) => {
+      const dueDateInEstDate: Date = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toJSDate();
+      const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toFormat('MM/dd/yyyy');
+      const dueDateRelativeDate = formatDistanceToNow(dueDateInEstDate, { addSuffix: true });
+
+      const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
+        .setZone(EST_TIME_ZONE)
+        .toJSDate();
+      const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
+        .setZone(EST_TIME_ZONE)
+        .toFormat('MM/dd/yyyy');
+      const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
+
+      const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
+        .setZone(EST_TIME_ZONE)
+        .toJSDate();
+      const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
+        .setZone(EST_TIME_ZONE)
+        .toFormat('MM/dd/yyyy');
+      const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
+
+      return {
+        ...billDue,
+        dueDateInEst: dueDateInEst,
+        dueDateInEstRelative: dueDateRelativeDate,
+        dateAddedInEst: dateAddedInEst,
+        dateAddedInEstRelative: dateAddedRelativeDate,
+        updatedAtInEst: updatedAtInEst,
+        updatedAtInEstRelative: updatedAtRelativeDate,
+      };
+    });
+
     return {
-      billDues: billDuesToReturn,
+      billDues: billDuesToReturnWithDateInEST,
       sortData,
       totalPages,
       totalBillsCount: billDues.length,
@@ -343,6 +377,7 @@ export async function getBillDueById(billDueId: string): Promise<BillDueWithSubs
       where: { id: billDueId },
       include: {
         subscription: true,
+        favorites: true,
       },
     });
 
