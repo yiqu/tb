@@ -1,11 +1,10 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
 import { useOptimistic, useTransition } from 'react';
-import { Plus, History, ChevronRight } from 'lucide-react';
+import { History, ChevronRight } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import useSideBarState from '@/hooks/useSideBarState';
@@ -73,7 +72,7 @@ export default function HistoryParentItem({ collapsableState }: { collapsableSta
         <Popover open={ isCollapsedMenuOpen } onOpenChange={ setIsCollapsedMenuOpen }>
           <PopoverTrigger asChild>
             <SidebarMenuButtonV1 onMouseEnter={ handleMouseEnter } onMouseLeave={ handleMouseLeave } className="cursor-pointer">
-              <Plus />
+              <History />
             </SidebarMenuButtonV1>
           </PopoverTrigger>
           <PopoverContent
@@ -100,7 +99,10 @@ export default function HistoryParentItem({ collapsableState }: { collapsableSta
             <span>History</span>
             { isPending ?
               <Skeleton className="ml-auto h-4 w-4" />
-            : <ChevronRight className={ `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90` } /> }
+            : <ChevronRight className={ `
+              ml-auto transition-transform duration-200
+              group-data-[state=open]/collapsible:rotate-90
+            ` } /> }
           </SidebarMenuButtonV1>
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -142,7 +144,10 @@ function CollapsedMenuContent() {
       <div className="mb-2 text-sm font-medium">Add New</div>
       <Separator className="my-1" />
       <div className="space-y-1">
-        <Link href={ '/' } className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }>
+        <Link href={ '/' } className={ `
+          flex items-center rounded-md px-2 py-1.5 text-sm
+          hover:bg-accent hover:text-accent-foreground
+        ` }>
           1
         </Link>
       </div>

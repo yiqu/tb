@@ -1,29 +1,35 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useRef, useState, useEffect } from 'react';
+import { Heart, ChevronRight } from 'lucide-react';
 import { useOptimistic, useTransition } from 'react';
-import { Plus, Heart, Calendar, ChevronRight, CalendarSync } from 'lucide-react';
+import { use, useRef, useState, useEffect } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import useSideBarState from '@/hooks/useSideBarState';
-import { Separator } from '@/components/ui/separator';
 import { SidebarCollapsableState } from '@/models/Sidebar.models';
+import { FavoriteEntity } from '@/models/favorites/favorite.model';
 import { SIDEBAR_COLLAPSABLE_FAVORITES } from '@/constants/constants';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { setSidebarCollapsableStateAction } from '@/server/sidebar/sidebar-actions';
+import { SidebarMenuSub, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { SidebarMenuSub, SidebarMenuItem, SidebarMenuButton, SidebarMenuSubItem } from '@/components/ui/sidebar';
 
-import SidebarMenuSubButtonFavoritesParentWithActive from '../SidebarMenuSubButtonFavoritesParentWithActive';
+import FavoritesListSection from './FavoritesListSection';
+import FavoritesListSectionCollapsed from './FavoritesListSectionCollapsed';
 
-export default function FavoriteParentItem({ collapsableState }: { collapsableState: SidebarCollapsableState }) {
+interface Props {
+  collapsableState: SidebarCollapsableState;
+  allFavoritesPromise: Promise<FavoriteEntity[]>;
+}
+
+export default function FavoriteParentItem({ collapsableState, allFavoritesPromise }: Props) {
   const [isPending, startTransition] = useTransition();
   const { isSidebarCollapsed } = useSideBarState();
   const [isCollapsedMenuOpen, setIsCollapsedMenuOpen] = useState(false);
   const isCollapsed: boolean = !!collapsableState[SIDEBAR_COLLAPSABLE_FAVORITES];
+  const allFavorites: FavoriteEntity[] = use(allFavoritesPromise);
+
   const [collapsedStateOptimistic, setCollapsedStateOptimistic] = useOptimistic(
     isCollapsed,
     (currentState: boolean, optimisticValue: boolean) => {
@@ -72,12 +78,8 @@ export default function FavoriteParentItem({ collapsableState }: { collapsableSt
       <SidebarMenuItem>
         <Popover open={ isCollapsedMenuOpen } onOpenChange={ setIsCollapsedMenuOpen }>
           <PopoverTrigger asChild>
-            <SidebarMenuButtonV1
-              onMouseEnter={ handleMouseEnter }
-              onMouseLeave={ handleMouseLeave }
-              className="cursor-pointer"
-            >
-              <Plus />
+            <SidebarMenuButtonV1 onMouseEnter={ handleMouseEnter } onMouseLeave={ handleMouseLeave } className="cursor-pointer">
+              <Heart />
             </SidebarMenuButtonV1>
           </PopoverTrigger>
           <PopoverContent
@@ -87,7 +89,7 @@ export default function FavoriteParentItem({ collapsableState }: { collapsableSt
             onMouseEnter={ handleMouseEnter }
             onMouseLeave={ handleMouseLeave }
           >
-            <CollapsedMenuContent />
+            <FavoritesListSectionCollapsed />
           </PopoverContent>
         </Popover>
       </SidebarMenuItem>
@@ -96,12 +98,7 @@ export default function FavoriteParentItem({ collapsableState }: { collapsableSt
 
   // Default collapsible behavior when not collapsed
   return (
-    <Collapsible
-      asChild
-      open={ collapsedStateOptimistic }
-      className={ `group/collapsible` }
-      onOpenChange={ handleOnOpenChange }
-    >
+    <Collapsible asChild open={ collapsedStateOptimistic } className={ `group/collapsible` } onOpenChange={ handleOnOpenChange }>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButtonV1>
@@ -109,59 +106,19 @@ export default function FavoriteParentItem({ collapsableState }: { collapsableSt
             <span>Favorites</span>
             { isPending ?
               <Skeleton className="ml-auto h-4 w-4" />
-            : <ChevronRight
-                className={ `ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90` }
-              />
-            }
+            : <ChevronRight className={ `
+              ml-auto transition-transform duration-200
+              group-data-[state=open]/collapsible:rotate-90
+            ` } /> }
           </SidebarMenuButtonV1>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub className="mr-0 pr-0">
-            <MenuSubParent />
+            <FavoritesListSection allFavorites={ allFavorites } />
           </SidebarMenuSub>
         </CollapsibleContent>
       </SidebarMenuItem>
     </Collapsible>
-  );
-}
-
-function MenuSubParent() {
-  return (
-    <>
-      <SidebarMenuSubItem>
-        <SidebarMenuSubButtonFavoritesParentWithActive favoriteId="1">
-          <Link href={ '/' } prefetch className="flex items-center">
-            <CalendarSync />
-            <span>{ '1' }</span>
-          </Link>
-        </SidebarMenuSubButtonFavoritesParentWithActive>
-      </SidebarMenuSubItem>
-      <SidebarMenuSubItem>
-        <SidebarMenuSubButtonFavoritesParentWithActive favoriteId="2">
-          <Link href={ '/' } prefetch className="flex items-center">
-            <Calendar />
-            <span>{ '2' }</span>
-          </Link>
-        </SidebarMenuSubButtonFavoritesParentWithActive>
-      </SidebarMenuSubItem>
-    </>
-  );
-}
-
-function CollapsedMenuContent() {
-  return (
-    <>
-      <div className="mb-2 text-sm font-medium">Add New</div>
-      <Separator className="my-1" />
-      <div className="space-y-1">
-        <Link
-          href={ '/' }
-          className={ `flex items-center rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground` }
-        >
-          1
-        </Link>
-      </div>
-    </>
   );
 }
 
