@@ -29,7 +29,9 @@ export default function SubscriptionsPage({ searchParams }: SubscriptionsPagePro
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
       <SubscriptionsTableActionBar />
       <SubscriptionsTablePaginationWrapper searchParams={ searchParams } />
-      AAA
+      <Suspense fallback={ <SubscriptionsTableSkeleton /> }>
+        <SubscriptionsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
+      </Suspense>
     </div>
   );
 }
