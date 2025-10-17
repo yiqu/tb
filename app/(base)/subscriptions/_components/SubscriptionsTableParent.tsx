@@ -22,14 +22,19 @@ interface SubscriptionsTableParentProps {
 }
 
 export default async function SubscriptionsTableParent({ searchParamsPromise, paginationPromise }: SubscriptionsTableParentProps) {
+  console.log("parent 1");
   const searchParams: z.infer<typeof subscriptionSearchParamsSchema> = await searchParamsPromise;
+  console.log("parent 2");
   const pagination: PaginationDataModel | null = await paginationPromise;
+  console.log("parent 3");
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions);
+  console.log("parent 4");
   const subscriptions: SubscriptionWithBillDuesAndSortData = await getAllSubscriptionsWithBillDuesPaginatedCached(
     sortData,
     pagination,
     searchParams,
   );
+  console.log("parent 5");
   const columnsSorted: SearchTableColumn[] = SUBSCRIPTIONS_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
   if (subscriptions.subscriptions.length === 0) {
