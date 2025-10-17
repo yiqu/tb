@@ -1,5 +1,5 @@
 'use server';
-import { unstable_cacheLife as cacheLife } from 'next/cache';
+import { cacheLife } from 'next/cache';
 
 import { Country } from '@/models/country/country.model';
 

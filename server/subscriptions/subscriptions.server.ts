@@ -5,10 +5,10 @@
 import z from 'zod';
 import { cache } from 'react';
 import { DateTime } from 'luxon';
+import { cacheLife } from 'next/cache';
 import { Prisma } from '@prisma/client';
-import { unstable_cacheLife as cacheLife } from 'next/cache';
+import { cacheTag, updateTag } from 'next/cache';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
-import { updateTag, unstable_cacheTag as cacheTag } from 'next/cache';
 
 import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';

@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { unstable_cacheLife as cacheLife } from 'next/cache';
+import { cacheLife } from 'next/cache';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
@@ -19,9 +19,7 @@ export default async function DisplayName() {
           <Typography variant="h5">Display Name</Typography>
         </CardTitle>
         <CardDescription>
-          <Typography variant="body1">
-            Please enter your full name, or a display name you are comfortable with.
-          </Typography>
+          <Typography variant="body1">Please enter your full name, or a display name you are comfortable with.</Typography>
         </CardDescription>
       </CardHeader>
       <Suspense fallback={ <FallBack /> }>

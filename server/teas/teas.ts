@@ -1,8 +1,8 @@
 'use server';
 
 import axios from 'axios';
-import { unstable_cacheLife as cacheLife } from 'next/cache';
-import { updateTag, unstable_cacheTag as cacheTag } from 'next/cache';
+import { cacheLife } from 'next/cache';
+import { cacheTag, updateTag } from 'next/cache';
 
 import { Tea } from '@/models/teas/teas.models';
 import { API_TIMEOUT } from '@/constants/constants';

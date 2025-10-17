@@ -2,10 +2,10 @@
 'use server';
 
 import { cache } from 'react';
+import { cacheTag } from 'next/cache';
 import { updateTag } from 'next/cache';
+import { cacheLife } from 'next/cache';
 import { Prisma } from '@prisma/client';
-import { unstable_cacheTag as cacheTag } from 'next/cache';
-import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
 import { UserAchievement } from '@/models/auth/user.model';

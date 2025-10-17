@@ -1,11 +1,11 @@
 'use server';
 
 import { cache } from 'react';
+import { cacheTag } from 'next/cache';
 import { updateTag } from 'next/cache';
+import { cacheLife } from 'next/cache';
 // eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
-import { unstable_cacheTag as cacheTag } from 'next/cache';
-import { unstable_cacheLife as cacheLife } from 'next/cache';
 
 import prisma from '@/lib/prisma';
 import { CACHE_TAG_PAGINATION_DATA_PREFIX } from '@/constants/constants';
