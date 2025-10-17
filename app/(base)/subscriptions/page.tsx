@@ -23,13 +23,16 @@ interface SubscriptionsPageProps {
 }
 
 export default function SubscriptionsPage({ searchParams }: SubscriptionsPageProps) {
+  console.log("PAGE TSX");
   const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions);
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
       <SubscriptionsTableActionBar />
       <SubscriptionsTablePaginationWrapper searchParams={ searchParams } />
-      <SubscriptionsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
+      <Suspense fallback={ <SubscriptionsTableSkeleton /> }>
+        <SubscriptionsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
+      </Suspense>
       <Suspense>
         <SubscriptionsTableActionDialog>
           <EditSubscriptionDialogContentCard />

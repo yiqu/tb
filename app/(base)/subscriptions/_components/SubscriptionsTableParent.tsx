@@ -1,7 +1,4 @@
-'use client';
-
 import z from 'zod';
-import { use } from 'react';
 
 import { CardContent } from '@/components/ui/card';
 import DisplayCard from '@/shared/components/DisplayCard';
@@ -24,12 +21,14 @@ interface SubscriptionsTableParentProps {
   paginationPromise: Promise<PaginationDataModel | null>;
 }
 
-export default function SubscriptionsTableParent({ searchParamsPromise, paginationPromise }: SubscriptionsTableParentProps) {
-  const searchParams: z.infer<typeof subscriptionSearchParamsSchema> = use(searchParamsPromise);
-  const pagination: PaginationDataModel | null = use(paginationPromise);
-  const sortData: SortDataModel | null = use(getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions));
-  const subscriptions: SubscriptionWithBillDuesAndSortData = use(
-    getAllSubscriptionsWithBillDuesPaginatedCached(sortData, pagination, searchParams),
+export default async function SubscriptionsTableParent({ searchParamsPromise, paginationPromise }: SubscriptionsTableParentProps) {
+  const searchParams: z.infer<typeof subscriptionSearchParamsSchema> = await searchParamsPromise;
+  const pagination: PaginationDataModel | null = await paginationPromise;
+  const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions);
+  const subscriptions: SubscriptionWithBillDuesAndSortData = await getAllSubscriptionsWithBillDuesPaginatedCached(
+    sortData,
+    pagination,
+    searchParams,
   );
   const columnsSorted: SearchTableColumn[] = SUBSCRIPTIONS_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
