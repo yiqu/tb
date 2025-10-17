@@ -1,14 +1,20 @@
+'use client';
+
 import { DateTime } from 'luxon';
-import { connection } from 'next/server';
-//import { connection } from 'next/server';
 import { formatDistanceToNow } from 'date-fns';
 
+import useIsClient from '@/hooks/useIsClient';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 
-export default async function DateDialogContentBase({ dateString, isIso = false }: { dateString: string; isIso?: boolean }) {
-  await connection();
+export default function DateDialogContentBase({ dateString, isIso = false }: { dateString: string; isIso?: boolean }) {
+  const isClient = useIsClient();
+
+  if (!isClient) {
+    return <Skeleton className="h-20 w-full" />;
+  }
 
   const dateDisplay =
     isIso ?
