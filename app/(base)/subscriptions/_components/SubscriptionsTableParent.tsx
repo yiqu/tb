@@ -65,9 +65,6 @@ export default async function SubscriptionsTableParent({ searchParamsPromise, pa
             </TableRow>
           </TableHeader>
           <TableBody>
-            { subscriptions.subscriptions.map((subscription: SubscriptionWithBillDues) => (
-              <SubscriptionsTableParentRow key={ subscription.id } subscription={ subscription } />
-            )) }
           </TableBody>
         </Table>
       </CardContent>
