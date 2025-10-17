@@ -29,24 +29,7 @@ export default function SubscriptionsPage({ searchParams }: SubscriptionsPagePro
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
       <SubscriptionsTableActionBar />
       <SubscriptionsTablePaginationWrapper searchParams={ searchParams } />
-      <Suspense fallback={ <SubscriptionsTableSkeleton /> }>
-        <SubscriptionsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
-      </Suspense>
-      <Suspense>
-        <SubscriptionsTableActionDialog>
-          <EditSubscriptionDialogContentCard />
-        </SubscriptionsTableActionDialog>
-      </Suspense>
-      <Suspense>
-        <SubscriptionsTableAddSubscriptionDialog>
-          <AddSubscriptionDialogContentCard />
-        </SubscriptionsTableAddSubscriptionDialog>
-      </Suspense>
-      <Suspense>
-        <AddNewBillDueDialogStandalone>
-          <AddNewBillDueDialogContentStandalone searchParams={ searchParams } />
-        </AddNewBillDueDialogStandalone>
-      </Suspense>
+      AAA
     </div>
   );
 }
