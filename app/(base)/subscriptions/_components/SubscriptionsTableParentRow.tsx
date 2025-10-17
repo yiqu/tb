@@ -7,9 +7,7 @@ import SubscriptionsTableParentRowWrapper from './SubscriptionsTableParentRowWra
 export default function SubscriptionsTableParentRow({ subscription }: { subscription: SubscriptionWithBillDues }) {
   return (
     <SubscriptionsTableParentRowWrapper key={ subscription.id } subscription={ subscription }>
-      { SUBSCRIPTIONS_TABLE_COLUMN_IDS.map((column: SearchTableColumn) => (
-        <SubscriptionsTableCellDisplay key={ column.headerId } colId={ column.headerId } subscription={ subscription } />
-      )) }
+      AA
     </SubscriptionsTableParentRowWrapper>
   );
 }

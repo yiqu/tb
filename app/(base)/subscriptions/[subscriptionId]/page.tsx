@@ -9,13 +9,13 @@ interface SubscriptionDetailsPageProps {
 }
 
 // Return a list of `params` to populate the [subscriptionId] dynamic segment
-// export async function generateStaticParams() {
-//   const subscriptions: SubscriptionOriginal[] = await getAllSubscriptionsBareCached();
+export async function generateStaticParams() {
+  const subscriptions: SubscriptionOriginal[] = await getAllSubscriptionsBareCached();
 
-//   return subscriptions.map((subscription) => ({
-//     subscriptionId: subscription.id,
-//   }));
-// }
+  return subscriptions.map((subscription) => ({
+    subscriptionId: subscription.id,
+  }));
+}
 
 export default async function SubscriptionDetailsPage({ params }: SubscriptionDetailsPageProps) {
   return <SubscriptionDetailsParent paramsPromise={ params } />;
