@@ -120,49 +120,49 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     );
   }
 
-  if (colId === 'dateAdded') {
-    return (
-      <TableCell>
-        <Popover>
-          <PopoverTrigger asChild>
-            <div
-              title={ `${subscription.dateAdded}` }
-              className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
-                hover:border-border hover:bg-accent
-              ` }
-            >
-              <Typography className="truncate">{ subscription.dateAddedInEst }</Typography>
-              <Typography className="truncate">{ subscription.dateAddedInEstRelative }</Typography>
-            </div>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Suspense>
-              <DateDialogContent dateTime={ subscription.dateAdded } />
-            </Suspense>
-          </PopoverContent>
-        </Popover>
-      </TableCell>
-    );
-  }
+  // if (colId === 'dateAdded') {
+  //   return (
+  //     <TableCell>
+  //       <Popover>
+  //         <PopoverTrigger asChild>
+  //           <div
+  //             title={ `${subscription.dateAdded}` }
+  //             className={ `
+  //               flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+  //               hover:border-border hover:bg-accent
+  //             ` }
+  //           >
+  //             <Typography className="truncate">{ subscription.dateAddedInEst }</Typography>
+  //             <Typography className="truncate">{ subscription.dateAddedInEstRelative }</Typography>
+  //           </div>
+  //         </PopoverTrigger>
+  //         <PopoverContent>
+  //           <Suspense>
+  //             <DateDialogContent dateTime={ subscription.dateAdded } />
+  //           </Suspense>
+  //         </PopoverContent>
+  //       </Popover>
+  //     </TableCell>
+  //   );
+  // }
 
-  if (colId === 'approved') {
-    const isApproved = !!subscription.approved;
-    return (
-      <TableCell>
-        <SubscriptionsTableToggleApprovedButton isApproved={ isApproved } subscriptionId={ subscription.id } />
-      </TableCell>
-    );
-  }
+  // if (colId === 'approved') {
+  //   const isApproved = !!subscription.approved;
+  //   return (
+  //     <TableCell>
+  //       <SubscriptionsTableToggleApprovedButton isApproved={ isApproved } subscriptionId={ subscription.id } />
+  //     </TableCell>
+  //   );
+  // }
 
-  if (colId === 'signed') {
-    const isSigned = !!subscription.signed;
-    return (
-      <TableCell>
-        <SubscriptionsTableToggleSignedButton isSigned={ isSigned } subscriptionId={ subscription.id } />
-      </TableCell>
-    );
-  }
+  // if (colId === 'signed') {
+  //   const isSigned = !!subscription.signed;
+  //   return (
+  //     <TableCell>
+  //       <SubscriptionsTableToggleSignedButton isSigned={ isSigned } subscriptionId={ subscription.id } />
+  //     </TableCell>
+  //   );
+  // }
 
   if (colId === 'name') {
     const subName = subscription.name;
@@ -187,13 +187,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     );
   }
 
-  if (colId === 'billDuesCurrentYearCount') {
-    return (
-      <TableCell>
-        <SubscriptionsTableCellDisplayCurrentYearCount subscription={ subscription } />
-      </TableCell>
-    );
-  }
+  // if (colId === 'billDuesCurrentYearCount') {
+  //   return (
+  //     <TableCell>
+  //       <SubscriptionsTableCellDisplayCurrentYearCount subscription={ subscription } />
+  //     </TableCell>
+  //   );
+  // }
 
   if (colId === 'billDuesCurrentYearTotalCost') {
     return (
@@ -242,36 +242,36 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
   //   );
   // }
 
-  if (colId === 'updatedAt') {
-    return (
-      <TableCell>
-        <Popover>
-          <PopoverTrigger asChild>
-            <div
-              title={ `${subscription.updatedAt}` }
-              className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
-                hover:border-border hover:bg-accent
-              ` }
-            >
-              { `${subscription.updatedAt}` === `${subscription.dateAdded}` ?
-                <Typography variant="nodata1">N/A</Typography>
-              : <>
-                <Typography className="truncate">{ subscription.updatedAtInEst }</Typography>
-                <Typography className="truncate">{ subscription.updatedAtInEstRelative }</Typography>
-              </>
-              }
-            </div>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Suspense>
-              <DateDialogContent dateTime={ subscription.updatedAt } />
-            </Suspense>
-          </PopoverContent>
-        </Popover>
-      </TableCell>
-    );
-  }
+  // if (colId === 'updatedAt') {
+  //   return (
+  //     <TableCell>
+  //       <Popover>
+  //         <PopoverTrigger asChild>
+  //           <div
+  //             title={ `${subscription.updatedAt}` }
+  //             className={ `
+  //               flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+  //               hover:border-border hover:bg-accent
+  //             ` }
+  //           >
+  //             { `${subscription.updatedAt}` === `${subscription.dateAdded}` ?
+  //               <Typography variant="nodata1">N/A</Typography>
+  //             : <>
+  //               <Typography className="truncate">{ subscription.updatedAtInEst }</Typography>
+  //               <Typography className="truncate">{ subscription.updatedAtInEstRelative }</Typography>
+  //             </>
+  //             }
+  //           </div>
+  //         </PopoverTrigger>
+  //         <PopoverContent>
+  //           <Suspense>
+  //             <DateDialogContent dateTime={ subscription.updatedAt } />
+  //           </Suspense>
+  //         </PopoverContent>
+  //       </Popover>
+  //     </TableCell>
+  //   );
+  // }
 
   if (colId === 'actions') {
     return (
