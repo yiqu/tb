@@ -208,11 +208,6 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     const startDateEpoch = currentYearStartLuxon.toMillis();
     const endDateEpoch = currentYearEndLuxon.toMillis();
 
-    console.log(currentYearStartLuxon);
-    console.log(currentYearEndLuxon);
-    console.log(startDateEpoch);
-    console.log(endDateEpoch);
-
     const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = subscriptionsToReturn.map(
       (subscription: SubscriptionWithBillDues) => {
         const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
