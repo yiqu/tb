@@ -146,23 +146,23 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
   //   );
   // }
 
-  // if (colId === 'approved') {
-  //   const isApproved = !!subscription.approved;
-  //   return (
-  //     <TableCell>
-  //       <SubscriptionsTableToggleApprovedButton isApproved={ isApproved } subscriptionId={ subscription.id } />
-  //     </TableCell>
-  //   );
-  // }
+  if (colId === 'approved') {
+    const isApproved = !!subscription.approved;
+    return (
+      <TableCell>
+        <SubscriptionsTableToggleApprovedButton isApproved={ isApproved } subscriptionId={ subscription.id } />
+      </TableCell>
+    );
+  }
 
-  // if (colId === 'signed') {
-  //   const isSigned = !!subscription.signed;
-  //   return (
-  //     <TableCell>
-  //       <SubscriptionsTableToggleSignedButton isSigned={ isSigned } subscriptionId={ subscription.id } />
-  //     </TableCell>
-  //   );
-  // }
+  if (colId === 'signed') {
+    const isSigned = !!subscription.signed;
+    return (
+      <TableCell>
+        <SubscriptionsTableToggleSignedButton isSigned={ isSigned } subscriptionId={ subscription.id } />
+      </TableCell>
+    );
+  }
 
   if (colId === 'name') {
     const subName = subscription.name;
