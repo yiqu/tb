@@ -32,6 +32,9 @@ export interface SubscriptionOriginal {
   dateAddedInEstRelative?: string;
   updatedAtInEst?: string;
   updatedAtInEstRelative?: string;
+
+  reimbursedBillsCount?: number;
+  billsWithinTimeRangeCount?: number;
 }
 
 export interface SubscriptionWithBillDues extends SubscriptionOriginal {

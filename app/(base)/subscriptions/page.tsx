@@ -1,9 +1,7 @@
-import z from 'zod';
 import { Suspense } from 'react';
 
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
-import { subscriptionSearchParamsSchema } from '@/validators/subscriptions/subscriptions.schema';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
 
 import SubscriptionsTableParent from './_components/SubscriptionsTableParent';
@@ -17,12 +15,7 @@ import EditSubscriptionDialogContentCard from '../add/_components/EditSubscripti
 import AddNewBillDueDialogContentStandalone from '../add/_components/AddNewBillDueDialogContentStandalone';
 import SubscriptionsTableAddSubscriptionDialog from './_components/SubscriptionsTableAddSubscriptionDialog';
 
-interface SubscriptionsPageProps {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<z.infer<typeof subscriptionSearchParamsSchema>>;
-}
-
-export default function SubscriptionsPage({ searchParams }: SubscriptionsPageProps) {
+export default function SubscriptionsPage({ searchParams }: PageProps<'/subscriptions'>) {
   const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions);
 
   return (

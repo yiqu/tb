@@ -112,6 +112,14 @@ export async function getAllSubscriptions(): Promise<SubscriptionOriginal[]> {
   }
 }
 
+/**
+ * Subscriptions main table
+ *
+ * @param sortData
+ * @param paginationData
+ * @param searchParams
+ * @returns SubscriptionWithBillDuesAndSortData
+ */
 export async function getAllSubscriptionsWithBillDuesPaginated(
   sortData: SortDataModel | null,
   paginationData: PaginationDataModel | null,
@@ -194,6 +202,12 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     const endIndex: number = pageNumber === totalPages ? subscriptions.length : startIndex + pageSize;
     let subscriptionsToReturn: SubscriptionWithBillDues[] = subscriptions.slice(startIndex, endIndex);
 
+    // Date constants
+    const currentYearStartLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('year');
+    const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
+    const startDateEpoch = currentYearStartLuxon.toMillis();
+    const endDateEpoch = currentYearEndLuxon.toMillis();
+
     const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = subscriptionsToReturn.map(
       (subscription: SubscriptionWithBillDues) => {
         const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
@@ -212,12 +226,29 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
           .toFormat('MM/dd/yyyy');
         const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
 
+        // calculate bills for current year
+        let billsWithInTimeRange: BillDueWithSubscription[] = [];
+
+        if (subscription.billCycleDuration === 'yearly' || subscription.billCycleDuration === 'monthly') {
+          billsWithInTimeRange = subscription.billDues.filter((billDue: BillDueWithSubscription) => {
+            const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate as unknown as string)).setZone(EST_TIME_ZONE);
+            return billDueDateLuxon.toMillis() >= startDateEpoch && billDueDateLuxon.toMillis() <= endDateEpoch;
+          });
+        } else if (subscription.billCycleDuration === 'once') {
+          billsWithInTimeRange = subscription.billDues;
+        }
+
+        const billsWithinTimeRangeCount = billsWithInTimeRange.length;
+        const reimbursedBillsCount = billsWithInTimeRange.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
+
         return {
           ...subscription,
           dateAddedInEst: dateAddedInEst,
           dateAddedInEstRelative: dateAddedRelativeDate,
           updatedAtInEst: updatedAtInEst,
           updatedAtInEstRelative: updatedAtRelativeDate,
+          reimbursedBillsCount: reimbursedBillsCount,
+          billsWithinTimeRangeCount: billsWithinTimeRangeCount,
         };
       },
     );

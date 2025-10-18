@@ -1,30 +1,10 @@
-import { DateTime } from 'luxon';
-
-import { EST_TIME_ZONE } from '@/lib/general.utils';
 import Typography from '@/components/typography/Typography';
-import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import SubscriptionDetailsMetadataFooterTotalBillsChart from '@/app/(base)/subscriptions/[subscriptionId]/_components/SubscriptionDetailsMetadataFooterTotalBillsChart';
 
 export default function SubscriptionsTableCellDisplayCurrentYearCount({ subscription }: { subscription: SubscriptionWithBillDues }) {
-  let billsWithInTimeRange: BillDueWithSubscription[] = [];
-
-  if (subscription.billCycleDuration === 'yearly' || subscription.billCycleDuration === 'monthly') {
-    const currentYearStartLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('year');
-    const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
-    const startDateEpoch = currentYearStartLuxon.toMillis();
-    const endDateEpoch = currentYearEndLuxon.toMillis();
-
-    billsWithInTimeRange = subscription.billDues.filter((billDue: BillDueWithSubscription) => {
-      const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate as unknown as string)).setZone(EST_TIME_ZONE);
-      return billDueDateLuxon.toMillis() >= startDateEpoch && billDueDateLuxon.toMillis() <= endDateEpoch;
-    });
-  } else if (subscription.billCycleDuration === 'once') {
-    billsWithInTimeRange = subscription.billDues;
-  }
-
-  const billsWithinTimeRangeCount = billsWithInTimeRange.length;
-  const reimbursedBillsCount = billsWithInTimeRange.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
+  const billsWithinTimeRangeCount = subscription.billsWithinTimeRangeCount ?? 0;
+  const reimbursedBillsCount = subscription.reimbursedBillsCount ?? 0;
 
   const count1 = reimbursedBillsCount;
   const count2 = billsWithinTimeRangeCount - reimbursedBillsCount;
