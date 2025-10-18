@@ -15,11 +15,6 @@ import EditSubscriptionDialogContentCard from '../add/_components/EditSubscripti
 import AddNewBillDueDialogContentStandalone from '../add/_components/AddNewBillDueDialogContentStandalone';
 import SubscriptionsTableAddSubscriptionDialog from './_components/SubscriptionsTableAddSubscriptionDialog';
 
-// interface SubscriptionsPageProps {
-//   params: Promise<{ slug: string }>;
-//   searchParams: Promise<z.infer<typeof subscriptionSearchParamsSchema>>;
-// }
-
 export default function SubscriptionsPage({ searchParams }: PageProps<'/subscriptions'>) {
   const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions);
 

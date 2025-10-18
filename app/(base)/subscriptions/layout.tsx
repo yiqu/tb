@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { ReactNode } from 'react';
 
 import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
   description: 'View all subscriptions.',
 };
 
-export default function SubscriptionsLayout({ children }: { children: ReactNode; params: Promise<any> }) {
+export default function SubscriptionsLayout({ children }: LayoutProps<'/subscriptions'>) {
   return (
     <div id="subscriptions-layout-parent">
       <LayoutParent>
