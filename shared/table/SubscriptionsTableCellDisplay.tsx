@@ -187,13 +187,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     );
   }
 
-  // if (colId === 'billDuesCurrentYearCount') {
-  //   return (
-  //     <TableCell>
-  //       <SubscriptionsTableCellDisplayCurrentYearCount subscription={ subscription } />
-  //     </TableCell>
-  //   );
-  // }
+  if (colId === 'billDuesCurrentYearCount') {
+    return (
+      <TableCell>
+        <SubscriptionsTableCellDisplayCurrentYearCount subscription={ subscription } />
+      </TableCell>
+    );
+  }
 
   if (colId === 'billDuesCurrentYearTotalCost') {
     return (
