@@ -45,7 +45,7 @@ export default function AddNewBillDueDialogContentStandalone({}: {
   return (
     <AddNewBillDueDialogContentFormWrapper subscriptionId={ addBillDueSubscriptionId } subscription={ data } key={ addBillDueSubscriptionId }>
       <AddNewBillDueDialogContentCard subscription={ data } />
-      { /* <AddNewBillDueDialogFooter /> */ }
+      <AddNewBillDueDialogFooter />
     </AddNewBillDueDialogContentFormWrapper>
   );
 }
