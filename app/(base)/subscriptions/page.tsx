@@ -37,8 +37,7 @@ export default function SubscriptionsPage({ searchParams }: PageProps<'/subscrip
       </Suspense>
       <Suspense>
         <AddNewBillDueDialogStandalone>
-          { /* <AddNewBillDueDialogContentStandalone searchParams={ searchParams } /> */ }
-          AA
+          <AddNewBillDueDialogContentStandalone searchParams={ searchParams } />
         </AddNewBillDueDialogStandalone>
       </Suspense>
     </div>
