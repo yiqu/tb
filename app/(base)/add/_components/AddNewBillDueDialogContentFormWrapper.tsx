@@ -30,12 +30,12 @@ export default function AddNewBillDueDialogContentFormWrapper({
   const [, setAddBillDueSubscriptionId] = useQueryState('addBillDueSubscriptionId', {
     scroll: false,
   });
-  // const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
-  // const currentDateLuxonMidDay12pm: string = currentDateLuxon.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toMillis().toString();
+  const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+  const currentDateLuxonMidDay12pm: string = currentDateLuxon.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toMillis().toString();
 
   const methods = useForm<z.infer<typeof billAddableSchema>>({
     defaultValues: {
-      dueDate: '1734460800000',
+      dueDate: currentDateLuxonMidDay12pm,
       paid: false,
       reimbursed: false,
       cost: subscription?.cost ?? 0,
