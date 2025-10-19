@@ -6,11 +6,12 @@ const nextConfig: NextConfig = {
     //viewTransition: true,
     useCache: true,
     clientSegmentCache: true,
-    cacheComponents: true,
     //turbopackFileSystemCacheForBuild: true,
     turbopackFileSystemCacheForDev: true,
   },
   reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
+  cacheComponents: true,
+  
   // typedRoutes: true
 
   // 10/7/2025 added this to fix the prisma client initialization error
