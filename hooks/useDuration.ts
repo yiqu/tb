@@ -9,6 +9,7 @@ const currentEpoch = Date.now();
 
 export default function useDuration(from: number) {
   const [passed, setPassed] = useState(currentEpoch - from);
+  
   useEffect(() => {
     let timer = setInterval(() => {
       const currentEpoch = Date.now();

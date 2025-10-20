@@ -78,7 +78,7 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
               ` }
             >
               <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" clientLoadingClassName="h-[20px] w-[153px]" />
-              <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis clientLoadingClassName="h-[20px] w-[40px]" />
+              <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis clientLoadingClassName="h-[20px] w-[40px]" showClientLoading={ true } />
             </div>
           </PopoverTrigger>
           <PopoverContent className="min-w-96">

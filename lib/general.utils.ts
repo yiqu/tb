@@ -5,6 +5,7 @@ export const FULL_DATE_FORMAT_STRING = 'MM/dd/yy h:mm aa';
 export const FULL_DATE_FORMAL_FORMAT_STRING = 'MM/DD/yyyy HH:mm ZZ';
 export const FULL_DATE_TOOLTIP_FORMAT_STRING = 'MM/dd/yyyy h:mm aa O';
 export const SHORT_DATE_FORMAT_STRING = 'MM/dd/yy';
+export const DEFAULT_DATE_FORMAT_STRING = 'MM/dd/yyyy';
 export const MOMENT_FULL_DATE_FORMAT_WITH_AM_PM_STRING = 'MM/DD/yyyy hh:mm:ss A';
 
 export function scrollToElementById(id: string, timeout?: number, position?: ScrollLogicalPosition): void {
