@@ -1,11 +1,16 @@
 'use client';
 
+import { DateTime } from 'luxon';
+
 import { cn } from '@/lib/utils';
 import useIsClient from '@/hooks/useIsClient';
 import { isNumeric } from '@/lib/number.utils';
 import useDuration2 from '@/hooks/useDuration2';
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
+
+const DAY_THRESHOLD_TO_SHOW_SECONDS = 3;
+const SHOW_SECONDS_IF_PAST_DUE_DATE = true;
 
 export default function DateRelativeDisplay({
   time,
@@ -19,6 +24,7 @@ export default function DateRelativeDisplay({
   useShortText = false,
   clientLoadingClassName = 'h-5 w-[50%]',
   showClientLoading,
+  overrideHideSeconds,
 }: {
   time: Date | string | null;
   includeParenthesis?: boolean;
@@ -31,8 +37,12 @@ export default function DateRelativeDisplay({
   useShortText?: boolean;
   clientLoadingClassName?: string;
   showClientLoading?: boolean;
+  overrideHideSeconds?: boolean;
 }) {
   const isClient = useIsClient();
+
+  let largestValue = largest;
+  let updateIntervalValue = updateInterval;
 
   // Convert time to timestamp (milliseconds)
   const timestamp =
@@ -42,7 +52,16 @@ export default function DateRelativeDisplay({
     : isNumeric(time) ? Number.parseInt(time)
     : new Date(time).getTime();
 
-  const relativeTime = useDuration2(timestamp, updateInterval, largest, useShortText);
+  const showSecondsDueToPastDueDate: boolean = SHOW_SECONDS_IF_PAST_DUE_DATE && DateTime.fromMillis(timestamp).diffNow().as('days') < 0;
+
+  // if the time range is within 3 days, show seconds too, so largest is 4
+  const timeRange = DateTime.fromMillis(timestamp).diffNow().as('days');
+
+  if (!overrideHideSeconds && (timeRange < DAY_THRESHOLD_TO_SHOW_SECONDS || showSecondsDueToPastDueDate)) {
+    largestValue = 4;
+    updateIntervalValue = 1_000;
+  }
+  const relativeTime = useDuration2(timestamp, updateIntervalValue, largestValue, useShortText);
 
   if (showClientLoading !== false && !isClient) {
     return <Skeleton className={ cn('h-5 w-[50%]', clientLoadingClassName) } />;

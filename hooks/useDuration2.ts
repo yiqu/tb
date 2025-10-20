@@ -58,14 +58,14 @@ export default function useDuration2(from: number, updateInterval: number = 30_0
   const duration = useShortText
     ? shortEnglish(absoluteElapsed, {
         largest,
-        units: ['y', 'mo', 'w', 'd', 'h', 'm'],
+        units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
         round: true,
         spacer: '',
         delimiter: ' ',
       })
     : humanizeDuration(absoluteElapsed, {
         largest,
-        units: ['y', 'mo', 'w', 'd', 'h', 'm'],
+        units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
         round: true,
       });
 

@@ -113,7 +113,13 @@ export default function BillsTableCell({
               ` }
             >
               <Typography className="truncate">{ billDue.dateAddedInEst }</Typography>
-              <DateRelativeDisplay time={ billDue.dateAdded as any } largest={ 2 } updateInterval={ 60_000 } useShortText={ true } />
+              <DateRelativeDisplay
+                time={ billDue.dateAdded as any }
+                largest={ 2 }
+                updateInterval={ 60_000 }
+                useShortText={ true }
+                overrideHideSeconds={ true }
+              />
             </div>
           </PopoverTrigger>
           <PopoverContent>
@@ -209,7 +215,13 @@ export default function BillsTableCell({
                 <Typography variant="nodata1">N/A</Typography>
               : <>
                 <Typography className="truncate">{ billDue.updatedAtInEst }</Typography>
-                <DateRelativeDisplay time={ billDue.updatedAt as any } largest={ 2 } updateInterval={ 60_000 } useShortText={ true } />
+                <DateRelativeDisplay
+                    time={ billDue.updatedAt as any }
+                    largest={ 2 }
+                    updateInterval={ 60_000 }
+                    useShortText={ true }
+                    overrideHideSeconds={ true }
+                  />
               </>
               }
             </div>

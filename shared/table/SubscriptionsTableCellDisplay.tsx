@@ -134,7 +134,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
               ` }
             >
               <Typography className="truncate">{ subscription.dateAddedInEst }</Typography>
-              <DateRelativeDisplay time={ subscription.dateAdded as any } largest={ 2 } updateInterval={ 60_000 } useShortText={ true } />
+              <DateRelativeDisplay
+                time={ subscription.dateAdded as any }
+                largest={ 2 }
+                updateInterval={ 60_000 }
+                useShortText={ true }
+                overrideHideSeconds={ true }
+              />
             </div>
           </PopoverTrigger>
           <PopoverContent>
@@ -259,7 +265,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
                 <Typography variant="nodata1">N/A</Typography>
               : <>
                 <Typography className="truncate">{ subscription.updatedAtInEst }</Typography>
-                <DateRelativeDisplay time={ subscription.updatedAt as any } largest={ 2 } updateInterval={ 60_000 } useShortText={ true } />
+                <DateRelativeDisplay
+                    time={ subscription.updatedAt as any }
+                    largest={ 2 }
+                    updateInterval={ 60_000 }
+                    useShortText={ true }
+                    overrideHideSeconds={ true }
+                  />
               </>
               }
             </div>
