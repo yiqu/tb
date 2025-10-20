@@ -17,9 +17,9 @@ type BillsTableViewState = {
   recentlyAddedBillDues: BillDueWithSubscription[];
 
   // Actions
-  setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
-  clearBillDueIdBeingEdited: (billDueId: string) => void;
-  setLastEdited: (lastEdited: number) => void;
+  // setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
+  // clearBillDueIdBeingEdited: (billDueId: string) => void;
+  // setLastEdited: (lastEdited: number) => void;
 
   actions: {
     setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
@@ -67,35 +67,35 @@ const billsTableViewStoreBase = create<BillsTableViewState>()(
         },
       },
 
-      setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => {
-        set((state: BillsTableViewState) => {
-          return {
-            billDueIdBeingEdited: {
-              ...state.billDueIdBeingEdited,
-              [billDueId]: setEmpty ? false : true,
-            },
-          };
-        });
-      },
+      // setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => {
+      //   set((state: BillsTableViewState) => {
+      //     return {
+      //       billDueIdBeingEdited: {
+      //         ...state.billDueIdBeingEdited,
+      //         [billDueId]: setEmpty ? false : true,
+      //       },
+      //     };
+      //   });
+      // },
 
-      clearBillDueIdBeingEdited: (billDueId: string) => {
-        set((state: BillsTableViewState) => {
-          return {
-            billDueIdBeingEdited: {
-              ...state.billDueIdBeingEdited,
-              [billDueId]: false,
-            },
-          };
-        });
-      },
+      // clearBillDueIdBeingEdited: (billDueId: string) => {
+      //   set((state: BillsTableViewState) => {
+      //     return {
+      //       billDueIdBeingEdited: {
+      //         ...state.billDueIdBeingEdited,
+      //         [billDueId]: false,
+      //       },
+      //     };
+      //   });
+      // },
 
-      setLastEdited: (lastEdited: number) => {
-        set((state: BillsTableViewState) => {
-          return {
-            lastEdited: lastEdited,
-          };
-        });
-      },
+      // setLastEdited: (lastEdited: number) => {
+      //   set((state: BillsTableViewState) => {
+      //     return {
+      //       lastEdited: lastEdited,
+      //     };
+      //   });
+      // },
     }),
     {
       name: 'bills-table-view-store',
@@ -126,5 +126,6 @@ const billsTableViewStore = createSelectors(billsTableViewStoreBase);
 // Non-selectors want to be exported for use in other files
 export const useBillStoreActions = () => billsTableViewStoreBase((state) => state.actions);
 export const useGetRecentlyAddedBillDues = () => billsTableViewStoreBase((state) => state.recentlyAddedBillDues);
+export const useGetBillDueIdBeingEdited = () => billsTableViewStoreBase((state) => state.billDueIdBeingEdited);
 
 export default billsTableViewStore;

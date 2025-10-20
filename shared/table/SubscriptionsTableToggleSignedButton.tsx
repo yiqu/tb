@@ -7,13 +7,11 @@ import { useQueryState, parseAsInteger } from 'nuqs';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import subscriptionsTableViewStore from '@/store/subscriptions/subscriptions.store';
+import { useSubscriptionStoreActions } from '@/store/subscriptions/subscriptions.store';
 import { updateIsSubscriptionSigned } from '@/server/subscriptions/subscriptions.server';
 
 export default function SubscriptionsTableToggleSignedButton({ subscriptionId, isSigned }: { subscriptionId: string; isSigned: boolean }) {
-  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
-  const setLastEdited = subscriptionsTableViewStore.use.setLastEdited();
-  const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
+  const { setSubscriptionIdBeingEdited, setLastEdited } = useSubscriptionStoreActions();
 
   const [page, setPage] = useQueryState(
     'page',
@@ -41,7 +39,7 @@ export default function SubscriptionsTableToggleSignedButton({ subscriptionId, i
       setPage(page);
       toast.remove();
       toast.success(`${res.signed ? 'Marked as signed.' : 'Marked as unsigned.'}`);
-      clearSubscriptionIdBeingEdited(subscriptionId);
+      setSubscriptionIdBeingEdited(subscriptionId, true);
     });
   };
 

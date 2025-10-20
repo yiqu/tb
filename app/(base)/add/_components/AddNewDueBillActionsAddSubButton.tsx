@@ -3,10 +3,10 @@
 import { ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
-import billsTableViewStore, { BillDueIdBeingEdited } from '@/store/bills/bills.store';
+import { BillDueIdBeingEdited, useGetBillDueIdBeingEdited } from '@/store/bills/bills.store';
 
 export default function AddNewDueBillActionsAddSubButton({ children }: { children: ReactNode }) {
-  const billDueIdBeingEdited: BillDueIdBeingEdited = billsTableViewStore.use.billDueIdBeingEdited();
+  const billDueIdBeingEdited: BillDueIdBeingEdited = useGetBillDueIdBeingEdited();
   const isNewBillDue: boolean = billDueIdBeingEdited['new-bill-due'] === true;
 
   return (
