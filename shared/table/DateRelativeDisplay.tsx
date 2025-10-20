@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
 
 const DAY_THRESHOLD_TO_SHOW_SECONDS = 3;
-const SHOW_SECONDS_IF_PAST_DUE_DATE = true;
+const SHOW_SECONDS_IF_PAST_DUE_DATE = false;
 
 export default function DateRelativeDisplay({
   time,

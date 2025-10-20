@@ -148,7 +148,7 @@ export default function BillsTableCell({
                 <Typography>{ dueDate }</Typography>
                 <SearchTableCellDisplayDueDateIcon date={ billDue.dueDate } billDue={ billDue } />
               </div>
-              <DateRelativeDisplay time={ dueDate as any } />
+              <DateRelativeDisplay time={ dueDate as any } className="truncate" />
             </div>
           </PopoverTrigger>
           <PopoverContent>
