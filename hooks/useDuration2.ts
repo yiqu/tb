@@ -10,9 +10,9 @@ const shortEnglish = humanizeDuration.humanizer({
   language: 'shortEn',
   languages: {
     shortEn: {
-      y: () => 'yr',
-      mo: () => 'mo',
-      w: () => 'wk',
+      y: () => 'y',
+      mo: () => 'm',
+      w: () => 'w',
       d: () => 'd',
       h: () => 'hr',
       m: () => 'min',
