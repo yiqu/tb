@@ -25,6 +25,7 @@ export default function DateRelativeDisplay({
   clientLoadingClassName = 'h-5 w-[50%]',
   showClientLoading,
   overrideHideSeconds,
+  isCompleted,
 }: {
   time: Date | string | null;
   includeParenthesis?: boolean;
@@ -38,6 +39,7 @@ export default function DateRelativeDisplay({
   clientLoadingClassName?: string;
   showClientLoading?: boolean;
   overrideHideSeconds?: boolean;
+  isCompleted?: boolean;
 }) {
   const isClient = useIsClient();
 
@@ -57,7 +59,7 @@ export default function DateRelativeDisplay({
   // if the time range is within 3 days, show seconds too, so largest is 4
   const timeRange = DateTime.fromMillis(timestamp).diffNow().as('days');
 
-  if (!overrideHideSeconds && (timeRange < DAY_THRESHOLD_TO_SHOW_SECONDS || showSecondsDueToPastDueDate)) {
+  if (!overrideHideSeconds && (timeRange < DAY_THRESHOLD_TO_SHOW_SECONDS || showSecondsDueToPastDueDate) && !isCompleted) {
     largestValue = 4;
     updateIntervalValue = 1_000;
   }

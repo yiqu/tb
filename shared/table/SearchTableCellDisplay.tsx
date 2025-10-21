@@ -134,6 +134,7 @@ export default function BillsTableCell({
 
   if (colId === 'dueDate') {
     const dueDate: string | undefined = billDue.dueDateInEst;
+    const isCompleted = billDue.reimbursed && billDue.paid;
     return (
       <TableCell>
         <Popover>
@@ -148,7 +149,7 @@ export default function BillsTableCell({
                 <Typography>{ dueDate }</Typography>
                 <SearchTableCellDisplayDueDateIcon date={ billDue.dueDate } billDue={ billDue } />
               </div>
-              <DateRelativeDisplay time={ dueDate as any } className="truncate" />
+              <DateRelativeDisplay time={ dueDate as any } className="truncate" isCompleted={ isCompleted } />
             </div>
           </PopoverTrigger>
           <PopoverContent>
