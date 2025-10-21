@@ -8,13 +8,13 @@ import { useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
 import StyledDialogFooter from '@/shared/dialogs/StyledDialogFooter';
-import subscriptionsTableViewStore, { SubscriptionIdBeingEdited } from '@/store/subscriptions/subscriptions.store';
+import { SubscriptionIdBeingEdited, useGetSubscriptionBeingEdited } from '@/store/subscriptions/subscriptions.store';
 
 import AddBillConsecutiveAdd from './form-fields/AddBillConsecutiveAdd';
 
 export default function AddNewBillDueDialogFooter() {
   const [addBillDueSubscriptionId] = useQueryState('addBillDueSubscriptionId', {});
-  const subscriptionIdBeingEdited: SubscriptionIdBeingEdited = subscriptionsTableViewStore.use.subscriptionIdBeingEdited();
+  const subscriptionIdBeingEdited: SubscriptionIdBeingEdited = useGetSubscriptionBeingEdited();
 
   return (
     <StyledDialogFooter>

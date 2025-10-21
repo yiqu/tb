@@ -80,7 +80,7 @@ export const SEARCH_TABLE_COLUMN_TEXT = {
   approved: 'Approved',
   signed: 'Signed',
   billDuesCurrentYearCount: 'Bills Current Year',
-  billDuesCurrentYearTotalCost: 'Cost Current Year',
+  billDuesCurrentYearTotalCost: 'Remaining Cost Current Year',
 };
 
 export type SortDirection = 'asc' | 'desc' | '';

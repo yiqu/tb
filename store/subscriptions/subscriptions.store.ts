@@ -12,9 +12,9 @@ type SubscriptionsTableViewState = {
   lastEdited: number | null;
 
   // Actions
-  setSubscriptionIdBeingEdited: (subscriptionId: string) => void;
-  clearSubscriptionIdBeingEdited: (subscriptionId: string) => void;
-  setLastEdited: (lastEdited: number) => void;
+  // setSubscriptionIdBeingEdited: (subscriptionId: string) => void;
+  // clearSubscriptionIdBeingEdited: (subscriptionId: string) => void;
+  // setLastEdited: (lastEdited: number) => void;
 
   actions: {
     setSubscriptionIdBeingEdited: (subscriptionId: string, setEmpty?: boolean) => void;
@@ -55,36 +55,36 @@ const subscriptionsTableViewStoreBase = create<SubscriptionsTableViewState>()(
         },
       },
 
-      setSubscriptionIdBeingEdited: (subscriptionId: string) => {
-        set((state: SubscriptionsTableViewState) => {
-          return {
-            subscriptionIdBeingEdited: {
-              ...state.subscriptionIdBeingEdited,
-              [subscriptionId]: true,
-            },
-            lastEdited: Date.now(),
-          };
-        });
-      },
+      // setSubscriptionIdBeingEdited: (subscriptionId: string) => {
+      //   set((state: SubscriptionsTableViewState) => {
+      //     return {
+      //       subscriptionIdBeingEdited: {
+      //         ...state.subscriptionIdBeingEdited,
+      //         [subscriptionId]: true,
+      //       },
+      //       lastEdited: Date.now(),
+      //     };
+      //   });
+      // },
 
-      clearSubscriptionIdBeingEdited: (subscriptionId: string) => {
-        set((state: SubscriptionsTableViewState) => {
-          return {
-            subscriptionIdBeingEdited: {
-              ...state.subscriptionIdBeingEdited,
-              [subscriptionId]: false,
-            },
-          };
-        });
-      },
+      // clearSubscriptionIdBeingEdited: (subscriptionId: string) => {
+      //   set((state: SubscriptionsTableViewState) => {
+      //     return {
+      //       subscriptionIdBeingEdited: {
+      //         ...state.subscriptionIdBeingEdited,
+      //         [subscriptionId]: false,
+      //       },
+      //     };
+      //   });
+      // },
 
-      setLastEdited: (lastEdited: number) => {
-        set((state: SubscriptionsTableViewState) => {
-          return {
-            lastEdited: lastEdited,
-          };
-        });
-      },
+      // setLastEdited: (lastEdited: number) => {
+      //   set((state: SubscriptionsTableViewState) => {
+      //     return {
+      //       lastEdited: lastEdited,
+      //     };
+      //   });
+      // },
     }),
     {
       name: 'subscriptions-table-view-store',

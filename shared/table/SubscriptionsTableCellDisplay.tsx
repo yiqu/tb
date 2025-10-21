@@ -19,6 +19,7 @@ import SubscriptionsTableEditSubscriptionButton from '@/app/(base)/subscriptions
 import SubscriptionsTableDeleteSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableDeleteSubscriptionButton';
 
 import DateDialogContent from '../dialogs/DateDialog';
+import DateRelativeDisplay from './DateRelativeDisplay';
 import { getFrequencyImageUrl, getSubscriptionLogoSize } from './table.utils';
 import SubscriptionsTableToggleSignedButton from './SubscriptionsTableToggleSignedButton';
 import SubscriptionsTableToggleApprovedButton from './SubscriptionsTableToggleApprovedButton';
@@ -133,7 +134,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
               ` }
             >
               <Typography className="truncate">{ subscription.dateAddedInEst }</Typography>
-              <Typography className="truncate">{ subscription.dateAddedInEstRelative }</Typography>
+              <DateRelativeDisplay
+                time={ subscription.dateAdded as any }
+                largest={ 2 }
+                updateInterval={ 60_000 }
+                useShortText={ true }
+                overrideHideSeconds={ true }
+              />
             </div>
           </PopoverTrigger>
           <PopoverContent>
@@ -258,7 +265,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
                 <Typography variant="nodata1">N/A</Typography>
               : <>
                 <Typography className="truncate">{ subscription.updatedAtInEst }</Typography>
-                <Typography className="truncate">{ subscription.updatedAtInEstRelative }</Typography>
+                <DateRelativeDisplay
+                    time={ subscription.updatedAt as any }
+                    largest={ 2 }
+                    updateInterval={ 60_000 }
+                    useShortText={ true }
+                    overrideHideSeconds={ true }
+                  />
               </>
               }
             </div>

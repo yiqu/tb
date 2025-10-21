@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 import { TableRow } from '@/components/ui/table';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
-import subscriptionsTableViewStore, { SubscriptionIdBeingEdited } from '@/store/subscriptions/subscriptions.store';
+import { SubscriptionIdBeingEdited, useGetSubscriptionBeingEdited } from '@/store/subscriptions/subscriptions.store';
 
 export default function SubscriptionsTableParentRowWrapper({
   subscription,
@@ -12,7 +12,7 @@ export default function SubscriptionsTableParentRowWrapper({
   subscription: SubscriptionWithBillDues;
   children: React.ReactNode;
 }) {
-  const subscriptionIdBeingEdited: SubscriptionIdBeingEdited = subscriptionsTableViewStore.use.subscriptionIdBeingEdited();
+  const subscriptionIdBeingEdited: SubscriptionIdBeingEdited = useGetSubscriptionBeingEdited();
 
   return (
     <TableRow

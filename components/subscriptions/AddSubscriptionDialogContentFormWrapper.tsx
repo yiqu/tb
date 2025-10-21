@@ -13,8 +13,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { TANSTACK_MUTATION_KEY_SUBSCRIPTION_CREATE } from '@/constants/constants';
 import { createNewSubscription } from '@/server/subscriptions/subscriptions.server';
-import subscriptionsTableViewStore from '@/store/subscriptions/subscriptions.store';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
+import { useSubscriptionStoreActions } from '@/store/subscriptions/subscriptions.store';
 import { subscriptionAddableSchema } from '@/validators/subscriptions/subscriptions.schema';
 
 export default function AddSubscriptionDialogContentFormWrapper({
@@ -24,8 +24,7 @@ export default function AddSubscriptionDialogContentFormWrapper({
   children: ReactNode;
   redirectToNewSubscriptionAfterCreation?: boolean;
 }) {
-  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
-  //const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
+  const { setSubscriptionIdBeingEdited } = useSubscriptionStoreActions();
 
   const [, setAddNewSubscription] = useQueryState('addNewSubscription', {
     scroll: false,

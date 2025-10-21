@@ -3,10 +3,16 @@
 import { cn } from '@/lib/utils';
 import { TableRow } from '@/components/ui/table';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
-import billsTableViewStore, { BillDueIdBeingEdited } from '@/store/bills/bills.store';
+import { BillDueIdBeingEdited, useGetBillDueIdBeingEdited } from '@/store/bills/bills.store';
 
-export default function UpcomingBillsTableParentRowWrapper({ billDue, children }: { billDue: BillDueWithSubscription; children: React.ReactNode }) {
-  const billDueIdBeingEdited: BillDueIdBeingEdited = billsTableViewStore.use.billDueIdBeingEdited();
+export default function UpcomingBillsTableParentRowWrapper({
+  billDue,
+  children,
+}: {
+  billDue: BillDueWithSubscription;
+  children: React.ReactNode;
+}) {
+  const billDueIdBeingEdited: BillDueIdBeingEdited = useGetBillDueIdBeingEdited();
 
   return (
     <TableRow

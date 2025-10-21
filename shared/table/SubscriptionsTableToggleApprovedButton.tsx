@@ -7,7 +7,7 @@ import { useQueryState, parseAsInteger } from 'nuqs';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import subscriptionsTableViewStore from '@/store/subscriptions/subscriptions.store';
+import { useSubscriptionStoreActions } from '@/store/subscriptions/subscriptions.store';
 import { updateIsSubscriptionApproved } from '@/server/subscriptions/subscriptions.server';
 
 export default function SubscriptionsTableToggleApprovedButton({
@@ -17,9 +17,7 @@ export default function SubscriptionsTableToggleApprovedButton({
   subscriptionId: string;
   isApproved: boolean;
 }) {
-  const setSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.setSubscriptionIdBeingEdited();
-  const setLastEdited = subscriptionsTableViewStore.use.setLastEdited();
-  const clearSubscriptionIdBeingEdited = subscriptionsTableViewStore.use.clearSubscriptionIdBeingEdited();
+  const { setSubscriptionIdBeingEdited, setLastEdited } = useSubscriptionStoreActions();
 
   const [page, setPage] = useQueryState(
     'page',
@@ -47,7 +45,7 @@ export default function SubscriptionsTableToggleApprovedButton({
       setPage(page);
       toast.remove();
       toast.success(`${res.approved ? 'Marked as approved.' : 'Marked as unapproved.'}`);
-      clearSubscriptionIdBeingEdited(subscriptionId);
+      setSubscriptionIdBeingEdited(subscriptionId, true);
     });
   };
 

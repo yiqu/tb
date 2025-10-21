@@ -16,6 +16,7 @@ import EditBillDialogFavoriteBillToggleButton from '@/components/bills/EditBillD
 
 import LinkClient from './LinkClient';
 import DateDialogContent from '../dialogs/DateDialog';
+import DateRelativeDisplay from './DateRelativeDisplay';
 import DateDialogContentBase from '../dialogs/DateDialogBase';
 import { TableCellHoverWrapper } from './TableCellHoverWrapper';
 import BillsTableEditBillButton from './BillsTableEditBillButton';
@@ -112,7 +113,13 @@ export default function BillsTableCell({
               ` }
             >
               <Typography className="truncate">{ billDue.dateAddedInEst }</Typography>
-              <Typography className="truncate">{ billDue.dateAddedInEstRelative }</Typography>
+              <DateRelativeDisplay
+                time={ billDue.dateAdded as any }
+                largest={ 2 }
+                updateInterval={ 60_000 }
+                useShortText={ true }
+                overrideHideSeconds={ true }
+              />
             </div>
           </PopoverTrigger>
           <PopoverContent>
@@ -127,7 +134,6 @@ export default function BillsTableCell({
 
   if (colId === 'dueDate') {
     const dueDate: string | undefined = billDue.dueDateInEst;
-    const dueDateRelative: string | undefined = billDue.dueDateInEstRelative;
     return (
       <TableCell>
         <Popover>
@@ -142,7 +148,7 @@ export default function BillsTableCell({
                 <Typography>{ dueDate }</Typography>
                 <SearchTableCellDisplayDueDateIcon date={ billDue.dueDate } billDue={ billDue } />
               </div>
-              <Typography>{ dueDateRelative }</Typography>
+              <DateRelativeDisplay time={ dueDate as any } className="truncate" />
             </div>
           </PopoverTrigger>
           <PopoverContent>
@@ -209,7 +215,13 @@ export default function BillsTableCell({
                 <Typography variant="nodata1">N/A</Typography>
               : <>
                 <Typography className="truncate">{ billDue.updatedAtInEst }</Typography>
-                <Typography className="truncate">{ billDue.updatedAtInEstRelative }</Typography>
+                <DateRelativeDisplay
+                    time={ billDue.updatedAt as any }
+                    largest={ 2 }
+                    updateInterval={ 60_000 }
+                    useShortText={ true }
+                    overrideHideSeconds={ true }
+                  />
               </>
               }
             </div>
