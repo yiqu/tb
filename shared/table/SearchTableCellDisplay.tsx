@@ -108,7 +108,7 @@ export default function BillsTableCell({
             <div
               title={ `${billDue.dateAdded}` }
               className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
                 hover:border-border hover:bg-accent
               ` }
             >
@@ -141,7 +141,7 @@ export default function BillsTableCell({
           <PopoverTrigger asChild>
             <div
               className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
                 hover:border-border hover:bg-accent
               ` }
             >
@@ -208,7 +208,7 @@ export default function BillsTableCell({
             <div
               title={ `${billDue.updatedAt}` }
               className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
                 hover:border-border hover:bg-accent
               ` }
             >

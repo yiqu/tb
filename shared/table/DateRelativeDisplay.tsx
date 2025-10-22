@@ -22,6 +22,7 @@ export default function DateRelativeDisplay({
   updateInterval = 15_000,
   largest = 3,
   useShortText = false,
+  useShortTextJustSeconds = false,
   clientLoadingClassName = 'h-5 w-[50%]',
   showClientLoading,
   overrideHideSeconds,
@@ -36,6 +37,7 @@ export default function DateRelativeDisplay({
   updateInterval?: number;
   largest?: number;
   useShortText?: boolean;
+  useShortTextJustSeconds?: boolean;
   clientLoadingClassName?: string;
   showClientLoading?: boolean;
   overrideHideSeconds?: boolean;
@@ -45,6 +47,7 @@ export default function DateRelativeDisplay({
 
   let largestValue = largest;
   let updateIntervalValue = updateInterval;
+  let useShortTextJustSecondsValue = useShortTextJustSeconds;
 
   // Convert time to timestamp (milliseconds)
   const timestamp =
@@ -59,11 +62,12 @@ export default function DateRelativeDisplay({
   // if the time range is within 3 days, show seconds too, so largest is 4
   const timeRange = DateTime.fromMillis(timestamp).diffNow().as('days');
 
-  if (!overrideHideSeconds && (timeRange < DAY_THRESHOLD_TO_SHOW_SECONDS || showSecondsDueToPastDueDate) && !isCompleted) {
+  if (!overrideHideSeconds && !isCompleted && (timeRange < DAY_THRESHOLD_TO_SHOW_SECONDS || showSecondsDueToPastDueDate)) {
     largestValue = 4;
     updateIntervalValue = 1_000;
+    useShortTextJustSecondsValue = true;
   }
-  const relativeTime = useDuration2(timestamp, updateIntervalValue, largestValue, useShortText);
+  const relativeTime = useDuration2(timestamp, updateIntervalValue, largestValue, useShortText, useShortTextJustSecondsValue);
 
   if (showClientLoading !== false && !isClient) {
     return <Skeleton className={ cn('h-5 w-[50%]', clientLoadingClassName) } />;

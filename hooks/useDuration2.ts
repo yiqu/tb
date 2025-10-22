@@ -11,17 +11,32 @@ const shortEnglish = humanizeDuration.humanizer({
   languages: {
     shortEn: {
       y: () => 'y',
-      mo: () => 'm',
+      mo: () => 'mo',
       w: () => 'w',
       d: () => 'd',
-      h: () => 'hr',
-      m: () => 'min',
+      h: () => 'h',
+      m: () => 'm',
       s: () => 's',
     },
   },
 });
 
-export default function useDuration2(from: number, updateInterval: number = 30_000, largest: number = 2, useShortText: boolean = false) {
+const shortEnglishJustSeconds = humanizeDuration.humanizer({
+  language: 'shortEnJustSeconds',
+  languages: {
+    shortEnJustSeconds: {
+      s: () => 's',
+    },
+  },
+});
+
+export default function useDuration2(
+  from: number,
+  updateInterval: number = 30_000,
+  largest: number = 2,
+  useShortText: boolean = false,
+  useShortTextJustSeconds: boolean = false,
+) {
   const [elapsed, setElapsed] = useState<number>(() => Date.now() - from);
 
   useEffect(() => {
@@ -55,8 +70,17 @@ export default function useDuration2(from: number, updateInterval: number = 30_0
   }
 
   // Format the duration using humanizeDuration
-  const duration = useShortText
-    ? shortEnglish(absoluteElapsed, {
+  const duration =
+    useShortTextJustSeconds ?
+      shortEnglishJustSeconds(absoluteElapsed, {
+        largest,
+        units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
+        round: true,
+        spacer: '',
+        delimiter: ' ',
+      })
+    : useShortText ?
+      shortEnglish(absoluteElapsed, {
         largest,
         units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
         round: true,

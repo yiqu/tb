@@ -62,7 +62,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     return (
       <TableCell>
         <Typography
-          className="text-wrap break-words"
+          className="text-wrap wrap-break-word"
           title={ subscription.description ?? 'N/A' }
           variant={ subscription.description ? 'labelvalue1' : 'nodata1' }
         >
@@ -91,7 +91,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
             <Typography className="break-all" title={ subscription.url ?? 'N/A' }>
               { subscription.url }
             </Typography>
-            <ExternalLinkIcon className="mt-0.5 h-4 w-4 flex-shrink-0" />
+            <ExternalLinkIcon className="mt-0.5 h-4 w-4 shrink-0" />
           </div>
         </Link>
       </TableCell>
@@ -129,7 +129,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
             <div
               title={ `${subscription.dateAdded}` }
               className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
                 hover:border-border hover:bg-accent
               ` }
             >
@@ -181,7 +181,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
           <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
             <div className="flex flex-row items-center justify-start gap-x-2 text-wrap">
               <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
-              <CenterUnderline label={ subName } className="break-words" />
+              <CenterUnderline label={ subName } className="wrap-break-word" />
             </div>
           </Link>
           <div>
@@ -257,7 +257,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
             <div
               title={ `${subscription.updatedAt}` }
               className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
+                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
                 hover:border-border hover:bg-accent
               ` }
             >
