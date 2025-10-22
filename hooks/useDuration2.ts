@@ -25,6 +25,12 @@ const shortEnglishJustSeconds = humanizeDuration.humanizer({
   language: 'shortEnJustSeconds',
   languages: {
     shortEnJustSeconds: {
+      y: (c?: number) => (c === 1 ? 'year' : 'years'),
+      mo: (c?: number) => (c === 1 ? 'month' : 'months'),
+      w: (c?: number) => (c === 1 ? 'week' : 'weeks'),
+      d: (c?: number) => (c === 1 ? 'day' : 'days'),
+      h: (c?: number) => (c === 1 ? 'hour' : 'hours'),
+      m: (c?: number) => (c === 1 ? 'minute' : 'minutes'),
       s: () => 's',
     },
   },
