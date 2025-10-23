@@ -90,7 +90,7 @@ export default function useDuration2(
         largest,
         units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
         round: true,
-        spacer: ' ',
+        spacer: '',
         delimiter: ' ',
       })
     : humanizeDuration(absoluteElapsed, {
