@@ -11,23 +11,21 @@ import UpcomingBillsActionBarSubscriptionFilterWrapper from './UpcomingBillsActi
 
 function UpcomingBillsTableActionBar() {
   return (
-    <div
-      className={ `sticky top-[4rem] z-50 flex w-full flex-row flex-wrap items-center justify-between gap-x-2 gap-y-2 bg-background py-2` }
-    >
+    <div className={ `sticky top-16 z-50 flex w-full flex-row flex-wrap items-center justify-between gap-x-2 gap-y-2 bg-background py-2` }>
       <div className="flex flex-row flex-wrap items-center justify-start gap-x-2 gap-y-2">
         <UpcomingBillsActionBarRefreshButton />
-        <Separator orientation="vertical" className="h-[1.5rem]!" />
+        <Separator orientation="vertical" className="h-6!" />
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <UpcomingBillsActionBarSubscriptionFilterWrapper />
         </Suspense>
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <UpcomingBillsActionBarFrequencyFilter />
         </Suspense>
-        <Separator orientation="vertical" className="h-[1.5rem]!" />
+        <Separator orientation="vertical" className="h-6!" />
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <UpcomingBillsActionBarDueDateFilter />
         </Suspense>
-        <Separator orientation="vertical" className="h-[1.5rem]!" />
+        <Separator orientation="vertical" className="h-6!" />
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <UpcomingBillsActionBarPaymentStatusFilter />
         </Suspense>

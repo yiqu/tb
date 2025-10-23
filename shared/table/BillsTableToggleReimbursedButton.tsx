@@ -68,7 +68,7 @@ export default function BillsTableToggleReimbursedButton({
       onClick={ handleOnClick.bind(null, optimisticIsReimbursed) }
       type="button"
       className={ cn('size-12', {
-        'border-1 border-green-500/20 dark:border-green-500/20': isPending && optimisticIsReimbursed,
+        'border border-green-500/20 dark:border-green-500/20': isPending && optimisticIsReimbursed,
       }) }
     >
       <HandCoins

@@ -1,4 +1,5 @@
 import z from 'zod';
+import { cacheLife } from 'next/cache';
 
 import { CardContent } from '@/components/ui/card';
 import DisplayCard from '@/shared/components/DisplayCard';
@@ -22,6 +23,9 @@ interface OutstandingBillsTableParentProps {
 }
 
 export default async function OutstandingBillsTableParent({ searchParamsPromise, paginationPromise }: OutstandingBillsTableParentProps) {
+  'use cache';
+  cacheLife('days');
+
   const searchParams: z.infer<typeof billSearchParamsSchema> = await searchParamsPromise;
   const pagination: PaginationDataModel | null = await paginationPromise;
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.outstanding);

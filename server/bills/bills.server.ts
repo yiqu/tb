@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 'use server';
 
@@ -6,6 +5,7 @@ import z from 'zod';
 import { cache } from 'react';
 import { DateTime } from 'luxon';
 import { cacheLife } from 'next/cache';
+// eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
 import { cacheTag, updateTag } from 'next/cache';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
@@ -237,16 +237,18 @@ export async function getAllBills(
     const billDuesToReturn: BillDueWithSubscription[] = billDues.slice(startIndex, endIndex);
 
     const billDuesToReturnWithDateInEST: BillDueWithSubscription[] = billDuesToReturn.map((billDue) => {
-      const dueDateInEstDate: Date = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toJSDate();
-      const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toFormat('MM/dd/yyyy');
-      const dueDateRelativeDate = formatDistanceToNow(dueDateInEstDate, { addSuffix: true });
+      const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate), {
+        zone: EST_TIME_ZONE,
+      }).toLocaleString(DateTime.DATETIME_SHORT);
+      //const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toFormat('MM/dd/yyyy');
 
       const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
         .setZone(EST_TIME_ZONE)
         .toJSDate();
       const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
         .setZone(EST_TIME_ZONE)
-        .toFormat('MM/dd/yyyy');
+        .toLocaleString(DateTime.DATETIME_SHORT);
+      //.toFormat('MM/dd/yyyy');
       const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
 
       const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
@@ -254,13 +256,13 @@ export async function getAllBills(
         .toJSDate();
       const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
         .setZone(EST_TIME_ZONE)
-        .toFormat('MM/dd/yyyy');
+        .toLocaleString(DateTime.DATETIME_SHORT);
+      // .toFormat('MM/dd/yyyy');
       const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
 
       return {
         ...billDue,
         dueDateInEst: dueDateInEst,
-        dueDateInEstRelative: dueDateRelativeDate,
         dateAddedInEst: dateAddedInEst,
         dateAddedInEstRelative: dateAddedRelativeDate,
         updatedAtInEst: updatedAtInEst,

@@ -376,7 +376,6 @@ export async function getSubscriptionBillsGroupedByYearById(subscriptionId: stri
     const billDuesToReturnWithDateInEST: BillDueWithSubscription[] = billDues.map((billDue) => {
       const dueDateInEstDate: Date = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toJSDate();
       const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toFormat('MM/dd/yyyy');
-      const dueDateRelativeDate = formatDistanceToNow(dueDateInEstDate, { addSuffix: true });
 
       const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
         .setZone(EST_TIME_ZONE)
@@ -397,7 +396,6 @@ export async function getSubscriptionBillsGroupedByYearById(subscriptionId: stri
       return {
         ...billDue,
         dueDateInEst: dueDateInEst,
-        dueDateInEstRelative: dueDateRelativeDate,
         dateAddedInEst: dateAddedInEst,
         dateAddedInEstRelative: dateAddedRelativeDate,
         updatedAtInEst: updatedAtInEst,

@@ -1,5 +1,6 @@
 import z from 'zod';
 import { Suspense } from 'react';
+import { cacheLife } from 'next/cache';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
@@ -23,6 +24,9 @@ interface UpcomingBillsTablePaginationProps {
 }
 
 export default async function UpcomingBillsTablePagination({ searchParamsPromise, paginationPromise }: UpcomingBillsTablePaginationProps) {
+  'use cache';
+  cacheLife('days');
+
   const pagination: PaginationDataModel | null = await paginationPromise;
   const searchParams: z.infer<typeof billSearchParamsSchema> = await searchParamsPromise;
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.upcoming);
