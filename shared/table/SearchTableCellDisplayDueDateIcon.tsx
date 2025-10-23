@@ -60,7 +60,7 @@ export default function SearchTableCellDisplayDueDateIcon({
     <div className="flex flex-row items-center justify-start">
       { isDueDateInCurrentMonth && !isPaidAndReimbursed && !isPastAndNotPaidOrReimbursed ?
         <span title={ `Due this month, not paid and not reimbursed` }>
-          <AlarmClock className={ cn('size-5 text-yellow-500') } />
+          <AlarmClock className={ cn('size-5 text-yellow-700') } />
         </span>
       : null }
       { isDueDateInCurrentMonth && isPaidAndReimbursed ?
