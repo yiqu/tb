@@ -27,11 +27,6 @@ export default async function BaseRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const [vibe, fontOverride] = await Promise.all([getSettingsApplicationVibe(), getSettingsApplicationFont()]);
-
-  // const cssVariables = getFontVariableByVibe(vibe);
-  // const fontOverrideCssVariables: string | undefined = getFontVariableByFont(fontOverride);
-
   return (
     <>
       <ReactScan />
