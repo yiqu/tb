@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 'use server';
 
@@ -6,14 +5,15 @@ import z from 'zod';
 import { cache } from 'react';
 import { DateTime } from 'luxon';
 import { cacheLife } from 'next/cache';
+// eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
 import { cacheTag, updateTag } from 'next/cache';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
 import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';
-import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
+import { EST_TIME_ZONE, UTC_TIME_ZONE } from '@/lib/general.utils';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { BillDueGroupedByYear, BillDueWithSubscription, BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
 import {
@@ -165,32 +165,103 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
       },
       where: whereClause.AND.length > 0 ? whereClause : {},
     });
-    // add the billDuesCurrentYearTotalCost to the subscriptions
-    subscriptions = subscriptions.map((subscription) => {
-      const billDuesCurrentYearCount = subscription.billDues.filter((billDue) => {
-        return (
-          DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).year === DateTime.now().setZone(EST_TIME_ZONE).year
-        );
-      }).length;
 
-      const billDuesCurrentYearTotalCost = subscription.billDues
-        .filter((billDue) => {
-          return (
-            DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).year === DateTime.now().setZone(EST_TIME_ZONE).year
-          );
-        })
-        .reduce((acc, billDue) => acc + Number.parseFloat(`${billDue.cost ?? 0}`), 0);
+    const pageSize: number = paginationData?.pageSize ?? DEFAULT_PAGE_SIZE;
+    const totalPages: number = Math.ceil(subscriptions.length / pageSize);
 
-      return { ...subscription, billDuesCurrentYearCount, billDuesCurrentYearTotalCost };
+    let startDateEpoch: number = 0;
+    let endDateEpoch: number = Infinity;
+
+    // if undefined, set to current year
+    const currentYearDateTime: DateTime = DateTime.now().setZone(EST_TIME_ZONE);
+    const currentYear: number = currentYearDateTime.year;
+    let selectedYearParam: string = searchParams?.year ?? currentYear.toString(); // e.g. 2025
+
+    console.log('selectedYear', selectedYearParam);
+
+    if (selectedYearParam !== 'all') {
+      const currentYearStartLuxon = DateTime.fromObject(
+        {
+          year: Number.parseInt(selectedYearParam),
+          month: 1,
+          day: 1,
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        },
+        {
+          zone: UTC_TIME_ZONE,
+        },
+      );
+      const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
+      startDateEpoch = currentYearStartLuxon.toMillis();
+      endDateEpoch = currentYearEndLuxon.toMillis();
+    }
+
+    // Massage the data to return
+    const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = subscriptions.map((subscription: SubscriptionWithBillDues) => {
+      const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
+        .setZone(EST_TIME_ZONE)
+        .toJSDate();
+      const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
+        .setZone(EST_TIME_ZONE)
+        .toFormat('MM/dd/yyyy');
+      const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
+
+      const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.updatedAt}`))
+        .setZone(EST_TIME_ZONE)
+        .toJSDate();
+      const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${subscription.updatedAt}`))
+        .setZone(EST_TIME_ZONE)
+        .toFormat('MM/dd/yyyy');
+      const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
+
+      // calculate bills for current year
+      let billsWithInTimeRange: BillDueWithSubscription[] = [];
+
+      billsWithInTimeRange = subscription.billDues.filter((billDue: BillDueWithSubscription) => {
+        const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate as unknown as string)).setZone(EST_TIME_ZONE);
+        return billDueDateLuxon.toMillis() >= startDateEpoch && billDueDateLuxon.toMillis() <= endDateEpoch;
+      });
+
+      const billDuesCurrentYearTotalCost = billsWithInTimeRange.reduce((acc, billDue) => {
+        return acc + Number.parseFloat(`${billDue.cost ?? subscription.cost ?? 0}`);
+      }, 0);
+
+      const billsWithinTimeRangeCount = billsWithInTimeRange.length;
+      const reimbursedBillsCount = billsWithInTimeRange.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
+
+      // All time bills
+      const totalBillsAllTimeCount = subscription.billDues.length;
+      const totalBillsAllTimeTotalCost = subscription.billDues.reduce((acc, billDue) => {
+        return acc + Number.parseFloat(`${billDue.cost ?? subscription.cost ?? 0}`);
+      }, 0);
+
+      return {
+        ...subscription,
+        dateAddedInEst: dateAddedInEst,
+        dateAddedInEstRelative: dateAddedRelativeDate,
+        updatedAtInEst: updatedAtInEst,
+        updatedAtInEstRelative: updatedAtRelativeDate,
+        reimbursedBillsCount: reimbursedBillsCount,
+        billsWithinTimeRangeCount: billsWithinTimeRangeCount,
+        totalBillsAllTimeCount: totalBillsAllTimeCount,
+        totalBillsAllTimeTotalCost: totalBillsAllTimeTotalCost,
+        selectedYearInEpoch: {
+          startDateEpoch: startDateEpoch,
+          endDateEpoch: endDateEpoch,
+        },
+        billDuesCurrentYearTotalCost: billDuesCurrentYearTotalCost,
+      };
     });
 
     // sort the bill dues
     if (sortData) {
-      subscriptions = getSortedSubscriptions(subscriptions, sortData);
+      subscriptions = getSortedSubscriptions(subscriptionsToReturnWithDateInEST, sortData);
     }
 
-    const pageSize: number = paginationData?.pageSize ?? DEFAULT_PAGE_SIZE;
-    const totalPages: number = Math.ceil(subscriptions.length / pageSize);
+    // Pagination
     // page starts at 1
     const pageNumber: number =
       searchParams?.page && isNumeric(searchParams?.page) && Number.parseInt(`${searchParams?.page}`) > 0 ?
@@ -202,59 +273,8 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     const endIndex: number = pageNumber === totalPages ? subscriptions.length : startIndex + pageSize;
     let subscriptionsToReturn: SubscriptionWithBillDues[] = subscriptions.slice(startIndex, endIndex);
 
-    // Date constants
-    const currentYearStartLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('year');
-    const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
-    const startDateEpoch = currentYearStartLuxon.toMillis();
-    const endDateEpoch = currentYearEndLuxon.toMillis();
-
-    const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = subscriptionsToReturn.map(
-      (subscription: SubscriptionWithBillDues) => {
-        const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
-          .setZone(EST_TIME_ZONE)
-          .toJSDate();
-        const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
-          .setZone(EST_TIME_ZONE)
-          .toFormat('MM/dd/yyyy');
-        const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
-
-        const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.updatedAt}`))
-          .setZone(EST_TIME_ZONE)
-          .toJSDate();
-        const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${subscription.updatedAt}`))
-          .setZone(EST_TIME_ZONE)
-          .toFormat('MM/dd/yyyy');
-        const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
-
-        // calculate bills for current year
-        let billsWithInTimeRange: BillDueWithSubscription[] = [];
-
-        if (subscription.billCycleDuration === 'yearly' || subscription.billCycleDuration === 'monthly') {
-          billsWithInTimeRange = subscription.billDues.filter((billDue: BillDueWithSubscription) => {
-            const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate as unknown as string)).setZone(EST_TIME_ZONE);
-            return billDueDateLuxon.toMillis() >= startDateEpoch && billDueDateLuxon.toMillis() <= endDateEpoch;
-          });
-        } else if (subscription.billCycleDuration === 'once') {
-          billsWithInTimeRange = subscription.billDues;
-        }
-
-        const billsWithinTimeRangeCount = billsWithInTimeRange.length;
-        const reimbursedBillsCount = billsWithInTimeRange.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
-
-        return {
-          ...subscription,
-          dateAddedInEst: dateAddedInEst,
-          dateAddedInEstRelative: dateAddedRelativeDate,
-          updatedAtInEst: updatedAtInEst,
-          updatedAtInEstRelative: updatedAtRelativeDate,
-          reimbursedBillsCount: reimbursedBillsCount,
-          billsWithinTimeRangeCount: billsWithinTimeRangeCount,
-        };
-      },
-    );
-
     return {
-      subscriptions: subscriptionsToReturnWithDateInEST,
+      subscriptions: subscriptionsToReturn,
       sortData,
       totalPages,
       totalSubscriptionsCount: subscriptions.length,
@@ -373,16 +393,20 @@ export async function getSubscriptionBillsGroupedByYearById(subscriptionId: stri
     });
 
     const billDues: BillDueWithSubscription[] = subscription?.billDues ?? [];
+
     const billDuesToReturnWithDateInEST: BillDueWithSubscription[] = billDues.map((billDue) => {
-      const dueDateInEstDate: Date = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toJSDate();
-      const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toFormat('MM/dd/yyyy');
+      const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate), {
+        zone: EST_TIME_ZONE,
+      }).toLocaleString(DateTime.DATETIME_SHORT);
+      //const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toFormat('MM/dd/yyyy');
 
       const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
         .setZone(EST_TIME_ZONE)
         .toJSDate();
       const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
         .setZone(EST_TIME_ZONE)
-        .toFormat('MM/dd/yyyy');
+        .toLocaleString(DateTime.DATETIME_SHORT);
+      //.toFormat('MM/dd/yyyy');
       const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
 
       const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
@@ -390,7 +414,8 @@ export async function getSubscriptionBillsGroupedByYearById(subscriptionId: stri
         .toJSDate();
       const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
         .setZone(EST_TIME_ZONE)
-        .toFormat('MM/dd/yyyy');
+        .toLocaleString(DateTime.DATETIME_SHORT);
+      // .toFormat('MM/dd/yyyy');
       const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
 
       return {
@@ -404,7 +429,9 @@ export async function getSubscriptionBillsGroupedByYearById(subscriptionId: stri
     });
 
     const billDuesGroupedByYear: BillDueGroupedByYear = billDuesToReturnWithDateInEST.reduce((acc, billDue) => {
-      const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE);
+      const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate), {
+        zone: EST_TIME_ZONE,
+      });
       const { year } = billDueDateLuxon;
       if (!acc[year]) {
         acc[year] = [];

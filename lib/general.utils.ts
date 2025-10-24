@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 
 export const EST_TIME_ZONE = 'America/New_York';
+export const UTC_TIME_ZONE = 'Etc/UTC';
 export const FULL_DATE_FORMAT_STRING = 'MM/dd/yy h:mm aa';
 export const FULL_DATE_FORMAL_FORMAT_STRING = 'MM/DD/yyyy HH:mm ZZ';
 export const FULL_DATE_TOOLTIP_FORMAT_STRING = 'MM/dd/yyyy h:mm aa O';

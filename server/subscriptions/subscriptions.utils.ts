@@ -143,6 +143,28 @@ export function getSortedSubscriptions(subscriptions: SubscriptionWithBillDues[]
         }
       }
 
+      if (sortData.sortField === 'totalBillsAllTimeCount') {
+        const aTotalBillsAllTimeCount = a.totalBillsAllTimeCount ?? 0;
+        const bTotalBillsAllTimeCount = b.totalBillsAllTimeCount ?? 0;
+
+        if (sortData.sortDirection === 'asc') {
+          return aTotalBillsAllTimeCount > bTotalBillsAllTimeCount ? 1 : -1;
+        } else if (sortData.sortDirection === 'desc') {
+          return aTotalBillsAllTimeCount < bTotalBillsAllTimeCount ? 1 : -1;
+        }
+      }
+
+      if (sortData.sortField === 'totalBillsAllTimeTotalCost') {
+        const aTotalBillsAllTimeTotalCost = a.totalBillsAllTimeTotalCost ?? 0;
+        const bTotalBillsAllTimeTotalCost = b.totalBillsAllTimeTotalCost ?? 0;
+
+        if (sortData.sortDirection === 'asc') {
+          return aTotalBillsAllTimeTotalCost > bTotalBillsAllTimeTotalCost ? 1 : -1;
+        } else if (sortData.sortDirection === 'desc') {
+          return aTotalBillsAllTimeTotalCost < bTotalBillsAllTimeTotalCost ? 1 : -1;
+        }
+      }
+
       return a[sortData.sortField] > b[sortData.sortField] ? 1 : -1;
     }
 
