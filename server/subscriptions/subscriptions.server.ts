@@ -188,9 +188,9 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
           second: 0,
           millisecond: 0,
         },
-        // {
-        //   zone: UTC_TIME_ZONE,
-        // },
+        {
+          zone: EST_TIME_ZONE,
+        },
       );
       const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
       startDateEpoch = currentYearStartLuxon.toMillis();
