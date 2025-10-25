@@ -12,8 +12,8 @@ import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
 import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';
+import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
-import { EST_TIME_ZONE, UTC_TIME_ZONE } from '@/lib/general.utils';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { BillDueGroupedByYear, BillDueWithSubscription, BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
 import {
@@ -177,8 +177,6 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     const currentYear: number = currentYearDateTime.year;
     let selectedYearParam: string = searchParams?.year ?? currentYear.toString(); // e.g. 2025
 
-    console.log('selectedYear', selectedYearParam);
-
     if (selectedYearParam !== 'all') {
       const currentYearStartLuxon = DateTime.fromObject(
         {
@@ -190,9 +188,9 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
           second: 0,
           millisecond: 0,
         },
-        {
-          zone: UTC_TIME_ZONE,
-        },
+        // {
+        //   zone: UTC_TIME_ZONE,
+        // },
       );
       const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
       startDateEpoch = currentYearStartLuxon.toMillis();
@@ -221,8 +219,8 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
       let billsWithInTimeRange: BillDueWithSubscription[] = [];
 
       billsWithInTimeRange = subscription.billDues.filter((billDue: BillDueWithSubscription) => {
-        const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate as unknown as string)).setZone(EST_TIME_ZONE);
-        return billDueDateLuxon.toMillis() >= startDateEpoch && billDueDateLuxon.toMillis() <= endDateEpoch;
+        const billDueDateLuxon: number = +billDue.dueDate;
+        return billDueDateLuxon >= startDateEpoch && billDueDateLuxon <= endDateEpoch;
       });
 
       const billDuesCurrentYearTotalCost = billsWithInTimeRange.reduce((acc, billDue) => {
