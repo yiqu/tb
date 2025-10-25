@@ -85,13 +85,15 @@ export default function HFDatepickerDialog({
         const handleOnTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const time = e.target.value; //HH:mm:ss
           const date = new Date(dateValue);
-          date.setHours(Number(time.split(':')[0]), Number(time.split(':')[1]), Number(time.split(':')[2]));
-          if (useEpochTimestamp) {
-            field.onChange(isEpochTimeStampInString ? date.getTime().toString() : date.getTime());
-            onValueChange?.(date.getTime());
-          } else {
-            field.onChange(date);
-            onValueChange?.(date);
+          if (time) {
+            date.setHours(Number(time.split(':')[0]), Number(time.split(':')[1]), Number(time.split(':')[2]));
+            if (useEpochTimestamp) {
+              field.onChange(isEpochTimeStampInString ? date.getTime().toString() : date.getTime());
+              onValueChange?.(date.getTime());
+            } else {
+              field.onChange(date);
+              onValueChange?.(date);
+            }
           }
         };
 

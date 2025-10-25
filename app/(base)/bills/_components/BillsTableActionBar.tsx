@@ -11,23 +11,21 @@ import BillsActionBarSubscriptionFilter from './BillsActionBarSubscriptionFilter
 
 function BillsTableActionBar() {
   return (
-    <div
-      className={ `sticky top-[4rem] z-50 flex w-full flex-row flex-wrap items-center justify-between gap-x-2 gap-y-2 bg-background py-2` }
-    >
+    <div className={ `sticky top-16 z-50 flex w-full flex-row flex-wrap items-center justify-between gap-x-2 gap-y-2 bg-background py-2` }>
       <div className="flex flex-row flex-wrap items-center justify-start gap-x-2 gap-y-2">
         <BillsActionBarRefreshButton />
-        <Separator orientation="vertical" className="h-[1.5rem]!" />
+        <Separator orientation="vertical" className="h-6!" />
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <BillsActionBarSubscriptionFilter />
         </Suspense>
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <BillsActionBarFrequencyFilter />
         </Suspense>
-        <Separator orientation="vertical" className="h-[1.5rem]!" />
+        <Separator orientation="vertical" className="h-6!" />
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <BillsActionBarDueDateFilter />
         </Suspense>
-        <Separator orientation="vertical" className="h-[1.5rem]!" />
+        <Separator orientation="vertical" className="h-6!" />
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
           <BillsActionBarPaymentStatusFilter />
         </Suspense>

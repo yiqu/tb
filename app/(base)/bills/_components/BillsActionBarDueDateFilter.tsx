@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 
 const YEAR_OPTIONS = [
+  { label: '2020', value: '2020' },
   { label: '2021', value: '2021' },
   { label: '2022', value: '2022' },
   { label: '2023', value: '2023' },
@@ -28,6 +29,8 @@ const YEAR_OPTIONS = [
   { label: '2029', value: '2029' },
   { label: '2030', value: '2030' },
 ];
+
+const YEAR_OPTIONS_ALL = [{ label: 'All', value: 'all' }, ...YEAR_OPTIONS];
 
 const DYNAMIC_YEAR_OPTIONS = [
   { label: 'Future (include today)', value: 'future-include-today' },
@@ -54,7 +57,13 @@ const MONTH_OPTIONS = [
 const DEFAULT_YEAR = '';
 const DEFAULT_MONTH = '';
 
-export default function BillsActionBarDueDateFilter() {
+type Props = {
+  showOnlyYears?: boolean;
+  placeholderText?: string;
+  defaultYear?: string;
+};
+
+export default function BillsActionBarDueDateFilter({ showOnlyYears, placeholderText, defaultYear = DEFAULT_YEAR }: Props) {
   const [selectedDueDate, setSelectedDueDate] = useQueryStates(
     {
       year: parseAsString
@@ -63,7 +72,7 @@ export default function BillsActionBarDueDateFilter() {
           scroll: false,
           shallow: false,
         })
-        .withDefault(DEFAULT_YEAR),
+        .withDefault(defaultYear),
       month: parseAsString
         .withOptions({
           history: 'push',
@@ -129,8 +138,8 @@ export default function BillsActionBarDueDateFilter() {
     <div className="flex flex-row items-center justify-start gap-x-2">
       <div className="relative">
         <Select onValueChange={ handleOnDueDateYearChange } value={ selectedDueDate.year === null ? '' : selectedDueDate.year }>
-          <SelectTrigger className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isYearValueSelected && `pr-7`) }>
-            <SelectValue placeholder="Due date year" />
+          <SelectTrigger className={ cn('min-w-36 cursor-pointer bg-card font-medium select-none', isYearValueSelected && `pr-7`) }>
+            <SelectValue placeholder={ placeholderText ? placeholderText : 'Due date year' } />
           </SelectTrigger>
           <SelectContent>
             { isDefaultValueYearSelected ? null : (
@@ -144,19 +153,22 @@ export default function BillsActionBarDueDateFilter() {
                 <SelectSeparator />
               </>
             ) }
-
-            <SelectGroup>
-              <SelectLabel>Dynamic</SelectLabel>
-              { DYNAMIC_YEAR_OPTIONS.map((option) => (
-                <SelectItem key={ option.value } value={ option.value }>
-                  { option.label }
-                </SelectItem>
-              )) }
-            </SelectGroup>
-            <SelectSeparator />
+            { showOnlyYears ? null : (
+              <>
+                <SelectGroup>
+                  <SelectLabel>Dynamic</SelectLabel>
+                  { DYNAMIC_YEAR_OPTIONS.map((option) => (
+                    <SelectItem key={ option.value } value={ option.value }>
+                      { option.label }
+                    </SelectItem>
+                  )) }
+                </SelectGroup>
+                <SelectSeparator />
+              </>
+            ) }
             <SelectGroup>
               <SelectLabel>Year</SelectLabel>
-              { YEAR_OPTIONS.map((option) => (
+              { (showOnlyYears ? YEAR_OPTIONS_ALL : YEAR_OPTIONS).map((option) => (
                 <SelectItem key={ option.value } value={ option.value }>
                   { option.label }
                 </SelectItem>
@@ -179,48 +191,50 @@ export default function BillsActionBarDueDateFilter() {
           </Button>
         : null }
       </div>
-      <div className="relative">
-        <Select onValueChange={ handleOnDueDateMonthChange } value={ selectedDueDate.month === null ? '' : selectedDueDate.month }>
-          <SelectTrigger className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isMonthValueSelected && `pr-7`) }>
-            <SelectValue placeholder="Due date month" />
-          </SelectTrigger>
-          <SelectContent>
-            { isDefaultValueMonthSelected ? null : (
-              <>
-                <SelectGroup>
-                  <SelectLabel>Reset</SelectLabel>
-                  <SelectItem key="clear" value="none" onClick={ handleClearMonthValue }>
-                    Clear month
+      { showOnlyYears ? null : (
+        <div className="relative">
+          <Select onValueChange={ handleOnDueDateMonthChange } value={ selectedDueDate.month === null ? '' : selectedDueDate.month }>
+            <SelectTrigger className={ cn('min-w-36 cursor-pointer bg-card font-medium select-none', isMonthValueSelected && `pr-7`) }>
+              <SelectValue placeholder="Due date month" />
+            </SelectTrigger>
+            <SelectContent>
+              { isDefaultValueMonthSelected ? null : (
+                <>
+                  <SelectGroup>
+                    <SelectLabel>Reset</SelectLabel>
+                    <SelectItem key="clear" value="none" onClick={ handleClearMonthValue }>
+                      Clear month
+                    </SelectItem>
+                  </SelectGroup>
+                  <SelectSeparator />
+                </>
+              ) }
+              <SelectGroup>
+                <SelectLabel>Month</SelectLabel>
+                { MONTH_OPTIONS.map((option) => (
+                  <SelectItem key={ option.value } value={ option.value }>
+                    { option.label }
                   </SelectItem>
-                </SelectGroup>
-                <SelectSeparator />
-              </>
-            ) }
-            <SelectGroup>
-              <SelectLabel>Month</SelectLabel>
-              { MONTH_OPTIONS.map((option) => (
-                <SelectItem key={ option.value } value={ option.value }>
-                  { option.label }
-                </SelectItem>
-              )) }
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        { isMonthValueSelected ?
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className={ `
-              absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 p-0
-              hover:bg-background
-            ` }
-            onClick={ handleClearMonthValue }
-          >
-            <X className="size-4" />
-          </Button>
-        : null }
-      </div>
+                )) }
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          { isMonthValueSelected ?
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className={ `
+                absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 p-0
+                hover:bg-background
+              ` }
+              onClick={ handleClearMonthValue }
+            >
+              <X className="size-4" />
+            </Button>
+          : null }
+        </div>
+      ) }
     </div>
   );
 }

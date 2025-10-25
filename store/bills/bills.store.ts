@@ -45,9 +45,9 @@ const billsTableViewStoreBase = create<BillsTableViewState>()(
           set((state: BillsTableViewState) => {
             const billDuesResult = [billDue, ...state.recentlyAddedBillDues];
             const formatted = billDuesResult.map((billDue) => {
-              const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate))
-                .setZone(EST_TIME_ZONE)
-                .toFormat(DEFAULT_DATE_FORMAT_STRING);
+              const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate), {
+                zone: EST_TIME_ZONE,
+              }).toLocaleString(DateTime.DATETIME_SHORT);
               const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
                 .setZone(EST_TIME_ZONE)
                 .toFormat(DEFAULT_DATE_FORMAT_STRING);

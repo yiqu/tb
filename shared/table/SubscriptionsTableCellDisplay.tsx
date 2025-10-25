@@ -216,6 +216,34 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     );
   }
 
+  if (colId === 'totalBillsAllTimeCount') {
+    return (
+      <TableCell>
+        <Typography
+          className="truncate"
+          variant={ subscription.totalBillsAllTimeCount ? 'labelvalue1' : 'nodata1' }
+          title={ `Total bills all time: ${subscription.totalBillsAllTimeCount}` }
+        >
+          { subscription.totalBillsAllTimeCount === undefined ? 'N/A' : subscription.totalBillsAllTimeCount.toLocaleString() }
+        </Typography>
+      </TableCell>
+    );
+  }
+
+  if (colId === 'totalBillsAllTimeTotalCost') {
+    return (
+      <TableCell>
+        <Typography
+          className="truncate"
+          variant={ subscription.totalBillsAllTimeTotalCost ? 'labelvalue1' : 'nodata1' }
+          title={ `Total bills all time: ${subscription.totalBillsAllTimeTotalCost}` }
+        >
+          { subscription.totalBillsAllTimeTotalCost === undefined ? 'N/A' : useFormatter.format(subscription.totalBillsAllTimeTotalCost) }
+        </Typography>
+      </TableCell>
+    );
+  }
+
   // if (colId === 'updatedAt') {
   //   return (
   //     <TableCell>

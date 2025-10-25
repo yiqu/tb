@@ -1,8 +1,4 @@
-import { DateTime } from 'luxon';
-
-import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
-import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 
 export function getSortedSubscriptions(subscriptions: SubscriptionWithBillDues[], sortData: SortDataModel): SubscriptionWithBillDues[] {
@@ -84,52 +80,70 @@ export function getSortedSubscriptions(subscriptions: SubscriptionWithBillDues[]
         }
       }
 
+      // if (sortData.sortField === 'billDuesCurrentYearCount') {
+      //   let billsWithInTimeRangeA: BillDueWithSubscription[] = [];
+
+      //   if (a.billCycleDuration === 'yearly' || a.billCycleDuration === 'monthly') {
+      //     const currentYearStartLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('year');
+      //     const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
+      //     const startDateEpoch = currentYearStartLuxon.toMillis();
+      //     const endDateEpoch = currentYearEndLuxon.toMillis();
+
+      //     billsWithInTimeRangeA = a.billDues.filter((billDue: BillDueWithSubscription) => {
+      //       const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate as unknown as string)).setZone(EST_TIME_ZONE);
+      //       return billDueDateLuxon.toMillis() >= startDateEpoch && billDueDateLuxon.toMillis() <= endDateEpoch;
+      //     });
+      //   } else if (a.billCycleDuration === 'once') {
+      //     billsWithInTimeRangeA = a.billDues;
+      //   }
+
+      //   const reimbursedBillsCountA = billsWithInTimeRangeA.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
+      //   const countA = reimbursedBillsCountA;
+
+      //   let billsWithInTimeRangeB: BillDueWithSubscription[] = [];
+
+      //   if (b.billCycleDuration === 'yearly' || b.billCycleDuration === 'monthly') {
+      //     const currentYearStartLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('year');
+      //     const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
+      //     const startDateEpoch = currentYearStartLuxon.toMillis();
+      //     const endDateEpoch = currentYearEndLuxon.toMillis();
+
+      //     billsWithInTimeRangeB = b.billDues.filter((billDue: BillDueWithSubscription) => {
+      //       const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate as unknown as string)).setZone(EST_TIME_ZONE);
+      //       return billDueDateLuxon.toMillis() >= startDateEpoch && billDueDateLuxon.toMillis() <= endDateEpoch;
+      //     });
+      //   } else if (b.billCycleDuration === 'once') {
+      //     billsWithInTimeRangeB = b.billDues;
+      //   }
+
+      //   const reimbursedBillsCountB = billsWithInTimeRangeB.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
+      //   const countB = reimbursedBillsCountB;
+
+      //   if (sortData.sortDirection === 'asc') {
+      //     return countA > countB ? 1 : -1;
+      //   } else if (sortData.sortDirection === 'desc') {
+      //     return countA < countB ? 1 : -1;
+      //   } else {
+      //     return 0;
+      //   }
+      // }
+
       if (sortData.sortField === 'billDuesCurrentYearCount') {
-        let billsWithInTimeRangeA: BillDueWithSubscription[] = [];
-
-        if (a.billCycleDuration === 'yearly' || a.billCycleDuration === 'monthly') {
-          const currentYearStartLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('year');
-          const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
-          const startDateEpoch = currentYearStartLuxon.toMillis();
-          const endDateEpoch = currentYearEndLuxon.toMillis();
-
-          billsWithInTimeRangeA = a.billDues.filter((billDue: BillDueWithSubscription) => {
-            const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate as unknown as string)).setZone(EST_TIME_ZONE);
-            return billDueDateLuxon.toMillis() >= startDateEpoch && billDueDateLuxon.toMillis() <= endDateEpoch;
-          });
-        } else if (a.billCycleDuration === 'once') {
-          billsWithInTimeRangeA = a.billDues;
+        // if billsWithinTimeRangeCount is 0, move it to the bottom of the list
+        // if billsWithinTimeRangeCount is not 0, then sort by reimbursedBillsCount
+        if (a.billsWithinTimeRangeCount === 0) {
+          return 1;
+        } else if (b.billsWithinTimeRangeCount === 0) {
+          return -1;
         }
-
-        const reimbursedBillsCountA = billsWithInTimeRangeA.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
-        const countA = reimbursedBillsCountA;
-
-        let billsWithInTimeRangeB: BillDueWithSubscription[] = [];
-
-        if (b.billCycleDuration === 'yearly' || b.billCycleDuration === 'monthly') {
-          const currentYearStartLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('year');
-          const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
-          const startDateEpoch = currentYearStartLuxon.toMillis();
-          const endDateEpoch = currentYearEndLuxon.toMillis();
-
-          billsWithInTimeRangeB = b.billDues.filter((billDue: BillDueWithSubscription) => {
-            const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate as unknown as string)).setZone(EST_TIME_ZONE);
-            return billDueDateLuxon.toMillis() >= startDateEpoch && billDueDateLuxon.toMillis() <= endDateEpoch;
-          });
-        } else if (b.billCycleDuration === 'once') {
-          billsWithInTimeRangeB = b.billDues;
-        }
-
-        const reimbursedBillsCountB = billsWithInTimeRangeB.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
-        const countB = reimbursedBillsCountB;
-
+        const aReimbursedBillsCount = a.reimbursedBillsCount ?? 0;
+        const bReimbursedBillsCount = b.reimbursedBillsCount ?? 0;
         if (sortData.sortDirection === 'asc') {
-          return countA > countB ? 1 : -1;
+          return aReimbursedBillsCount > bReimbursedBillsCount ? 1 : -1;
         } else if (sortData.sortDirection === 'desc') {
-          return countA < countB ? 1 : -1;
-        } else {
-          return 0;
+          return aReimbursedBillsCount < bReimbursedBillsCount ? 1 : -1;
         }
+        return 0;
       }
 
       if (sortData.sortField === 'billDuesCurrentYearTotalCost') {
@@ -140,6 +154,28 @@ export function getSortedSubscriptions(subscriptions: SubscriptionWithBillDues[]
           return aBillDuesCurrentYearTotalCost > bBillDuesCurrentYearTotalCost ? 1 : -1;
         } else if (sortData.sortDirection === 'desc') {
           return aBillDuesCurrentYearTotalCost < bBillDuesCurrentYearTotalCost ? 1 : -1;
+        }
+      }
+
+      if (sortData.sortField === 'totalBillsAllTimeCount') {
+        const aTotalBillsAllTimeCount = a.totalBillsAllTimeCount ?? 0;
+        const bTotalBillsAllTimeCount = b.totalBillsAllTimeCount ?? 0;
+
+        if (sortData.sortDirection === 'asc') {
+          return aTotalBillsAllTimeCount > bTotalBillsAllTimeCount ? 1 : -1;
+        } else if (sortData.sortDirection === 'desc') {
+          return aTotalBillsAllTimeCount < bTotalBillsAllTimeCount ? 1 : -1;
+        }
+      }
+
+      if (sortData.sortField === 'totalBillsAllTimeTotalCost') {
+        const aTotalBillsAllTimeTotalCost = a.totalBillsAllTimeTotalCost ?? 0;
+        const bTotalBillsAllTimeTotalCost = b.totalBillsAllTimeTotalCost ?? 0;
+
+        if (sortData.sortDirection === 'asc') {
+          return aTotalBillsAllTimeTotalCost > bTotalBillsAllTimeTotalCost ? 1 : -1;
+        } else if (sortData.sortDirection === 'desc') {
+          return aTotalBillsAllTimeTotalCost < bTotalBillsAllTimeTotalCost ? 1 : -1;
         }
       }
 

@@ -25,11 +25,13 @@ export const SUBSCRIPTIONS_TABLE_COLUMN_IDS: SearchTableColumn[] = [
   { headerId: 'cost', ordinal: 4, sortable: true },
   { headerId: 'billDuesCurrentYearCount', ordinal: 5, sortable: true },
   { headerId: 'billDuesCurrentYearTotalCost', ordinal: 6, sortable: true },
-  { headerId: 'approved', ordinal: 7, sortable: true },
-  { headerId: 'signed', ordinal: 8, sortable: true },
-  { headerId: 'dateAdded', ordinal: 9, sortable: true },
-  { headerId: 'updatedAt', ordinal: 10, sortable: true },
-  { headerId: 'actions', ordinal: 11, sortable: false },
+  { headerId: 'totalBillsAllTimeCount', ordinal: 7, sortable: true },
+  { headerId: 'totalBillsAllTimeTotalCost', ordinal: 8, sortable: true },
+  { headerId: 'approved', ordinal: 9, sortable: true },
+  { headerId: 'signed', ordinal: 10, sortable: true },
+  { headerId: 'dateAdded', ordinal: 11, sortable: true },
+  { headerId: 'updatedAt', ordinal: 12, sortable: true },
+  { headerId: 'actions', ordinal: 13, sortable: false },
 ];
 
 export const getSearchTableColumnWidth = (columnId: string): string | undefined => {
@@ -60,6 +62,8 @@ export const SEARCH_TABLE_COLUMN_WIDTH = {
   signed: '5rem',
   billDuesCurrentYearCount: '7rem',
   billDuesCurrentYearTotalCost: '6rem',
+  totalBillsAllTimeCount: '4rem',
+  totalBillsAllTimeTotalCost: '6rem',
 };
 
 export const SEARCH_TABLE_COLUMN_TEXT = {
@@ -79,8 +83,10 @@ export const SEARCH_TABLE_COLUMN_TEXT = {
   billCycleDuration: 'Frequency',
   approved: 'Approved',
   signed: 'Signed',
-  billDuesCurrentYearCount: 'Bills Current Year',
-  billDuesCurrentYearTotalCost: 'Remaining Cost Current Year',
+  billDuesCurrentYearCount: 'Current Year Bills Reimbursed / Total',
+  billDuesCurrentYearTotalCost: 'Current Year Total Balance',
+  totalBillsAllTimeCount: 'Total Bills All Time Count',
+  totalBillsAllTimeTotalCost: 'Total Bills All Time Balance',
 };
 
 export type SortDirection = 'asc' | 'desc' | '';

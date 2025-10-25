@@ -129,7 +129,7 @@ export default function UpcomingBillsActionBarDueDateFilter() {
     <div className="flex flex-row items-center justify-start gap-x-2">
       <div className="relative">
         <Select onValueChange={ handleOnDueDateYearChange } value={ selectedDueDate.year === null ? '' : selectedDueDate.year }>
-          <SelectTrigger className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isYearValueSelected && `pr-7`) }>
+          <SelectTrigger className={ cn('min-w-36 cursor-pointer bg-card font-medium select-none', isYearValueSelected && `pr-7`) }>
             <SelectValue placeholder="Due date year" />
           </SelectTrigger>
           <SelectContent>
@@ -181,7 +181,7 @@ export default function UpcomingBillsActionBarDueDateFilter() {
       </div>
       <div className="relative">
         <Select onValueChange={ handleOnDueDateMonthChange } value={ selectedDueDate.month === null ? '' : selectedDueDate.month }>
-          <SelectTrigger className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isMonthValueSelected && `pr-7`) }>
+          <SelectTrigger className={ cn('min-w-36 cursor-pointer bg-card font-medium select-none', isMonthValueSelected && `pr-7`) }>
             <SelectValue placeholder="Due date month" />
           </SelectTrigger>
           <SelectContent>

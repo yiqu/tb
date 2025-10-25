@@ -35,6 +35,14 @@ export interface SubscriptionOriginal {
 
   reimbursedBillsCount?: number;
   billsWithinTimeRangeCount?: number;
+
+  totalBillsAllTimeCount?: number;
+  totalBillsAllTimeTotalCost?: number;
+
+  selectedYearInEpoch?: {
+    startDateEpoch: number;
+    endDateEpoch: number;
+  };
 }
 
 export interface SubscriptionWithBillDues extends SubscriptionOriginal {
