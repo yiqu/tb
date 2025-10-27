@@ -9,6 +9,8 @@ import { cacheLife } from 'next/cache';
 import { Prisma } from '@prisma/client';
 
 import prisma from '@/lib/prisma';
+import { BillDue } from '@/models/bills/bills.model';
+import { SubscriptionOriginal } from '@/models/subscriptions/subscriptions.model';
 import {
   FavoriteEntity,
   FavoriteActionType,
@@ -31,7 +33,7 @@ export const getIsFavoriteByEntityTypeAndIdCached = cache(async (entityType: Fav
   return res;
 });
 
-export const getAllFavoritesCached = cache(async () => {
+export const getAllFavoritesCached = cache(async (): Promise<FavoriteEntity[]> => {
   const res = await getAllFavoritesEntities();
   return res;
 });
@@ -43,7 +45,27 @@ export async function getAllFavoritesEntities(): Promise<FavoriteEntity[]> {
 
   try {
     const favorites: FavoriteEntity[] = await prisma.favoriteEntity.findMany();
-    return favorites;
+    const sortedFavorites: FavoriteEntity[] = favorites.sort((a: FavoriteEntity, b: FavoriteEntity) => {
+      const aName = a.name.toLowerCase();
+      const bName = b.name.toLowerCase();
+      return aName > bName ? 1 : -1;
+    });
+
+    const withUrl = sortedFavorites.map((favorite) => {
+      let favUrl = favorite.url ?? '';
+      if (favorite.entityType === 'SUBSCRIPTION') {
+        favUrl = `/subscriptions/${favorite.subscriptionId}`;
+      } else if (favorite.entityType === 'BILL_DUE') {
+        favUrl = `/bills/${favorite.billDueId}`;
+      }
+
+      return {
+        ...favorite,
+        url: favUrl,
+      };
+    });
+
+    return withUrl;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllFavorites(): ', JSON.stringify(error));
     throw new Error(`Error retrieving favorites. Code: ${error.code}`);
@@ -172,5 +194,25 @@ export async function toggleFavoriteByBillDueId(
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at toggleFavoriteByBillDueId(): ', JSON.stringify(error));
     throw new Error(`Error updating favorite entity. Code: ${error.code}`);
+  }
+}
+
+export async function getEntityByFavoriteTypeId(entity: FavoriteEntity): Promise<SubscriptionOriginal | BillDue | null> {
+  try {
+    if (entity.entityType === 'SUBSCRIPTION' && entity.subscriptionId) {
+      const subscription: SubscriptionOriginal | null = await prisma.subscription.findUnique({
+        where: { id: entity.subscriptionId },
+      });
+      return subscription;
+    } else if (entity.entityType === 'BILL_DUE' && entity.billDueId) {
+      const billDue: BillDue | null = await prisma.billDue.findUnique({
+        where: { id: entity.billDueId },
+      });
+      return billDue;
+    }
+    return null;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getFavoriteById(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving favorite by id. Code: ${error.code}`);
   }
 }

@@ -29,6 +29,8 @@ export const TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS = 'bill-due-details';
 export const TANSTACK_QUERY_QUERY_KEY_SUBSCRIPTION_DETAILS = 'subscription-details';
 export const TANSTACK_QUERY_QUERY_KEY_ID_GENERAL = 'id';
 export const TANSTACK_QUERY_QUERY_KEY_FAVORITES_ALL = 'favorites-all';
+export const TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS = 'favorite-details';
+export const TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS_ID = 'favorite-details-id';
 
 // TanStack mutation keys
 export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_UPDATE = 'subscription-details-update';

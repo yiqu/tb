@@ -16,7 +16,7 @@ export default function SidebarMenuSubButtonFavoritesParentWithActive({
   const isActive = firstPath.toLowerCase() === favoriteId.toLowerCase() && accessType.toLowerCase() === 'favorites';
 
   return (
-    <SidebarMenuSubButton asChild isActive={ isActive }>
+    <SidebarMenuSubButton asChild isActive={ false }>
       { children }
     </SidebarMenuSubButton>
   );

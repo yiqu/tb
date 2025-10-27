@@ -85,7 +85,7 @@ export default function FavoriteParentItem({ collapsableState, allFavoritesPromi
           <PopoverContent
             side="right"
             align="start"
-            className="max-h-[55rem] w-72 overflow-auto p-2"
+            className="max-h-220 w-72 overflow-auto p-2"
             onMouseEnter={ handleMouseEnter }
             onMouseLeave={ handleMouseLeave }
           >
