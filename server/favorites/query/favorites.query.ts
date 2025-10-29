@@ -2,7 +2,7 @@ import { queryOptions } from '@tanstack/react-query';
 
 import { BillDue } from '@/models/bills/bills.model';
 import { FavoriteEntity } from '@/models/favorites/favorite.model';
-import { SubscriptionOriginal } from '@/models/subscriptions/subscriptions.model';
+import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import {
   TANSTACK_QUERY_QUERY_KEY_FAVORITES_ALL,
   TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS,
@@ -17,8 +17,8 @@ async function getAllFavorites(): Promise<FavoriteEntity[]> {
   return res;
 }
 
-async function getFavoriteById(favoriteEntity: FavoriteEntity): Promise<SubscriptionOriginal | BillDue | null> {
-  const res: SubscriptionOriginal | BillDue | null = await getEntityByFavoriteTypeId(favoriteEntity);
+async function getFavoriteById(favoriteEntity: FavoriteEntity): Promise<SubscriptionWithBillDues | BillDue | null> {
+  const res: SubscriptionWithBillDues | BillDue | null = await getEntityByFavoriteTypeId(favoriteEntity);
   return res;
 }
 

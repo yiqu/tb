@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     clientSegmentCache: true,
     //turbopackFileSystemCacheForBuild: true,
     turbopackFileSystemCacheForDev: true,
+    browserDebugInfoInTerminal: true,
   },
   reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
   cacheComponents: true,

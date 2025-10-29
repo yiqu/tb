@@ -16,11 +16,11 @@ export default function FavoritesListSection({ allFavorites }: { allFavorites: F
     <>
       { allFavorites.map((favorite: FavoriteEntity) => {
         return (
-          <HoverCard key={ favorite.id }>
+          <HoverCard key={ favorite.id } openDelay={ 150 } closeDelay={ 50 }>
             <HoverCardTrigger asChild>
               <SidebarMenuSubItem>
                 <SidebarMenuSubButtonFavoritesParentWithActive favoriteId="">
-                  <Link href={ `${favorite.url}` } prefetch className="flex items-center">
+                  <Link href={ `${favorite.url}` } prefetch className="flex w-full items-center justify-start">
                     <EntityDisplayMedia entity={ favorite.entityType } className="size-4" />
                     <FavoriteItemName entity={ favorite } />
                   </Link>
@@ -38,5 +38,5 @@ export default function FavoritesListSection({ allFavorites }: { allFavorites: F
 }
 
 function FavoriteItemName({ entity }: { entity: FavoriteEntity }) {
-  return <Typography>{ entity.name }</Typography>;
+  return <Typography className="truncate">{ entity.name }</Typography>;
 }

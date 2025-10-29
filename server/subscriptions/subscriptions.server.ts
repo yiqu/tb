@@ -34,6 +34,7 @@ import {
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
+import { transformSubscriptionExtraProps } from './utils';
 import { getSortedSubscriptions } from './subscriptions.utils';
 
 export async function revalidateBillDue() {
@@ -198,61 +199,11 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     }
 
     // Massage the data to return
-    const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = subscriptions.map((subscription: SubscriptionWithBillDues) => {
-      const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
-        .setZone(EST_TIME_ZONE)
-        .toJSDate();
-      const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${subscription.dateAdded}`))
-        .setZone(EST_TIME_ZONE)
-        .toFormat('MM/dd/yyyy');
-      const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
-
-      const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${subscription.updatedAt}`))
-        .setZone(EST_TIME_ZONE)
-        .toJSDate();
-      const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${subscription.updatedAt}`))
-        .setZone(EST_TIME_ZONE)
-        .toFormat('MM/dd/yyyy');
-      const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
-
-      // calculate bills for current year
-      let billsWithInTimeRange: BillDueWithSubscription[] = [];
-
-      billsWithInTimeRange = subscription.billDues.filter((billDue: BillDueWithSubscription) => {
-        const billDueDateLuxon: number = +billDue.dueDate;
-        return billDueDateLuxon >= startDateEpoch && billDueDateLuxon <= endDateEpoch;
-      });
-
-      const billDuesCurrentYearTotalCost = billsWithInTimeRange.reduce((acc, billDue) => {
-        return acc + Number.parseFloat(`${billDue.cost ?? subscription.cost ?? 0}`);
-      }, 0);
-
-      const billsWithinTimeRangeCount = billsWithInTimeRange.length;
-      const reimbursedBillsCount = billsWithInTimeRange.filter((billDue: BillDueWithSubscription) => billDue.reimbursed).length;
-
-      // All time bills
-      const totalBillsAllTimeCount = subscription.billDues.length;
-      const totalBillsAllTimeTotalCost = subscription.billDues.reduce((acc, billDue) => {
-        return acc + Number.parseFloat(`${billDue.cost ?? subscription.cost ?? 0}`);
-      }, 0);
-
-      return {
-        ...subscription,
-        dateAddedInEst: dateAddedInEst,
-        dateAddedInEstRelative: dateAddedRelativeDate,
-        updatedAtInEst: updatedAtInEst,
-        updatedAtInEstRelative: updatedAtRelativeDate,
-        reimbursedBillsCount: reimbursedBillsCount,
-        billsWithinTimeRangeCount: billsWithinTimeRangeCount,
-        totalBillsAllTimeCount: totalBillsAllTimeCount,
-        totalBillsAllTimeTotalCost: totalBillsAllTimeTotalCost,
-        selectedYearInEpoch: {
-          startDateEpoch: startDateEpoch,
-          endDateEpoch: endDateEpoch,
-        },
-        billDuesCurrentYearTotalCost: billDuesCurrentYearTotalCost,
-      };
-    });
+    const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = transformSubscriptionExtraProps(
+      subscriptions,
+      startDateEpoch,
+      endDateEpoch,
+    );
 
     // sort the bill dues
     if (sortData) {

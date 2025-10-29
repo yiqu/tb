@@ -2,6 +2,7 @@
 
 import z from 'zod';
 import { cache } from 'react';
+import { DateTime } from 'luxon';
 import { cacheTag } from 'next/cache';
 import { updateTag } from 'next/cache';
 import { cacheLife } from 'next/cache';
@@ -9,8 +10,9 @@ import { cacheLife } from 'next/cache';
 import { Prisma } from '@prisma/client';
 
 import prisma from '@/lib/prisma';
+import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { BillDue } from '@/models/bills/bills.model';
-import { SubscriptionOriginal } from '@/models/subscriptions/subscriptions.model';
+import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import {
   FavoriteEntity,
   FavoriteActionType,
@@ -24,8 +26,14 @@ import {
   CACHE_TAG_SUBSCRIPTIONS_ALL,
 } from '@/constants/constants';
 
+import { transformSubscriptionExtraProps, transformSubscriptionExtraPropsForFavorite } from '../subscriptions/utils';
+
 export async function revalidateIsFavoriteByEntityTypeAndId(entityType: FavoriteEntityEntityTypeType, id: string) {
   updateTag(`${CACHE_TAG_FAVORITES_PREFIX}${entityType}-${id}`);
+}
+
+export async function revalidateFavoritesAll() {
+  updateTag(CACHE_TAG_FAVORITES_ALL);
 }
 
 export const getIsFavoriteByEntityTypeAndIdCached = cache(async (entityType: FavoriteEntityEntityTypeType, id: string) => {
@@ -40,7 +48,7 @@ export const getAllFavoritesCached = cache(async (): Promise<FavoriteEntity[]> =
 
 export async function getAllFavoritesEntities(): Promise<FavoriteEntity[]> {
   'use cache';
-  cacheLife('weeks');
+  cacheLife('seconds');
   cacheTag(CACHE_TAG_FAVORITES_ALL);
 
   try {
@@ -197,13 +205,55 @@ export async function toggleFavoriteByBillDueId(
   }
 }
 
-export async function getEntityByFavoriteTypeId(entity: FavoriteEntity): Promise<SubscriptionOriginal | BillDue | null> {
+export async function getEntityByFavoriteTypeId(entity: FavoriteEntity): Promise<SubscriptionWithBillDues | BillDue | null> {
   try {
     if (entity.entityType === 'SUBSCRIPTION' && entity.subscriptionId) {
-      const subscription: SubscriptionOriginal | null = await prisma.subscription.findUnique({
+      const subscription: SubscriptionWithBillDues | null = await prisma.subscription.findUnique({
         where: { id: entity.subscriptionId },
+        include: {
+          billDues: {
+            include: {
+              subscription: true,
+            },
+            orderBy: {
+              dueDate: 'desc',
+            },
+          },
+        },
       });
-      return subscription;
+
+      const currentYearDateTime: DateTime = DateTime.now().setZone(EST_TIME_ZONE);
+      const currentYear: number = currentYearDateTime.year;
+      const currentYearStartLuxon = DateTime.fromObject(
+        {
+          year: currentYear,
+          month: 1,
+          day: 1,
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        },
+        {
+          zone: EST_TIME_ZONE,
+        },
+      );
+      const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
+      const startDateEpoch = currentYearStartLuxon.toMillis();
+      const endDateEpoch = currentYearEndLuxon.toMillis();
+
+      const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = transformSubscriptionExtraProps(
+        subscription ? [subscription] : [],
+        startDateEpoch,
+        endDateEpoch,
+      );
+
+      const subscriptionsWithFavoriteProps: SubscriptionWithBillDues[] =
+        transformSubscriptionExtraPropsForFavorite(subscriptionsToReturnWithDateInEST);
+
+      const result: SubscriptionWithBillDues = subscriptionsWithFavoriteProps[0];
+
+      return result;
     } else if (entity.entityType === 'BILL_DUE' && entity.billDueId) {
       const billDue: BillDue | null = await prisma.billDue.findUnique({
         where: { id: entity.billDueId },
