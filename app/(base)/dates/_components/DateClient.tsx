@@ -4,6 +4,7 @@ import { DateTime } from 'luxon';
 import { CircleCheck } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { useClientOnly } from '@/hooks/useClientOnly';
 import DisplayCard from '@/shared/components/DisplayCard';
 import Typography from '@/components/typography/Typography';
@@ -17,6 +18,7 @@ export default function DateClient({ date }: { date: number }) {
   }
 
   const dateDisplay = DateTime.fromMillis(date);
+  const dateNow = DateTime.now().setZone(EST_TIME_ZONE);
 
   return (
     <div className="w-full">
@@ -32,6 +34,8 @@ export default function DateClient({ date }: { date: number }) {
           </Typography>
           <Typography>EST display: { dateDisplay.setZone('America/New_York').toString() } (manually converted with setZone)</Typography>
           <Typography>PST display: { dateDisplay.setZone('America/Los_Angeles').toString() } (manually converted with setZone)</Typography>
+
+          <Typography>Date now: { dateNow.toString() }</Typography>
         </CardContent>
       </DisplayCard>
     </div>

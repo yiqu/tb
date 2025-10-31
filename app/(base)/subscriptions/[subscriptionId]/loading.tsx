@@ -13,13 +13,13 @@ function LoadingMask() {
       <div className="flex w-full flex-col items-start justify-start gap-y-6">
         <DisplayCard className="h-[535px] w-full">
           <CardContent className="overflow-hidden">
-            <Skeleton className="h-[50rem] w-full" />
+            <Skeleton className="h-200 w-full" />
           </CardContent>
         </DisplayCard>
 
         <div className="flex w-full flex-col items-start justify-start gap-y-6">
           <Typography variant="h3">Bill Dues</Typography>
-          <Skeleton className="h-[50rem] w-full" />
+          <Skeleton className="h-200 w-full" />
         </div>
       </div>
     </div>

@@ -65,7 +65,7 @@ export function transformSubscriptionExtraProps(subscriptions: SubscriptionWithB
   return subscriptionsToReturnWithDateInEST;
 }
 
-export function transformSubscriptionExtraPropsForFavorite(subscriptions: SubscriptionWithBillDues[]) {
+export function transformSubscriptionExtraPropsForFavorite(subscriptions: SubscriptionWithBillDues[]): SubscriptionWithBillDues[] {
   const result = subscriptions.map((subscription: SubscriptionWithBillDues) => {
     const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
     const frequency: SubscriptionFrequency = subscription.billCycleDuration;
@@ -75,6 +75,7 @@ export function transformSubscriptionExtraPropsForFavorite(subscriptions: Subscr
     let billDuesWithinTimeRange: BillDueWithSubscription[] = [];
     let nextDueDateForThisCycle: number | null = null;
     let nextDueDateForThisCycleBillDue: BillDueWithSubscription | null = null;
+    let outstandingBillDuesFOrThisCycleAndPast: BillDueWithSubscription[] = [];
 
     if (frequency === 'yearly') {
       const currentYearStartLuxon = currentDateLuxon.startOf('year');
@@ -101,6 +102,12 @@ export function transformSubscriptionExtraPropsForFavorite(subscriptions: Subscr
         const dueDateMillis = Number.parseInt(billDue.dueDate);
         return dueDateMillis >= startDateEpoch && dueDateMillis <= endDateEpoch;
       });
+
+      outstandingBillDuesFOrThisCycleAndPast = billDuesWithinTimeRange.filter((billDue: BillDueWithSubscription) => {
+        const dueDateMillis = Number.parseInt(billDue.dueDate);
+        // not paid, or not reimbursed and between 0 and start date epoch
+        return (!billDue.paid || !billDue.reimbursed) && dueDateMillis >= 0 && dueDateMillis <= endDateEpoch;
+      });
       if (billDuesWithinTimeRange.length > 0) {
         nextDueDateForThisCycle = Number.parseInt(billDuesWithinTimeRange[0].dueDate);
         nextDueDateForThisCycleBillDue = billDuesWithinTimeRange[0];
@@ -117,12 +124,20 @@ export function transformSubscriptionExtraPropsForFavorite(subscriptions: Subscr
       return acc + Number.parseFloat(`${billDue.cost ?? subscription.cost ?? 0}`);
     }, 0);
 
+    const billDuesWithinTimeRangeThatIsNotPaidOrReimbursed: BillDueWithSubscription[] = billDuesWithinTimeRange.filter(
+      (billDue: BillDueWithSubscription) => {
+        return !billDue.paid || !billDue.reimbursed;
+      },
+    );
+
     return {
       ...subscription,
       billDuesWithinTimeRange: billDuesWithinTimeRange,
       dueCostThisCycle: billDuesWithinTimeRange.length > 0 ? dueCostThisCycle : null,
       dueDateThisCycle: nextDueDateForThisCycle,
       nextDueDateForThisCycleBillDue: nextDueDateForThisCycleBillDue,
+      billDuesWithinTimeRangeThatIsNotPaidOrReimbursed: billDuesWithinTimeRangeThatIsNotPaidOrReimbursed,
+      outstandingBillDuesFOrThisCycleAndPast: outstandingBillDuesFOrThisCycleAndPast,
     };
   });
 

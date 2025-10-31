@@ -51,6 +51,8 @@ export interface SubscriptionOriginal {
   dueDateThisCycle?: number | null;
   billDuesWithinTimeRange?: BillDueWithSubscription[];
   nextDueDateForThisCycleBillDue?: BillDueWithSubscription | null;
+  billDuesWithinTimeRangeThatIsNotPaidOrReimbursed?: BillDueWithSubscription[];
+  outstandingBillDuesFOrThisCycleAndPast?: BillDueWithSubscription[];
 }
 
 export interface SubscriptionWithBillDues extends SubscriptionOriginal {

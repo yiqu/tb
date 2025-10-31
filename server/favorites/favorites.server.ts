@@ -11,7 +11,7 @@ import { Prisma } from '@prisma/client';
 
 import prisma from '@/lib/prisma';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
-import { BillDue } from '@/models/bills/bills.model';
+import { BillDue, BillDueWithSubscription } from '@/models/bills/bills.model';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import {
   FavoriteEntity,
@@ -241,6 +241,16 @@ export async function getEntityByFavoriteTypeId(entity: FavoriteEntity): Promise
       const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
       const startDateEpoch = currentYearStartLuxon.toMillis();
       const endDateEpoch = currentYearEndLuxon.toMillis();
+
+      const sortedSubscriptionBillDues: BillDueWithSubscription[] = (subscription?.billDues ?? []).toSorted(
+        (a: BillDueWithSubscription, b: BillDueWithSubscription) => {
+          return (a.dueDate ?? 0) > (b.dueDate ?? 0) ? 1 : -1;
+        },
+      );
+
+      if (subscription) {
+        subscription.billDues = sortedSubscriptionBillDues;
+      }
 
       const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = transformSubscriptionExtraProps(
         subscription ? [subscription] : [],

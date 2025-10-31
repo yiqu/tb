@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import CenterUnderline from '@/fancy/components/text/underline-center';
 
 import Typography from '../typography/Typography';
+import BreadCrumbsEntityLeaf from './BreadCrumbsEntityLeaf';
 
 export function BreadcrumbSegmentIcon({ path }: { path: string; params: Params; isLast?: boolean }) {
   if (path === 'search') {
@@ -186,15 +187,7 @@ export function BreadcrumbSegmentTitle({ path, isLast, paths }: { path: string; 
     );
   }
 
-  return (
-    <Typography
-      className={ cn({
-        'text-muted-foreground': isLast,
-      }) }
-    >
-      { path }
-    </Typography>
-  );
+  return <BreadCrumbsEntityLeaf paths={ paths } path={ path } isLast={ isLast } />;
 }
 
 export function BreadcrumbSegmentDisplay({ isLast, path }: { isLast?: boolean; path: string }) {

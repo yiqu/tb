@@ -77,6 +77,11 @@ function FavoriteItemDetailsSkeleton() {
       <Separator />
       <Skeleton className="h-5 w-full" />
       <Skeleton className="h-5 w-full" />
+      <Skeleton className="h-5 w-full" />
+      <Separator />
+      <Skeleton className="h-5 w-full" />
+      <Skeleton className="h-5 w-full" />
+      <Skeleton className="h-5 w-full" />
     </div>
   );
 }
