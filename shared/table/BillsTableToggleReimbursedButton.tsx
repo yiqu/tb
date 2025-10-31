@@ -10,16 +10,27 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useBillStoreActions } from '@/store/bills/bills.store';
 import { updateIsBillDueReimbursed } from '@/server/bills/bills.server';
-import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS } from '@/constants/constants';
+import {
+  TANSTACK_QUERY_QUERY_KEY_ID_GENERAL,
+  TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS,
+  TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS,
+  TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS_ID,
+} from '@/constants/constants';
 
 export default function BillsTableToggleReimbursedButton({
   billDueId,
   isReimbursed,
   subscriptionId,
+  btnClassName,
+  btnIconClassName,
+  favoriteEntityId,
 }: {
   billDueId: string;
   isReimbursed: boolean;
   subscriptionId: string;
+  btnClassName?: string;
+  btnIconClassName?: string;
+  favoriteEntityId?: string;
 }) {
   const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
@@ -58,6 +69,14 @@ export default function BillsTableToggleReimbursedButton({
           },
         ],
       });
+      queryClient.invalidateQueries({
+        queryKey: [
+          TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS,
+          {
+            [TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS_ID]: favoriteEntityId,
+          },
+        ],
+      });
     });
   };
 
@@ -67,7 +86,7 @@ export default function BillsTableToggleReimbursedButton({
       variant="ghost"
       onClick={ handleOnClick.bind(null, optimisticIsReimbursed) }
       type="button"
-      className={ cn('size-12', {
+      className={ cn('size-12', btnClassName, {
         'border border-green-500/20 dark:border-green-500/20': isPending && optimisticIsReimbursed,
       }) }
     >
@@ -75,7 +94,7 @@ export default function BillsTableToggleReimbursedButton({
         className={ cn(`
           size-8 text-muted
           dark:text-gray-500/60
-        `, {
+        `, btnIconClassName, {
           'text-green-600 dark:text-green-500': optimisticIsReimbursed,
         }) }
       />

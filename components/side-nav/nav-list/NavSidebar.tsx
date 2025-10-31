@@ -5,6 +5,7 @@ import BillsGroup from '@/components/sidebar/bills-group/BillsGroup';
 import { HomeGroup } from '@/components/sidebar/home-group/HomeGroup';
 import { AddNewGroup } from '@/components/sidebar/add-group/AddNewGroup';
 import { QueryGroup } from '@/components/sidebar/search-group/SearchGroup';
+import PreloadFunctionForApplication from '@/shared/preload/PreloadFunctionForApplication';
 import { QuickAccessGroup } from '@/components/sidebar/quick-access-group/QuickAccessGroup';
 import SubscriptionsGroup from '@/components/sidebar/subscriptions-group/SubscriptionsGroup';
 import { OutstandingBillsGroup } from '@/components/sidebar/outstanding-group/OutstandingBillsGroup';
@@ -24,6 +25,7 @@ import { NavFooter } from '../footer/NavFooter';
 export async function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" { ...props } id="app-sidebar">
+      <PreloadFunctionForApplication />
       <SidebarHeader>
         <NavHeader />
       </SidebarHeader>

@@ -126,7 +126,7 @@ export default function SubscriptionDetailsHeaderFavoriteToggleForm({
                 id="edit-subscription-dialog-save-button"
                 disabled={ disableButton }
                 className={ cn({
-                  'border-1 border-red-600': false,
+                  'border border-red-600': false,
                 }) }
                 form="update-favorite-name-input-form"
               >

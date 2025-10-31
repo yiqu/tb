@@ -14,6 +14,8 @@ export interface SubscriptionPostBody {
   url?: string;
 }
 
+export type SubscriptionFrequency = 'yearly' | 'monthly' | 'once' | string;
+
 export interface SubscriptionOriginal {
   id: string;
   name: string;
@@ -43,6 +45,14 @@ export interface SubscriptionOriginal {
     startDateEpoch: number;
     endDateEpoch: number;
   };
+
+  // for favorites
+  dueCostThisCycle?: number | null;
+  dueDateThisCycle?: number | null;
+  billDuesWithinTimeRange?: BillDueWithSubscription[];
+  nextDueDateForThisCycleBillDue?: BillDueWithSubscription | null;
+  billDuesWithinTimeRangeThatIsNotPaidOrReimbursed?: BillDueWithSubscription[];
+  outstandingBillDuesFOrThisCycleAndPast?: BillDueWithSubscription[];
 }
 
 export interface SubscriptionWithBillDues extends SubscriptionOriginal {

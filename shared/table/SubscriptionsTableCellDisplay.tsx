@@ -244,39 +244,6 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     );
   }
 
-  // if (colId === 'updatedAt') {
-  //   return (
-  //     <TableCell>
-  //       <Popover>
-  //         <PopoverTrigger asChild>
-  //           <div
-  //             title={ `${DateTime.fromISO(new Date(subscription.updatedAt ?? '').toISOString())
-  //               .setZone(EST_TIME_ZONE)
-  //               .toLocaleString(DateTime.DATETIME_MED)}` }
-  //             className={ `
-  //               flex cursor-pointer flex-col gap-y-1 truncate rounded-md border-1 border-transparent p-1 select-none
-  //               hover:border-border hover:bg-accent
-  //             ` }
-  //           >
-  //             { `${subscription.updatedAt}` === `${subscription.dateAdded}` ?
-  //               <Typography variant="nodata1">N/A</Typography>
-  //             : <>
-  //               <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" />
-  //               <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis className="truncate" />
-  //             </>
-  //             }
-  //           </div>
-  //         </PopoverTrigger>
-  //         <PopoverContent>
-  //           <Suspense>
-  //             <DateDialogContent dateTime={ subscription.updatedAt } />
-  //           </Suspense>
-  //         </PopoverContent>
-  //       </Popover>
-  //     </TableCell>
-  //   );
-  // }
-
   if (colId === 'updatedAt') {
     return (
       <TableCell>

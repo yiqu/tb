@@ -65,8 +65,7 @@ function OverLayContent({ frequency }: { frequency: string }) {
     <SparklesText sparklesCount={ 5 } className="select-none">
       <Typography
         className={ `
-          logo-text-color font-fun m-[10px] rounded-2xl bg-accent px-[0.5rem] py-[0.5rem] tracking-wider shadow-[0_5px_30px_#06060659]
-          select-none
+          logo-text-color font-fun m-[10px] rounded-2xl bg-accent px-2 py-2 tracking-wider shadow-[0_5px_30px_#06060659] select-none
           dark:shadow-[0_5px_30px_#ccc]
         ` }
         variant="h5"

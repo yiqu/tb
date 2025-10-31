@@ -10,6 +10,7 @@ import useSideBarState from '@/hooks/useSideBarState';
 import { SidebarCollapsableState } from '@/models/Sidebar.models';
 import { FavoriteEntity } from '@/models/favorites/favorite.model';
 import { SIDEBAR_COLLAPSABLE_FAVORITES } from '@/constants/constants';
+import { revalidateFavoritesAll } from '@/server/favorites/favorites.server';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { setSidebarCollapsableStateAction } from '@/server/sidebar/sidebar-actions';
 import { SidebarMenuSub, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
@@ -85,7 +86,7 @@ export default function FavoriteParentItem({ collapsableState, allFavoritesPromi
           <PopoverContent
             side="right"
             align="start"
-            className="max-h-[55rem] w-72 overflow-auto p-2"
+            className="max-h-220 w-72 overflow-auto p-2"
             onMouseEnter={ handleMouseEnter }
             onMouseLeave={ handleMouseLeave }
           >
@@ -127,8 +128,12 @@ function SidebarMenuButtonV1({ children, ...props }: { children: React.ReactNode
   const firstPath = pathname.split('/')[1] || ''; // add
   const isActive = firstPath === 'favorites';
 
+  const handleOnMouseEnter = () => {
+    revalidateFavoritesAll();
+  };
+
   return (
-    <SidebarMenuButton className="cursor-pointer" isActive={ isActive } { ...props }>
+    <SidebarMenuButton className="cursor-pointer" isActive={ isActive } { ...props } onMouseEnter={ handleOnMouseEnter }>
       { children }
     </SidebarMenuButton>
   );

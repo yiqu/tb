@@ -8,7 +8,7 @@ export default function DurationDisplay({ updatedAt }: { updatedAt: string | Dat
   const { duration } = useDuration(new Date(updatedAt ?? 0).getTime());
 
   if (!isClient) {
-    return <Skeleton className="h-6 w-[10rem]" />;
+    return <Skeleton className="h-6 w-40" />;
   }
 
   if (updatedAt) {

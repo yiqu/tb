@@ -4,6 +4,7 @@ import { BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 
 import SubscriptionDetailsBillsTable from './SubscriptionDetailsBillsTable';
+import SubscriptionDetailsBillsTableHeader from './SubscriptionDetailsBillsTableHeader';
 
 interface SubscriptionDetailsBillsTableProps {
   billDues: BillsDueGroupedByYearObject[];
@@ -21,7 +22,7 @@ export default function SubscriptionDetailsBillsTableParent({ billDues, subscrip
       { billDues.map((billDue: BillsDueGroupedByYearObject) => {
         return (
           <div key={ billDue.year } className="flex w-full flex-col items-start justify-start gap-y-3">
-            <Typography variant="h4">{ billDue.year }</Typography>
+            <SubscriptionDetailsBillsTableHeader billDues={ billDue.bills } year={ billDue.year } />
             <SubscriptionDetailsBillsTable billDues={ billDue.bills } />
           </div>
         );
