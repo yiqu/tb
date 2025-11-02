@@ -27,7 +27,7 @@ export default function FavoritesListSection({ allFavorites }: { allFavorites: F
                 </SidebarMenuSubButtonFavoritesParentWithActive>
               </SidebarMenuSubItem>
             </HoverCardTrigger>
-            <HoverCardContent className="min-w-120" align="end" side="right">
+            <HoverCardContent className="min-w-130" align="end" side="right">
               <FavoriteItemDetails favoriteEntity={ favorite } />
             </HoverCardContent>
           </HoverCard>

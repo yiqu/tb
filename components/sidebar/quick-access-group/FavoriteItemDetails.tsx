@@ -1,12 +1,11 @@
 import Image from 'next/image';
 import startCase from 'lodash/startCase';
-import { CircleCheck } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { HandCoins, CircleCheck, BanknoteArrowUp } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/spinner';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BillDue } from '@/models/bills/bills.model';
 import { getUSDFormatter } from '@/lib/number.utils';
 import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
@@ -14,6 +13,7 @@ import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
 import { FavoriteEntity } from '@/models/favorites/favorite.model';
 import DateRelativeDisplay from '@/shared/table/DateRelativeDisplay';
 import EntityDisplayMedia from '@/shared/components/EntityDisplayMedia';
+import { BillDue, BillDueWithSubscriptionOnly } from '@/models/bills/bills.model';
 import BillsTableTogglePaidButton from '@/shared/table/BillsTableTogglePaidButton';
 import { getFavoriteByIdQueryOptions } from '@/server/favorites/query/favorites.query';
 import { getFrequencyImageUrl, getSubscriptionLogoSize } from '@/shared/table/table.utils';
@@ -57,8 +57,6 @@ export default function FavoriteItemDetails({ favoriteEntity }: { favoriteEntity
     );
   }
 
-  console.log('favoriteDetails', favoriteDetails);
-
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-2">
       <div className="flex w-full flex-row items-center justify-between gap-x-2">
@@ -91,7 +89,7 @@ function FavoriteDetailsTitle({
   favoriteDetails,
 }: {
   favoriteEntity: FavoriteEntity;
-  favoriteDetails: SubscriptionOriginal | BillDue | null;
+  favoriteDetails: SubscriptionOriginal | BillDueWithSubscriptionOnly | null;
 }) {
   return (
     <div className="grid w-full grid-cols-10 gap-1">
@@ -110,7 +108,7 @@ function FavoriteDetailsTitle2({
   favoriteDetails,
 }: {
   favoriteEntity: FavoriteEntity;
-  favoriteDetails: SubscriptionOriginal | BillDue | null;
+  favoriteDetails: SubscriptionOriginal | BillDueWithSubscriptionOnly | null;
 }) {
   if (favoriteEntity.entityType === 'SUBSCRIPTION') {
     const subscription = favoriteDetails as SubscriptionOriginal;
@@ -135,10 +133,22 @@ function FavoriteDetailsTitle2({
   }
 
   if (favoriteEntity.entityType === 'BILL_DUE') {
-    const billDue = favoriteDetails as BillDue;
+    const billDue = favoriteDetails as BillDueWithSubscriptionOnly;
+    const { subscription } = billDue;
     return (
       <div className="flex w-full flex-row items-center justify-between gap-x-2 text-wrap">
-        <Typography>AA</Typography>
+        <div className="flex w-full flex-row items-center justify-start gap-x-1 truncate">
+          <SubscriptionLogo subscriptionName={ subscription.name } height={ getSubscriptionLogoSize(subscription.name) } />
+          <Typography>{ subscription.name } -</Typography>
+          <Typography>{ usdFormatter.format(billDue.cost ?? billDue.subscription.cost ?? 0) } -</Typography>
+          <DateRelativeDisplay
+            time={ billDue.dueDate as any }
+            largest={ 4 }
+            updateInterval={ 1_000 }
+            useShortText={ true }
+            className={ `truncate` }
+          />
+        </div>
       </div>
     );
   }
@@ -158,7 +168,54 @@ function FavoriteDetailsStatus({
     const subscription = favoriteDetails as SubscriptionOriginal;
     status1 = subscription.approved;
     status2 = subscription.signed;
+
+    return (
+      <div className="flex flex-row items-center justify-end gap-x-1">
+        <CircleCheck
+          className={ cn(`
+            size-4 text-gray-400
+            dark:text-gray-400
+          `, {
+            'text-green-600 dark:text-green-500': status1,
+          }) }
+        />
+        <CircleCheck
+          className={ cn(`
+            size-4 text-gray-400
+            dark:text-gray-400
+          `, {
+            'text-green-600 dark:text-green-500': status2,
+          }) }
+        />
+      </div>
+    );
+  } else if (favoriteEntity.entityType === 'BILL_DUE') {
+    const billDue = favoriteDetails as BillDueWithSubscriptionOnly;
+    status1 = billDue.paid;
+    status2 = billDue.reimbursed;
+
+    return (
+      <div className="flex flex-row items-center justify-end gap-x-1">
+        <BanknoteArrowUp
+          className={ cn(`
+            size-4 text-gray-400
+            dark:text-gray-400
+          `, {
+            'text-green-600 dark:text-green-500': status1,
+          }) }
+        />
+        <HandCoins
+          className={ cn(`
+            size-4 text-gray-400
+            dark:text-gray-400
+          `, {
+            'text-green-600 dark:text-green-500': status2,
+          }) }
+        />
+      </div>
+    );
   }
+
   return (
     <div className="flex flex-row items-center justify-end gap-x-1">
       <CircleCheck
@@ -314,7 +371,71 @@ function FavoriteDetailsContent({
   }
 
   if (favoriteEntity.entityType === 'BILL_DUE') {
-    return <div className="flex w-full flex-col items-start justify-start gap-y-2"></div>;
+    const billDue = favoriteDetails as BillDueWithSubscriptionOnly;
+    return (
+      <div className="flex w-full flex-col items-start justify-start gap-y-2">
+        <div className="grid w-full grid-cols-12 gap-2">
+          <div className="col-span-1 flex cursor-pointer items-center" onClick={ handleOnIconClick }>
+            { isFetching ?
+              <Spinner className="size-4" />
+            : <EntityDisplayMedia entity={ favoriteEntity.entityType } /> }
+          </div>
+          <div className="col-span-11 flex justify-end text-wrap">
+            <Typography>{ favoriteEntity.name }</Typography>
+          </div>
+        </div>
+
+        <div className="grid w-full grid-cols-6 gap-2">
+          <div className="col-span-4 flex items-center">
+            <Typography>Cost:</Typography>
+          </div>
+          <div className="col-span-2 flex justify-end text-wrap">
+            <Typography>{ usdFormatter.format(billDue.cost ?? billDue.subscription.cost ?? 0) }</Typography>
+          </div>
+        </div>
+
+        <div className="grid w-full grid-cols-12 gap-2">
+          <div className="col-span-4 flex items-center">
+            <Typography>Due date:</Typography>
+          </div>
+          <div className="col-span-8 flex justify-end text-wrap">
+            <DateRelativeDisplay time={ billDue.dueDate as any } largest={ 4 } updateInterval={ 1_000 } useShortText={ false } />
+          </div>
+        </div>
+
+        <Separator />
+
+        <div className="grid w-full grid-cols-12 gap-2">
+          <div className="col-span-4 flex items-center">
+            <Typography>Added:</Typography>
+          </div>
+          <div className="col-span-8 flex justify-end text-wrap">
+            <DateRelativeDisplay
+              time={ billDue.dateAdded as any }
+              largest={ 3 }
+              updateInterval={ 60_000 }
+              useShortText={ true }
+              overrideHideSeconds
+            />
+          </div>
+        </div>
+
+        <div className="grid w-full grid-cols-12 gap-2">
+          <div className="col-span-4 flex items-center">
+            <Typography>Updated:</Typography>
+          </div>
+          <div className="col-span-8 flex justify-end text-wrap">
+            <DateRelativeDisplay
+              time={ billDue.updatedAt as any }
+              largest={ 3 }
+              updateInterval={ 60_000 }
+              useShortText={ true }
+              overrideHideSeconds
+            />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return <div>Unknown entity type</div>;

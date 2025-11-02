@@ -70,6 +70,10 @@ export type BillDueWithSubscription = BillDue & {
   favorites?: FavoriteEntity[];
 };
 
+export type BillDueWithSubscriptionOnly = BillDue & {
+  subscription: SubscriptionOriginal;
+};
+
 export type BillDueWithSubscriptionAndSortData = {
   billDues: BillDueWithSubscription[];
   sortData: SortDataModel | null;

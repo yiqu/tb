@@ -11,8 +11,8 @@ import { Prisma } from '@prisma/client';
 
 import prisma from '@/lib/prisma';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
-import { BillDue, BillDueWithSubscription } from '@/models/bills/bills.model';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
+import { BillDueWithSubscription, BillDueWithSubscriptionOnly } from '@/models/bills/bills.model';
 import {
   FavoriteEntity,
   FavoriteActionType,
@@ -53,10 +53,14 @@ export async function getAllFavoritesEntities(): Promise<FavoriteEntity[]> {
 
   try {
     const favorites: FavoriteEntity[] = await prisma.favoriteEntity.findMany();
-    const sortedFavorites: FavoriteEntity[] = favorites.sort((a: FavoriteEntity, b: FavoriteEntity) => {
-      const aName = a.name.toLowerCase();
-      const bName = b.name.toLowerCase();
-      return aName > bName ? 1 : -1;
+    const sortedFavorites: FavoriteEntity[] = favorites.toSorted((a: FavoriteEntity, b: FavoriteEntity) => {
+      // sort by entity type first (BILL_DUE before SUBSCRIPTION), then by name within each type
+      if (a.entityType !== b.entityType) {
+        return a.entityType === 'BILL_DUE' ? -1 : 1;
+      }
+
+      // Same entity type, sort alphabetically by name
+      return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
     });
 
     const withUrl = sortedFavorites.map((favorite) => {
@@ -205,7 +209,9 @@ export async function toggleFavoriteByBillDueId(
   }
 }
 
-export async function getEntityByFavoriteTypeId(entity: FavoriteEntity): Promise<SubscriptionWithBillDues | BillDue | null> {
+export async function getEntityByFavoriteTypeId(
+  entity: FavoriteEntity,
+): Promise<SubscriptionWithBillDues | BillDueWithSubscriptionOnly | null> {
   try {
     if (entity.entityType === 'SUBSCRIPTION' && entity.subscriptionId) {
       const subscription: SubscriptionWithBillDues | null = await prisma.subscription.findUnique({
@@ -265,8 +271,11 @@ export async function getEntityByFavoriteTypeId(entity: FavoriteEntity): Promise
 
       return result;
     } else if (entity.entityType === 'BILL_DUE' && entity.billDueId) {
-      const billDue: BillDue | null = await prisma.billDue.findUnique({
+      const billDue: BillDueWithSubscriptionOnly | null = await prisma.billDue.findUnique({
         where: { id: entity.billDueId },
+        include: {
+          subscription: true,
+        },
       });
       return billDue;
     }
