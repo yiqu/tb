@@ -15,7 +15,7 @@ export default function TopNavWrapper({ children }: { children: ReactNode }) {
       <header
         className={ cn(
           `
-            sticky top-0 z-40 box-border flex h-16 shrink-0 flex-row items-center justify-between gap-2 border-b border-transparent
+            sticky top-0 z-40 box-border flex h-12 shrink-0 flex-row items-center justify-between gap-2 border-b border-transparent
             bg-background transition-[width,height] ease-linear
             group-has-data-[collapsible=icon]/sidebar-wrapper:h-12
           `,
@@ -30,7 +30,7 @@ export default function TopNavWrapper({ children }: { children: ReactNode }) {
     <header
       className={ cn(
         `
-          sticky top-0 z-40 box-border flex h-16 shrink-0 flex-row items-center justify-between gap-2 border-b border-transparent
+          sticky top-0 z-40 box-border flex h-12 shrink-0 flex-row items-center justify-between gap-2 border-b border-transparent
           bg-background transition-[width,height] ease-linear
           group-has-data-[collapsible=icon]/sidebar-wrapper:h-12
         `,

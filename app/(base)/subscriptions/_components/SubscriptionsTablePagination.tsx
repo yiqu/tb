@@ -10,6 +10,7 @@ import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server'
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { subscriptionSearchParamsSchema } from '@/validators/subscriptions/subscriptions.schema';
 import { SubscriptionWithBillDuesAndSortData } from '@/models/subscriptions/subscriptions.model';
+import ContentPaginationBarStickyWrapper from '@/components/layout/ContentPaginationBarStickyWrapper';
 import {
   getAllSubscriptionsCountCached,
   getAllSubscriptionsWithBillDuesPaginatedCached,
@@ -43,7 +44,7 @@ export default async function SubscriptionsTablePagination({ searchParamsPromise
   const hasSearchParams: boolean = isSearchParamsExist(searchParams);
 
   return (
-    <div className={ `sticky top-[7.2rem] z-10 flex w-full flex-row items-center justify-between bg-background py-2` }>
+    <ContentPaginationBarStickyWrapper>
       <div>{ `` }</div>
       <div className="flex flex-row items-center justify-end gap-x-4">
         { hasSearchParams ?
@@ -70,7 +71,7 @@ export default async function SubscriptionsTablePagination({ searchParamsPromise
           <SubscriptionsTablePaginationPageSelect totalPages={ totalPages } />
         </Suspense>
       </div>
-    </div>
+    </ContentPaginationBarStickyWrapper>
   );
 }
 
