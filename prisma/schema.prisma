@@ -25,6 +25,7 @@ datasource db {
 enum EntityType {
   SUBSCRIPTION
   BILL_DUE
+  SEARCH_QUERY
 }
 
 model Subscription {

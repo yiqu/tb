@@ -14,7 +14,7 @@ import { getAllBillsCached, getAllBillsCountCached } from '@/server/bills/bills.
 import ContentPaginationBarStickyWrapper from '@/components/layout/ContentPaginationBarStickyWrapper';
 
 import { isSearchParamsExist } from './bills.utils';
-import BillsActionBarClearAllFilters from './BillsActionBarClearAllFilters';
+import BillsTableHasParamsSection from './BillsTableHasParamsSection';
 import BillsTablePaginationPageSelect from './BillsTablePaginationPageSelect';
 import BillsTablePaginationPageCountSelect from './BillsTablePaginationPageCountSelect';
 
@@ -40,14 +40,7 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
     <ContentPaginationBarStickyWrapper>
       <div></div>
       <div className="flex flex-row items-center justify-end gap-x-4">
-        { hasSearchParams ?
-          <>
-            <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-              <BillsActionBarClearAllFilters />
-            </Suspense>
-            <Separator orientation="vertical" className="h-[1.2rem]!" />
-          </>
-        : null }
+        <BillsTableHasParamsSection searchParams={ searchParams } />
 
         <div className="h-9">
           <BillsTablePaginationPageCountSelect>
@@ -66,10 +59,6 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
       </div>
     </ContentPaginationBarStickyWrapper>
   );
-}
-
-function ActionBarButtonSkeleton() {
-  return <Skeleton className="h-9 w-[120px]" />;
 }
 
 function PaginationSkeleton() {

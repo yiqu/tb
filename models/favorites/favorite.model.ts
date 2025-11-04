@@ -13,9 +13,14 @@ export const FavoriteEntityInput = z.union([
     subscriptionId: z.string(),
     billDueId: z.undefined().or(z.null()).optional(),
   }),
+  z.object({
+    name: z.string().min(1),
+    entityType: z.literal('SEARCH_QUERY'),
+    url: z.string().optional(),
+  }),
 ]);
 
-export const FavoriteEntityEntityType = z.enum(['BILL_DUE', 'SUBSCRIPTION']);
+export const FavoriteEntityEntityType = z.enum(['BILL_DUE', 'SUBSCRIPTION', 'SEARCH_QUERY']);
 
 export const FavoriteEntityResponse = z.object({
   id: z.string(),
@@ -23,13 +28,18 @@ export const FavoriteEntityResponse = z.object({
   entityType: FavoriteEntityEntityType,
   subscriptionId: z.string().nullable(),
   billDueId: z.string().nullable(),
+  url: z.string().nullable(),
 });
 
 export type FavoriteEntityResponseType = z.infer<typeof FavoriteEntityResponse>;
 export type FavoriteEntityEntityTypeType = z.infer<typeof FavoriteEntityEntityType>;
 
 export const getFavoriteEntityEntityTypeLabel = (entityType: FavoriteEntityEntityTypeType) => {
-  return entityType === 'SUBSCRIPTION' ? 'Subscription' : 'Bill Due';
+  return (
+    entityType === 'SUBSCRIPTION' ? 'Subscription'
+    : entityType === 'BILL_DUE' ? 'Bill Due'
+    : 'Search Query'
+  );
 };
 
 export type FavoriteActionType = 'EDIT' | 'CREATE' | 'DELETE';

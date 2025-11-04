@@ -71,9 +71,21 @@ function FavoriteItemName({ entity }: { entity: FavoriteEntity }) {
           <Skeleton className="h-5 w-full truncate" />
         : isBillDueError ?
           <Typography className="truncate text-red-500">Error loading bill due</Typography>
-        : <DateRelativeDisplay time={ dueDate as any } largest={ 1 } updateInterval={ 120_000 } useShortText={ true } className={ `truncate` } overrideHideSeconds /> }
+        : <DateRelativeDisplay
+            time={ dueDate as any }
+            largest={ 1 }
+            updateInterval={ 120_000 }
+            useShortText={ true }
+            className={ `truncate` }
+            overrideHideSeconds
+          />
+        }
       </div>
     );
+  }
+
+  if (entity.entityType === 'SEARCH_QUERY') {
+    return <Typography className="truncate">{ entity.url }</Typography>;
   }
 
   return <Typography className="truncate">{ entity.name }</Typography>;
