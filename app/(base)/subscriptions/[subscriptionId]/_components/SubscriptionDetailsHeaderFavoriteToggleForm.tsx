@@ -53,6 +53,7 @@ export default function SubscriptionDetailsHeaderFavoriteToggleForm({
         entityId:
           type === 'SUBSCRIPTION' ? (subscription?.id ?? '')
           : type === 'BILL_DUE' ? (billDue?.id ?? '')
+          : type === 'SEARCH_QUERY' ? (subscription?.url ?? '')
           : '',
         entityType: type,
       },
