@@ -21,6 +21,7 @@ import BillsTableToggleReimbursedButton from '@/shared/table/BillsTableToggleRei
 import { SubscriptionOriginal, SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 
 const usdFormatter = getUSDFormatter();
+const NON_QUERYABLE_ENTITY_TYPES = ['SEARCH_QUERY'];
 
 export default function FavoriteItemDetails({ favoriteEntity }: { favoriteEntity: FavoriteEntity }) {
   const {
@@ -30,8 +31,16 @@ export default function FavoriteItemDetails({ favoriteEntity }: { favoriteEntity
     error,
   } = useQuery({
     ...getFavoriteByIdQueryOptions(favoriteEntity),
-    enabled: !!favoriteEntity.id,
+    enabled: !!favoriteEntity.id && !NON_QUERYABLE_ENTITY_TYPES.includes(favoriteEntity.entityType),
   });
+
+  if (favoriteEntity.entityType === 'SEARCH_QUERY') {
+    return (
+      <div className="flex flex-col items-start justify-start gap-y-2">
+        <Typography className="break-all">Search query: { favoriteEntity.name }</Typography>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

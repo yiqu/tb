@@ -57,7 +57,7 @@ export default function BillsActionBarSubscriptionFilter({ allSubscriptionsPromi
         onChange={ handleOnSubscriptionsChange }
         defaultValues={ selectedSubscriptions.subscriptions }
         multi={ true }
-        className="min-w-[15rem] bg-card"
+        className="min-w-60 bg-card"
         searchBy="label"
         badgeTextMaxLength={ 8 }
       />

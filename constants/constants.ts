@@ -27,6 +27,7 @@ export const FONT_FAMILY_PRIMARY = 'Geist';
 export const TANSTACK_QUERY_QUERY_KEY_FIREBASE_USER = 'firebase-user';
 export const TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS = 'bill-due-details';
 export const TANSTACK_QUERY_QUERY_KEY_SUBSCRIPTION_DETAILS = 'subscription-details';
+export const TANSTACK_QUERY_QUERY_KEY_SUBSCRIPTIONS_DETAILS = 'subscriptions-details';
 export const TANSTACK_QUERY_QUERY_KEY_ID_GENERAL = 'id';
 export const TANSTACK_QUERY_QUERY_KEY_FAVORITES_ALL = 'favorites-all';
 export const TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS = 'favorite-details';

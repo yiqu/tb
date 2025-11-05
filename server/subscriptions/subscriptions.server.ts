@@ -324,6 +324,26 @@ export async function getSubscriptionWithBillDuesByIdUncached(subscriptionId: st
   }
 }
 
+export async function getAllSubscriptionsWithBillDuesByIdsUncached(subscriptionIds: string[]): Promise<SubscriptionWithBillDues[]> {
+  try {
+    const subscriptions: SubscriptionWithBillDues[] = await prisma.subscription.findMany({
+      where: { id: { in: subscriptionIds } },
+      include: {
+        billDues: {
+          include: {
+            subscription: true,
+          },
+        },
+      },
+    });
+
+    return subscriptions;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getAllSubscriptionsWithBillDuesByIdsUncached(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving subscriptions by ids. Code: ${error.code}`);
+  }
+}
+
 export async function getSubscriptionBillsGroupedByYearById(subscriptionId: string): Promise<BillsDueGroupedByYearObject[]> {
   'use cache';
   cacheLife('weeks');
