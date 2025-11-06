@@ -6,6 +6,7 @@ import { HandCoins, CircleCheck, BanknoteArrowUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/spinner';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getParamsAsObject } from '@/lib/url.utils';
 import { getUSDFormatter } from '@/lib/number.utils';
 import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
@@ -35,11 +36,7 @@ export default function FavoriteItemDetails({ favoriteEntity }: { favoriteEntity
   });
 
   if (favoriteEntity.entityType === 'SEARCH_QUERY') {
-    return (
-      <div className="flex flex-col items-start justify-start gap-y-2">
-        <Typography className="break-all">Search query: { favoriteEntity.name }</Typography>
-      </div>
-    );
+    return <FavoriteDetailsSearchQueryDisplay favoriteEntity={ favoriteEntity } />;
   }
 
   if (isLoading) {
@@ -448,4 +445,35 @@ function FavoriteDetailsContent({
   }
 
   return <div>Unknown entity type</div>;
+}
+
+function FavoriteDetailsSearchQueryDisplay({ favoriteEntity }: { favoriteEntity: FavoriteEntity }) {
+  const fullUrl = favoriteEntity.url ?? '';
+  const mainPageUrl = fullUrl.split('?')[0]; // bills, subscriptions, etc.
+  const paramsString = fullUrl.split('?')[1] ?? '';
+  const paramsObject = getParamsAsObject(new URLSearchParams(paramsString));
+
+  const paramsKeys = Object.keys(paramsObject);
+
+  return (
+    <div className="flex w-full flex-col items-start justify-start gap-y-2">
+      <div className="flex w-full flex-row items-center justify-between gap-x-2">
+        <Typography>Search query</Typography>
+        <div className="flex flex-row items-center justify-end gap-x-1">
+          <Typography>{ mainPageUrl }</Typography>
+        </div>
+      </div>
+      <Separator />
+      <div className="flex flex-col items-start justify-start gap-y-2">
+        { paramsKeys.map((key) => {
+          return (
+            <div key={ key } className="flex flex-row items-center justify-start gap-x-2">
+              <Typography variant="label1">{ startCase(key) }:</Typography>
+              <Typography variant="labelvalue1">{ paramsObject[key] }</Typography>
+            </div>
+          );
+        }) }
+      </div>
+    </div>
+  );
 }

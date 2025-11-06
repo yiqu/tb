@@ -1,8 +1,7 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-important-position */
 'use client';
 
 import * as React from 'react';
-import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { CheckIcon, CircleIcon, ChevronRightIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -73,7 +72,7 @@ function DropdownMenuItem({
           dark:data-[variant=destructive]:focus:bg-destructive/20
           [&_svg]:pointer-events-none [&_svg]:shrink-0
           [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground
-          data-[variant=destructive]:*:[svg]:!text-destructive
+          data-[variant=destructive]:*:[svg]:text-destructive!
         `,
         className,
       ) }
@@ -104,7 +103,7 @@ function DropdownMenuCheckboxItem({
       checked={ checked }
       { ...props }
     >
-      <span className={ `pointer-events-none absolute left-2 flex size-3.5 items-center justify-center` }>
+      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
           <CheckIcon className="size-4" />
         </DropdownMenuPrimitive.ItemIndicator>
@@ -134,7 +133,7 @@ function DropdownMenuRadioItem({ className, children, ...props }: React.Componen
       ) }
       { ...props }
     >
-      <span className={ `pointer-events-none absolute left-2 flex size-3.5 items-center justify-center` }>
+      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
           <CircleIcon className="size-2 fill-current" />
         </DropdownMenuPrimitive.ItemIndicator>
@@ -202,10 +201,12 @@ function DropdownMenuSubTrigger({
       data-inset={ inset }
       className={ cn(
         `
-          flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none
+          flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none
           focus:bg-accent focus:text-accent-foreground
           data-[inset]:pl-8
           data-[state=open]:bg-accent data-[state=open]:text-accent-foreground
+          [&_svg]:pointer-events-none [&_svg]:shrink-0
+          [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground
         `,
         className,
       ) }

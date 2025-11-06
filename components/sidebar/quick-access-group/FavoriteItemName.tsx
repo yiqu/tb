@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { getParamsAsObject } from '@/lib/url.utils';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import { FavoriteEntity } from '@/models/favorites/favorite.model';
@@ -14,11 +15,11 @@ export default function FavoriteItemName({ favoriteEntity }: { favoriteEntity: F
   // if search query is subscriptions list, extract the subscription ids
   const nameArray = favoriteEntity.name.split('?');
   const querySection = nameArray[1] ?? favoriteEntity.name;
-  const urlSearchParams = new URLSearchParams(querySection);
-  const urlSearchParamsObject = Object.fromEntries(urlSearchParams.entries());
+  const urlSearchParamsObject = getParamsAsObject(new URLSearchParams(querySection));
   const isSearchParamsOnlySubscriptions: boolean = !!(
     Object.keys(urlSearchParamsObject).length === 1 && urlSearchParamsObject.subscriptions
   );
+  
   let subscriptionIds: string[] = [];
   if (favoriteEntity.entityType === 'SEARCH_QUERY' && favoriteEntity.name.includes('subscriptions=') && isSearchParamsOnlySubscriptions) {
     const nameArray = favoriteEntity.name.split('?');
