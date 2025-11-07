@@ -7,7 +7,7 @@ import { CardTitle, CardHeader, CardContent } from '@/components/ui/card';
 export default function PageInfoPage() {
   return (
     <div className="flex flex-col items-center justify-start">
-      <DisplayCard className="relative w-[30rem] overflow-hidden">
+      <DisplayCard className="relative w-120 overflow-hidden">
         <CardHeader>
           <CardTitle>Page Information</CardTitle>
         </CardHeader>

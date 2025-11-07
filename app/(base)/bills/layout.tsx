@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { ReactNode } from 'react';
 
 import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
   description: 'View all of your bills.',
 };
 
-export default function AllBillsLayout({ children }: { children: ReactNode; params: Promise<any> }) {
+export default function AllBillsLayout({ children }: LayoutProps<'/bills'>) {
   return (
     <div id="bills-layout-parent">
       <LayoutParent>

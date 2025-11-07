@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import { ReactNode } from 'react';
 
+import { getLayoutMetadata } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
 import LayoutParent from '@/components/layout/LayoutParent';
@@ -9,12 +9,10 @@ import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
 import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
 import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
-export const metadata: Metadata = {
-  title: 'Search',
-  description: 'Search or view your subscriptions and bills.',
-};
+const layoutMetadata = getLayoutMetadata('Search', 'Search or view your subscriptions and bills.');
+export const metadata: Metadata = layoutMetadata;
 
-export default function SearchLayout({ children }: { children: ReactNode; params: Promise<any> }) {
+export default function SearchLayout({ children }: LayoutProps<'/search'>) {
   return (
     <div id="search-layout-parent">
       <LayoutParent>

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import { ReactNode } from 'react';
 
+import { getLayoutMetadata } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
 import LayoutParent from '@/components/layout/LayoutParent';
@@ -9,21 +9,16 @@ import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
 import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
 import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
-export const metadata: Metadata = {
-  title: 'Playground',
-  description: 'Playground.',
-};
+const layoutMetadata = getLayoutMetadata('Playground', 'Playground.');
+export const metadata: Metadata = layoutMetadata;
 
-export default function PlaygroundLayout({ children }: { children: ReactNode; params: Promise<any> }) {
+export default function PlaygroundLayout({ children }: LayoutProps<'/test'>) {
   return (
     <div id="playground-layout-parent">
       <LayoutParent>
         <LayoutWithGutter size="wider">
           <section className="w-full">
-            <PageTitle
-              title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.search }>Playground</AuroraText> }
-              subText="Playground."
-            />
+            <PageTitle title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.search }>Playground</AuroraText> } subText="Playground." />
           </section>
         </LayoutWithGutter>
       </LayoutParent>

@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { ReactNode } from 'react';
 
 import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
   description: 'View the status of the API.',
 };
 
-export default function ApiStatusLayout({ children }: { children: ReactNode; params: Promise<any> }) {
+export default function ApiStatusLayout({ children }: LayoutProps<'/api-status'>) {
   return (
     <div id="api-status-layout-parent">
       <LayoutParent>

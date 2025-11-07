@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { ReactNode } from 'react';
 
 import { getLayoutMetadata } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -13,7 +12,7 @@ import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 const layoutMetadata = getLayoutMetadata('Outstanding', 'View outstanding bills');
 export const metadata: Metadata = layoutMetadata;
 
-export default function OutstandingLayout({ children }: { children: ReactNode; params: Promise<any> }) {
+export default function OutstandingLayout({ children }: LayoutProps<'/outstanding'>) {
   return (
     <div id="bills-layout-parent">
       <LayoutParent>

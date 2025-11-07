@@ -64,6 +64,7 @@ export const SORT_DATA_PAGE_IDS = {
 export const DEFAULT_PAGE_SIZE = 10;
 
 export const APP_TITLE_GRADIENT_COLORS = {
+  dashboard: ['#005493', '#e31837', '#489cd4', '#2774a6'],
   search: ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'],
   bills: ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'],
   dates: ['#005493', '#f5aa1c', '#c63527', '#8fe1c2'],
@@ -75,7 +76,6 @@ export const APP_TITLE_GRADIENT_COLORS = {
   admin: ['#cc0000', '#ff9900', '#000066'],
   settings: ['#005493', '#f5aa1c', '#c63527', '#002754'],
   login: ['#00a3e2', '#1ba548', '#fdc800', '#f1860e', '#e41b13'],
-  dashboard: ['#005493', '#e31837', '#489cd4', '#2774a6'],
   subscriptions: ['#005493', '#f5aa1c', '#c63527', '#002754'],
   outstanding: ['#FF4757', '#FF6B35', '#FFA726', '#0070F3'],
   upcoming: ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF'],

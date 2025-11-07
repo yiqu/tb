@@ -1,9 +1,7 @@
-import z from 'zod';
 import { Suspense } from 'react';
 
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import EditBillForm from '@/components/bills/EditBillForm';
-import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
 
@@ -13,12 +11,7 @@ import BillsTableActionBar from './_components/BillsTableActionBar';
 import BillsTableActionDialog from './_components/BillsTableActionDialog';
 import BillsTablePaginationWrapper from './_components/BillsTablePaginationWrapper';
 
-interface AllBillsPageProps {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<z.infer<typeof billSearchParamsSchema>>;
-}
-
-export default function AllBillsPage({ searchParams }: AllBillsPageProps) {
+export default function AllBillsPage({ searchParams }: PageProps<'/bills'>) {
   const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
 
   return (

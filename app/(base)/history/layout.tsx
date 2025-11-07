@@ -1,5 +1,5 @@
 import PageLayout from '@/shared/PageLayout';
 
-export default function HistoryLayout({ children }: { children: React.ReactNode }) {
+export default function HistoryLayout({ children }: LayoutProps<'/history'>) {
   return <PageLayout>{ children }</PageLayout>;
 }
