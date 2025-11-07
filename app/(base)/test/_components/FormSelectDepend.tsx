@@ -22,7 +22,6 @@ export default function FormSelectDepend() {
   const [state, setState] = useState<string>('');
 
   const onSubmitForm = (_data: FormSubmitData) => {
-    console.log('onSubmitForm');
   };
 
   const handleOnStateChange = (state: string) => {

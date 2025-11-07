@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   experimental: {
     //viewTransition: true,
     useCache: true,
-    clientSegmentCache: true,
     //turbopackFileSystemCacheForBuild: true,
     turbopackFileSystemCacheForDev: true,
     browserDebugInfoInTerminal: false,

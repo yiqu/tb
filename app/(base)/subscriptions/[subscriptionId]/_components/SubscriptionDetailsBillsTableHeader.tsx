@@ -11,7 +11,7 @@ const usdFormatter = getUSDFormatter();
 
 export default function SubscriptionDetailsBillsTableHeader({ billDues, year }: Props) {
   const billDuesCount = billDues.length;
-  const billDuesTotalCost = billDues.reduce((acc, billDue) => acc + (billDue.cost ?? 0), 0);
+  const billDuesTotalCost = billDues.reduce((acc, billDue) => acc + (billDue.cost ?? billDue.subscription.cost ?? 0), 0);
 
   return (
     <div className="flex flex-row items-center justify-start gap-x-2">

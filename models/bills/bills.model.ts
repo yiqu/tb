@@ -1,3 +1,7 @@
+import z from 'zod';
+
+import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
+
 import { SortDataModel } from '../sort-data/SortData.model';
 import { FavoriteEntity } from '../favorites/favorite.model';
 
@@ -70,6 +74,10 @@ export type BillDueWithSubscription = BillDue & {
   favorites?: FavoriteEntity[];
 };
 
+export type BillDueWithSubscriptionOnly = BillDue & {
+  subscription: SubscriptionOriginal;
+};
+
 export type BillDueWithSubscriptionAndSortData = {
   billDues: BillDueWithSubscription[];
   sortData: SortDataModel | null;
@@ -100,3 +108,5 @@ export interface BillsDueGroupedByYearObject {
   year: string;
   bills: BillDueWithSubscription[];
 }
+
+export type BillDueSearchParams = z.infer<typeof billSearchParamsSchema>;

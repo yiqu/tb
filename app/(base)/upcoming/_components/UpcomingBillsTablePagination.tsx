@@ -11,6 +11,7 @@ import { BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { getAllBillsCountCached, getAllUpcomingBillsCached } from '@/server/bills/bills.server';
+import ContentPaginationBarStickyWrapper from '@/components/layout/ContentPaginationBarStickyWrapper';
 
 import { isSearchParamsExist } from './bills.utils';
 import UpcomingBillsActionBarClearAllFilters from './UpcomingBillsActionBarClearAllFilters';
@@ -36,7 +37,7 @@ export default async function UpcomingBillsTablePagination({ searchParamsPromise
   const hasSearchParams: boolean = isSearchParamsExist(searchParams);
 
   return (
-    <div className={ `sticky top-[7.2rem] z-10 flex w-full flex-row items-center justify-between bg-background py-2` }>
+    <ContentPaginationBarStickyWrapper>
       <div>{ `` }</div>
       <div className="flex flex-row items-center justify-end gap-x-4">
         { hasSearchParams ?
@@ -63,7 +64,7 @@ export default async function UpcomingBillsTablePagination({ searchParamsPromise
           <UpcomingBillsTablePaginationPageSelect pageCount={ totalPages } />
         </Suspense>
       </div>
-    </div>
+    </ContentPaginationBarStickyWrapper>
   );
 }
 

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { X } from 'lucide-react';
 import { parseAsString, parseAsInteger, useQueryStates } from 'nuqs';
 
@@ -40,6 +41,9 @@ const DYNAMIC_YEAR_OPTIONS = [
 ];
 
 const MONTH_OPTIONS = [
+  { label: 'Current Month', value: 'current-month' },
+  { label: 'Last Month', value: 'last-month' },
+  { label: 'Next Month', value: 'next-month' },
   { label: 'January / 1', value: '1' },
   { label: 'February / 2', value: '2' },
   { label: 'March / 3', value: '3' },
@@ -211,11 +215,16 @@ export default function BillsActionBarDueDateFilter({ showOnlyYears, placeholder
               ) }
               <SelectGroup>
                 <SelectLabel>Month</SelectLabel>
-                { MONTH_OPTIONS.map((option) => (
-                  <SelectItem key={ option.value } value={ option.value }>
-                    { option.label }
-                  </SelectItem>
-                )) }
+                { MONTH_OPTIONS.map((option) => {
+                  return (
+                    <React.Fragment key={ option.value }>
+                      <SelectItem value={ option.value }>{ option.label }</SelectItem>
+                      { option.value === 'next-month' ?
+                        <SelectSeparator />
+                      : null }
+                    </React.Fragment>
+                  );
+                }) }
               </SelectGroup>
             </SelectContent>
           </Select>

@@ -105,6 +105,7 @@ export default function FavoriteParentItem({ collapsableState, allFavoritesPromi
           <SidebarMenuButtonV1>
             <Heart />
             <span>Favorites</span>
+            <FavoriteCount allFavoritesPromise={ allFavoritesPromise } />
             { isPending ?
               <Skeleton className="ml-auto h-4 w-4" />
             : <ChevronRight className={ `
@@ -137,4 +138,9 @@ function SidebarMenuButtonV1({ children, ...props }: { children: React.ReactNode
       { children }
     </SidebarMenuButton>
   );
+}
+
+function FavoriteCount({ allFavoritesPromise }: { allFavoritesPromise: Promise<FavoriteEntity[]> }) {
+  const allFavorites: FavoriteEntity[] = use(allFavoritesPromise);
+  return <span>({ allFavorites.length })</span>;
 }

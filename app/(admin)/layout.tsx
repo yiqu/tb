@@ -2,7 +2,7 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 
 import { Suspense } from 'react';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';

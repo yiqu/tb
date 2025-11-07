@@ -55,7 +55,7 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
             <div className="flex flex-row items-center justify-end gap-x-2">
               <DateRelativeDisplay time={ `${data?.updatedAt}` } includeParenthesis={ false } prefixText="Last edited:" />
             </div>
-          : <Skeleton className="h-5 w-[10rem]" /> }
+          : <Skeleton className="h-5 w-40" /> }
         </div>
       }
     >
@@ -93,11 +93,11 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
           </StyledDialogFooter>
         </EditBillDialogFormWrapper>
       : <div className="mb-4 flex flex-col justify-start gap-y-4 px-4">
-        <Skeleton className="h-[5rem] w-full" />
-        <Skeleton className="h-[5rem] w-full" />
-        <Skeleton className="h-[5rem] w-full" />
-        <Skeleton className="h-[5rem] w-full" />
-        <Skeleton className="h-[10.5rem] w-full" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-42 w-full" />
       </div>
       }
     </StyledDialogContent>

@@ -2,6 +2,7 @@ import { memo, Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
+import ContentActionBarStickyWrapper from '@/components/layout/ContentActionBarStickyWrapper';
 
 import OutstandingBillsActionBarDueDateFilter from './OutstandingBillsActionBarDueDateFilter';
 import OutstandingBillsActionBarRefreshButton from './OutstandingBillsActionBarRefreshButton';
@@ -11,7 +12,7 @@ import OutstandingBillsActionBarSubscriptionFilterWrapper from './OutstandingBil
 
 function OutstandingBillsTableActionBar() {
   return (
-    <div className={ `sticky top-16 z-50 flex w-full flex-row flex-wrap items-center justify-between gap-x-2 gap-y-2 bg-background py-2` }>
+    <ContentActionBarStickyWrapper>
       <div className="flex flex-row flex-wrap items-center justify-start gap-x-2 gap-y-2">
         <OutstandingBillsActionBarRefreshButton />
         <Separator orientation="vertical" className="h-6!" />
@@ -30,7 +31,7 @@ function OutstandingBillsTableActionBar() {
           <OutstandingBillsActionBarPaymentStatusFilter />
         </Suspense>
       </div>
-    </div>
+    </ContentActionBarStickyWrapper>
   );
 }
 

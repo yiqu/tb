@@ -27,6 +27,7 @@ export const FONT_FAMILY_PRIMARY = 'Geist';
 export const TANSTACK_QUERY_QUERY_KEY_FIREBASE_USER = 'firebase-user';
 export const TANSTACK_QUERY_QUERY_KEY_BILL_DUE_DETAILS = 'bill-due-details';
 export const TANSTACK_QUERY_QUERY_KEY_SUBSCRIPTION_DETAILS = 'subscription-details';
+export const TANSTACK_QUERY_QUERY_KEY_SUBSCRIPTIONS_DETAILS = 'subscriptions-details';
 export const TANSTACK_QUERY_QUERY_KEY_ID_GENERAL = 'id';
 export const TANSTACK_QUERY_QUERY_KEY_FAVORITES_ALL = 'favorites-all';
 export const TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS = 'favorite-details';
@@ -48,6 +49,8 @@ export const CACHE_TAG_FAVORITES_ALL = 'favorites-all';
 export const CACHE_TAG_SUBSCRIPTIONS_ALL = 'subscriptions-all';
 export const CACHE_TAG_SUBSCRIPTION_DETAILS = 'subscription-by-id-';
 export const CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR = 'subscription-bills-grouped-by-year-';
+
+export const CACHE_TAG_HISTORY_ENTRIES_ALL = 'history-entries-all';
 
 export const SORT_DATA_PAGE_IDS = {
   search: 'search',

@@ -11,9 +11,10 @@ import { BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { getAllBillsCached, getAllBillsCountCached } from '@/server/bills/bills.server';
+import ContentPaginationBarStickyWrapper from '@/components/layout/ContentPaginationBarStickyWrapper';
 
 import { isSearchParamsExist } from './bills.utils';
-import BillsActionBarClearAllFilters from './BillsActionBarClearAllFilters';
+import BillsTableHasParamsSection from './BillsTableHasParamsSection';
 import BillsTablePaginationPageSelect from './BillsTablePaginationPageSelect';
 import BillsTablePaginationPageCountSelect from './BillsTablePaginationPageCountSelect';
 
@@ -36,17 +37,10 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
   const hasSearchParams: boolean = isSearchParamsExist(searchParams);
 
   return (
-    <div className={ `sticky top-[7.2rem] z-20 flex w-full flex-row items-center justify-between bg-background py-2` }>
+    <ContentPaginationBarStickyWrapper>
       <div></div>
       <div className="flex flex-row items-center justify-end gap-x-4">
-        { hasSearchParams ?
-          <>
-            <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-              <BillsActionBarClearAllFilters />
-            </Suspense>
-            <Separator orientation="vertical" className="h-[1.2rem]!" />
-          </>
-        : null }
+        <BillsTableHasParamsSection searchParams={ searchParams } />
 
         <div className="h-9">
           <BillsTablePaginationPageCountSelect>
@@ -63,12 +57,8 @@ export default async function BillsTablePagination({ searchParamsPromise, pagina
           <BillsTablePaginationPageSelect pageCount={ totalPages } />
         </Suspense>
       </div>
-    </div>
+    </ContentPaginationBarStickyWrapper>
   );
-}
-
-function ActionBarButtonSkeleton() {
-  return <Skeleton className="h-9 w-[120px]" />;
 }
 
 function PaginationSkeleton() {

@@ -6,6 +6,6 @@ export const addNewFavoriteNameInputSchema = z.object({
 
 export const newFavoriteAddableSchema = z.object({
   favoriteName: z.string().trim().min(1, { message: 'Name is required' }),
-  entityType: z.enum(['SUBSCRIPTION', 'BILL_DUE']),
+  entityType: z.enum(['SUBSCRIPTION', 'BILL_DUE', 'SEARCH_QUERY']),
   entityId: z.string().trim().min(1, { message: 'Entity ID is required' }),
 });

@@ -9,8 +9,19 @@ export function getFilteredBillDuesByMonth(
   monthParams: string,
   yearParams: string,
 ): BillDueWithSubscription[] {
-  const monthInt: number = Number.parseInt(monthParams);
-  const yearInt: number = Number.parseInt(yearParams);
+  let monthInt: number = Number.parseInt(monthParams);
+  let yearInt: number = Number.parseInt(yearParams);
+
+  if (monthParams === 'current-month') {
+    const currentMonthLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('month');
+    monthInt = currentMonthLuxon.month;
+  } else if (monthParams === 'last-month') {
+    const lastMonthLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('month').minus({ months: 1 });
+    monthInt = lastMonthLuxon.month;
+  } else if (monthParams === 'next-month') {
+    const nextMonthLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('month').plus({ months: 1 });
+    monthInt = nextMonthLuxon.month;
+  }
 
   // use Luxon to get the start and end of the month
   const startMonthLuxon = DateTime.fromObject(

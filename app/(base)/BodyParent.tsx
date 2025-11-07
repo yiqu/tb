@@ -1,6 +1,6 @@
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -17,6 +17,7 @@ import { ScrollToTop } from '@/components/scroll-up/ScrollToTop';
 import VibeProviderWrapper from '@/providers/VibeProviderWrapper';
 import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider';
 import { getFontStylesheetHref, getVibeStylesheetHref } from '@/lib/vibes-css-map';
+import HistoryTrackerWrapper from '@/components/history-tracker/HistoryTrackerWrapper';
 import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server/settings/vibe-select';
 
 export default async function BodyParent({ children }: { children: React.ReactNode }) {
@@ -51,6 +52,7 @@ export default async function BodyParent({ children }: { children: React.ReactNo
         <AppTopLoader />
         <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
         <Preloads />
+        <HistoryTrackerWrapper />
         <VibeProviderWrapper>
           <AppRouterCacheProvider options={ { enableCssLayer: true } }>
             <MuiThemeProvider theme={ theme } defaultMode="light">
