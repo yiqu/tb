@@ -50,6 +50,8 @@ export const CACHE_TAG_SUBSCRIPTIONS_ALL = 'subscriptions-all';
 export const CACHE_TAG_SUBSCRIPTION_DETAILS = 'subscription-by-id-';
 export const CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR = 'subscription-bills-grouped-by-year-';
 
+export const CACHE_TAG_HISTORY_ENTRIES_ALL = 'history-entries-all';
+
 export const SORT_DATA_PAGE_IDS = {
   search: 'search',
   subscriptions: 'subscriptions',

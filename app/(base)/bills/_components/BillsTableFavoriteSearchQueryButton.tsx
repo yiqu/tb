@@ -8,12 +8,11 @@ import { VariantProps } from 'class-variance-authority';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { BillDueSearchParams } from '@/models/bills/bills.model';
+import { toggleFavoriteByUrl } from '@/server/favorites/favorites.server';
+import { FavoriteEntityResponseType } from '@/models/favorites/favorite.model';
 import { getFavoriteByUrlQueryOptions } from '@/server/favorites/query/favorites.query';
-import { FavoriteEntity, FavoriteEntityResponseType } from '@/models/favorites/favorite.model';
-import { toggleFavoriteByUrl, toggleFavoriteByBillDueId } from '@/server/favorites/favorites.server';
 import { TANSTACK_QUERY_QUERY_KEY_ID_GENERAL, TANSTACK_QUERY_QUERY_KEY_FAVORITE_DETAILS } from '@/constants/constants';
 
 interface Props {
@@ -26,7 +25,7 @@ export default function BillsTableFavoriteSearchQueryButton({ buttonProps, searc
   const {
     data: favoriteObjectByUrl,
     isLoading: isFavoriteLoading,
-    isError: isFavoriteError,
+    isError: _isFavoriteError,
   } = useQuery(getFavoriteByUrlQueryOptions(favoriteUrl));
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
@@ -40,7 +39,6 @@ export default function BillsTableFavoriteSearchQueryButton({ buttonProps, searc
     if (isPending) return;
 
     const favoriteUrl = `/bills?${new URLSearchParams(searchParams as Record<string, string>).toString()}`;
-    console.log('handleOnFavoriteToggle', isFavorited, favoriteUrl);
 
     startTransition(async () => {
       const nextValue: boolean = !isFavorited;
