@@ -46,7 +46,7 @@ export default function BillsActionBarFrequencyFilter() {
         onChange={ handleOnFrequencyChange }
         defaultValues={ selectedFrequency.frequency }
         multi={ true }
-        className="min-w-[12rem] bg-card"
+        className="min-w-48 bg-card"
         searchBy="label"
         badgeTextMaxLength={ 10 }
       />

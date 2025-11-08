@@ -68,7 +68,9 @@ export default function BillsTableFavoriteSearchQueryButton({ buttonProps, searc
     <Button
       variant="outline"
       size="icon"
-      className={ cn('', { 'border-2 border-yellow-600': isPending }) }
+      className={ cn('', {
+        'border-2 border-yellow-600': isPending,
+      }) }
       type="button"
       onClick={ handleOnFavoriteToggle.bind(null, optimisticIsFavorite) }
       title={ `${isFavorite ? 'Remove this search query from' : 'Add this search query to'} favorites` }

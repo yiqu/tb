@@ -14,7 +14,7 @@
     "build-debug-ppr": "next build --debug-prerender",
     "start": "next start",
     "lint": "next lint",
-    "prettier-check": "npx prettier --check app",
+    "prettier-check": "npx prettier --check .",
     "lint-check": "npx eslint . --ext js,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "push-prisma": "npx prisma db push",
     "update-prisma": "npx prisma generate",

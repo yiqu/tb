@@ -3,6 +3,8 @@
   "singleQuote": true,
   "experimentalTernaries": true,
   "printWidth": 140,
+  "arrowParens": "always",
+  "endOfLine": "crlf",
   "plugins": ["prettier-plugin-tailwindcss"],
   "tailwindStylesheet": "./app/(base)/tailwind-config.css",
   "tailwindFunctions": ["clsx", "cn", "cva"]

@@ -71,7 +71,7 @@ export default function BillsActionBarPaymentStatusFilter() {
     <div className="flex flex-row items-center justify-start gap-x-2">
       <div className="relative">
         <Select onValueChange={ handleOnStatusChange } value={ paymentStatus.paymentStatus ?? '' }>
-          <SelectTrigger className={ cn('min-w-[9rem] cursor-pointer bg-card font-medium select-none', isStatusValueSelected && `pr-7`) }>
+          <SelectTrigger className={ cn('min-w-36 cursor-pointer bg-card font-medium select-none', isStatusValueSelected && `pr-7`) }>
             <SelectValue placeholder="Payment status" />
           </SelectTrigger>
           <SelectContent>
