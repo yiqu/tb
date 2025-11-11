@@ -7,13 +7,13 @@ import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import Typography from '@/components/typography/Typography';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
-import { BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
-import { getAllBillsCached, getAllBillsCountCached } from '@/server/bills/bills.server';
+import { CurrentMonthDateData, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 import ContentPaginationBarStickyWrapper from '@/components/layout/ContentPaginationBarStickyWrapper';
+import { getAllBillsCached, getCurrentMonthDateData, getCurrentMonthBillsCountCached } from '@/server/bills/bills.server';
 
-import { isSearchParamsExist } from './bills.utils';
+import { isSearchParamsExist } from './dashboard.utils';
 import BillsTableHasParamsSection from './BillsTableHasParamsSection';
 import BillsTablePaginationPageSelect from './BillsTablePaginationPageSelect';
 import BillsTablePaginationPageCountSelect from './BillsTablePaginationPageCountSelect';
@@ -29,11 +29,14 @@ export default async function BillsTablePagination({
   paginationPromise,
   paginationBarStickyWrapperClassName,
 }: BillsTablePaginationProps) {
+  const dateData: CurrentMonthDateData = await getCurrentMonthDateData();
+  const dateParamsData: z.infer<typeof billSearchParamsSchema> = await dateData.dateSearchParamsPromise;
   const pagination: PaginationDataModel | null = await paginationPromise;
-  const searchParams: z.infer<typeof billSearchParamsSchema> = await searchParamsPromise;
-  const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
+  let searchParams: z.infer<typeof billSearchParamsSchema> = await searchParamsPromise;
+  searchParams = { ...dateParamsData, ...searchParams };
+  const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.dashboard_current_month);
   const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, pagination, searchParams);
-  const totalBillsCount: number = await getAllBillsCountCached();
+  const totalBillsCount: number = await getCurrentMonthBillsCountCached();
   const billsCount = billDues.totalBillsCount;
   const startIndex = billDues.startIndex + 1;
   const { endIndex } = billDues;

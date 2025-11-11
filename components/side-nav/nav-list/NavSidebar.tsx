@@ -35,7 +35,7 @@ export async function NavSidebar({ ...props }: React.ComponentProps<typeof Sideb
         <BillsGroup />
         <SubscriptionsGroup />
         <QueryGroup />
-        <Suspense fallback={ <NavSidebarSuspended title="New" /> }>
+        <Suspense fallback={ <NavSidebarAddsGroupSuspended /> }>
           <AddNewGroup />
         </Suspense>
         <Suspense fallback={ <NavSidebarSuspended title="Quick Access" /> }>
@@ -49,12 +49,24 @@ export async function NavSidebar({ ...props }: React.ComponentProps<typeof Sideb
   );
 }
 
+function NavSidebarAddsGroupSuspended() {
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>{ 'New' }</SidebarGroupLabel>
+      <SidebarMenu className="app-sidebar-menu gap-2">
+        <Skeleton className="relative left-2 h-24 w-[90%] rounded-xs" />
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+}
+
 function NavSidebarSuspended({ title }: { title: string }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{ title }</SidebarGroupLabel>
       <SidebarMenu className="app-sidebar-menu gap-2">
-        <Skeleton className="relative left-2 h-32 w-[90%] rounded-xs" />
+        <Skeleton className="relative left-2 h-52 w-[90%] rounded-xs" />
+        <Skeleton className="relative left-2 h-52 w-[90%] rounded-xs" />
       </SidebarMenu>
     </SidebarGroup>
   );

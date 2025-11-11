@@ -9,7 +9,12 @@ import { Prisma } from '@prisma/client';
 
 import prisma from '@/lib/prisma';
 import { SortDataModel, SortDataUpsertable } from '@/models/sort-data/SortData.model';
-import { CACHE_TAG_BILL_DUES_ALL, CACHE_TAG_SORT_DATA_PREFIX, CACHE_TAG_SUBSCRIPTIONS_ALL } from '@/constants/constants';
+import {
+  CACHE_TAG_BILL_DUES_ALL,
+  CACHE_TAG_SORT_DATA_PREFIX,
+  CACHE_TAG_SUBSCRIPTIONS_ALL,
+  CACHE_TAG_BILL_DUES_CURRENT_MONTH,
+} from '@/constants/constants';
 
 export const getSortDataForPageIdCached = cache(async (pageId: string) => {
   const res = await getSortDataForPageId(pageId);
@@ -48,6 +53,7 @@ export async function upsertSortData2(sortData: SortDataUpsertable): Promise<Sor
 
       updateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
       updateTag(CACHE_TAG_BILL_DUES_ALL);
+      updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH);
       updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
       return updatedSortData;
@@ -63,6 +69,7 @@ export async function upsertSortData2(sortData: SortDataUpsertable): Promise<Sor
       });
 
       updateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
+      updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH);
       updateTag(CACHE_TAG_BILL_DUES_ALL);
       updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 

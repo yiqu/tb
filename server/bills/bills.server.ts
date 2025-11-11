@@ -15,8 +15,14 @@ import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
-import { BillDue, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 import { billAddableSchema, billEditableSchema, billSearchParamsSchema, AutoSelectedDefaultStatus } from '@/validators/bills/bill.schema';
+import {
+  BillDue,
+  BillsForCurrentMonth,
+  CurrentMonthDateData,
+  BillDueWithSubscription,
+  BillDueWithSubscriptionAndSortData,
+} from '@/models/bills/bills.model';
 import {
   DEFAULT_PAGE_SIZE,
   SORT_DATA_PAGE_IDS,
@@ -24,6 +30,9 @@ import {
   CACHE_TAG_SUBSCRIPTIONS_ALL,
   CACHE_TAG_SUBSCRIPTION_DETAILS,
   CACHE_TAG_PAGINATION_DATA_PREFIX,
+  CACHE_TAG_BILL_DUES_CURRENT_MONTH,
+  CACHE_TAG_CURRENT_MONTH_DATE_DATA,
+  CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT,
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
@@ -61,6 +70,25 @@ export async function revalidateBillDue() {
 export async function revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId: string) {
   updateTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}${subscriptionId}`);
 }
+
+export async function revalidateBillsForCurrentMonth() {
+  updateTag(CACHE_TAG_CURRENT_MONTH_DATE_DATA);
+  // updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH);
+}
+
+export async function revalidateCurrentMonthBillsCount() {
+  updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT);
+}
+
+export const getCurrentMonthBillsCountCached = cache(async () => {
+  const res = await getCurrentMonthBillsCount();
+  return res;
+});
+
+export const getBillsForCurrentMonthCached = cache(async () => {
+  const res = await getBillsForCurrentMonth();
+  return res;
+});
 
 export const getAllBillsCached = cache(
   async (
@@ -303,6 +331,87 @@ export async function getAllBillsCount(): Promise<number> {
   }
 }
 
+export async function getCurrentMonthBillsCount(): Promise<number> {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT);
+
+  try {
+    const billDues: BillsForCurrentMonth = await getBillsForCurrentMonth();
+
+    return billDues.bills.length;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getCurrentMonthBillsCount(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving current month bill dues count. Code: ${error.code}`);
+  }
+}
+
+async function getBillsForCurrentMonth(): Promise<BillsForCurrentMonth> {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH);
+
+  const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+  const currentMonthStartLuxon = currentDateLuxon.startOf('month');
+  const endOfMonthLuxon = currentDateLuxon.endOf('month');
+  const monthName: string | null = DateTime.fromObject({ month: currentMonthStartLuxon.month }).monthLong;
+
+  try {
+    const allBillsDue: BillDueWithSubscription[] = await prisma.billDue.findMany({
+      include: {
+        favorites: true,
+        subscription: true,
+      },
+    });
+
+    const currentMonthBillsDue = allBillsDue.filter((billDue: BillDueWithSubscription) => {
+      const billDueDateInMillis = Number.parseInt(billDue.dueDate);
+      const currentMonthStartEpoch = currentMonthStartLuxon.toMillis();
+      const endOfMonthEpoch = endOfMonthLuxon.toMillis();
+      return billDueDateInMillis >= currentMonthStartEpoch && billDueDateInMillis <= endOfMonthEpoch;
+    });
+
+    return {
+      bills: currentMonthBillsDue,
+      month: currentMonthStartLuxon.month,
+      monthName,
+      startDate: currentMonthStartLuxon.toMillis(),
+      endDate: endOfMonthLuxon.toMillis(),
+    };
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getBillsForCurrentMonth(): ', JSON.stringify(error));
+    throw new Error(`Error getting bills for current month. Code: ${error.code}`);
+  }
+}
+
+export async function getCurrentMonthDateData(): Promise<CurrentMonthDateData> {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_CURRENT_MONTH_DATE_DATA);
+
+  const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+  const currentMonthStartLuxon = currentDateLuxon.startOf('month');
+  const endOfMonthLuxon = currentDateLuxon.endOf('month');
+  const monthName: string | null = DateTime.fromObject({ month: currentMonthStartLuxon.month }).monthLong;
+  const currentYear = currentDateLuxon.year;
+
+  const dateSearchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>> = new Promise((resolve) => {
+    resolve({
+      month: currentMonthStartLuxon.month.toString(),
+      year: currentYear.toString(),
+    });
+  });
+
+  return {
+    month: currentMonthStartLuxon.month,
+    monthName,
+    startDate: currentMonthStartLuxon.toMillis(),
+    endDate: endOfMonthLuxon.toMillis(),
+    currentYear,
+    dateSearchParamsPromise,
+  };
+}
+
 export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, subscriptionId: string): Promise<BillDue> {
   try {
     const billDue: BillDue = await prisma.billDue.update({
@@ -315,6 +424,7 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, su
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
     revalidateSubscriptions();
+    revalidateBillsForCurrentMonth();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -335,6 +445,7 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
     revalidateSubscriptions();
+    revalidateBillsForCurrentMonth();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -365,6 +476,7 @@ export async function updateBillDue(billDueId: string, data: z.infer<typeof bill
     revalidateSubscriptionDetailsBillsDueGroupedByYear(billDue.subscriptionId);
     revalidateSubscriptionDetails(billDue.subscriptionId);
     revalidateSubscriptions();
+    revalidateBillsForCurrentMonth();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -404,6 +516,7 @@ export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubsc
     revalidateSubscriptionDetailsBillsDueGroupedByYear(billDue.subscriptionId);
     revalidateSubscriptionDetails(billDue.subscriptionId);
     revalidateSubscriptions();
+    revalidateBillsForCurrentMonth();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -434,6 +547,7 @@ export async function addBillDue(subscriptionId: string, payload: z.infer<typeof
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
     revalidateSubscriptions();
+    revalidateBillsForCurrentMonth();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {

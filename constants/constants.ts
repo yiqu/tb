@@ -38,7 +38,11 @@ export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_UPDATE = 'subscription-details-u
 export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_CREATE = 'subscription-create';
 
 export const CACHE_TAG_BILL_DUES_ALL = 'bill-dues-all';
+export const CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT = 'bill-dues-current-month-count';
+export const CACHE_TAG_BILL_DUES_CURRENT_MONTH = 'bill-dues-current-month';
 export const CACHE_TAG_USER_ACHIEVEMENTS = 'user-achievements';
+
+export const CACHE_TAG_CURRENT_MONTH_DATE_DATA = 'current-month-date-data';
 
 export const CACHE_TAG_SORT_DATA_PREFIX = 'sort-data-page-';
 export const CACHE_TAG_PAGINATION_DATA_PREFIX = 'pagination-data-page-';
@@ -53,6 +57,7 @@ export const CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR = 'subscription-bills-
 export const CACHE_TAG_HISTORY_ENTRIES_ALL = 'history-entries-all';
 
 export const SORT_DATA_PAGE_IDS = {
+  dashboard_current_month: 'dashboard-current-month',
   search: 'search',
   subscriptions: 'subscriptions',
   outstanding: 'outstanding',

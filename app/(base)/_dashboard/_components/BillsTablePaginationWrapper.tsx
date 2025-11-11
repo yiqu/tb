@@ -18,7 +18,9 @@ export default function BillsTablePaginationWrapper({
   searchParams,
   paginationBarStickyWrapperClassName,
 }: BillsTablePaginationWrapperProps) {
-  const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
+  const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(
+    SORT_DATA_PAGE_IDS.dashboard_current_month,
+  );
 
   return (
     <Suspense fallback={ <BillsTablePaginationSkeleton /> }>

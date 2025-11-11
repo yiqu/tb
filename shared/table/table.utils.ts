@@ -258,6 +258,12 @@ export function getSubscriptionLogoUrl(subscriptionName: string) {
       logoDarkUrl = 'mongodb';
       break;
     }
+
+    case 'Education to Training Hours': {
+      logoLightUrl = 'edu';
+      logoDarkUrl = 'edu';
+      break;
+    }
   }
 
   return {

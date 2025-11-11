@@ -1,5 +1,11 @@
 import { ReactNode } from 'react';
 
-export default function ContentPaginationBarStickyWrapper({ children }: { children: ReactNode }) {
-  return <div className={ `sticky top-[100px] z-20 flex w-full flex-row items-center justify-between bg-background py-2` }>{ children }</div>;
+import { cn } from '@/lib/utils';
+
+export default function ContentPaginationBarStickyWrapper({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={ cn(`sticky top-[100px] z-20 flex w-full flex-row items-center justify-between bg-background py-2`, className) }>
+      { children }
+    </div>
+  );
 }

@@ -22,11 +22,7 @@ export const metadata: Metadata = {
   description: '',
 };
 
-export default async function BaseRootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function BaseRootLayout({ children }: LayoutProps<'/'>) {
   return (
     <>
       <ReactScan />

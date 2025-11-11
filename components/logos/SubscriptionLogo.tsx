@@ -124,6 +124,12 @@ export default function SubscriptionLogo({ subscriptionName, height = 100 }: Sub
       logoDarkUrl = 'mongodb';
       break;
     }
+
+    case 'Education to Training Hours': {
+      logoLightUrl = 'edu';
+      logoDarkUrl = 'edu';
+      break;
+    }
   }
   return (
     <>

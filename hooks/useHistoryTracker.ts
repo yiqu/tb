@@ -10,7 +10,8 @@ export default function useHistoryTracker() {
   const [_isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (pathName !== '/') {
+    if (pathName !== '/' && process.env.NODE_ENV === 'production') {
+      // only track if its production
       startTransition(async () => {
         const url: string = `${pathName}${searchParamsString ? `?${searchParamsString}` : ''}`;
         await addHistoryEntry(null, url);

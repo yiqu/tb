@@ -14,7 +14,7 @@ import HomeDashboardWrapper from './_dashboard/_components/HomeDashboardWrapper'
 const layoutMetadata = getLayoutMetadata('Home Dashboard', 'View and manage all your due bills with ease.');
 export const metadata: Metadata = layoutMetadata;
 
-export default function HomeDashboardPage({}: PageProps<'/'>) {
+export default function HomeDashboardPage({ searchParams }: PageProps<'/'>) {
   return (
     <div id="dashboard-page-parent">
       <LayoutParent>
@@ -30,7 +30,7 @@ export default function HomeDashboardPage({}: PageProps<'/'>) {
       <Separator />
       <LayoutChildrenParent>
         <LayoutWithGutter size="wider">
-          <HomeDashboardWrapper />
+          <HomeDashboardWrapper searchParamsPromise={ searchParams } />
         </LayoutWithGutter>
       </LayoutChildrenParent>
     </div>

@@ -1,6 +1,7 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { X } from 'lucide-react';
 import { Control } from 'react-hook-form';
+import * as SelectPrimitive from '@radix-ui/react-select';
 
 import { cn } from '@/lib/utils';
 import { FONT_CSS_CLASSNAME } from '@/lib/vibes-css-map';
@@ -27,6 +28,7 @@ interface HFSelectProps {
   startAdornment?: React.ReactNode;
   className?: string;
   formItemClassName?: string;
+  selectProps?: React.ComponentProps<typeof SelectPrimitive.Root>;
   onChanged?: (_value: string) => void;
 }
 
@@ -42,6 +44,7 @@ export default function HFSelect({
   startAdornment,
   className,
   formItemClassName,
+  selectProps,
   onChanged,
 }: HFSelectProps) {
   const hasOptions = options.length > 0;
@@ -71,7 +74,13 @@ export default function HFSelect({
               { startAdornment ?
                 <div className={ `pointer-events-none absolute top-0 left-0 flex h-full items-center pl-3` }>{ startAdornment }</div>
               : null }
-              <Select onValueChange={ handleOnValueChange } defaultValue={ field.value } value={ field.value } disabled={ disabled }>
+              <Select
+                onValueChange={ handleOnValueChange }
+                defaultValue={ field.value }
+                value={ field.value }
+                disabled={ disabled }
+                { ...selectProps }
+              >
                 <FormControl className="w-full">
                   <SelectTrigger
                     className={ cn('cursor-pointer', {

@@ -21,7 +21,7 @@ export default function BillsTablePaginationPageCountSelectList({
     await toast.promise(
       upsertPaginationData({
         id: pagination?.id ?? '',
-        pageId: SORT_DATA_PAGE_IDS.search,
+        pageId: SORT_DATA_PAGE_IDS.dashboard_current_month,
         pageSize: Number.parseInt(value),
       }),
       {
@@ -55,6 +55,10 @@ export default function BillsTablePaginationPageCountSelectList({
 
 const ITEM_PER_PAGE_OPTIONS = [
   {
+    label: '5',
+    value: '5',
+  },
+  {
     label: '10',
     value: '10',
   },
@@ -69,13 +73,5 @@ const ITEM_PER_PAGE_OPTIONS = [
   {
     label: '50',
     value: '50',
-  },
-  {
-    label: '100',
-    value: '100',
-  },
-  {
-    label: '200',
-    value: '200',
   },
 ];

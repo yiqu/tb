@@ -109,4 +109,21 @@ export interface BillsDueGroupedByYearObject {
   bills: BillDueWithSubscription[];
 }
 
+export interface BillsForCurrentMonth {
+  bills: BillDueWithSubscription[];
+  month: number;
+  monthName: string | null;
+  startDate: number;
+  endDate: number;
+}
+
+export type CurrentMonthDateData = {
+  month: number;
+  monthName: string | null;
+  startDate: number;
+  endDate: number;
+  currentYear: number;
+  dateSearchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
+};
+
 export type BillDueSearchParams = z.infer<typeof billSearchParamsSchema>;
