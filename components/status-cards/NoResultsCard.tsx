@@ -31,7 +31,7 @@ export default function NoResultsCard({
 }: NoResultsCardProps) {
   return (
     <DisplayCard
-      className={ cn(`w-[45rem] sec:w-[60rem] main:w-[80rem]`, {
+      className={ cn(`w-180 sec:w-[60rem] main:w-[80rem]`, {
         'border-0 bg-transparent shadow-none': blendBg,
       }) }
     >

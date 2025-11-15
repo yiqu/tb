@@ -57,6 +57,7 @@ export const billSearchParamsSchema = z.object({
   year: z.string().optional(),
   month: z.string().optional(),
   page: z.number().optional(),
+  selectedMonthYear: z.string().optional(),
 });
 
 export const newBillDueSchema = z.object({
@@ -68,3 +69,4 @@ export const newBillDueSchema = z.object({
 export const autoSelectedDefaultStatus = z.enum(['need-payment-or-reimbursement', 'future-include-today']);
 
 export type AutoSelectedDefaultStatus = z.infer<typeof autoSelectedDefaultStatus>;
+export type BillSearchParams = z.infer<typeof billSearchParamsSchema>;

@@ -2,39 +2,44 @@ import z from 'zod';
 import { Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import Typography from '@/components/typography/Typography';
-import { CurrentMonthDateData } from '@/models/bills/bills.model';
-import { getCurrentMonthDateData } from '@/server/bills/bills.server';
 import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { Card, CardTitle, CardAction, CardFooter, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
 import CurrentMonthText from './CurrentMonthText';
 import CurrentMonthBillsTable from './CurrentMonthBillsTable';
+import BillsActivityMonthSelect from './BillsActivityMonthSelect';
+import BillsTableClearMonthSelectionButton from './BillsTableClearMonthSelectionButton';
 
 type Props = {
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
 };
 
 export default function BillsCurrentMonth({ searchParamsPromise }: Props) {
-  const dateDataPromise: Promise<CurrentMonthDateData> = getCurrentMonthDateData();
-
   return (
     <div className="flex w-full flex-col gap-y-2">
-      <div className="flex flex-row items-center justify-start gap-x-1">
+      <div className="flex w-full flex-row items-center justify-between gap-x-1">
         <Suspense fallback={ <MonthTextLoading /> }>
-          <CurrentMonthText variant="h4" dateDataPromise={ dateDataPromise } />
+          <CurrentMonthText variant="h3" searchParamsPromise={ searchParamsPromise } />
         </Suspense>
-        <Typography variant="h4">Activities</Typography>
+        <div className="flex flex-row items-center justify-end gap-x-4">
+          <Suspense fallback={ <Skeleton className="h-8 w-29" /> }>
+            <BillsTableClearMonthSelectionButton searchParamsPromise={ searchParamsPromise } />
+          </Suspense>
+          <Suspense fallback={ <Skeleton className="h-9 w-121" /> }>
+            <BillsActivityMonthSelect searchParamsPromise={ searchParamsPromise } />
+          </Suspense>
+        </div>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Coming this month</CardTitle>
-          <CardDescription>View all the bills that are due this month.</CardDescription>
+          <CardTitle>Bills due this month</CardTitle>
+          <CardDescription>View, edit, and manage bills that are due this month.</CardDescription>
           <CardAction></CardAction>
         </CardHeader>
         <CardContent>
           <CurrentMonthBillsTable searchParamsPromise={ searchParamsPromise } />
         </CardContent>
+        <CardFooter className=""></CardFooter>
       </Card>
     </div>
   );

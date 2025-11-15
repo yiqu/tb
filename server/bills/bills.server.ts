@@ -18,6 +18,7 @@ import { PaginationDataModel } from '@/models/pagination-data/pagination-data.mo
 import { billAddableSchema, billEditableSchema, billSearchParamsSchema, AutoSelectedDefaultStatus } from '@/validators/bills/bill.schema';
 import {
   BillDue,
+  NavigationMonthData,
   BillsForCurrentMonth,
   CurrentMonthDateData,
   BillDueWithSubscription,
@@ -80,8 +81,8 @@ export async function revalidateCurrentMonthBillsCount() {
   updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT);
 }
 
-export const getCurrentMonthBillsCountCached = cache(async () => {
-  const res = await getCurrentMonthBillsCount();
+export const getCurrentMonthBillsCountCached = cache(async (month: string, year: string) => {
+  const res = await getCurrentMonthBillsCount(month, year);
   return res;
 });
 
@@ -128,11 +129,16 @@ export const getAllBillsCountCached = cache(async () => {
   return res;
 });
 
+export const getCurrentMonthDateDataCached = cache(async () => {
+  const res = await getCurrentMonthDateData();
+  return res;
+});
+
 export async function getAllBills(
   sortData: SortDataModel | null,
   paginationData: PaginationDataModel | null,
   searchParams?: z.infer<typeof billSearchParamsSchema>,
-  autoSelectedDefaultStatus?: AutoSelectedDefaultStatus,
+  autoSelectedDefaultStatus?: AutoSelectedDefaultStatus, // for outstanding and upcoming bills pages that have preselected status
 ): Promise<BillDueWithSubscriptionAndSortData> {
   'use cache';
   cacheLife('weeks');
@@ -305,6 +311,8 @@ export async function getAllBills(
       totalBillsCount: billDues.length,
       startIndex,
       endIndex,
+      yearParams,
+      monthParams,
     };
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllBills(): ', JSON.stringify(error));
@@ -331,15 +339,23 @@ export async function getAllBillsCount(): Promise<number> {
   }
 }
 
-export async function getCurrentMonthBillsCount(): Promise<number> {
+export async function getCurrentMonthBillsCount(month: string, year: string): Promise<number> {
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT);
 
   try {
-    const billDues: BillsForCurrentMonth = await getBillsForCurrentMonth();
+    const allBillsDue = await prisma.billDue.findMany({});
 
-    return billDues.bills.length;
+    const startDateLuxon = DateTime.fromObject({ month: Number.parseInt(month), year: Number.parseInt(year) }).startOf('month');
+    const endDateLuxon = startDateLuxon.endOf('month');
+
+    const filtered = allBillsDue.filter((billDue) => {
+      const dueDateNumber = Number.parseInt(billDue.dueDate);
+      return dueDateNumber >= startDateLuxon.toMillis() && dueDateNumber <= endDateLuxon.toMillis();
+    });
+
+    return filtered.length;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getCurrentMonthBillsCount(): ', JSON.stringify(error));
     throw new Error(`Error retrieving current month bill dues count. Code: ${error.code}`);
@@ -386,14 +402,18 @@ async function getBillsForCurrentMonth(): Promise<BillsForCurrentMonth> {
 
 export async function getCurrentMonthDateData(): Promise<CurrentMonthDateData> {
   'use cache';
-  cacheLife('weeks');
+  cacheLife('days');
   cacheTag(CACHE_TAG_CURRENT_MONTH_DATE_DATA);
 
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const currentMonthStartLuxon = currentDateLuxon.startOf('month');
   const endOfMonthLuxon = currentDateLuxon.endOf('month');
   const monthName: string | null = DateTime.fromObject({ month: currentMonthStartLuxon.month }).monthLong;
-  const currentYear = currentDateLuxon.year;
+  const currentYear: number = currentDateLuxon.year;
+  const currentMonth: number = currentMonthStartLuxon.month;
+
+  const nextMonthName = DateTime.fromObject({ month: currentMonthStartLuxon.month + 1 }).monthLong;
+  const previousMonthName = DateTime.fromObject({ month: currentMonthStartLuxon.month - 1 }).monthLong;
 
   const dateSearchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>> = new Promise((resolve) => {
     resolve({
@@ -405,10 +425,57 @@ export async function getCurrentMonthDateData(): Promise<CurrentMonthDateData> {
   return {
     month: currentMonthStartLuxon.month,
     monthName,
+    nextMonthName,
+    previousMonthName,
     startDate: currentMonthStartLuxon.toMillis(),
     endDate: endOfMonthLuxon.toMillis(),
     currentYear,
+    currentMonth,
     dateSearchParamsPromise,
+  };
+}
+
+export async function getNavigationMonthData(
+  currentMonth: number,
+  currentYear: number,
+  manuallySelectedMonthYear?: string,
+): Promise<NavigationMonthData> {
+  let cMonth = currentMonth;
+  let cYear = currentYear;
+
+  // MM/YYYY
+  if (manuallySelectedMonthYear) {
+    const [month, year] = manuallySelectedMonthYear.split('/');
+    cMonth = Number.parseInt(month);
+    cYear = Number.parseInt(year);
+  }
+
+  const currentDateLuxon: DateTime = DateTime.fromObject(
+    {
+      month: cMonth,
+      year: cYear,
+      day: 1,
+    },
+    { zone: EST_TIME_ZONE },
+  );
+
+  const previousMonthLuxon: DateTime = currentDateLuxon.minus({ months: 1 });
+  const nextMonthLuxon: DateTime = currentDateLuxon.plus({ months: 1 });
+
+  const isNextMonthTheCurrentMonth = nextMonthLuxon.month === currentMonth && nextMonthLuxon.year === currentYear;
+  const isPreviousMonthTheCurrentMonth = previousMonthLuxon.month === currentMonth && previousMonthLuxon.year === currentYear;
+
+  return {
+    previousYear: previousMonthLuxon.year,
+    previousMonth: previousMonthLuxon.month,
+    previousMonthName: previousMonthLuxon.monthLong,
+    nextYear: nextMonthLuxon.year,
+    nextMonth: nextMonthLuxon.month,
+    nextMonthName: nextMonthLuxon.monthLong,
+    currentMonth: cMonth,
+    currentMonthName: currentDateLuxon.monthLong,
+    isNextMonthTheCurrentMonth,
+    isPreviousMonthTheCurrentMonth,
   };
 }
 

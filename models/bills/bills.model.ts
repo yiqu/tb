@@ -85,6 +85,8 @@ export type BillDueWithSubscriptionAndSortData = {
   totalBillsCount: number;
   startIndex: number;
   endIndex: number;
+  yearParams: string | undefined;
+  monthParams: string | undefined;
 };
 
 export interface BillDueWithSubscription2 {
@@ -120,10 +122,26 @@ export interface BillsForCurrentMonth {
 export type CurrentMonthDateData = {
   month: number;
   monthName: string | null;
+  nextMonthName: string | null;
+  previousMonthName: string | null;
   startDate: number;
   endDate: number;
   currentYear: number;
+  currentMonth: number;
   dateSearchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
 };
+
+export type NavigationMonthData = {
+  nextMonth: number;
+  nextMonthName: string | null;
+  nextYear: number;
+  previousMonth: number;
+  previousMonthName: string | null;
+  previousYear: number;
+  currentMonth: number;
+  currentMonthName: string | null;
+  isNextMonthTheCurrentMonth: boolean;
+  isPreviousMonthTheCurrentMonth: boolean;
+}
 
 export type BillDueSearchParams = z.infer<typeof billSearchParamsSchema>;
