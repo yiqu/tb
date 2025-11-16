@@ -1,7 +1,6 @@
 'use client';
 
 import z from 'zod';
-import Link from 'next/link';
 import { DateTime } from 'luxon';
 import { use, useState } from 'react';
 
@@ -38,16 +37,9 @@ export default function CurrentMonthText({ searchParamsPromise, ...rest }: Props
 
   return (
     <>
-      <Link href={ `/` } prefetch>
-        <Typography { ...rest } onClick={ handleOnTitleClick }>
-          { selectedMonthYear } <span className="ml-1 text-muted-foreground">{ '' }</span>
-        </Typography>
-      </Link>
-      { titleClicked ?
-        <Typography>
-          { 'TBD' } -{ '>' } { 'TBD' }
-        </Typography>
-      : null }
+      <Typography { ...rest } onClick={ handleOnTitleClick }>
+        { selectedMonthYear } <span className="ml-1 text-muted-foreground">{ '' }</span>
+      </Typography>
     </>
   );
 }

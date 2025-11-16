@@ -87,6 +87,8 @@ export type BillDueWithSubscriptionAndSortData = {
   endIndex: number;
   yearParams: string | undefined;
   monthParams: string | undefined;
+  startDateEpoch: number;
+  endDateEpoch: number;
 };
 
 export interface BillDueWithSubscription2 {

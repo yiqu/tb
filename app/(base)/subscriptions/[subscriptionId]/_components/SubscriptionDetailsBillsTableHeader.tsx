@@ -16,7 +16,10 @@ export default function SubscriptionDetailsBillsTableHeader({ billDues, year }: 
   return (
     <div className="flex flex-row items-center justify-start gap-x-2">
       <Typography variant="h4">
-        { year }: Bills: { billDuesCount } | Total: { usdFormatter.format(billDuesTotalCost) }
+        { year }: Bills: { billDuesCount } | Total:
+      </Typography>
+      <Typography className="tabular-nums" variant="h4">
+        { usdFormatter.format(billDuesTotalCost) }
       </Typography>
     </div>
   );

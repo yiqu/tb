@@ -54,7 +54,7 @@ export default function BillsTableCell({
           two:gap-x-6
         ` }>
           <Link href={ `/bills/${billDue.id}` } prefetch={ true }>
-            <CenterUnderline label={ useFormatter.format(cost) } className="truncate" />
+            <CenterUnderline label={ useFormatter.format(cost) } className="truncate tabular-nums" />
           </Link>
           <div>
             { isFavorited ?

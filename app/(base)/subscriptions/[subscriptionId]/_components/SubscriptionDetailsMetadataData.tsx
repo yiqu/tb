@@ -55,7 +55,7 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
       </div>
       <div className="flex flex-col items-start justify-start gap-y-1">
         <Typography variant="label1">Default cost</Typography>
-        <Typography variant="labelvalue1" className="font-semibold">
+        <Typography variant="labelvalue1" className="font-semibold tabular-nums">
           { usdFormatter.format(subscription.cost) }
         </Typography>
       </div>
@@ -72,13 +72,18 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
                 .setZone(EST_TIME_ZONE)
                 .toLocaleString(DateTime.DATETIME_MED)}` }
               className={ `
-                flex cursor-pointer flex-row items-center justify-start gap-x-1 truncate rounded-md border-1 border-transparent p-1
+                flex cursor-pointer flex-row items-center justify-start gap-x-1 truncate rounded-md border border-transparent p-1
                 select-none
                 hover:border-border hover:bg-accent
               ` }
             >
               <DateDisplay date={ subscription.updatedAt } dateFormat="MM/dd/yy" clientLoadingClassName="h-[20px] w-[153px]" />
-              <DateRelativeDisplay time={ subscription.updatedAt } includeParenthesis clientLoadingClassName="h-[20px] w-[40px]" showClientLoading={ true } />
+              <DateRelativeDisplay
+                time={ subscription.updatedAt }
+                includeParenthesis
+                clientLoadingClassName="h-[20px] w-[40px]"
+                showClientLoading={ true }
+              />
             </div>
           </PopoverTrigger>
           <PopoverContent className="min-w-96">
@@ -97,7 +102,7 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
                 .setZone(EST_TIME_ZONE)
                 .toLocaleString(DateTime.DATETIME_MED)}` }
               className={ `
-                flex cursor-pointer flex-row items-center justify-start gap-x-1 truncate rounded-md border-1 border-transparent p-1
+                flex cursor-pointer flex-row items-center justify-start gap-x-1 truncate rounded-md border border-transparent p-1
                 select-none
                 hover:border-border hover:bg-accent
               ` }

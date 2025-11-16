@@ -1,8 +1,8 @@
 import z from 'zod';
 
-import { CardContent } from '@/components/ui/card';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
+import { CardFooter, CardContent } from '@/components/ui/card';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import NoResultsCard from '@/components/status-cards/NoResultsCard';
 import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
@@ -15,6 +15,7 @@ import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS } from '@/shared/table/table
 import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
 import OutstandingBillsTableParentRow from './OutstandingBillsTableParentRow';
+import DateRangeEpochButton from '../../_dashboard/_components/DateRangeEpochButton';
 
 interface OutstandingBillsTableParentProps {
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
@@ -37,8 +38,8 @@ export default async function OutstandingBillsTableParent({ searchParamsPromise,
   }
 
   return (
-    <DisplayCard className="w-full py-0">
-      <CardContent className="overflow-x-auto px-0">
+    <DisplayCard className="w-full pt-0">
+      <CardContent className="overflow-x-auto border-b px-0">
         <Table className={ `
           table-auto
           two:table-fixed
@@ -67,6 +68,12 @@ export default async function OutstandingBillsTableParent({ searchParamsPromise,
           </TableBody>
         </Table>
       </CardContent>
+      <CardFooter className="flex w-full flex-row items-center justify-between">
+        <div>
+          <DateRangeEpochButton billDuesData={ billDues } />
+        </div>
+        <div></div>
+      </CardFooter>
     </DisplayCard>
   );
 }

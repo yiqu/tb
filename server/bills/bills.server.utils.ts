@@ -8,7 +8,7 @@ export function getFilteredBillDuesByMonth(
   billDues: BillDueWithSubscription[],
   monthParams: string,
   yearParams: string,
-): BillDueWithSubscription[] {
+): [BillDueWithSubscription[], number, number] {
   let monthInt: number = Number.parseInt(monthParams);
   let yearInt: number = Number.parseInt(yearParams);
 
@@ -41,10 +41,13 @@ export function getFilteredBillDuesByMonth(
     return billDueDateEpoch >= startMonthEpoch && billDueDateEpoch <= endMonthEpoch;
   });
 
-  return result;
+  return [result, startMonthEpoch, endMonthEpoch];
 }
 
-export function getFilteredBillDuesByYear(billDues: BillDueWithSubscription[], yearParams: string): BillDueWithSubscription[] {
+export function getFilteredBillDuesByYear(
+  billDues: BillDueWithSubscription[],
+  yearParams: string,
+): [BillDueWithSubscription[], number, number] {
   const yearInt: number = Number.parseInt(yearParams);
 
   // use Luxon to get the start and end of the year
@@ -65,16 +68,23 @@ export function getFilteredBillDuesByYear(billDues: BillDueWithSubscription[], y
     return billDueDateEpoch >= startYearEpoch && billDueDateEpoch <= endYearEpoch;
   });
 
-  return result;
+  return [result, startYearEpoch, endYearEpoch];
 }
 
-export function getFilteredBillDuesBySpecialYear(billDues: BillDueWithSubscription[], yearParams: string): BillDueWithSubscription[] {
+export function getFilteredBillDuesBySpecialYear(
+  billDues: BillDueWithSubscription[],
+  yearParams: string,
+): [BillDueWithSubscription[], number, number] {
   const currentTimeLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const startOfTodayLuxon = currentTimeLuxon.startOf('day');
   const startOfTodayEpoch = startOfTodayLuxon.toMillis();
+  const endOfTodayLuxon = currentTimeLuxon.endOf('day');
+  const endOfTodayEpoch = endOfTodayLuxon.toMillis();
 
   const startOfCurrentYearLuxon = currentTimeLuxon.startOf('year');
+  const endOfCurrentYearLuxon = currentTimeLuxon.endOf('year');
   const startOfCurrentYearEpoch = startOfCurrentYearLuxon.toMillis();
+  const endOfCurrentYearEpoch = endOfCurrentYearLuxon.toMillis();
 
   if (yearParams === 'future-include-today') {
     const result: BillDueWithSubscription[] = billDues.filter((billDue: BillDueWithSubscription) => {
@@ -82,38 +92,38 @@ export function getFilteredBillDuesBySpecialYear(billDues: BillDueWithSubscripti
       return billDueDateEpoch >= startOfTodayEpoch;
     });
 
-    return result;
+    return [result, startOfTodayEpoch, 0];
   } else if (yearParams === 'past-include-today') {
     const result: BillDueWithSubscription[] = billDues.filter((billDue: BillDueWithSubscription) => {
       const billDueDateEpoch: number = Number.parseInt(billDue.dueDate);
-      return billDueDateEpoch <= startOfTodayEpoch;
+      return billDueDateEpoch <= endOfTodayEpoch;
     });
 
-    return result;
+    return [result, 0, endOfTodayEpoch];
   } else if (yearParams === 'future-include-current-year') {
     const result: BillDueWithSubscription[] = billDues.filter((billDue: BillDueWithSubscription) => {
       const billDueDateEpoch: number = Number.parseInt(billDue.dueDate);
       return billDueDateEpoch >= startOfCurrentYearEpoch;
     });
 
-    return result;
+    return [result, startOfCurrentYearEpoch, 0];
   } else if (yearParams === 'past-include-current-year') {
     const result: BillDueWithSubscription[] = billDues.filter((billDue: BillDueWithSubscription) => {
       const billDueDateEpoch: number = Number.parseInt(billDue.dueDate);
-      return billDueDateEpoch <= startOfCurrentYearEpoch;
+      return billDueDateEpoch <= endOfCurrentYearEpoch;
     });
 
-    return result;
+    return [result, 0, endOfCurrentYearEpoch];
   }
 
-  return [];
+  return [[], 0, 0];
 }
 
 export function getFilteredBillDuesBySpecialYearAndMonth(
   billDues: BillDueWithSubscription[],
   yearParams: string,
   monthParams: string,
-): BillDueWithSubscription[] {
+): [BillDueWithSubscription[], number, number] {
   // if its year string contains "future", find all bills that are in the future and within the selected month
   const currentTimeLuxon = DateTime.now().setZone(EST_TIME_ZONE);
 
@@ -130,7 +140,7 @@ export function getFilteredBillDuesBySpecialYearAndMonth(
         return billDueDateEpoch >= startOfTodayEpoch && billDueDateLuxon.month === monthInt;
       });
 
-      return result;
+      return [result, startOfTodayEpoch, 0];
     }
 
     if (yearParams.includes('include-current-year')) {
@@ -144,7 +154,7 @@ export function getFilteredBillDuesBySpecialYearAndMonth(
         return billDueDateEpoch >= startOfCurrentYearEpoch && billDueDateLuxon.month === monthInt;
       });
 
-      return result;
+      return [result, startOfCurrentYearEpoch, 0];
     }
   }
 
@@ -161,7 +171,7 @@ export function getFilteredBillDuesBySpecialYearAndMonth(
         return billDueDateEpoch <= startOfTodayEpoch && billDueDateLuxon.month === monthInt;
       });
 
-      return result;
+      return [result, 0, startOfTodayEpoch];
     }
 
     if (yearParams.includes('include-current-year')) {
@@ -175,11 +185,11 @@ export function getFilteredBillDuesBySpecialYearAndMonth(
         return billDueDateEpoch <= startOfCurrentYearEpoch && billDueDateLuxon.month === monthInt;
       });
 
-      return result;
+      return [result, 0, startOfCurrentYearEpoch];
     }
   }
 
-  return [];
+  return [[], 0, 0];
 }
 
 export function getSortedBillDues(billDues: BillDueWithSubscription[], sortData: SortDataModel): BillDueWithSubscription[] {

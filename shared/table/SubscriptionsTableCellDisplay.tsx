@@ -42,7 +42,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
           sec:gap-x-1
           two:gap-x-6
         ` }>
-          <Typography className="truncate">{ useFormatter.format(cost) }</Typography>
+          <Typography className="truncate tabular-nums">{ useFormatter.format(cost) }</Typography>
         </div>
       </TableCell>
     );

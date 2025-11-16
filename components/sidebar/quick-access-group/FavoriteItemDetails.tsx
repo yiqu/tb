@@ -293,7 +293,7 @@ function FavoriteDetailsContent({
             <Typography>Default Cost:</Typography>
           </div>
           <div className="col-span-2 flex justify-end text-wrap">
-            <Typography>{ usdFormatter.format(subscription.cost) }</Typography>
+            <Typography className="tabular-nums">{ usdFormatter.format(subscription.cost) }</Typography>
           </div>
         </div>
 

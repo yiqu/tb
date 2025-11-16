@@ -219,8 +219,14 @@ export async function getAllBills(
     const yearParams: string | undefined = searchParams?.year;
     const monthParams: string | undefined = searchParams?.month;
 
+    let startDateEpoch: number = 0;
+    let endDateEpoch: number = 0;
+
     if (autoSelectedDefaultStatus === 'future-include-today') {
-      billDues = getFilteredBillDuesBySpecialYear(billDues, 'future-include-today');
+      const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYear(billDues, 'future-include-today');
+      billDues = filteredBillDues;
+      startDateEpoch = startDateEpochLocal;
+      endDateEpoch = endDateEpochLocal;
     }
 
     if ((yearParams && yearParams.trim() !== '') || (monthParams && monthParams.trim() !== '')) {
@@ -231,24 +237,47 @@ export async function getAllBills(
 
       // both month and year are numbers
       if (isYearInt && doesMonthExist && doesYearExist && monthParams && yearParams) {
-        billDues = getFilteredBillDuesByMonth(billDues, monthParams, yearParams);
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(billDues, monthParams, yearParams);
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
       }
       // only year is a number
       else if (isYearInt && doesYearExist && yearParams) {
-        billDues = getFilteredBillDuesByYear(billDues, yearParams);
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByYear(billDues, yearParams);
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
       }
       // only month is selected, auto default year to current year
       else if (!doesYearExist && doesMonthExist && monthParams) {
         const currentYear: number = DateTime.now().setZone(EST_TIME_ZONE).year;
-        billDues = getFilteredBillDuesByMonth(billDues, monthParams, currentYear.toString());
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(
+          billDues,
+          monthParams,
+          currentYear.toString(),
+        );
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
       }
       // if the year is special scenario
       else if (doesYearExist && !isYearInt && !doesMonthExist) {
-        billDues = getFilteredBillDuesBySpecialYear(billDues, yearParams ?? '');
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYear(billDues, yearParams ?? '');
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
       }
       // if the year is special and month is selected
       else if (doesYearExist && !isYearInt && doesMonthExist) {
-        billDues = getFilteredBillDuesBySpecialYearAndMonth(billDues, yearParams ?? '', monthParams ?? '');
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYearAndMonth(
+          billDues,
+          yearParams ?? '',
+          monthParams ?? '',
+        );
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
       }
     }
 
@@ -313,6 +342,8 @@ export async function getAllBills(
       endIndex,
       yearParams,
       monthParams,
+      startDateEpoch,
+      endDateEpoch,
     };
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllBills(): ', JSON.stringify(error));
