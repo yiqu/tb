@@ -68,7 +68,7 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
   }
 
   return (
-    <DisplayCard className="w-full pt-0">
+    <DisplayCard className="w-full pt-0 shadow-none">
       <CardContent className="overflow-x-auto border-b px-0">
         <Table className={ `
           table-auto
