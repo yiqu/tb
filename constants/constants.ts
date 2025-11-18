@@ -38,6 +38,7 @@ export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_UPDATE = 'subscription-details-u
 export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_CREATE = 'subscription-create';
 
 export const CACHE_TAG_BILL_DUES_ALL = 'bill-dues-all';
+export const CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR = 'bill-dues-by-month-and-year';
 export const CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT = 'bill-dues-current-month-count';
 export const CACHE_TAG_BILL_DUES_CURRENT_MONTH = 'bill-dues-current-month';
 export const CACHE_TAG_USER_ACHIEVEMENTS = 'user-achievements';

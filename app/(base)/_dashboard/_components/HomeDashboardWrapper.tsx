@@ -13,9 +13,9 @@ type Props = {
 
 export default function HomeDashboardWrapper({ searchParamsPromise }: Props) {
   return (
-    <div className="flex w-full flex-col gap-y-2">
+    <div className="flex w-full flex-col gap-y-6">
       <DashboardDateTitle searchParamsPromise={ searchParamsPromise } />
-      <SummarySectionCards />
+      <SummarySectionCards searchParamsPromise={ searchParamsPromise } />
       <YearDueChartParent />
       <BillsCurrentMonth searchParamsPromise={ searchParamsPromise } />
     </div>

@@ -1,9 +1,19 @@
+import z from 'zod';
+import { Suspense } from 'react';
+
+import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
+
+import CardLoading from './summary-cards/CardLoading';
 import TotalDueYearCard from './summary-cards/TotalDueYearCard';
 import NextMonthDueCard from './summary-cards/NextMonthDueCard';
 import TotalDueMonthCard from './summary-cards/TotalDueMonthCard';
 import PreviousMonthDueCard from './summary-cards/PreviousMonthDueCard';
 
-export default function SummarySectionCards() {
+type Props = {
+  searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
+};
+
+export default function SummarySectionCards({ searchParamsPromise }: Props) {
   return (
     <div
       className={ `
@@ -14,7 +24,9 @@ export default function SummarySectionCards() {
         dark:*:data-[slot=card]:bg-card
       ` }
     >
-      <TotalDueMonthCard />
+      <Suspense fallback={ <CardLoading cardTitle="This Month" /> }>
+        <TotalDueMonthCard searchParamsPromise={ searchParamsPromise } />
+      </Suspense>
       <NextMonthDueCard />
       <PreviousMonthDueCard />
       <TotalDueYearCard />

@@ -1,6 +1,6 @@
 import ApiStatusButton from './ApiStatusButton';
 import TopNavWelcomeButton from './TopNavWelcomeButton';
-import ThemeToggleAnimatedButton from './ThemeToggleAnimatedButton';
+import ThemeToggleButtonParent from './ThemeToggleButtonParent';
 import ResourcesDropdownMenuButton from './ResourcesDropdownMenuButton';
 
 export default function TopNavRightActionButtons() {
@@ -9,7 +9,7 @@ export default function TopNavRightActionButtons() {
       <ApiStatusButton />
       <TopNavWelcomeButton />
       <ResourcesDropdownMenuButton />
-      <ThemeToggleAnimatedButton />
+      <ThemeToggleButtonParent />
     </div>
   );
 }

@@ -15,7 +15,7 @@ export default function TotalDueYearCard() {
             <Typography>Year</Typography>
           </div>
         </CardDescription>
-        <CardTitle className={ `text-2xl font-semibold tabular-nums` }>$1,250.00</CardTitle>
+        <CardTitle className={ `text-2xl font-semibold tabular-nums` }>$0</CardTitle>
         <CardAction>
           <Badge variant="outline">
             <TrendingUp />

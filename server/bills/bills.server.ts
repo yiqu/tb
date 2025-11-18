@@ -23,6 +23,7 @@ import {
   CurrentMonthDateData,
   BillDueWithSubscription,
   BillDueWithSubscriptionAndSortData,
+  BillDueWithSubscriptionByMonthAndYear,
 } from '@/models/bills/bills.model';
 import {
   DEFAULT_PAGE_SIZE,
@@ -33,6 +34,7 @@ import {
   CACHE_TAG_PAGINATION_DATA_PREFIX,
   CACHE_TAG_BILL_DUES_CURRENT_MONTH,
   CACHE_TAG_CURRENT_MONTH_DATE_DATA,
+  CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR,
   CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT,
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
@@ -131,6 +133,11 @@ export const getAllBillsCountCached = cache(async () => {
 
 export const getCurrentMonthDateDataCached = cache(async () => {
   const res = await getCurrentMonthDateData();
+  return res;
+});
+
+export const getAllBillsByMonthAndYearCached = cache(async (month: string | undefined, year: string | undefined) => {
+  const res = await getAllBillsByMonthAndYear(month, year);
   return res;
 });
 
@@ -351,6 +358,103 @@ export async function getAllBills(
   }
 }
 
+async function getAllBillsByMonthAndYear(
+  month: string | undefined,
+  year: string | undefined,
+): Promise<BillDueWithSubscriptionByMonthAndYear> {
+  'use cache';
+
+  // Due date related filters
+  const yearParams: string | undefined = year;
+  const monthParams: string | undefined = month;
+
+  cacheLife('weeks');
+  // TODO test this tag invalidation
+  cacheTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR, `${CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR}-${yearParams}-${monthParams}`);
+
+  try {
+    let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
+      include: {
+        subscription: true,
+        favorites: true,
+      },
+    });
+
+    let startDateEpoch: number = 0;
+    let endDateEpoch: number = 0;
+
+    if ((yearParams && yearParams.trim() !== '') || (monthParams && monthParams.trim() !== '')) {
+      const doesMonthExist: boolean = !!(monthParams && monthParams.trim() !== '');
+      const doesYearExist: boolean = !!(yearParams && yearParams.trim() !== '');
+
+      const isYearInt: boolean = isNumeric(yearParams);
+
+      // both month and year are numbers
+      if (isYearInt && doesMonthExist && doesYearExist && monthParams && yearParams) {
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(billDues, monthParams, yearParams);
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
+      }
+      // only year is a number
+      else if (isYearInt && doesYearExist && yearParams) {
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByYear(billDues, yearParams);
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
+      }
+      // only month is selected, auto default year to current year
+      else if (!doesYearExist && doesMonthExist && monthParams) {
+        const currentYear: number = DateTime.now().setZone(EST_TIME_ZONE).year;
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(
+          billDues,
+          monthParams,
+          currentYear.toString(),
+        );
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
+      }
+      // if the year is special scenario
+      else if (doesYearExist && !isYearInt && !doesMonthExist) {
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYear(billDues, yearParams ?? '');
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
+      }
+      // if the year is special and month is selected
+      else if (doesYearExist && !isYearInt && doesMonthExist) {
+        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYearAndMonth(
+          billDues,
+          yearParams ?? '',
+          monthParams ?? '',
+        );
+        billDues = filteredBillDues;
+        startDateEpoch = startDateEpochLocal;
+        endDateEpoch = endDateEpochLocal;
+      }
+    }
+
+    const totalBillsCost: number = billDues.reduce(
+      (acc, billDue) => acc + Number.parseFloat(`${billDue.cost ?? billDue.subscription.cost ?? 0}`),
+      0,
+    );
+
+    return {
+      billDues: billDues,
+      totalBillsCount: billDues.length,
+      yearParams,
+      monthParams,
+      startDateEpoch,
+      endDateEpoch,
+      totalBillsCost,
+    };
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getAllBillsByMonthAndYear(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving bill dues by month and year. Code: ${error.code}`);
+  }
+}
+
 export async function getAllBillsCount(): Promise<number> {
   'use cache';
   cacheLife('weeks');
@@ -433,7 +537,7 @@ async function getBillsForCurrentMonth(): Promise<BillsForCurrentMonth> {
 
 export async function getCurrentMonthDateData(): Promise<CurrentMonthDateData> {
   'use cache';
-  cacheLife('days');
+  cacheLife('minutes');
   cacheTag(CACHE_TAG_CURRENT_MONTH_DATE_DATA);
 
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
