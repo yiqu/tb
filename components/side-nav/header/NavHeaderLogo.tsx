@@ -2,28 +2,22 @@ import Image from 'next/image';
 
 const LOGO_SIZE = 40;
 
-export default function NavHeaderLogo({ size = LOGO_SIZE }: { size?: number }) {
+interface Props {
+  imageUrlLight?: string;
+  imageUrlDark?: string;
+  size?: number;
+}
+
+export default function NavHeaderLogo({
+  imageUrlLight = '/images/leaf.png',
+  imageUrlDark = '/images/leafnight.png',
+  size = LOGO_SIZE,
+}: Props) {
   return (
     <>
-      <Image
-        src="/images/leaf.png"
-        width={ size }
-        height={ size }
-        alt="logo"
-        className="shrink-0"
-        data-hide-on-theme="dark"
-        priority
-      />
+      <Image src={ imageUrlLight } width={ size } height={ size } alt="logo" className="shrink-0" data-hide-on-theme="dark" priority />
 
-      <Image
-        src="/images/leafnight.png"
-        width={ size }
-        height={ size }
-        alt="logo"
-        className="shrink-0"
-        data-hide-on-theme="light"
-        priority
-      />
+      <Image src={ imageUrlDark } width={ size } height={ size } alt="logo" className="shrink-0" data-hide-on-theme="light" priority />
     </>
   );
 }

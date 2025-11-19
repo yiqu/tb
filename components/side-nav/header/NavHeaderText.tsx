@@ -1,4 +1,3 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
 
 import { Suspense } from 'react';
@@ -15,7 +14,10 @@ export default function NavHeaderText() {
     <div className="relative h-8 w-full truncate">
       <div
         className={ cn(
-          `logo-text-color font-fun absolute top-1/2 left-0 w-full -translate-y-1/2 truncate text-[25px] transition-all duration-300 ease-out will-change-transform`,
+          `
+            logo-text-color font-fun absolute top-[55%] left-0 w-full -translate-y-1/2 truncate text-[25px] transition-all duration-300
+            ease-out will-change-transform
+          `,
           isSidebarCollapsed ? 'invisible translate-x-8 opacity-0' : `visible translate-x-0 opacity-100`,
         ) }
       >

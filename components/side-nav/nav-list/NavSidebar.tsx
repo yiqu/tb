@@ -22,7 +22,7 @@ import {
 import NavHeader from '../header/NavHeader';
 import { NavFooter } from '../footer/NavFooter';
 
-export async function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" { ...props } id="app-sidebar">
       <PreloadFunctionForApplication />
