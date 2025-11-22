@@ -1,5 +1,4 @@
 import z from 'zod';
-import { cacheLife } from 'next/cache';
 
 import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
@@ -17,9 +16,6 @@ interface Props {
 }
 
 export default async function CurrentMonthSubTextSection({ currentMonthData, searchParamsPromise, monthData }: Props) {
-  'use cache';
-  cacheLife('weeks');
-
   let searchParams: BillSearchParams = await searchParamsPromise;
   let monthToFetch = monthData.previousMonth;
   let yearToFetch = monthData.previousMonthYear;

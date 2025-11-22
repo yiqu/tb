@@ -1,5 +1,4 @@
 import z from 'zod';
-import { cacheLife } from 'next/cache';
 import { Minus, TrendingUp, TrendingDown } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -20,9 +19,6 @@ type Props = {
 };
 
 export default async function CardTrendPercent({ monthData, searchParamsPromise, currentMonthData }: Props) {
-  'use cache';
-  cacheLife('weeks');
-
   let searchParams: BillSearchParams = await searchParamsPromise;
   let monthToFetch = monthData.previousMonth;
   let yearToFetch = monthData.previousMonthYear;

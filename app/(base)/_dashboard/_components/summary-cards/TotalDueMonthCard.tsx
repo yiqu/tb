@@ -1,6 +1,5 @@
 import z from 'zod';
 import { Suspense } from 'react';
-import { cacheLife } from 'next/cache';
 import { SquareArrowDown } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -24,9 +23,6 @@ type Props = {
 };
 
 export default async function TotalDueMonthCard({ searchParamsPromise }: Props) {
-  'use cache';
-  cacheLife('weeks');
-
   // get the current month and year from server
   const dateData: CurrentMonthDateData = await getCurrentMonthDateDataCached();
   const dateParamsData: BillSearchParams = await dateData.dateSearchParamsPromise;
