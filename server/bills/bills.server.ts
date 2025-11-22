@@ -547,8 +547,15 @@ export async function getCurrentMonthDateData(): Promise<CurrentMonthDateData> {
   const currentYear: number = currentDateLuxon.year;
   const currentMonth: number = currentMonthStartLuxon.month;
 
+  const previousMonthLuxon: DateTime = currentMonthStartLuxon.minus({ months: 1 });
+  const nextMonthLuxon: DateTime = currentMonthStartLuxon.plus({ months: 1 });
   const nextMonthName = DateTime.fromObject({ month: currentMonthStartLuxon.month + 1 }).monthLong;
   const previousMonthName = DateTime.fromObject({ month: currentMonthStartLuxon.month - 1 }).monthLong;
+
+  const previousMonth = previousMonthLuxon.month;
+  const previousMonthYear = previousMonthLuxon.year;
+  const nextMonth = nextMonthLuxon.month;
+  const nextMonthYear = nextMonthLuxon.year;
 
   const dateSearchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>> = new Promise((resolve) => {
     resolve({
@@ -567,6 +574,10 @@ export async function getCurrentMonthDateData(): Promise<CurrentMonthDateData> {
     currentYear,
     currentMonth,
     dateSearchParamsPromise,
+    previousMonth,
+    previousMonthYear,
+    nextMonth,
+    nextMonthYear,
   };
 }
 

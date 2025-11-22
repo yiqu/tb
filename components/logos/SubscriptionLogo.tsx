@@ -5,7 +5,7 @@ interface SubscriptionLogoProps {
   height?: number;
 }
 
-export default function SubscriptionLogo({ subscriptionName, height = 100 }: SubscriptionLogoProps) {
+export function getSubscriptionLogoUrl(subscriptionName: string): { light: string; dark: string } {
   let logoLightUrl = 'renewal';
   let logoDarkUrl = 'renewal';
   const name = subscriptionName.trim();
@@ -131,27 +131,20 @@ export default function SubscriptionLogo({ subscriptionName, height = 100 }: Sub
       break;
     }
   }
+
+  return {
+    light: `/subs/${logoLightUrl}.png`,
+    dark: `/subs/${logoDarkUrl}.png`,
+  };
+}
+
+export default function SubscriptionLogo({ subscriptionName, height = 100 }: SubscriptionLogoProps): React.ReactNode {
+  const { light, dark } = getSubscriptionLogoUrl(subscriptionName);
   return (
     <>
-      <Image
-        src={ `/subs/${logoLightUrl}.png` }
-        width={ height }
-        height={ height }
-        alt="logo"
-        className="shrink-0"
-        data-hide-on-theme="dark"
-        priority
-      />
+      <Image src={ light } width={ height } height={ height } alt="logo" className="shrink-0" data-hide-on-theme="dark" priority />
 
-      <Image
-        src={ `/subs/${logoDarkUrl}.png` }
-        width={ height }
-        height={ height }
-        alt="logo"
-        className="shrink-0"
-        data-hide-on-theme="light"
-        priority
-      />
+      <Image src={ dark } width={ height } height={ height } alt="logo" className="shrink-0" data-hide-on-theme="light" priority />
     </>
   );
 }

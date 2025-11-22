@@ -1,5 +1,7 @@
 import z from 'zod';
+import { DateTime } from 'luxon';
 
+import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
 import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 
 //const paramsToIgnore = ['editBillId', 'month', 'year', 'page'];
@@ -50,4 +52,25 @@ export function appendMonthAndYearToSearchParams(searchParams: BillSearchParams,
   result = { ...searchParams, month: monthInt.toString(), year: yearInt.toString() };
 
   return result;
+}
+
+export function getPreviousMonthLuxon(month: number, year: number): DateTime {
+  return DateTime.fromObject({ month, year }).minus({ months: 1 });
+}
+
+export function getPercentIncreasedByPreviousMonth(
+  currentMonthData: BillDueWithSubscriptionByMonthAndYear,
+  previousMonthData: BillDueWithSubscriptionByMonthAndYear,
+): number {
+  if (currentMonthData.totalBillsCost === 0 && previousMonthData.totalBillsCost === 0) {
+    return 0;
+  }
+
+  if (previousMonthData.totalBillsCost === 0) {
+    return -1;
+  }
+
+  const increasePercentInt = (currentMonthData.totalBillsCost - previousMonthData.totalBillsCost) / previousMonthData.totalBillsCost;
+
+  return increasePercentInt;
 }

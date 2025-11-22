@@ -141,6 +141,10 @@ export type CurrentMonthDateData = {
   currentYear: number;
   currentMonth: number;
   dateSearchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
+  previousMonth: number;
+  nextMonth: number;
+  previousMonthYear: number;
+  nextMonthYear: number;
 };
 
 export type NavigationMonthData = {

@@ -1,7 +1,10 @@
 import z from 'zod';
-import { TrendingUp, SquareArrowDown } from 'lucide-react';
+import { Suspense } from 'react';
+import { cacheLife } from 'next/cache';
+import { SquareArrowDown } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getUSDFormatter } from '@/lib/number.utils';
 import DisplayCard from '@/shared/components/DisplayCard';
 import Typography from '@/components/typography/Typography';
@@ -10,7 +13,9 @@ import { CardTitle, CardAction, CardFooter, CardHeader, CardDescription } from '
 import { CurrentMonthDateData, BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
 import { getCurrentMonthDateDataCached, getAllBillsByMonthAndYearCached } from '@/server/bills/bills.server';
 
+import CardTrendPercent from './CardTrendPercent';
 import { appendMonthAndYearToSearchParams } from '../dashboard.utils';
+import CurrentMonthSubTextSection from './CurrentMonthSubTextSection';
 
 const usdFormatter = getUSDFormatter();
 
@@ -19,6 +24,9 @@ type Props = {
 };
 
 export default async function TotalDueMonthCard({ searchParamsPromise }: Props) {
+  'use cache';
+  cacheLife('weeks');
+
   // get the current month and year from server
   const dateData: CurrentMonthDateData = await getCurrentMonthDateDataCached();
   const dateParamsData: BillSearchParams = await dateData.dateSearchParamsPromise;
@@ -32,8 +40,6 @@ export default async function TotalDueMonthCard({ searchParamsPromise }: Props) 
     searchParams.year,
   );
 
-  console.log(currentMonthData);
-
   return (
     <DisplayCard className="@container/card">
       <CardHeader>
@@ -45,18 +51,28 @@ export default async function TotalDueMonthCard({ searchParamsPromise }: Props) 
         </CardDescription>
         <CardTitle className={ `text-2xl font-semibold tabular-nums` }>{ usdFormatter.format(currentMonthData.totalBillsCost) }</CardTitle>
         <CardAction>
-          <Badge variant="outline">
-            <TrendingUp />
-            +12.5%
-          </Badge>
+          <Suspense fallback={ <TrendBadgeLoading /> }>
+            <CardTrendPercent monthData={ dateData } searchParamsPromise={ searchParamsPromise } currentMonthData={ currentMonthData } />
+          </Suspense>
         </CardAction>
       </CardHeader>
       <CardFooter className="flex-col items-start gap-1.5 text-sm">
-        <div className="line-clamp-1 flex gap-2 font-medium">
-          Trending up this month <TrendingUp className="size-4" />
-        </div>
-        <div className="text-muted-foreground">Visitors for the last 6 months</div>
+        <Suspense fallback={ <SubTextLoading /> }>
+          <CurrentMonthSubTextSection monthData={ dateData } searchParamsPromise={ searchParamsPromise } currentMonthData={ currentMonthData } />
+        </Suspense>
       </CardFooter>
     </DisplayCard>
   );
+}
+
+function TrendBadgeLoading() {
+  return (
+    <Badge variant="outline">
+      <Skeleton className="h-4 w-[50px]" />
+    </Badge>
+  );
+}
+
+function SubTextLoading() {
+  return <Skeleton className="h-11.5 w-full" />;
 }

@@ -31,20 +31,20 @@ import { cn } from '@/lib/utils';
 // extrabold = 800
 // black = 900
 
-const typographyVariants = cva('scroll-m-20 tracking-tight', {
+const typographyVariants = cva('scroll-m-20', {
   variants: {
     variant: {
-      h1: `text-4xl leading-10 font-semibold tracking-normal`,
-      h2: 'text-3xl leading-9 font-semibold tracking-normal',
-      h3: 'text-2xl leading-8 font-semibold tracking-normal',
+      h1: `text-4xl leading-10 font-semibold tracking-tight`,
+      h2: 'text-3xl leading-9 font-semibold tracking-tight',
+      h3: 'text-2xl leading-8 font-semibold tracking-tight',
       h4: 'text-xl leading-7 font-semibold tracking-normal',
       h5: 'text-lg leading-7 font-semibold tracking-normal',
       h6: 'text-base leading-6 font-semibold tracking-normal',
 
       p: `text-[0.875rem] leading-5 tracking-normal [&:not(:first-child)]:mt-6`,
 
-      caption0: `text-[0.65rem] leading-[0.9rem] tracking-normal text-gray-500 dark:text-gray-300`,
-      caption1: `text-[0.75rem] leading-4 tracking-normal text-gray-500 dark:text-gray-300`,
+      caption0: `text-[0.65rem] leading-[0.9rem] tracking-wide text-gray-500 dark:text-gray-300`,
+      caption1: `text-[0.75rem] leading-4 tracking-wide text-gray-500 dark:text-gray-300`,
       caption2: `text-[0.85rem] leading-5 tracking-normal text-gray-500 dark:text-gray-300`,
 
       body0: `text-[0.75rem] leading-4 tracking-normal`,
@@ -59,7 +59,7 @@ const typographyVariants = cva('scroll-m-20 tracking-tight', {
       nodata1: `text-[0.875rem] leading-5 tracking-normal text-gray-300 italic`,
       nodata2: `text-[1rem] leading-6 tracking-normal text-gray-300 italic`,
 
-      label0: `text-[0.75rem] leading-4 tracking-normal text-gray-600 dark:text-gray-300`,
+      label0: `text-[0.75rem] leading-4 tracking-wide text-gray-600 dark:text-gray-300`,
       label1: `text-[0.875rem] leading-5 tracking-normal text-gray-600 dark:text-gray-300`,
       label2: `text-[1rem] leading-6 tracking-normal text-gray-600 dark:text-gray-300`,
 
