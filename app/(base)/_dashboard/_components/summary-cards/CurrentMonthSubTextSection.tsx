@@ -1,5 +1,6 @@
 import z from 'zod';
 
+import { getUSDFormatter } from '@/lib/number.utils';
 import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
 import { getAllBillsByMonthAndYearCached } from '@/server/bills/bills.server';
@@ -9,6 +10,7 @@ import { CurrentMonthDateData, BillDueWithSubscriptionByMonthAndYear } from '@/m
 
 import { getPreviousMonthLuxon } from '../dashboard.utils';
 
+const usdFormatter = getUSDFormatter();
 interface Props {
   currentMonthData: BillDueWithSubscriptionByMonthAndYear;
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
@@ -32,14 +34,15 @@ export default async function CurrentMonthSubTextSection({ currentMonthData, sea
     yearToFetch.toString(),
   );
 
+  const isMonthSameAsPreviousMonth: boolean = currentMonthData.totalBillsCost === previousMonthData.totalBillsCost;
   const isThisMonthMoreThanPreviousMonth = currentMonthData.totalBillsCost > previousMonthData.totalBillsCost;
-  const monthDifference = Math.abs(currentMonthData.totalBillsCost - previousMonthData.totalBillsCost);
-  console.log(currentMonthData);
+  const monthDifference: number = Math.abs(currentMonthData.totalBillsCost - previousMonthData.totalBillsCost);
+
   return (
-    <div className="flex w-full flex-col justify-start gap-y-1">
+    <div className="flex w-full flex-col justify-start gap-y-2">
       <div className="flex flex-row flex-wrap items-center justify-start gap-x-2">
         <div className="flex flex-row items-center justify-start gap-x-1">
-          <Typography>Selected Month:</Typography>
+          <Typography className="w-[84px]">Bills:</Typography>
           <Typography className="font-semibold tabular-nums" variant="body2">
             { currentMonthData.totalBillsCount }
           </Typography>
@@ -68,7 +71,7 @@ export default async function CurrentMonthSubTextSection({ currentMonthData, sea
 
       <div className="flex flex-row flex-wrap items-center justify-start gap-x-2">
         <div className="flex flex-row items-center justify-start gap-x-1">
-          <Typography>Previous Month:</Typography>
+          <Typography className="w-[84px]">Previous Bills:</Typography>
           <Typography className="font-semibold tabular-nums" variant="body2">
             { previousMonthData.totalBillsCount }
           </Typography>
@@ -92,7 +95,23 @@ export default async function CurrentMonthSubTextSection({ currentMonthData, sea
                 </div>
               );
             }) }
+          <Typography className="ml-1 font-semibold tabular-nums">({ usdFormatter.format(previousMonthData.totalBillsCost) })</Typography>
         </div>
+      </div>
+
+      <div>
+        { isMonthSameAsPreviousMonth ?
+          <Typography>
+            Bills cost is the <span className="font-semibold">same</span> as previous month.
+          </Typography>
+        : <Typography>
+          Bills cost{ ' ' }
+          <span className="font-semibold tabular-nums">
+            { isThisMonthMoreThanPreviousMonth ? 'increased' : 'decreased' } by { usdFormatter.format(monthDifference) }
+          </span>{ ' ' }
+          compared to previous month.
+        </Typography>
+        }
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { use, useState } from 'react';
 
 import useIsClient from '@/hooks/useIsClient';
 import { Skeleton } from '@/components/ui/skeleton';
-import { EST_TIME_ZONE } from '@/lib/general.utils';
+import { MONTH_NAMES, EST_TIME_ZONE } from '@/lib/general.utils';
 import Typography, { TypographyProps } from '@/components/typography/Typography';
 import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 
@@ -22,8 +22,9 @@ export default function CurrentMonthText({ searchParamsPromise, ...rest }: Props
   const currentMonthName = currentDateLuxon.month;
   const currentYear = currentDateLuxon.year;
   const selectedMonthYear: string = searchParams.selectedMonthYear ?? `${currentMonthName}/${currentYear}`;
+  const monthNumber: string = selectedMonthYear.split('/')[0];
 
-  const [titleClicked, setTitleClicked] = useState(false);
+  const [_titleClicked, setTitleClicked] = useState(false);
 
   const handleOnTitleClick = () => {
     setTitleClicked((prev) => {
@@ -38,7 +39,7 @@ export default function CurrentMonthText({ searchParamsPromise, ...rest }: Props
   return (
     <>
       <Typography { ...rest } onClick={ handleOnTitleClick }>
-        { selectedMonthYear } <span className="ml-1 text-muted-foreground">{ '' }</span>
+        { MONTH_NAMES[Number.parseInt(monthNumber) - 1] } <span className="ml-1 text-muted-foreground">({ selectedMonthYear })</span>
       </Typography>
     </>
   );

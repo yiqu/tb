@@ -42,20 +42,19 @@ export function isMonthSelectionSearchParamsExist(searchParams: z.infer<typeof b
 }
 
 export function appendMonthAndYearToSearchParams(searchParams: BillSearchParams, dateParamsData: BillSearchParams) {
-  let result: BillSearchParams = searchParams;
+  // use server month and year if searchParams are not set
   const selectedMonthYear: string = searchParams.selectedMonthYear ?? `${dateParamsData.month}/${dateParamsData.year}`;
+  // extract month and year
   const [month, year] = selectedMonthYear.split('/');
-
-  const monthInt: number = Number.parseInt(month);
-  const yearInt: number = Number.parseInt(year);
-
-  result = { ...searchParams, month: monthInt.toString(), year: yearInt.toString() };
-
-  return result;
+  return { ...searchParams, month: Number.parseInt(month).toString(), year: Number.parseInt(year).toString() };
 }
 
 export function getPreviousMonthLuxon(month: number, year: number): DateTime {
   return DateTime.fromObject({ month, year }).minus({ months: 1 });
+}
+
+export function getNextMonthLuxon(month: number, year: number): DateTime {
+  return DateTime.fromObject({ month, year }).plus({ months: 1 });
 }
 
 export function getPercentIncreasedByPreviousMonth(

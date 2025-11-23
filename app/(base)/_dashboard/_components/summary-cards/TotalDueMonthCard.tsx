@@ -42,7 +42,9 @@ export default async function TotalDueMonthCard({ searchParamsPromise }: Props) 
         <CardDescription>
           <div className="flex flex-row items-center justify-start gap-x-2">
             <SquareArrowDown className="size-5" />
-            <Typography>This Month</Typography>
+            <Typography>
+              Month: { currentMonthData.monthParams }/{ currentMonthData.yearParams }
+            </Typography>
           </div>
         </CardDescription>
         <CardTitle className={ `text-2xl font-semibold tabular-nums` }>{ usdFormatter.format(currentMonthData.totalBillsCost) }</CardTitle>

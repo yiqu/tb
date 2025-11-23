@@ -50,7 +50,7 @@ export default async function CardTrendPercent({ monthData, searchParamsPromise,
           dark:text-red-500
         ` } />
       : <Minus /> }
-      <Typography variant="body0" className="tracking-wide">
+      <Typography variant="body0" className="tracking-wide tabular-nums">
         { percentFormatter.format(percentIncreased) }
       </Typography>
     </Badge>

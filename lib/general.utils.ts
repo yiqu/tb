@@ -107,7 +107,7 @@ export function getMonthNameByParam(monthNumber: string): string {
   return MONTH_NAMES[+currentMonthString - 1];
 }
 
-const MONTH_NAMES = [
+export const MONTH_NAMES = [
   'January',
   'February',
   'March',
