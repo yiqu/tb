@@ -1,5 +1,4 @@
 import z from 'zod';
-import { DateTime } from 'luxon';
 import { Suspense } from 'react';
 import { SquareArrowRight } from 'lucide-react';
 
@@ -8,14 +7,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getUSDFormatter } from '@/lib/number.utils';
 import DisplayCard from '@/shared/components/DisplayCard';
 import Typography from '@/components/typography/Typography';
+import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
+import { getAllBillsByMonthAndYearParamsCached } from '@/server/bills/bills.server';
 import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
-import { CardTitle, CardAction, CardFooter, CardHeader, CardDescription } from '@/components/ui/card';
-import { CurrentMonthDateData, BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
-import { getCurrentMonthDateDataCached, getAllBillsByMonthAndYearCached } from '@/server/bills/bills.server';
+import { CardTitle, CardAction, CardFooter, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
-import CardTrendPercent from './CardTrendPercent';
+import NextMonthFooterSection from './NextMonthFooterSection';
 import NextMonthSubTextSection from './NextMonthSubTextSection';
-import { getNextMonthLuxon, appendMonthAndYearToSearchParams } from '../dashboard.utils';
 
 const usdFormatter = getUSDFormatter();
 
@@ -24,41 +22,19 @@ type Props = {
 };
 
 export default async function NextMonthDueCard({ searchParamsPromise }: Props) {
-  // get the current month and year from server
-  const dateData: CurrentMonthDateData = await getCurrentMonthDateDataCached();
-  const dateParamsData: BillSearchParams = await dateData.dateSearchParamsPromise;
-  let { nextMonth, nextMonthYear } = dateData;
-
-  // use server month and year if searchParams are not set
   let searchParams: BillSearchParams = await searchParamsPromise;
-  searchParams = appendMonthAndYearToSearchParams(searchParams, dateParamsData);
-  const monthYearParams: string | undefined = searchParams.selectedMonthYear;
-
-  if (monthYearParams) {
-    const [month, year] = monthYearParams.split('/');
-    const nextMonthLuxon: DateTime = getNextMonthLuxon(Number.parseInt(month), Number.parseInt(year));
-    nextMonth = nextMonthLuxon.month;
-    nextMonthYear = nextMonthLuxon.year;
-  }
-
-  const nextMonthData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByMonthAndYearCached(
-    nextMonth.toString(),
-    nextMonthYear.toString(),
-  );
-
-  const currentMonthData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByMonthAndYearCached(
-    searchParams.month,
-    searchParams.year,
-  );
+  const { selectedMonthYear } = searchParams; // e.g. 11/2025 or undefined
+  const currentMonthData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByMonthAndYearParamsCached(selectedMonthYear);
+  const nextMonthData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByMonthAndYearParamsCached(selectedMonthYear, 1);
 
   return (
-    <DisplayCard className="@container/card">
+    <DisplayCard className="@container/card flex flex-col">
       <CardHeader>
         <CardDescription>
           <div className="flex flex-row items-center justify-start gap-x-2">
             <SquareArrowRight className="size-5" />
             <Typography>
-              Next Month: { nextMonth }/{ nextMonthYear }
+              Next Month: { nextMonthData.monthParams }/{ nextMonthData.yearParams }
             </Typography>
           </div>
         </CardDescription>
@@ -69,9 +45,14 @@ export default async function NextMonthDueCard({ searchParamsPromise }: Props) {
           </Suspense>
         </CardAction>
       </CardHeader>
-      <CardFooter className="flex-col items-start gap-1.5 text-sm">
+      <CardContent className="grow">
         <Suspense fallback={ <SubTextLoading /> }>
-          <NextMonthSubTextSection monthData={ dateData } searchParamsPromise={ searchParamsPromise } currentMonthData={ currentMonthData } />
+          <NextMonthSubTextSection selectedMonthYear={ selectedMonthYear } currentMonthData={ currentMonthData } />
+        </Suspense>
+      </CardContent>
+      <CardFooter className="">
+        <Suspense fallback={ <SubTextLoading /> }>
+          <NextMonthFooterSection selectedMonthYear={ selectedMonthYear } currentMonthData={ currentMonthData } />
         </Suspense>
       </CardFooter>
     </DisplayCard>

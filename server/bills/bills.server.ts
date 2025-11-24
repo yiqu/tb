@@ -141,6 +141,11 @@ export const getAllBillsByMonthAndYearCached = cache(async (month: string | unde
   return res;
 });
 
+export const getAllBillsByMonthAndYearParamsCached = cache(async (params: string | undefined, monthOffset?: number) => {
+  const res = await getAllBillsByMonthAndYearParams(params, monthOffset);
+  return res;
+});
+
 export async function getAllBills(
   sortData: SortDataModel | null,
   paginationData: PaginationDataModel | null,
@@ -452,6 +457,84 @@ async function getAllBillsByMonthAndYear(
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllBillsByMonthAndYear(): ', JSON.stringify(error));
     throw new Error(`Error retrieving bill dues by month and year. Code: ${error.code}`);
+  }
+}
+
+async function getAllBillsByMonthAndYearParams(
+  params: string | undefined,
+  monthOffset?: number,
+): Promise<BillDueWithSubscriptionByMonthAndYear> {
+  'use cache';
+
+  let currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+  let currentYear: number = currentDateLuxon.year;
+  let currentMonth: number = currentDateLuxon.month;
+
+  let monthYearTag = `${currentMonth}-${currentYear}`;
+
+  if (params) {
+    const dateArray = params.split('/');
+    const month: number = Number.parseInt(dateArray[0] ?? currentMonth.toString());
+    const year: number = Number.parseInt(dateArray[1] ?? currentYear.toString());
+    currentMonth = month;
+    currentYear = year;
+    currentDateLuxon = DateTime.fromObject({ month: currentMonth, year: currentYear }).setZone(EST_TIME_ZONE);
+    monthYearTag = `${month}-${year}`;
+  }
+
+  if (monthOffset !== undefined) {
+    if (monthOffset > 0) {
+      currentDateLuxon = currentDateLuxon.plus({ months: Math.abs(monthOffset) });
+    } else if (monthOffset < 0) {
+      currentDateLuxon = currentDateLuxon.minus({ months: Math.abs(monthOffset) });
+    }
+    currentMonth = currentDateLuxon.month;
+    currentYear = currentDateLuxon.year;
+  }
+
+  cacheLife('weeks');
+  // TODO test this tag invalidation
+  cacheTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR, `${CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR}-${monthYearTag}`);
+
+  try {
+    let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
+      include: {
+        subscription: true,
+        favorites: true,
+      },
+    });
+
+    let startDateEpoch: number = 0;
+    let endDateEpoch: number = 0;
+
+    // both month and year are numbers
+    const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(
+      billDues,
+      currentMonth.toString(),
+      currentYear.toString(),
+    );
+
+    billDues = filteredBillDues;
+    startDateEpoch = startDateEpochLocal;
+    endDateEpoch = endDateEpochLocal;
+
+    const totalBillsCost: number = billDues.reduce(
+      (acc, billDue) => acc + Number.parseFloat(`${billDue.cost ?? billDue.subscription.cost ?? 0}`),
+      0,
+    );
+
+    return {
+      billDues: billDues,
+      totalBillsCount: billDues.length,
+      yearParams: currentYear.toString(),
+      monthParams: currentMonth.toString(),
+      startDateEpoch,
+      endDateEpoch,
+      totalBillsCost,
+    };
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getAllBillsByMonthAndYearParams(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving bill dues by month and year params. Code: ${error.code}`);
   }
 }
 

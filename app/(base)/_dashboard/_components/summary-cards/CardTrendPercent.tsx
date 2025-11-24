@@ -1,40 +1,22 @@
-import z from 'zod';
 import { Minus, TrendingUp, TrendingDown } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { getPercentFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
-import { getAllBillsByMonthAndYearCached } from '@/server/bills/bills.server';
-import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
-import { CurrentMonthDateData, BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
+import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
+import { getAllBillsByMonthAndYearParamsCached } from '@/server/bills/bills.server';
 
-import { getPreviousMonthLuxon, getPercentIncreasedByPreviousMonth } from '../dashboard.utils';
+import { getPercentIncreasedByPreviousMonth } from '../dashboard.utils';
 
 const percentFormatter = getPercentFormatter();
 
 type Props = {
-  monthData: CurrentMonthDateData;
-  searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
   currentMonthData: BillDueWithSubscriptionByMonthAndYear;
+  selectedMonthYear: string | undefined;
 };
 
-export default async function CardTrendPercent({ monthData, searchParamsPromise, currentMonthData }: Props) {
-  let searchParams: BillSearchParams = await searchParamsPromise;
-  let monthToFetch = monthData.previousMonth;
-  let yearToFetch = monthData.previousMonthYear;
-
-  if (searchParams.selectedMonthYear) {
-    const [month, year] = searchParams.selectedMonthYear.split('/');
-    const previousMonthLuxon = getPreviousMonthLuxon(Number.parseInt(month), Number.parseInt(year));
-    monthToFetch = previousMonthLuxon.month;
-    yearToFetch = previousMonthLuxon.year;
-  }
-
-  const previousMonthData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByMonthAndYearCached(
-    monthToFetch.toString(),
-    yearToFetch.toString(),
-  );
-
+export default async function CardTrendPercent({ selectedMonthYear, currentMonthData }: Props) {
+  const previousMonthData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByMonthAndYearParamsCached(selectedMonthYear, -1);
   const percentIncreased: number = getPercentIncreasedByPreviousMonth(currentMonthData, previousMonthData);
 
   return (

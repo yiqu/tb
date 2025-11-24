@@ -1,43 +1,16 @@
-import z from 'zod';
-
-import { getUSDFormatter } from '@/lib/number.utils';
 import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
-import { getAllBillsByMonthAndYearCached } from '@/server/bills/bills.server';
 import SubscriptionLogoAvatar from '@/components/logos/SubscriptionLogoAvatar';
-import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
-import { CurrentMonthDateData, BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
-
-import { getNextMonthLuxon } from '../dashboard.utils';
-
-const usdFormatter = getUSDFormatter();
+import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
+import { getAllBillsByMonthAndYearParamsCached } from '@/server/bills/bills.server';
 
 interface Props {
   currentMonthData: BillDueWithSubscriptionByMonthAndYear;
-  searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
-  monthData: CurrentMonthDateData;
+  selectedMonthYear: string | undefined;
 }
 
-export default async function NextMonthSubTextSection({ currentMonthData, searchParamsPromise, monthData }: Props) {
-  let searchParams: BillSearchParams = await searchParamsPromise;
-  let monthToFetch = monthData.nextMonth;
-  let yearToFetch = monthData.nextMonthYear;
-
-  if (searchParams.selectedMonthYear) {
-    const [month, year] = searchParams.selectedMonthYear.split('/');
-    const nextMonthLuxon = getNextMonthLuxon(Number.parseInt(month), Number.parseInt(year));
-    monthToFetch = nextMonthLuxon.month;
-    yearToFetch = nextMonthLuxon.year;
-  }
-
-  const nextMonthData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByMonthAndYearCached(
-    monthToFetch.toString(),
-    yearToFetch.toString(),
-  );
-
-  const isMonthSameAsNextMonth: boolean = currentMonthData.totalBillsCost === nextMonthData.totalBillsCost;
-  const isThisMonthMoreThanNextMonth = currentMonthData.totalBillsCost > nextMonthData.totalBillsCost;
-  const monthDifference: number = Math.abs(currentMonthData.totalBillsCost - nextMonthData.totalBillsCost);
+export default async function NextMonthSubTextSection({ selectedMonthYear }: Props) {
+  const nextMonthData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByMonthAndYearParamsCached(selectedMonthYear, 1);
 
   return (
     <div className="flex w-full flex-col justify-start gap-y-2">
@@ -68,21 +41,6 @@ export default async function NextMonthSubTextSection({ currentMonthData, search
               );
             }) }
         </div>
-      </div>
-
-      <div>
-        { isMonthSameAsNextMonth ?
-          <Typography>
-            Bills cost will be the <span className="font-semibold">same</span> for next month.
-          </Typography>
-        : <Typography>
-          Bills cost will{ ' ' }
-          <span className="font-semibold tabular-nums">
-            { isThisMonthMoreThanNextMonth ? 'decrease' : 'increase' } by { usdFormatter.format(monthDifference) }
-          </span>{ ' ' }
-          for next month.
-        </Typography>
-        }
       </div>
     </div>
   );
