@@ -1,6 +1,7 @@
 import z from 'zod';
 import { DateTime } from 'luxon';
 
+import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
 import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 
@@ -50,11 +51,21 @@ export function appendMonthAndYearToSearchParams(searchParams: BillSearchParams,
 }
 
 export function getPreviousMonthLuxon(month: number, year: number): DateTime {
-  return DateTime.fromObject({ month, year }).minus({ months: 1 });
+  return DateTime.fromObject(
+    { month, year, hour: 0, minute: 0, second: 0, millisecond: 0 },
+    {
+      zone: EST_TIME_ZONE,
+    },
+  ).minus({ months: 1 });
 }
 
 export function getNextMonthLuxon(month: number, year: number): DateTime {
-  return DateTime.fromObject({ month, year }).plus({ months: 1 });
+  return DateTime.fromObject(
+    { month, year, hour: 0, minute: 0, second: 0, millisecond: 0 },
+    {
+      zone: EST_TIME_ZONE,
+    },
+  ).plus({ months: 1 });
 }
 
 export function getPercentIncreasedByPreviousMonth(

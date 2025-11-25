@@ -486,7 +486,12 @@ async function getAllBillsByMonthAndYearParams(
     const year: number = Number.parseInt(dateArray[1] ?? currentYear.toString());
     currentMonth = month;
     currentYear = year;
-    currentDateLuxon = DateTime.fromObject({ month: currentMonth, year: currentYear }).setZone(EST_TIME_ZONE);
+    currentDateLuxon = DateTime.fromObject(
+      { month: currentMonth, year: currentYear },
+      {
+        zone: EST_TIME_ZONE,
+      },
+    );
     monthYearTag = `${month}-${year}`;
   }
 
@@ -557,12 +562,11 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
     const year: number = Number.parseInt(dateArray[1] ?? currentYear.toString());
     currentYear = year;
     currentDateLuxon = DateTime.fromObject(
-      { month: 1, day: 1, year: currentYear, hour: 0, minute: 0, second: 0, millisecond: 0 },
+      { month: 1, day: 1, year: currentYear },
       {
         zone: EST_TIME_ZONE,
       },
     );
-    console.log('currentDateLuxon: ', currentDateLuxon.toString());
   }
 
   if (yearOffset !== undefined) {
@@ -573,8 +577,6 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
     }
     currentYear = currentDateLuxon.year;
   }
-
-  console.log('after offset: ', currentDateLuxon.toString());
 
   cacheLife('weeks');
   // TODO test this tag invalidation
@@ -649,7 +651,12 @@ export async function getCurrentMonthBillsCount(month: string, year: string): Pr
   try {
     const allBillsDue = await prisma.billDue.findMany({});
 
-    const startDateLuxon = DateTime.fromObject({ month: Number.parseInt(month), year: Number.parseInt(year) }).startOf('month');
+    const startDateLuxon = DateTime.fromObject(
+      { month: Number.parseInt(month), year: Number.parseInt(year) },
+      {
+        zone: EST_TIME_ZONE,
+      },
+    ).startOf('month');
     const endDateLuxon = startDateLuxon.endOf('month');
 
     const filtered = allBillsDue.filter((billDue) => {
@@ -672,7 +679,12 @@ async function getBillsForCurrentMonth(): Promise<BillsForCurrentMonth> {
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const currentMonthStartLuxon = currentDateLuxon.startOf('month');
   const endOfMonthLuxon = currentDateLuxon.endOf('month');
-  const monthName: string | null = DateTime.fromObject({ month: currentMonthStartLuxon.month }).monthLong;
+  const monthName: string | null = DateTime.fromObject(
+    { month: currentMonthStartLuxon.month },
+    {
+      zone: EST_TIME_ZONE,
+    },
+  ).monthLong;
 
   try {
     const allBillsDue: BillDueWithSubscription[] = await prisma.billDue.findMany({
@@ -710,14 +722,29 @@ export async function getCurrentMonthDateData(): Promise<CurrentMonthDateData> {
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const currentMonthStartLuxon = currentDateLuxon.startOf('month');
   const endOfMonthLuxon = currentDateLuxon.endOf('month');
-  const monthName: string | null = DateTime.fromObject({ month: currentMonthStartLuxon.month }).monthLong;
+  const monthName: string | null = DateTime.fromObject(
+    { month: currentMonthStartLuxon.month },
+    {
+      zone: EST_TIME_ZONE,
+    },
+  ).monthLong;
   const currentYear: number = currentDateLuxon.year;
   const currentMonth: number = currentMonthStartLuxon.month;
 
   const previousMonthLuxon: DateTime = currentMonthStartLuxon.minus({ months: 1 });
   const nextMonthLuxon: DateTime = currentMonthStartLuxon.plus({ months: 1 });
-  const nextMonthName = DateTime.fromObject({ month: currentMonthStartLuxon.month + 1 }).monthLong;
-  const previousMonthName = DateTime.fromObject({ month: currentMonthStartLuxon.month - 1 }).monthLong;
+  const nextMonthName = DateTime.fromObject(
+    { month: currentMonthStartLuxon.month + 1 },
+    {
+      zone: EST_TIME_ZONE,
+    },
+  ).monthLong;
+  const previousMonthName = DateTime.fromObject(
+    { month: currentMonthStartLuxon.month - 1 },
+    {
+      zone: EST_TIME_ZONE,
+    },
+  ).monthLong;
 
   const previousMonth = previousMonthLuxon.month;
   const previousMonthYear = previousMonthLuxon.year;
