@@ -14,6 +14,7 @@ import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bil
 import { CardTitle, CardAction, CardFooter, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
 import YearCardTrendPercent from './YearCardTrendPercent';
+import DateRangeEpochDisplay from './DateRangeEpochDisplay';
 import NextYearContentTextSection from './NextYearContentTextSection';
 import CurrentYearContentTextSection from './CurrentYearContentTextSection';
 import PreviousYearContentTextSection from './PreviousYearContentTextSection';
@@ -34,7 +35,7 @@ export default async function TotalDueYearCard({ searchParamsPromise }: Props) {
       <CardHeader>
         <CardDescription>
           <div className="flex flex-row items-center justify-start gap-x-2">
-            <SquareArrowDown className="size-5" />
+            <DateRangeEpochDisplay startDateEpoch={ currentYearData.startDateEpoch } endDateEpoch={ currentYearData.endDateEpoch } />
             <Typography>Year: { currentYearData.yearParams }</Typography>
           </div>
         </CardDescription>
