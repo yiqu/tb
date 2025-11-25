@@ -5,13 +5,13 @@ import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
 import LayoutParent from '@/components/layout/LayoutParent';
 import { AuroraText } from '@/components/magicui/aurora-text';
-import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
 import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
+import { appName, APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
 import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
 import HomeDashboardWrapper from './_dashboard/_components/HomeDashboardWrapper';
 
-const layoutMetadata = getLayoutMetadata('Home Dashboard', 'View and manage all your due bills with ease.');
+const layoutMetadata = getLayoutMetadata(`Dashboard | ${appName}`, 'View and manage all your due bills with ease.');
 export const metadata: Metadata = layoutMetadata;
 
 export default function HomeDashboardPage({ searchParams }: PageProps<'/'>) {

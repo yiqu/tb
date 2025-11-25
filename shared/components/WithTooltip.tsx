@@ -1,6 +1,7 @@
 import { ComponentProps } from 'react';
 import { Tooltip as TooltipPrimitive } from 'radix-ui';
 
+import Typography from '@/components/typography/Typography';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function WithTooltip({
@@ -15,7 +16,7 @@ export default function WithTooltip({
     <Tooltip { ...props }>
       <TooltipTrigger asChild>{ children }</TooltipTrigger>
       <TooltipContent { ...contentProps }>
-        <p>{ tooltip }</p>
+        <Typography variant="body0">{ tooltip }</Typography>
       </TooltipContent>
     </Tooltip>
   );

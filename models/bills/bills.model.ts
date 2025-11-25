@@ -101,6 +101,12 @@ export type BillDueWithSubscriptionByMonthAndYear = {
   totalBillsCost: number;
 };
 
+export type BillDueWithSubscriptionByYear = BillDueWithSubscriptionByMonthAndYear & {
+  uniqueBySubscription: BillDueWithSubscription[];
+  totalBillsCount: number;
+  totalSubscriptionsCount: number;
+}
+
 export interface BillDueWithSubscription2 {
   id: string;
   subscriptionId: string;

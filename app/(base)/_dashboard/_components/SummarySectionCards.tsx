@@ -16,11 +16,11 @@ export default function SummarySectionCards({ searchParamsPromise }: Props) {
   return (
     <div
       className={ `
-        grid w-full grid-cols-2 gap-4
+        grid w-full grid-cols-1 gap-4
         *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs
         sec:grid-cols-2
         two:grid-cols-3
-        main:grid-cols-4
+        main:grid-cols-3
         dark:*:data-[slot=card]:bg-card
       ` }
     >
@@ -28,7 +28,7 @@ export default function SummarySectionCards({ searchParamsPromise }: Props) {
         <TotalDueMonthCard searchParamsPromise={ searchParamsPromise } />
       </Suspense>
       <NextMonthDueCard searchParamsPromise={ searchParamsPromise } />
-      <TotalDueYearCard />
+      <TotalDueYearCard searchParamsPromise={ searchParamsPromise } />
     </div>
   );
 }

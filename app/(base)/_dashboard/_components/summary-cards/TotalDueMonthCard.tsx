@@ -51,7 +51,7 @@ export default async function TotalDueMonthCard({ searchParamsPromise }: Props) 
         </Suspense>
       </CardContent>
       <CardFooter className="">
-        <Suspense fallback={ <SubTextLoading /> }>
+        <Suspense fallback={ <SubTextLoadingSmall /> }>
           <CurrentMonthFooterSection selectedMonthYear={ selectedMonthYear } currentMonthData={ currentMonthData } />
         </Suspense>
       </CardFooter>
@@ -67,6 +67,10 @@ function TrendBadgeLoading() {
   );
 }
 
+function SubTextLoadingSmall() {
+  return <Skeleton className="h-5 w-full" />;
+}
+
 function SubTextLoading() {
-  return <Skeleton className="h-11.5 w-full" />;
+  return <Skeleton className="h-24 w-full" />;
 }

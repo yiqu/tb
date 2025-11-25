@@ -22,7 +22,7 @@ export default async function CurrentMonthSubTextSection({ currentMonthData, sel
             { currentMonthData.totalBillsCount }
           </Typography>
         </div>
-        <Separator orientation="vertical" />
+        <Separator orientation="vertical" className="h-4!" />
         <div className={ `
           flex flex-wrap space-x-1
           *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background
@@ -51,7 +51,7 @@ export default async function CurrentMonthSubTextSection({ currentMonthData, sel
             { previousMonthData.totalBillsCount }
           </Typography>
         </div>
-        <Separator orientation="vertical" />
+        <Separator orientation="vertical" className="h-4!" />
         <div className={ `
           flex flex-wrap space-x-1
           *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background

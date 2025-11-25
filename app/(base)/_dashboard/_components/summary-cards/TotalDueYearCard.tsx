@@ -1,34 +1,76 @@
-import { TrendingUp, CalendarDays } from 'lucide-react';
+import z from 'zod';
+import { Suspense } from 'react';
+import { SquareArrowDown } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getUSDFormatter } from '@/lib/number.utils';
+import { Separator } from '@/components/ui/separator';
 import DisplayCard from '@/shared/components/DisplayCard';
 import Typography from '@/components/typography/Typography';
-import { Card, CardTitle, CardAction, CardFooter, CardHeader, CardDescription } from '@/components/ui/card';
+import { BillDueWithSubscriptionByYear } from '@/models/bills/bills.model';
+import { getAllBillsByYearFromParamsCached } from '@/server/bills/bills.server';
+import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
+import { CardTitle, CardAction, CardFooter, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
-export default function TotalDueYearCard() {
+import YearCardTrendPercent from './YearCardTrendPercent';
+import NextYearContentTextSection from './NextYearContentTextSection';
+import CurrentYearContentTextSection from './CurrentYearContentTextSection';
+import PreviousYearContentTextSection from './PreviousYearContentTextSection';
+
+const usdFormatter = getUSDFormatter();
+
+type Props = {
+  searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
+};
+
+export default async function TotalDueYearCard({ searchParamsPromise }: Props) {
+  let searchParams: BillSearchParams = await searchParamsPromise;
+  const { selectedMonthYear } = searchParams; // e.g. 11/2025 or undefined
+  const currentYearData: BillDueWithSubscriptionByYear = await getAllBillsByYearFromParamsCached(selectedMonthYear);
+
   return (
-    <DisplayCard className="@container/card">
+    <DisplayCard className="@container/card flex flex-col">
       <CardHeader>
         <CardDescription>
           <div className="flex flex-row items-center justify-start gap-x-2">
-            <CalendarDays className="size-5" />
-            <Typography>Year</Typography>
+            <SquareArrowDown className="size-5" />
+            <Typography>Year: { currentYearData.yearParams }</Typography>
           </div>
         </CardDescription>
-        <CardTitle className={ `text-2xl font-semibold tabular-nums` }>$0</CardTitle>
+        <CardTitle className={ `text-2xl font-semibold tabular-nums` }>{ usdFormatter.format(currentYearData.totalBillsCost) }</CardTitle>
         <CardAction>
-          <Badge variant="outline">
-            <TrendingUp />
-            +12.5%
-          </Badge>
+          <Suspense fallback={ <TrendBadgeLoading /> }>
+            <YearCardTrendPercent selectedMonthYear={ selectedMonthYear } currentYearData={ currentYearData } />
+          </Suspense>
         </CardAction>
       </CardHeader>
-      <CardFooter className="flex-col items-start gap-1.5 text-sm">
-        <div className="line-clamp-1 flex gap-2 font-medium">
-          Trending up this month <TrendingUp className="size-4" />
-        </div>
-        <div className="text-muted-foreground">Visitors for the last 6 months</div>
-      </CardFooter>
+      <CardContent className="flex grow flex-col justify-start gap-y-4">
+        <Suspense fallback={ <SubTextLoading /> }>
+          <CurrentYearContentTextSection selectedMonthYear={ selectedMonthYear } currentYearData={ currentYearData } />
+        </Suspense>
+        <Separator orientation="horizontal" className="w-full" />
+        <Suspense fallback={ <SubTextLoading /> }>
+          <PreviousYearContentTextSection selectedMonthYear={ selectedMonthYear } />
+        </Suspense>
+        <Separator orientation="horizontal" className="w-full" />
+        <Suspense fallback={ <SubTextLoading /> }>
+          <NextYearContentTextSection selectedMonthYear={ selectedMonthYear } />
+        </Suspense>
+      </CardContent>
+      <CardFooter className=""></CardFooter>
     </DisplayCard>
   );
+}
+
+function TrendBadgeLoading() {
+  return (
+    <Badge variant="outline">
+      <Skeleton className="h-4 w-[50px]" />
+    </Badge>
+  );
+}
+
+function SubTextLoading() {
+  return <Skeleton className="h-12 w-full" />;
 }

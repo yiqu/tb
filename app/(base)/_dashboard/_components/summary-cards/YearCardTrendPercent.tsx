@@ -4,8 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import WithTooltip from '@/shared/components/WithTooltip';
 import Typography from '@/components/typography/Typography';
 import { getUSDFormatter, getPercentFormatter } from '@/lib/number.utils';
+import { getAllBillsByYearFromParamsCached } from '@/server/bills/bills.server';
 import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
-import { getAllBillsByMonthAndYearParamsCached } from '@/server/bills/bills.server';
 
 import { getPercentIncreasedByPreviousMonth } from '../dashboard.utils';
 
@@ -13,16 +13,16 @@ const percentFormatter = getPercentFormatter();
 const usdFormatter = getUSDFormatter();
 
 type Props = {
-  currentMonthData: BillDueWithSubscriptionByMonthAndYear;
+  currentYearData: BillDueWithSubscriptionByMonthAndYear;
   selectedMonthYear: string | undefined;
 };
 
-export default async function CardTrendPercent({ selectedMonthYear, currentMonthData }: Props) {
-  const previousMonthData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByMonthAndYearParamsCached(selectedMonthYear, -1);
-  const percentIncreased: number = getPercentIncreasedByPreviousMonth(currentMonthData, previousMonthData);
+export default async function YearCardTrendPercent({ selectedMonthYear, currentYearData }: Props) {
+  const previousYearData: BillDueWithSubscriptionByMonthAndYear = await getAllBillsByYearFromParamsCached(selectedMonthYear, -1);
+  const percentIncreased: number = getPercentIncreasedByPreviousMonth(currentYearData, previousYearData);
 
   return (
-    <WithTooltip tooltip={ `Last month's total cost: ${usdFormatter.format(previousMonthData.totalBillsCost)}` }>
+    <WithTooltip tooltip={ `Last year's total cost: ${usdFormatter.format(previousYearData.totalBillsCost)}` }>
       <Badge variant="outline">
         { percentIncreased > 0 ?
           <TrendingUp className={ `
