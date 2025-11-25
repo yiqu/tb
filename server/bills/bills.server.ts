@@ -556,7 +556,13 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
     const dateArray = params.split('/');
     const year: number = Number.parseInt(dateArray[1] ?? currentYear.toString());
     currentYear = year;
-    currentDateLuxon = DateTime.fromObject({ month: 1, day: 1, year: currentYear }).setZone(EST_TIME_ZONE);
+    currentDateLuxon = DateTime.fromObject(
+      { month: 1, day: 1, year: currentYear },
+      {
+        zone: EST_TIME_ZONE,
+      },
+    );
+    console.log('currentDateLuxon: ', currentDateLuxon.toJSDate());
   }
 
   if (yearOffset !== undefined) {
@@ -567,6 +573,8 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
     }
     currentYear = currentDateLuxon.year;
   }
+
+  console.log('after offset: ', currentDateLuxon.toJSDate());
 
   cacheLife('weeks');
   // TODO test this tag invalidation
