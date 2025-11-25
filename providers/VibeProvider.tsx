@@ -9,7 +9,7 @@ const LINK_ID = 'vibe-theme-stylesheet';
 const FONT_LINK_ID = 'vibe-font-stylesheet';
 
 export default function VibeProvider({
-  vibe = 'vintage',
+  vibe = 'amethyst-haze',
   fontOverride,
   children,
 }: {

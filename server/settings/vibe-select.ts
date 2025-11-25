@@ -14,7 +14,7 @@ export async function getSettingsApplicationVibe(): Promise<AppVibe> {
   const cookie: RequestCookie | undefined = await getCookieByName(SETTINGS_USER_VIBE_COOKIE_NAME);
 
   if (!cookie) {
-    return 'vintage';
+    return 'amethyst-haze';
   }
   return cookie.value as AppVibe;
 }
