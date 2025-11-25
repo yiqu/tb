@@ -35,7 +35,9 @@ export default async function TotalDueYearCard({ searchParamsPromise }: Props) {
       <CardHeader>
         <CardDescription>
           <div className="flex flex-row items-center justify-start gap-x-2">
-            <DateRangeEpochDisplay startDateEpoch={ currentYearData.startDateEpoch } endDateEpoch={ currentYearData.endDateEpoch } />
+            <DateRangeEpochDisplay startDateEpoch={ currentYearData.startDateEpoch } endDateEpoch={ currentYearData.endDateEpoch }>
+              <SquareArrowDown className="size-5" />
+            </DateRangeEpochDisplay>
             <Typography>Year: { currentYearData.yearParams }</Typography>
           </div>
         </CardDescription>

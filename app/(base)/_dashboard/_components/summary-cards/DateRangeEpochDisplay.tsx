@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { SquareArrowDown } from 'lucide-react';
 
 import Typography from '@/components/typography/Typography';
 
 interface Props {
   startDateEpoch: number;
   endDateEpoch: number;
+  children: React.ReactNode;
 }
 
-export default function DateRangeEpochDisplay({ startDateEpoch, endDateEpoch }: Props) {
+export default function DateRangeEpochDisplay({ startDateEpoch, endDateEpoch, children }: Props) {
   const [showEpoch, setShowEpoch] = useState(false);
 
   const handleOnClick = () => {
@@ -28,5 +28,5 @@ export default function DateRangeEpochDisplay({ startDateEpoch, endDateEpoch }: 
     );
   }
 
-  return <SquareArrowDown className="size-5" onClick={ handleOnClick } />;
+  return <div onClick={ handleOnClick }>{ children }</div>;
 }

@@ -4,6 +4,8 @@ import { BillDueWithSubscriptionByYear } from '@/models/bills/bills.model';
 import SubscriptionLogoAvatar from '@/components/logos/SubscriptionLogoAvatar';
 import { getAllBillsByYearFromParamsCached } from '@/server/bills/bills.server';
 
+import DateRangeEpochDisplay from './DateRangeEpochDisplay';
+
 const usdFormatter = getUSDFormatter();
 
 interface Props {
@@ -44,9 +46,9 @@ export default async function NextYearContentTextSection({ selectedMonthYear }: 
             );
           }) }
       </div>
-      <div>
+      <DateRangeEpochDisplay startDateEpoch={ nextYearData.startDateEpoch } endDateEpoch={ nextYearData.endDateEpoch }>
         <Typography className="tabular-nums">Cost: { usdFormatter.format(totalCost) }</Typography>
-      </div>
+      </DateRangeEpochDisplay>
     </div>
   );
 }
