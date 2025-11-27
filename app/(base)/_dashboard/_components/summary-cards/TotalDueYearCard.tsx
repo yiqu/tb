@@ -75,5 +75,5 @@ function TrendBadgeLoading() {
 }
 
 function SubTextLoading() {
-  return <Skeleton className="h-12 w-full" />;
+  return <Skeleton className="h-19 w-full" />;
 }

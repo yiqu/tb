@@ -14,6 +14,7 @@ import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
+import { AllBillsChartNode } from '@/models/charts/chart.model';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { billAddableSchema, billEditableSchema, billSearchParamsSchema, AutoSelectedDefaultStatus } from '@/validators/bills/bill.schema';
@@ -129,6 +130,16 @@ export const getAllUpcomingBillsCached = cache(
   },
 );
 
+export const getEntireBillsCached = cache(async () => {
+  const res = await getEntireBills();
+  return res;
+});
+
+export const getEntireBillsChartDataCached = cache(async () => {
+  const res = await getEntireBillsChartData();
+  return res;
+});
+
 export const getAllBillsCountCached = cache(async () => {
   const res = await getAllBillsCount();
   return res;
@@ -153,6 +164,74 @@ export const getAllBillsByYearFromParamsCached = cache(async (params: string | u
   const res = await getAllBillsByYearFromParams(params, yearOffset);
   return res;
 });
+
+export async function getEntireBills() {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_BILL_DUES_ALL);
+
+  try {
+    const billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
+      include: {
+        subscription: true,
+        favorites: true,
+      },
+    });
+
+    return billDues;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getEntireBills(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving entire bill dues. Code: ${error.code}`);
+  }
+}
+
+export async function getEntireBillsChartData(): Promise<AllBillsChartNode[]> {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_BILL_DUES_ALL);
+
+  const billDues: BillDueWithSubscription[] = await getEntireBills();
+  const sortedByDueDate = billDues.toSorted((a: BillDueWithSubscription, b: BillDueWithSubscription) => {
+    return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
+  });
+  const firstBillDue = sortedByDueDate[0];
+  const firstBillDueMonthStart = DateTime.fromMillis(Number.parseInt(firstBillDue.dueDate), {
+    zone: EST_TIME_ZONE,
+  }).startOf('month');
+  const lastBillDue = sortedByDueDate[sortedByDueDate.length - 1];
+  const lastBillDueMonthStart = DateTime.fromMillis(Number.parseInt(lastBillDue.dueDate), {
+    zone: EST_TIME_ZONE,
+  }).startOf('month');
+
+  let allMonthStartEpochs: number[] = [];
+
+  console.log(firstBillDueMonthStart.toString(), firstBillDue.dueDate, lastBillDue.dueDate, lastBillDueMonthStart.toString());
+  const next = firstBillDueMonthStart.plus({ months: 1 });
+  console.log('NEXT: ', next.toString());
+
+  let monthIterator = firstBillDueMonthStart.toMillis();
+
+  while (monthIterator < Number.parseInt(lastBillDue.dueDate)) {
+    const currentMonthLuxon = DateTime.fromMillis(monthIterator, {
+      zone: EST_TIME_ZONE,
+    }).startOf('month');
+
+    allMonthStartEpochs.push(currentMonthLuxon.toMillis());
+
+    const nextMonthLuxon = currentMonthLuxon.plus({ months: 1 });
+    monthIterator = nextMonthLuxon.toMillis();
+  }
+
+  const monthz = allMonthStartEpochs.map((s) => {
+    const na = DateTime.fromMillis(s, { zone: EST_TIME_ZONE }).toString();
+    return na;
+  });
+
+  console.log(allMonthStartEpochs);
+  console.log(monthz);
+
+  return [];
+}
 
 export async function getAllBills(
   sortData: SortDataModel | null,

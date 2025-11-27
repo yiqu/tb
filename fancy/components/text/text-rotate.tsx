@@ -344,21 +344,11 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
     const MotionComponent = useMemo(() => motion.create(as ?? 'p'), [as]);
 
     return (
-      <MotionComponent
-        className={ cn('flex flex-wrap whitespace-pre-wrap', mainClassName) }
-        transition={ transition }
-        layout
-        { ...props }
-      >
+      <MotionComponent className={ cn('flex flex-wrap whitespace-pre-wrap', mainClassName) } transition={ transition } layout { ...props }>
         <span className="sr-only">{ texts[currentTextIndex] }</span>
 
         <AnimatePresence mode={ animatePresenceMode } initial={ animatePresenceInitial }>
-          <motion.span
-            key={ currentTextIndex }
-            className={ cn('flex flex-wrap', splitBy === 'lines' && 'w-full flex-col') }
-            aria-hidden
-            layout
-          >
+          <motion.span key={ currentTextIndex } className={ cn('flex flex-wrap', splitBy === 'lines' && 'w-full flex-col') } aria-hidden layout>
             { (splitBy === 'characters' ?
               (elements as WordObject[])
             : (elements as string[]).map((el, i) => ({
@@ -366,9 +356,7 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
                 needsSpace: i !== elements.length - 1,
               }))
             ).map((wordObj, wordIndex, array) => {
-              const previousCharsCount = array
-                .slice(0, wordIndex)
-                .reduce((sum, word) => sum + word.characters.length, 0);
+              const previousCharsCount = array.slice(0, wordIndex).reduce((sum, word) => sum + word.characters.length, 0);
 
               return (
                 <span key={ wordIndex } className={ cn('inline-flex', splitLevelClassName) }>
@@ -394,7 +382,9 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
                       </span>
                     );
                   }) }
-                  { wordObj.needsSpace ? <span className="whitespace-pre"> </span> : null }
+                  { wordObj.needsSpace ?
+                    <span className="whitespace-pre"> </span>
+                  : null }
                 </span>
               );
             }) }

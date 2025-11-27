@@ -4,8 +4,8 @@ import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 
 import BillsCurrentMonth from './BillsCurrentMonth';
 import DashboardDateTitle from './DashboardDateTitle';
-import YearDueChartParent from './YearDueChartParent';
 import SummarySectionCards from './SummarySectionCards';
+import YearDueChartParent from './charts/YearDueChartParent';
 
 type Props = {
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
@@ -16,7 +16,7 @@ export default function HomeDashboardWrapper({ searchParamsPromise }: Props) {
     <div className="flex w-full flex-col gap-y-6">
       <DashboardDateTitle searchParamsPromise={ searchParamsPromise } />
       <SummarySectionCards searchParamsPromise={ searchParamsPromise } />
-      <YearDueChartParent />
+      <YearDueChartParent searchParamsPromise={ searchParamsPromise } />
       <BillsCurrentMonth searchParamsPromise={ searchParamsPromise } />
     </div>
   );
