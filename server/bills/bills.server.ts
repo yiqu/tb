@@ -191,44 +191,50 @@ export async function getEntireBillsChartData(): Promise<AllBillsChartNode[]> {
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
 
   const billDues: BillDueWithSubscription[] = await getEntireBills();
+
+  if (billDues.length === 0) {
+    return [];
+  }
+
   const sortedByDueDate = billDues.toSorted((a: BillDueWithSubscription, b: BillDueWithSubscription) => {
     return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
   });
-  const firstBillDue = sortedByDueDate[0];
+
+  const firstBillDue: BillDueWithSubscription = sortedByDueDate[0];
+
+  // first bill due's month starting date, as the beginning point for the chart's first node
   const firstBillDueMonthStart = DateTime.fromMillis(Number.parseInt(firstBillDue.dueDate), {
     zone: EST_TIME_ZONE,
   }).startOf('month');
+
+  // final chart node
   const lastBillDue = sortedByDueDate[sortedByDueDate.length - 1];
-  const lastBillDueMonthStart = DateTime.fromMillis(Number.parseInt(lastBillDue.dueDate), {
-    zone: EST_TIME_ZONE,
-  }).startOf('month');
 
+  // get the list of months' nodes for beginning to end
   let allMonthStartEpochs: number[] = [];
-
-  console.log(firstBillDueMonthStart.toString(), firstBillDue.dueDate, lastBillDue.dueDate, lastBillDueMonthStart.toString());
-  const next = firstBillDueMonthStart.plus({ months: 1 });
-  console.log('NEXT: ', next.toString());
-
   let monthIterator = firstBillDueMonthStart.toMillis();
-
   while (monthIterator < Number.parseInt(lastBillDue.dueDate)) {
     const currentMonthLuxon = DateTime.fromMillis(monthIterator, {
       zone: EST_TIME_ZONE,
     }).startOf('month');
 
     allMonthStartEpochs.push(currentMonthLuxon.toMillis());
-
     const nextMonthLuxon = currentMonthLuxon.plus({ months: 1 });
     monthIterator = nextMonthLuxon.toMillis();
   }
 
-  const monthz = allMonthStartEpochs.map((s) => {
-    const na = DateTime.fromMillis(s, { zone: EST_TIME_ZONE }).toString();
-    return na;
-  });
+  // now append the bills for each month node
+  for (const monthStartEpoch of allMonthStartEpochs) {
+    const endOfMonthEpoch = DateTime.fromMillis(monthStartEpoch, {
+      zone: EST_TIME_ZONE,
+    })
+      .endOf('month')
+      .toMillis();
 
-  console.log(allMonthStartEpochs);
-  console.log(monthz);
+    console.log('start', monthStartEpoch, 'end:', endOfMonthEpoch);
+  }
+
+  // console.log(allMonthStartEpochs);
 
   return [];
 }
