@@ -19,9 +19,9 @@ export default async function LoginComponentPage() {
     );
   }
 
-  return (
-    <div className="flex h-full w-full flex-col items-center justify-center">
-      <AdminPasswordInputParent user={ null } />
-    </div>
-  );
+  // return (
+  //   <div className="flex h-full w-full flex-col items-center justify-center">
+  //     <AdminPasswordInputParent user={ null } />
+  //   </div>
+  // );
 }
