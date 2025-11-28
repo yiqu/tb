@@ -7,7 +7,7 @@ import useIsClient from '@/hooks/useIsClient';
 import { isNumeric } from '@/lib/number.utils';
 import useDuration2 from '@/hooks/useDuration2';
 import { Skeleton } from '@/components/ui/skeleton';
-import Typography from '@/components/typography/Typography';
+import Typography, { TypographyProps } from '@/components/typography/Typography';
 
 const DAY_THRESHOLD_TO_SHOW_SECONDS = 3;
 const SHOW_SECONDS_IF_PAST_DUE_DATE = false;
@@ -27,6 +27,8 @@ export default function DateRelativeDisplay({
   showClientLoading,
   overrideHideSeconds,
   isCompleted,
+  title,
+  ...typographyProps
 }: {
   time: Date | string | null;
   includeParenthesis?: boolean;
@@ -42,7 +44,8 @@ export default function DateRelativeDisplay({
   showClientLoading?: boolean;
   overrideHideSeconds?: boolean;
   isCompleted?: boolean;
-}) {
+  title?: string;
+} & TypographyProps) {
   const isClient = useIsClient();
 
   let largestValue = largest;
@@ -81,7 +84,7 @@ export default function DateRelativeDisplay({
   const relativeDate = addSuffix ? relativeTime : relativeTime.replace(/ ago$/, '').replace(/^in /, '');
 
   return (
-    <Typography className={ cn(className) }>
+    <Typography className={ cn(className) } title={ title } { ...typographyProps }>
       { includeParenthesis ?
         `(${prefixText ? `${prefixText} ` : ''}${relativeDate}${postFixText ? ` ${postFixText}` : ''})`
       : `${prefixText ? `${prefixText} ` : ''}${relativeDate}${postFixText ? ` ${postFixText}` : ''}` }

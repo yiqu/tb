@@ -27,7 +27,9 @@ export default function HomeDashboardPage({ searchParams }: PageProps<'/'>) {
           </section>
         </LayoutWithGutter>
       </LayoutParent>
+      
       <Separator />
+
       <LayoutChildrenParent>
         <LayoutWithGutter size="wider">
           <HomeDashboardWrapper searchParamsPromise={ searchParams } />

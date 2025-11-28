@@ -14,6 +14,7 @@ import { CardTitle, CardAction, CardFooter, CardHeader, CardContent, CardDescrip
 
 import NextMonthFooterSection from './NextMonthFooterSection';
 import NextMonthSubTextSection from './NextMonthSubTextSection';
+import NextMonthTimeRemainDuration from './NextMonthTimeRemainDuration';
 
 const usdFormatter = getUSDFormatter();
 
@@ -31,11 +32,14 @@ export default async function NextMonthDueCard({ searchParamsPromise }: Props) {
     <DisplayCard className="@container/card flex flex-col">
       <CardHeader>
         <CardDescription>
-          <div className="flex flex-row items-center justify-start gap-x-2">
-            <SquareArrowRight className="size-5" />
-            <Typography>
-              Next Month: { nextMonthData.monthParams }/{ nextMonthData.yearParams }
-            </Typography>
+          <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-start gap-x-2">
+              <SquareArrowRight className="size-5" />
+              <Typography>
+                Next Month: { nextMonthData.monthParams }/{ nextMonthData.yearParams }
+              </Typography>
+            </div>
+            <NextMonthTimeRemainDuration selectedMonthYear={ selectedMonthYear } nextMonthData={ nextMonthData } />
           </div>
         </CardDescription>
         <CardTitle>
