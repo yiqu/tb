@@ -41,7 +41,11 @@ export default async function TotalDueYearCard({ searchParamsPromise }: Props) {
             <Typography>Year: { currentYearData.yearParams }</Typography>
           </div>
         </CardDescription>
-        <CardTitle className={ `text-2xl font-semibold tabular-nums` }>{ usdFormatter.format(currentYearData.totalBillsCost) }</CardTitle>
+        <CardTitle>
+          <Typography variant="h3" className="tabular-nums">
+            { usdFormatter.format(currentYearData.totalBillsCost) }
+          </Typography>
+        </CardTitle>
         <CardAction>
           <Suspense fallback={ <TrendBadgeLoading /> }>
             <YearCardTrendPercent selectedMonthYear={ selectedMonthYear } currentYearData={ currentYearData } />

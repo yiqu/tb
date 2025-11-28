@@ -16,8 +16,8 @@ export default function HomeDashboardWrapper({ searchParamsPromise }: Props) {
     <div className="flex w-full flex-col gap-y-6">
       <DashboardDateTitle searchParamsPromise={ searchParamsPromise } />
       <SummarySectionCards searchParamsPromise={ searchParamsPromise } />
-      <YearDueChartParent searchParamsPromise={ searchParamsPromise } />
       <BillsCurrentMonth searchParamsPromise={ searchParamsPromise } />
+      <YearDueChartParent />
     </div>
   );
 }

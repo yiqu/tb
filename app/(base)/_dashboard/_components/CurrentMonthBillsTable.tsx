@@ -23,7 +23,7 @@ export default async function CurrentMonthBillsTable({ searchParamsPromise }: Pr
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
-      <BillsTablePaginationWrapper searchParams={ searchParamsPromise } paginationBarStickyWrapperClassName="bg-transparent" />
+      <BillsTablePaginationWrapper searchParams={ searchParamsPromise } paginationBarStickyWrapperClassName="bg-card top-12" />
       <Suspense fallback={ <BillsTableSkeleton count={ 5 } className="h-full pb-6" /> }>
         <BillsTableParent searchParamsPromise={ searchParamsPromise } paginationPromise={ paginationPromise } />
       </Suspense>

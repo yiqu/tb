@@ -24,11 +24,15 @@ export default function SummarySectionCards({ searchParamsPromise }: Props) {
         dark:*:data-[slot=card]:bg-card
       ` }
     >
-      <Suspense fallback={ <CardLoading cardTitle="This Month" /> }>
+      <Suspense fallback={ <CardLoading cardTitle="Month" /> }>
         <TotalDueMonthCard searchParamsPromise={ searchParamsPromise } />
       </Suspense>
-      <NextMonthDueCard searchParamsPromise={ searchParamsPromise } />
-      <TotalDueYearCard searchParamsPromise={ searchParamsPromise } />
+      <Suspense fallback={ <CardLoading cardTitle="Next Month" /> }>
+        <NextMonthDueCard searchParamsPromise={ searchParamsPromise } />
+      </Suspense>
+      <Suspense fallback={ <CardLoading cardTitle="Year" /> }>
+        <TotalDueYearCard searchParamsPromise={ searchParamsPromise } />
+      </Suspense>
     </div>
   );
 }

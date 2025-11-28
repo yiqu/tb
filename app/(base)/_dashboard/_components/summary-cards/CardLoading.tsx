@@ -11,7 +11,7 @@ type Props = {
 
 export default function CardLoading({ cardTitle }: Props) {
   return (
-    <DisplayCard className="@container/card">
+    <DisplayCard className="@container/card h-[423.33px]">
       <CardHeader>
         <CardDescription>
           <div className="flex flex-row items-center justify-start gap-x-2">

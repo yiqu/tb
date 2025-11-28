@@ -38,7 +38,11 @@ export default async function NextMonthDueCard({ searchParamsPromise }: Props) {
             </Typography>
           </div>
         </CardDescription>
-        <CardTitle className={ `text-2xl font-semibold tabular-nums` }>{ usdFormatter.format(nextMonthData.totalBillsCost) }</CardTitle>
+        <CardTitle>
+          <Typography variant="h3" className="tabular-nums">
+            { usdFormatter.format(nextMonthData.totalBillsCost) }
+          </Typography>
+        </CardTitle>
         <CardAction>
           <Suspense fallback={ <TrendBadgeLoading /> }>
             { /* <CardTrendPercent monthData={ dateData } searchParamsPromise={ searchParamsPromise } currentMonthData={ nextMonthData } /> */ }

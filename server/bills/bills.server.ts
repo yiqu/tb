@@ -14,15 +14,16 @@ import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
-import { AllBillsChartNode } from '@/models/charts/chart.model';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
+import { AllBillsChartNode, DashboardYearBillsChartData } from '@/models/charts/chart.model';
 import { billAddableSchema, billEditableSchema, billSearchParamsSchema, AutoSelectedDefaultStatus } from '@/validators/bills/bill.schema';
 import {
   BillDue,
   NavigationMonthData,
   BillsForCurrentMonth,
   CurrentMonthDateData,
+  SubscriptionOriginal,
   BillDueWithSubscription,
   BillDueWithSubscriptionByYear,
   BillDueWithSubscriptionAndSortData,
@@ -185,16 +186,24 @@ export async function getEntireBills() {
   }
 }
 
-export async function getEntireBillsChartData(): Promise<AllBillsChartNode[]> {
+export async function getEntireBillsChartData(): Promise<DashboardYearBillsChartData> {
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
 
   const billDues: BillDueWithSubscription[] = await getEntireBills();
+  let results: AllBillsChartNode[] = [];
 
   if (billDues.length === 0) {
-    return [];
+    return {
+      subscriptions: [],
+      chartData: [],
+    };
   }
+
+  const allUniqueSubscriptions: SubscriptionOriginal[] = uniqBy(billDues, 'subscription.id').map(
+    (billDue: BillDueWithSubscription) => billDue.subscription,
+  );
 
   const sortedByDueDate = billDues.toSorted((a: BillDueWithSubscription, b: BillDueWithSubscription) => {
     return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
@@ -223,20 +232,70 @@ export async function getEntireBillsChartData(): Promise<AllBillsChartNode[]> {
     monthIterator = nextMonthLuxon.toMillis();
   }
 
-  // now append the bills for each month node
-  for (const monthStartEpoch of allMonthStartEpochs) {
-    const endOfMonthEpoch = DateTime.fromMillis(monthStartEpoch, {
+  results = allMonthStartEpochs.map((monthStart: number) => {
+    const monthLuxon = DateTime.fromMillis(monthStart, {
       zone: EST_TIME_ZONE,
-    })
-      .endOf('month')
-      .toMillis();
+    });
+    const endOfMonthEpoch = monthLuxon.endOf('month').toMillis();
 
-    console.log('start', monthStartEpoch, 'end:', endOfMonthEpoch);
+    return {
+      billDues: [],
+      dateStart: monthStart,
+      dateEnd: endOfMonthEpoch,
+      displayName: `${monthLuxon.month}/${monthLuxon.year}`,
+      month: monthLuxon.month,
+      year: monthLuxon.year,
+      totalCost: 0,
+    };
+  });
+
+  // now append the bills for each month node
+  for (const bill of billDues) {
+    const billDueDate: number = Number.parseInt(bill.dueDate);
+    const monthNodeIndex: number = results.findIndex((monthNode: AllBillsChartNode) => {
+      return billDueDate >= monthNode.dateStart && billDueDate <= monthNode.dateEnd;
+    });
+
+    if (monthNodeIndex !== -1) {
+      const resultAtNode: AllBillsChartNode | undefined = results[monthNodeIndex];
+
+      const billDueCost: number = bill.cost ?? bill.subscription.cost ?? 0;
+
+      if (resultAtNode) {
+        resultAtNode.billDues.push(bill);
+        resultAtNode.totalCost = resultAtNode.totalCost + billDueCost;
+
+        // if subscription name property already exist
+        const subscriptionResultAtNode: any = resultAtNode[bill.subscription.name];
+        if (subscriptionResultAtNode) {
+          subscriptionResultAtNode.billDues.push(bill);
+          subscriptionResultAtNode.totalCost = subscriptionResultAtNode.totalCost + billDueCost;
+        } else {
+          resultAtNode[bill.subscription.name] = {
+            billDues: [bill],
+            totalCost: billDueCost,
+          };
+        }
+      } else {
+        results[monthNodeIndex] = {
+          ...results[monthNodeIndex],
+          billDues: [bill],
+          totalCost: billDueCost,
+          [bill.subscription.name]: {
+            billDues: [bill],
+            totalCost: billDueCost,
+          },
+        };
+      }
+    }
   }
 
-  // console.log(allMonthStartEpochs);
-
-  return [];
+  return {
+    subscriptions: allUniqueSubscriptions,
+    chartData: results,
+    firstBillDue: firstBillDue,
+    lastBillDue: lastBillDue,
+  };
 }
 
 export async function getAllBills(

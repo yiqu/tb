@@ -1,6 +1,7 @@
 import z from 'zod';
 
 import DisplayCard from '@/shared/components/DisplayCard';
+import Typography from '@/components/typography/Typography';
 import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { CardTitle, CardAction, CardFooter, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
@@ -14,7 +15,9 @@ export default function BillsCurrentMonth({ searchParamsPromise }: Props) {
   return (
     <DisplayCard>
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold">Bills</CardTitle>
+        <CardTitle>
+          <Typography variant="h4">Bills</Typography>
+        </CardTitle>
         <CardDescription>View, edit, and manage bills that are due this month.</CardDescription>
         <CardAction></CardAction>
       </CardHeader>
