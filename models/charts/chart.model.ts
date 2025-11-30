@@ -53,4 +53,13 @@ export const CHART_COLORS: Record<string, string> = {
   'UI dot dev': '#ffcc00',
   'Vercel Pro': '#999999',
   'Vercel v0': '#4da6ff',
+  Netflix: '#666666',
+  'YouTube TV Base': '#800080',
+  'Disney+': '#1e3a8a',
+  'Paramount+': '#007bff',
+  'Peacock TV': '#00bfff',
+  'HBO Max': '#008080',
+  'Apple TV': '#000080',
+  'Amazon Prime Videos': '#ffa500',
+  DAZN: '#997300',
 };

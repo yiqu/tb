@@ -1,9 +1,12 @@
 'use client';
 
+import toast from 'react-hot-toast';
 import { useQueryState } from 'nuqs';
-import { Plus, EllipsisVerticalIcon } from 'lucide-react';
+import { useTransition } from 'react';
+import { Plus, Trash, RefreshCcw, EllipsisVerticalIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { deleteAllSubscriptions } from '@/server/subscriptions/subscriptions.server';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -11,9 +14,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 
-export default function SubscriptionsActionBarActionsMenu() {
+interface SubscriptionsActionBarActionsMenuProps {
+  showDeleteAllSubscriptionsOption: boolean;
+}
+
+export default function SubscriptionsActionBarActionsMenu({ showDeleteAllSubscriptionsOption }: SubscriptionsActionBarActionsMenuProps) {
+  const [isPending, startTransition] = useTransition();
   const [, setAddNewSubscription] = useQueryState('addNewSubscription', {
     scroll: false,
   });
@@ -22,6 +31,21 @@ export default function SubscriptionsActionBarActionsMenu() {
     setAddNewSubscription('true', {
       scroll: false,
     });
+  };
+
+  const handleOnDeleteAllSubscriptions = () => {
+    const confirm = window.confirm('Are you sure you want to delete all subscriptions? This action cannot be undone.');
+    if (confirm) {
+      startTransition(async () => {
+        await toast.promise(deleteAllSubscriptions(), {
+          loading: 'Deleting all subscriptions...',
+          success: (_res: void) => {
+            return 'All subscriptions deleted.';
+          },
+          error: 'Failed to delete all subscriptions.',
+        });
+      });
+    }
   };
 
   return (
@@ -40,6 +64,19 @@ export default function SubscriptionsActionBarActionsMenu() {
             Add new subscription
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        { showDeleteAllSubscriptionsOption ?
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={ handleOnDeleteAllSubscriptions } disabled={ isPending }>
+                { isPending ?
+                  <RefreshCcw className="h-4 w-4 animate-spin" />
+                : <Trash className="h-4 w-4" /> }
+                Delete all subscriptions
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        : null }
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -60,7 +60,7 @@ export default function YearDueChart({ chartDataPromise }: Props) {
           margin={ {
             top: 20,
             right: 30,
-            left: 20,
+            left: 40,
             bottom: 5,
           } }
         >
@@ -85,7 +85,7 @@ export default function YearDueChart({ chartDataPromise }: Props) {
               value: 'Cost',
               angle: -90,
               position: 'insideLeft',
-              offset: -10,
+              offset: -23,
               style: { fontSize: 20, fill: isDarkMode ? '#d1d5db' : '#374151', textAnchor: 'middle' },
             } }
           />

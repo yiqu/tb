@@ -10,6 +10,8 @@ import SubscriptionsActionBarRefreshButton from './SubscriptionsActionBarRefresh
 import SubscriptionsActionBarFrequencyFilter from './SubscriptionsActionBarFrequencyFilter';
 import SubscriptionsActionBarSubscriptionFilterWrapper from './SubscriptionsActionBarSubscriptionFilterWrapper';
 
+const showDeleteAllSubscriptionsOption: boolean = process.env.APP_SHOW_DELETE_ALL_SUBSCRIPTIONS === 'true';
+
 function SubscriptionsTableActionBar() {
   return (
     <ContentActionBarStickyWrapper>
@@ -26,7 +28,7 @@ function SubscriptionsTableActionBar() {
           <BillsActionBarDueDateFilterParent />
         </div>
 
-        <SubscriptionsActionBarActionsMenu />
+        <SubscriptionsActionBarActionsMenu showDeleteAllSubscriptionsOption={ showDeleteAllSubscriptionsOption } />
       </div>
     </ContentActionBarStickyWrapper>
   );

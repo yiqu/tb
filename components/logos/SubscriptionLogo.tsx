@@ -130,6 +130,103 @@ export function getSubscriptionLogoUrl(subscriptionName: string): { light: strin
       logoDarkUrl = 'edu';
       break;
     }
+
+    case 'Netflix': {
+      logoLightUrl = 'nf-logo';
+      logoDarkUrl = 'nf-logo';
+      break;
+    }
+
+    case 'YouTube TV Base': {
+      logoLightUrl = 'yttv';
+      logoDarkUrl = 'yttv';
+      break;
+    }
+
+    case 'Disney+': {
+      logoLightUrl = 'dplus';
+      logoDarkUrl = 'dplus';
+      break;
+    }
+
+    case 'Paramount+': {
+      logoLightUrl = 'pplus';
+      logoDarkUrl = 'pplus';
+      break;
+    }
+
+    case 'Peacock TV': {
+      logoLightUrl = 'peacocktv';
+      logoDarkUrl = 'peacocktv';
+      break;
+    }
+
+    case 'HBO Max': {
+      logoLightUrl = 'hbotv';
+      logoDarkUrl = 'hbotv';
+      break;
+    }
+
+    case 'Apple TV': {
+      logoLightUrl = 'appletv';
+      logoDarkUrl = 'appletv';
+      break;
+    }
+
+    case 'Amazon Prime Videos': {
+      logoLightUrl = 'primetvlogo';
+      logoDarkUrl = 'primetvlogo';
+      break;
+    }
+
+    case 'DAZN': {
+      logoLightUrl = 'daznlogo';
+      logoDarkUrl = 'daznlogo';
+      break;
+    }
+
+    case 'Costco Gold Star': {
+      logoLightUrl = 'costcologo';
+      logoDarkUrl = 'costcologo';
+      break;
+    }
+
+    case 'Xbox Game Pass Essential': {
+      logoLightUrl = 'xboxlogo';
+      logoDarkUrl = 'xboxlogo';
+      break;
+    }
+
+    case 'PlayStation Plus Essential': {
+      logoLightUrl = 'pslogo';
+      logoDarkUrl = 'pslogo';
+      break;
+    }
+
+    case 'Spotify Individual': {
+      logoLightUrl = 'spotlogo';
+      logoDarkUrl = 'spotlogo';
+      break;
+    }
+
+    case 'Planet Fitness Classic': {
+      logoLightUrl = 'pflogo';
+      logoDarkUrl = 'pflogo';
+      break;
+    }
+
+    case 'Sam\'s Club': {
+      logoLightUrl = 'samlogo';
+      logoDarkUrl = 'samlogo';
+      break;
+    }
+
+    case 'Doordash Dash Pass': {
+      logoLightUrl = 'dashlogo';
+      logoDarkUrl = 'dashlogo';
+      break;
+    }
+
   }
 
   return {

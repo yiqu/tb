@@ -2,8 +2,9 @@ import startCase from 'lodash/startCase';
 
 import Typography from '@/components/typography/Typography';
 import { SparklesText } from '@/components/magicui/sparkles-text';
+import { getSubscriptionLogoUrl } from '@/components/logos/SubscriptionLogo';
 import TiltedCard from '@/components/reactbits/Components/TiltedCard/TiltedCard';
-import { getSubscriptionLogoUrl, getSubscriptionDetailsTiltCardLogoSize } from '@/shared/table/table.utils';
+import { getSubscriptionDetailsTiltCardLogoSize } from '@/shared/table/table.utils';
 
 const IMAGE_WIDTH = 250;
 

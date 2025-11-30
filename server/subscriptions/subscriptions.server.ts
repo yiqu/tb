@@ -29,8 +29,13 @@ import {
 import {
   DEFAULT_PAGE_SIZE,
   CACHE_TAG_BILL_DUES_ALL,
+  CACHE_TAG_FAVORITES_ALL,
   CACHE_TAG_SUBSCRIPTIONS_ALL,
+  CACHE_TAG_BILL_DUES_BY_YEAR,
   CACHE_TAG_SUBSCRIPTION_DETAILS,
+  CACHE_TAG_BILL_DUES_CURRENT_MONTH,
+  CACHE_TAG_CURRENT_MONTH_DATE_DATA,
+  CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR,
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
@@ -564,6 +569,19 @@ export async function createNewSubscription(payload: z.infer<typeof subscription
 
 export async function deleteSubscription(subscriptionId: string): Promise<SubscriptionWithBillDues> {
   try {
+    await prisma.billDue.deleteMany({
+      where: {
+        subscriptionId: subscriptionId,
+      },
+    });
+
+    //delete the favorite associated with the subscription
+    await prisma.favoriteEntity.deleteMany({
+      where: {
+        subscriptionId: subscriptionId,
+      },
+    });
+
     const subscription: SubscriptionWithBillDues = await prisma.subscription.delete({
       where: { id: subscriptionId },
       include: {
@@ -575,6 +593,7 @@ export async function deleteSubscription(subscriptionId: string): Promise<Subscr
       },
     });
 
+    updateTag(CACHE_TAG_FAVORITES_ALL);
     revalidateSubscriptions();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
@@ -584,5 +603,27 @@ export async function deleteSubscription(subscriptionId: string): Promise<Subscr
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at deleteSubscription(): ', JSON.stringify(error));
     throw new Error(`Error deleting subscription. Code: ${error.code}`);
+  }
+}
+
+export async function deleteAllSubscriptions(): Promise<void> {
+  try {
+    await prisma.billDue.deleteMany();
+    await prisma.favoriteEntity.deleteMany();
+    await prisma.subscription.deleteMany();
+
+    updateTag(CACHE_TAG_FAVORITES_ALL);
+    revalidateSubscriptions();
+    revalidateBillDue();
+    updateTag(CACHE_TAG_BILL_DUES_ALL);
+    updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
+    updateTag(CACHE_TAG_BILL_DUES_BY_YEAR);
+    updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH);
+    updateTag(CACHE_TAG_CURRENT_MONTH_DATE_DATA);
+
+    return;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at deleteAllSubscriptions(): ', JSON.stringify(error));
+    throw new Error(`Error deleting all subscriptions. Code: ${error.code}`);
   }
 }
