@@ -724,7 +724,7 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
 
   cacheLife('weeks');
   // TODO test this tag invalidation
-  cacheTag(CACHE_TAG_BILL_DUES_BY_YEAR, `${currentYear}`);
+  cacheTag(CACHE_TAG_BILL_DUES_BY_YEAR, `${CACHE_TAG_BILL_DUES_BY_YEAR}-${currentYear}`);
 
   try {
     let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
@@ -963,6 +963,23 @@ export async function getNavigationMonthData(
   };
 }
 
+export async function getBillDueById(billDueId: string): Promise<BillDueWithSubscription | null> {
+  try {
+    const billDue: BillDueWithSubscription | null = await prisma.billDue.findUnique({
+      where: { id: billDueId },
+      include: {
+        subscription: true,
+        favorites: true,
+      },
+    });
+
+    return billDue;
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.error('Server error at getBillDueById(): ', JSON.stringify(error));
+    throw new Error(`Error retrieving bill due. Code: ${error.code}`);
+  }
+}
+
 export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, subscriptionId: string): Promise<BillDue> {
   try {
     const billDue: BillDue = await prisma.billDue.update({
@@ -976,6 +993,8 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, su
     revalidateSubscriptionDetails(subscriptionId);
     revalidateSubscriptions();
     revalidateBillsForCurrentMonth();
+    updateTag(CACHE_TAG_BILL_DUES_BY_YEAR);
+    updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -997,6 +1016,8 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
     revalidateSubscriptionDetails(subscriptionId);
     revalidateSubscriptions();
     revalidateBillsForCurrentMonth();
+    updateTag(CACHE_TAG_BILL_DUES_BY_YEAR);
+    updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -1028,28 +1049,13 @@ export async function updateBillDue(billDueId: string, data: z.infer<typeof bill
     revalidateSubscriptionDetails(billDue.subscriptionId);
     revalidateSubscriptions();
     revalidateBillsForCurrentMonth();
+    updateTag(CACHE_TAG_BILL_DUES_BY_YEAR);
+    updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at updateBillDue(): ', JSON.stringify(error));
     throw new Error(`Error updating bill due. Code: ${error.code}`);
-  }
-}
-
-export async function getBillDueById(billDueId: string): Promise<BillDueWithSubscription | null> {
-  try {
-    const billDue: BillDueWithSubscription | null = await prisma.billDue.findUnique({
-      where: { id: billDueId },
-      include: {
-        subscription: true,
-        favorites: true,
-      },
-    });
-
-    return billDue;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-    console.error('Server error at getBillDueById(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving bill due. Code: ${error.code}`);
   }
 }
 
@@ -1068,6 +1074,8 @@ export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubsc
     revalidateSubscriptionDetails(billDue.subscriptionId);
     revalidateSubscriptions();
     revalidateBillsForCurrentMonth();
+    updateTag(CACHE_TAG_BILL_DUES_BY_YEAR);
+    updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -1099,6 +1107,8 @@ export async function addBillDue(subscriptionId: string, payload: z.infer<typeof
     revalidateSubscriptionDetails(subscriptionId);
     revalidateSubscriptions();
     revalidateBillsForCurrentMonth();
+    updateTag(CACHE_TAG_BILL_DUES_BY_YEAR);
+    updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {

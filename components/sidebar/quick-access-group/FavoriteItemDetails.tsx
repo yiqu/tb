@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { DateTime } from 'luxon';
 import startCase from 'lodash/startCase';
 import { useQuery } from '@tanstack/react-query';
 import { HandCoins, CircleCheck, BanknoteArrowUp } from 'lucide-react';
@@ -278,10 +279,13 @@ function FavoriteDetailsContent({
     return (
       <div className="flex w-full flex-col items-start justify-start gap-y-2">
         <div className="grid w-full grid-cols-12 gap-2">
-          <div className="col-span-1 flex cursor-pointer items-center" onClick={ handleOnIconClick }>
+          <div className="col-span-1 flex cursor-pointer items-center gap-x-1" onClick={ handleOnIconClick }>
             { isFetching ?
               <Spinner className="size-4" />
             : <EntityDisplayMedia entity={ favoriteEntity.entityType } /> }
+            <Typography>
+              Name:
+            </Typography>
           </div>
           <div className="col-span-11 flex justify-end text-wrap">
             <Typography>{ favoriteEntity.name }</Typography>
@@ -333,8 +337,13 @@ function FavoriteDetailsContent({
               subscription.nextDueDateForThisCycleBillDue === undefined
             ) ?
               <Typography>Not available</Typography>
-            : <div className="flex flex-row items-center justify-end">
+            : <div className="flex flex-col items-end justify-start">
               <DateRelativeDisplay time={ subscription.dueDateThisCycle as any } largest={ 3 } updateInterval={ 60_000 } />
+              <Typography>
+                { DateTime.fromMillis(Number.parseInt(subscription.dueDateThisCycle as any)).toLocaleString(
+                    DateTime.DATETIME_SHORT_WITH_SECONDS,
+                  ) }
+              </Typography>
             </div>
             }
           </div>
