@@ -15,6 +15,7 @@ import { CardTitle, CardAction, CardFooter, CardHeader, CardContent, CardDescrip
 import CardTrendPercent from './CardTrendPercent';
 import CurrentMonthFooterSection from './CurrentMonthFooterSection';
 import CurrentMonthSubTextSection from './CurrentMonthSubTextSection';
+import OutstandingBillsGroupBadge from '@/components/sidebar/outstanding-group/OutstandingBillsGroupBadge';
 
 const usdFormatter = getUSDFormatter();
 
@@ -50,6 +51,9 @@ export default async function TotalDueMonthCard({ searchParamsPromise }: Props) 
         </CardAction>
       </CardHeader>
       <CardContent className="grow">
+         <Suspense>
+          <OutstandingBillsGroupBadge />
+         </Suspense>
         <Suspense fallback={ <SubTextLoading /> }>
           <CurrentMonthSubTextSection selectedMonthYear={ selectedMonthYear } currentMonthData={ currentMonthData } />
         </Suspense>
