@@ -42,6 +42,7 @@ import {
   CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR,
   CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT,
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
+  CACHE_TAG_BILL_DUES_OUTSTANDING_PRIOR_MONTHS,
 } from '@/constants/constants';
 
 import {
@@ -73,6 +74,7 @@ export async function revalidateSubscriptions() {
 
 export async function revalidateBillDue() {
   updateTag(CACHE_TAG_BILL_DUES_ALL);
+  updateTag(CACHE_TAG_BILL_DUES_OUTSTANDING_PRIOR_MONTHS);
 }
 
 export async function revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId: string) {
@@ -163,6 +165,11 @@ export const getAllBillsByMonthAndYearParamsCached = cache(async (params: string
 
 export const getAllBillsByYearFromParamsCached = cache(async (params: string | undefined, yearOffset?: number) => {
   const res = await getAllBillsByYearFromParams(params, yearOffset);
+  return res;
+});
+
+export const getOutstandingBillsCountForPriorMonthsCached = cache(async () => {
+  const res = await getOutstandingBillsCountForPriorMonths();
   return res;
 });
 
@@ -978,6 +985,23 @@ export async function getBillDueById(billDueId: string): Promise<BillDueWithSubs
     console.error('Server error at getBillDueById(): ', JSON.stringify(error));
     throw new Error(`Error retrieving bill due. Code: ${error.code}`);
   }
+}
+
+export async function getOutstandingBillsCountForPriorMonths(): Promise<number> {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_BILL_DUES_OUTSTANDING_PRIOR_MONTHS);
+
+  const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+  const endOfMonthLuxon = currentDateLuxon.endOf('month');
+  const allBillsDue = await prisma.billDue.findMany();
+
+  const outstanding = allBillsDue.filter((bill) => {
+    const dueDate = Number.parseInt(bill.dueDate);
+    return dueDate <= endOfMonthLuxon.toMillis() && (!bill.reimbursed || !bill.paid);
+  });
+
+  return outstanding.length;
 }
 
 export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, subscriptionId: string): Promise<BillDue> {

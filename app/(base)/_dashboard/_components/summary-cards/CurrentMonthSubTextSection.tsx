@@ -17,7 +17,7 @@ export default async function CurrentMonthSubTextSection({ currentMonthData, sel
     <div className="flex w-full flex-col justify-start gap-y-2">
       <div className="flex flex-row flex-wrap items-center justify-start gap-x-2">
         <div className="flex flex-row items-center justify-start gap-x-1">
-          <Typography className="w-[84px]">Bills:</Typography>
+          <Typography className="w-[64px]">Current:</Typography>
           <Typography className="font-semibold tabular-nums" variant="body2">
             { currentMonthData.totalBillsCount }
           </Typography>
@@ -46,7 +46,7 @@ export default async function CurrentMonthSubTextSection({ currentMonthData, sel
 
       <div className="flex flex-row flex-wrap items-center justify-start gap-x-2">
         <div className="flex flex-row items-center justify-start gap-x-1">
-          <Typography className="w-[84px]">Previous Bills:</Typography>
+          <Typography className="w-[64px]">Previous:</Typography>
           <Typography className="font-semibold tabular-nums" variant="body2">
             { previousMonthData.totalBillsCount }
           </Typography>

@@ -58,6 +58,9 @@ export const CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR = 'subscription-bills-
 
 export const CACHE_TAG_HISTORY_ENTRIES_ALL = 'history-entries-all';
 
+// Sidenav
+export const CACHE_TAG_BILL_DUES_OUTSTANDING_PRIOR_MONTHS = 'bill-dues-outstanding-prior-months';
+
 export const SORT_DATA_PAGE_IDS = {
   dashboard_current_month: 'dashboard-current-month',
   search: 'search',
