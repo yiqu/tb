@@ -6,6 +6,7 @@ import { use, useState } from 'react';
 
 import useIsClient from '@/hooks/useIsClient';
 import { Skeleton } from '@/components/ui/skeleton';
+import MonthIcon from '@/components/month/MonthIcon';
 import { MONTH_NAMES, EST_TIME_ZONE } from '@/lib/general.utils';
 import Typography, { TypographyProps } from '@/components/typography/Typography';
 import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
@@ -37,10 +38,11 @@ export default function CurrentMonthText({ searchParamsPromise, ...rest }: Props
   }
 
   return (
-    <>
+    <div className="flex flex-row items-center gap-x-2">
+      <MonthIcon month={ monthNumber } height={ 30 } />
       <Typography { ...rest } onClick={ handleOnTitleClick }>
         { MONTH_NAMES[Number.parseInt(monthNumber) - 1] } <span className="ml-1 text-muted-foreground">({ selectedMonthYear })</span>
       </Typography>
-    </>
+    </div>
   );
 }

@@ -1,10 +1,10 @@
 import z from 'zod';
 import { Suspense } from 'react';
-import { SquareArrowDown } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getUSDFormatter } from '@/lib/number.utils';
+import MonthImage from '@/components/month/MonthImage';
 import DisplayCard from '@/shared/components/DisplayCard';
 import Typography from '@/components/typography/Typography';
 import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
@@ -32,7 +32,7 @@ export default async function TotalDueMonthCard({ searchParamsPromise }: Props) 
       <CardHeader>
         <CardDescription>
           <div className="flex flex-row items-center justify-start gap-x-2">
-            <SquareArrowDown className="size-5" />
+            <MonthImage month={ currentMonthData.monthParams ?? '' } height={ 22 } />
             <Typography>
               Month: { currentMonthData.monthParams }/{ currentMonthData.yearParams }
             </Typography>

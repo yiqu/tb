@@ -1,6 +1,7 @@
 import { getUSDFormatter } from '@/lib/number.utils';
 import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
+import OutstandingCount from '@/components/counts/OutstandingCount';
 import SubscriptionLogoAvatar from '@/components/logos/SubscriptionLogoAvatar';
 import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
 import { getAllBillsByMonthAndYearParamsCached } from '@/server/bills/bills.server';
@@ -16,10 +17,17 @@ export default async function CurrentMonthSubTextSection({ currentMonthData, sel
   return (
     <div className="flex w-full flex-col justify-start gap-y-2">
       <div className="flex flex-row flex-wrap items-center justify-start gap-x-2">
-        <div className="flex flex-row items-center justify-start gap-x-1">
-          <Typography className="w-[64px]">Current:</Typography>
-          <Typography className="font-semibold tabular-nums" variant="body2">
+        <div className="flex min-w-25 flex-row items-center justify-start gap-x-1">
+          <Typography className="min-w-14">Current:</Typography>
+          <Typography className="font-semibold tabular-nums" variant="body1">
             { currentMonthData.totalBillsCount }
+            { ` ` }
+            <span className={ `
+              text-red-700
+              dark:text-red-400
+            ` }>
+              (<OutstandingCount selectedMonthYear={ selectedMonthYear } showTooltip />)
+            </span>
           </Typography>
         </div>
         <Separator orientation="vertical" className="h-4!" />
@@ -45,10 +53,17 @@ export default async function CurrentMonthSubTextSection({ currentMonthData, sel
       </div>
 
       <div className="flex flex-row flex-wrap items-center justify-start gap-x-2">
-        <div className="flex flex-row items-center justify-start gap-x-1">
-          <Typography className="w-[64px]">Previous:</Typography>
-          <Typography className="font-semibold tabular-nums" variant="body2">
+        <div className="flex min-w-25 flex-row items-center justify-start gap-x-1">
+          <Typography className="">Previous:</Typography>
+          <Typography className="font-semibold tabular-nums" variant="body1">
             { previousMonthData.totalBillsCount }
+            { ` ` }
+            <span className={ `
+              text-red-700
+              dark:text-red-400
+            ` }>
+              (<OutstandingCount selectedMonthYear={ `${previousMonthData.monthParams}/${previousMonthData.yearParams}` } showTooltip />)
+            </span>
           </Typography>
         </div>
         <Separator orientation="vertical" className="h-4!" />

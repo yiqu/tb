@@ -173,6 +173,11 @@ export const getOutstandingBillsCountForPriorMonthsCached = cache(async () => {
   return res;
 });
 
+export const getOutstandingBillsCountForMonthAndYearCached = cache(async (selectedMonthYear: string | undefined) => {
+  const res = await getOutstandingBillsCountForMonthAndYear(selectedMonthYear);
+  return res;
+});
+
 export async function getEntireBills() {
   'use cache';
   cacheLife('weeks');
@@ -999,6 +1004,43 @@ export async function getOutstandingBillsCountForPriorMonths(): Promise<number> 
   const outstanding = allBillsDue.filter((bill) => {
     const dueDate = Number.parseInt(bill.dueDate);
     return dueDate <= endOfMonthLuxon.toMillis() && (!bill.reimbursed || !bill.paid);
+  });
+
+  return outstanding.length;
+}
+
+export async function getOutstandingBillsCountForMonthAndYear(selectedMonthYear: string | undefined): Promise<number> {
+  'use cache';
+  cacheLife('weeks');
+  cacheTag(CACHE_TAG_BILL_DUES_OUTSTANDING_PRIOR_MONTHS);
+
+  const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
+  let startOfMonthLuxon = currentDateLuxon.startOf('month');
+  let endOfMonthLuxon = currentDateLuxon.endOf('month');
+
+  if (selectedMonthYear) {
+    // 11/2025
+    const [month, year] = selectedMonthYear.split('/');
+    let monthLuxon = DateTime.fromObject(
+      {
+        month: Number.parseInt(month),
+        year: Number.parseInt(year),
+        day: 1,
+      },
+      {
+        zone: EST_TIME_ZONE,
+      },
+    );
+
+    startOfMonthLuxon = monthLuxon.startOf('month');
+    endOfMonthLuxon = monthLuxon.endOf('month');
+  }
+
+  const allBillsDue = await prisma.billDue.findMany();
+
+  const outstanding = allBillsDue.filter((bill) => {
+    const dueDate = Number.parseInt(bill.dueDate);
+    return dueDate <= endOfMonthLuxon.toMillis() && dueDate >= startOfMonthLuxon.toMillis() && (!bill.reimbursed || !bill.paid);
   });
 
   return outstanding.length;

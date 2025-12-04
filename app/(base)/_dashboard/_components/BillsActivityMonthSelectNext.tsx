@@ -4,6 +4,7 @@ import { useQueryState } from 'nuqs';
 import { ArrowRightIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import MonthImage from '@/components/month/MonthImage';
 import { NavigationMonthData } from '@/models/bills/bills.model';
 
 type Props = {
@@ -30,7 +31,9 @@ export default function BillsActivityMonthSelectNextButton({ navigationMonthData
 
   return (
     <Button variant="secondary" size="default" aria-label="Next month" onClick={ handleOnClickNext } className="min-w-60">
-      <ArrowRightIcon /> { nextMonthName ?? 'Next month' }
+      <ArrowRightIcon />
+      <MonthImage month={ nextMonth.toString() } height={ 18 } />
+      { nextMonthName ?? 'Next month' }
       <span>{ nextMonthYear }</span>
       { isNextMonthTheCurrentMonth ?
         <span>(Current)</span>
