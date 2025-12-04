@@ -6,6 +6,7 @@ import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 
 import CurrentMonthText from './CurrentMonthText';
 import BillsActivityMonthSelect from './BillsActivityMonthSelect';
+import OutstandingBillsGroupBadge from './OutstandingBillsGroupBadge';
 import BillsTableClearMonthSelectionButton from './BillsTableClearMonthSelectionButton';
 
 type Props = {
@@ -17,6 +18,9 @@ export default function DashboardDateTitle({ searchParamsPromise }: Props) {
     <div className="flex w-full flex-row items-center justify-between gap-x-1">
       <Suspense fallback={ <MonthTextLoading /> }>
         <CurrentMonthText variant="h3" searchParamsPromise={ searchParamsPromise } />
+      </Suspense>
+      <Suspense>
+        <OutstandingBillsGroupBadge />
       </Suspense>
       <div className="flex flex-row items-center justify-end gap-x-4">
         <Suspense fallback={ <Skeleton className="h-8 w-29" /> }>

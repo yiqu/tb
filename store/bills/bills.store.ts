@@ -17,16 +17,13 @@ type BillsTableViewState = {
   billDueIdBeingEdited: BillDueIdBeingEdited;
   lastEdited: number | null;
   recentlyAddedBillDues: BillDueWithSubscription[];
-
-  // Actions
-  // setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
-  // clearBillDueIdBeingEdited: (billDueId: string) => void;
-  // setLastEdited: (lastEdited: number) => void;
+  outstandingBillsAllTimeCount: number | undefined;
 
   actions: {
     setBillDueIdBeingEdited: (billDueId: string, setEmpty?: boolean) => void;
     appendRecentlyAddedBillDues: (billDues: BillDueWithSubscription) => void;
     setLastEditedTimestamp: (lastEdited: number) => void;
+    setOutstandingBillsAllTimeCount: (outstandingBillsAllTimeCount: number) => void;
   };
 };
 
@@ -39,6 +36,7 @@ const billsTableViewStoreBase = create<BillsTableViewState>()(
       billDueIdBeingEdited: {},
       lastEdited: null,
       recentlyAddedBillDues: [],
+      outstandingBillsAllTimeCount: undefined,
 
       actions: {
         appendRecentlyAddedBillDues: (billDue: BillDueWithSubscription) => {
@@ -86,6 +84,14 @@ const billsTableViewStoreBase = create<BillsTableViewState>()(
             };
           });
         },
+
+        setOutstandingBillsAllTimeCount: (outstandingBillsAllTimeCount: number) => {
+          set((state: BillsTableViewState) => {
+            return {
+              outstandingBillsAllTimeCount: outstandingBillsAllTimeCount,
+            };
+          });
+        },
       },
     }),
     {
@@ -118,5 +124,6 @@ const billsTableViewStore = createSelectors(billsTableViewStoreBase);
 export const useBillStoreActions = () => billsTableViewStoreBase((state) => state.actions);
 export const useGetRecentlyAddedBillDues = () => billsTableViewStoreBase((state) => state.recentlyAddedBillDues);
 export const useGetBillDueIdBeingEdited = () => billsTableViewStoreBase((state) => state.billDueIdBeingEdited);
+export const useGetOutstandingBillsAllTimeCount = () => billsTableViewStoreBase((state) => state.outstandingBillsAllTimeCount);
 
 export default billsTableViewStore;
