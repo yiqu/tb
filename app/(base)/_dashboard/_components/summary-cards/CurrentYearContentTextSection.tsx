@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import Typography from '@/components/typography/Typography';
 import { BillDueWithSubscriptionByYear } from '@/models/bills/bills.model';
 import SubscriptionLogoAvatar from '@/components/logos/SubscriptionLogoAvatar';
@@ -16,7 +18,11 @@ export default async function CurrentYearContentTextSection({ currentYearData }:
       <Typography className="">
         There { isBillsCountSingle ? 'is' : 'are' } <span className="font-semibold tabular-nums">{ currentYearData.totalBillsCount }</span> bill
         { isBillsCountSingle ? '' : 's' } out of <span className="font-semibold tabular-nums">{ currentYearData.totalSubscriptionsCount }</span>{ ' ' }
-        subscription{ isSubscriptionsCountSingle ? '' : 's' } in year { currentYearData.yearParams }.
+        subscription{ isSubscriptionsCountSingle ? '' : 's' } in{ ' ' }
+        <Link href={ `/bills?year=${currentYearData.yearParams}` } prefetch>
+          year { currentYearData.yearParams }
+        </Link>
+        .
       </Typography>
       <div className={ `
         flex flex-wrap space-x-1
