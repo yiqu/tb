@@ -18,7 +18,3 @@ export default function SubscriptionDetailsMetadataFooter({ subscription }: { su
     </div>
   );
 }
-
-// function CurrentYearBillsLoading() {
-//   return <Skeleton className="h-[50px] w-[311px]" />;
-// }

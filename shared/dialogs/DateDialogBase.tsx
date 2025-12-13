@@ -9,6 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
 import { CopyButton } from '@/components/animate-ui/buttons/copy';
 
+import DateRelativeDisplay from '../table/DateRelativeDisplay';
+
 export default function DateDialogContentBase({ dateString, isIso = false }: { dateString: string; isIso?: boolean }) {
   const isClient = useIsClient();
 
@@ -41,6 +43,13 @@ export default function DateDialogContentBase({ dateString, isIso = false }: { d
             <Typography>{ relativeDate }</Typography>
           </div>
         </div>
+        <div className="grid grid-cols-3 items-center gap-4">
+          <Typography>Relative</Typography>
+          <div className="col-span-2">
+            <DateRelativeDisplay time={ dateString } includeParenthesis clientLoadingClassName="h-[20px] w-[40px]" showClientLoading={ true } />
+          </div>
+        </div>
+
         <div className="grid grid-cols-3 items-center gap-4">
           <Typography>Epoch</Typography>
           <div className="col-span-2 flex flex-row items-center gap-x-2">

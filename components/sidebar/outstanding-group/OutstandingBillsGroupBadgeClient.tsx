@@ -8,7 +8,6 @@ import { useGetOutstandingBillsAllTimeCount } from '@/store/bills/bills.store';
 export default function OutstandingBillsGroupBadgeClient() {
   const isClient = useClientOnly();
   const outstandingBillsAllTimeCount: number | undefined = useGetOutstandingBillsAllTimeCount();
-
   if (!isClient) {
     return <BadgeLoading />;
   }
