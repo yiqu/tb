@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { useClientOnly } from '@/hooks/useClientOnly';
+import WithTooltip from '@/shared/components/WithTooltip';
 import DateRelativeDisplay from '@/shared/table/DateRelativeDisplay';
 import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
 
@@ -48,20 +49,24 @@ export default function NextMonthTimeRemainDuration({ selectedMonthYear, nextMon
     });
 
     return (
-      <div>
+      <WithTooltip tooltip={ duration }>
         <DateRelativeDisplay
           time={ `${nextMonthFirstDayLuxonMillisecond}` }
           addSuffix={ false }
-          prefixText={ 'in' }
-          title={ duration }
+          prefixText={ 'IN:' }
           className={ cn(`truncate font-semibold`, {
             'text-yellow-600': nextMonthFirstDayLuxonMillisecond - currentDateLuxonMillisecond < WARNING_DURATION_MILLISECONDS,
             'text-red-400': nextMonthFirstDayLuxonMillisecond - currentDateLuxonMillisecond < DANGER_DURATION_MILLISECONDS,
           }) }
+          isCompleted={ false }
+          largest={ 5 }
+          updateInterval={ 1_000 }
+          useShortTextJustSeconds={ true }
         />
-      </div>
+      </WithTooltip>
     );
   }
 
   return null;
 }
+

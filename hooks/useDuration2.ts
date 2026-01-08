@@ -84,7 +84,7 @@ export default function useDuration2(
         round: true,
         spacer: ' ',
         delimiter: ' ',
-      })
+      }).replace(/(\d+) s\b/g, '$1s') // removes the space in front of "s"
     : useShortText ?
       shortEnglish(absoluteElapsed, {
         largest,

@@ -62,7 +62,7 @@
     "iso8601-duration": "~2.1.2",
     "little-date": "~1.0.0",
     "lodash": "~4.17.21",
-    "lucide-react": "^0.561.0",
+    "lucide-react": "^0.562.0",
     "luxon": "~3.7.2",
     "moment": "~2.30.1",
     "motion": "^12.23.12",
