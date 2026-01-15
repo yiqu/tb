@@ -34,9 +34,10 @@ export async function getSortDataForPageId(pageId: string): Promise<SortDataMode
     });
 
     return sortData;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getSortDataForPageId(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving sort data for page id: ${pageId}. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving sort data for page id: ${pageId}. Code: ${errorCode}`);
   }
 }
 
@@ -57,9 +58,10 @@ export async function upsertSortData2(sortData: SortDataUpsertable): Promise<Sor
       updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
       return updatedSortData;
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    } catch (error: unknown) {
       console.error('Server error at updating sort data(): ', JSON.stringify(error));
-      throw new Error(`Error updating sort data. Code: ${error.code}`);
+      const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+      throw new Error(`Error updating sort data. Code: ${errorCode}`);
     }
   } else {
     // create new sort data
@@ -74,9 +76,10 @@ export async function upsertSortData2(sortData: SortDataUpsertable): Promise<Sor
       updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
       return newSortData;
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    } catch (error: unknown) {
       console.error('Server error at adding sort data(): ', JSON.stringify(error));
-      throw new Error(`Error creating sort data. Code: ${error.code}`);
+      const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+      throw new Error(`Error creating sort data. Code: ${errorCode}`);
     }
   }
 }
