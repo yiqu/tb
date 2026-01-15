@@ -192,9 +192,10 @@ export async function getEntireBills() {
     });
 
     return billDues;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getEntireBills(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving entire bill dues. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving entire bill dues. Code: ${errorCode}`);
   }
 }
 
@@ -278,7 +279,7 @@ export async function getEntireBillsChartData(): Promise<DashboardYearBillsChart
         resultAtNode.totalCost = resultAtNode.totalCost + billDueCost;
 
         // if subscription name property already exist
-        const subscriptionResultAtNode: any = resultAtNode[bill.subscription.name];
+        const subscriptionResultAtNode = resultAtNode[bill.subscription.name] as { billDues: BillDueWithSubscription[]; totalCost: number } | undefined;
         if (subscriptionResultAtNode) {
           subscriptionResultAtNode.billDues.push(bill);
           subscriptionResultAtNode.totalCost = subscriptionResultAtNode.totalCost + billDueCost;
@@ -320,7 +321,7 @@ export async function getAllBills(
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
 
-  const whereClause: any = {
+  const whereClause: Prisma.BillDueWhereInput = {
     AND: [],
   };
 
@@ -521,9 +522,10 @@ export async function getAllBills(
       startDateEpoch,
       endDateEpoch,
     };
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllBills(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving bill dues. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving bill dues. Code: ${errorCode}`);
   }
 }
 
@@ -618,9 +620,10 @@ async function getAllBillsByMonthAndYear(
       endDateEpoch,
       totalBillsCost,
     };
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllBillsByMonthAndYear(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving bill dues by month and year. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving bill dues by month and year. Code: ${errorCode}`);
   }
 }
 
@@ -701,9 +704,10 @@ async function getAllBillsByMonthAndYearParams(
       endDateEpoch,
       totalBillsCost,
     };
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllBillsByMonthAndYearParams(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving bill dues by month and year params. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving bill dues by month and year params. Code: ${errorCode}`);
   }
 }
 
@@ -774,9 +778,10 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
       totalSubscriptionsCount: uniqueBySubscription.length,
       uniqueBySubscription: uniqueBySubscription,
     };
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllBillsByMonthAndYearParams(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving bill dues by month and year params. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving bill dues by month and year params. Code: ${errorCode}`);
   }
 }
 
@@ -793,9 +798,10 @@ export async function getAllBillsCount(): Promise<number> {
     });
 
     return billDues.length;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllBillsCount(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving bill dues count. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving bill dues count. Code: ${errorCode}`);
   }
 }
 
@@ -821,9 +827,10 @@ export async function getCurrentMonthBillsCount(month: string, year: string): Pr
     });
 
     return filtered.length;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getCurrentMonthBillsCount(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving current month bill dues count. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving current month bill dues count. Code: ${errorCode}`);
   }
 }
 
@@ -864,9 +871,10 @@ async function getBillsForCurrentMonth(): Promise<BillsForCurrentMonth> {
       startDate: currentMonthStartLuxon.toMillis(),
       endDate: endOfMonthLuxon.toMillis(),
     };
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getBillsForCurrentMonth(): ', JSON.stringify(error));
-    throw new Error(`Error getting bills for current month. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error getting bills for current month. Code: ${errorCode}`);
   }
 }
 
@@ -986,9 +994,10 @@ export async function getBillDueById(billDueId: string): Promise<BillDueWithSubs
     });
 
     return billDue;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getBillDueById(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving bill due. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving bill due. Code: ${errorCode}`);
   }
 }
 
@@ -1063,9 +1072,10 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, su
     updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at updateIsBillDuePaid(): ', JSON.stringify(error));
-    throw new Error(`Error updating bill due paid status. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error updating bill due paid status. Code: ${errorCode}`);
   }
 }
 
@@ -1086,9 +1096,10 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
     updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at updateIsBillDueReimbursed(): ', JSON.stringify(error));
-    throw new Error(`Error updating bill due reimbursed status. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error updating bill due reimbursed status. Code: ${errorCode}`);
   }
 }
 
@@ -1119,9 +1130,10 @@ export async function updateBillDue(billDueId: string, data: z.infer<typeof bill
     updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at updateBillDue(): ', JSON.stringify(error));
-    throw new Error(`Error updating bill due. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error updating bill due. Code: ${errorCode}`);
   }
 }
 
@@ -1144,9 +1156,10 @@ export async function deleteBillDue(billDueId: string): Promise<BillDueWithSubsc
     updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at deleteBillDue(): ', JSON.stringify(error));
-    throw new Error(`Error deleting bill due. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error deleting bill due. Code: ${errorCode}`);
   }
 }
 
@@ -1177,8 +1190,9 @@ export async function addBillDue(subscriptionId: string, payload: z.infer<typeof
     updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
 
     return billDue;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at addBillDue(): ', JSON.stringify(error));
-    throw new Error(`Error adding bill due. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error adding bill due. Code: ${errorCode}`);
   }
 }
