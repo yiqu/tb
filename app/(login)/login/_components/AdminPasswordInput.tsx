@@ -1,8 +1,5 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable better-tailwindcss/enforce-consistent-class-order */
-
 import Link from 'next/link';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 
 import { UserProfile } from '@/models/user/user.model';
 import Typography from '@/components/typography/Typography';
@@ -12,60 +9,69 @@ import { InputOTP, InputOTPSlot, InputOTPGroup } from '@/components/ui/input-otp
 
 import LoginGreetUser from './LoginGreetUser';
 
+// this is the thing that shows the password box
 interface AdminPasswordInputProps {
   onPasswordEnteredStatus: (correct: boolean | null) => void;
   user: UserProfile | null;
 }
 
 export default function AdminPasswordInput({ onPasswordEnteredStatus, user }: AdminPasswordInputProps) {
-  const [value, setValue] = useState('');
-  const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean | null>(null);
-  const [isPasswordFinished, setIsPasswordFinished] = useState<boolean>(false);
-  const autoFocusInputRef = useFocusInputField();
+  // the password the person types
+  const [password, setPassword] = useState('');
+  // is the password good or bad?
+  const [isGood, setIsGood] = useState<boolean | null>(null);
+  // did they finish typing?
+  const [isDone, setIsDone] = useState<boolean>(false);
+  const inputRef = useFocusInputField();
 
-  const handleOnInputChange = useCallback(
-    (value: string) => {
-      setValue(value);
+  // when they type something
+  function handleChange(newPassword: string) {
+    setPassword(newPassword);
 
-      if (value.length > 3) {
-        setIsPasswordFinished(true);
-        if (process.env.NEXT_PUBLIC_ADMIN_PASSWORD === value) {
-          setIsPasswordCorrect(true);
-          onPasswordEnteredStatus(true);
-          triggerPasswordCorrect();
-        } else {
-          setIsPasswordCorrect(false);
-          onPasswordEnteredStatus(false);
-        }
+    // if they typed more than 3 letters
+    if (newPassword.length > 3) {
+      setIsDone(true);
+      
+      // check if it matches the secret password
+      const secretPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+      if (secretPassword === newPassword) {
+        // yay! it's good!
+        setIsGood(true);
+        onPasswordEnteredStatus(true);
+        triggerPasswordCorrect();
       } else {
-        setIsPasswordFinished(false);
-        onPasswordEnteredStatus(null);
-        setIsPasswordCorrect(null);
+        // oh no! it's wrong!
+        setIsGood(false);
+        onPasswordEnteredStatus(false);
       }
-    },
-    [onPasswordEnteredStatus],
-  );
+    } else {
+      // they're still typing
+      setIsDone(false);
+      onPasswordEnteredStatus(null);
+      setIsGood(null);
+    }
+  }
 
   return (
     <div className="fixed z-2 flex flex-col gap-y-10 bg-black/30 text-white">
       <div className="flex flex-col gap-y-4">
-        { isPasswordCorrect === true ? null : (
+        { isGood === true ? null : (
           <div className="flex flex-row justify-center">
-            <LoginGreetUser user={ user } isPasswordCorrect={ isPasswordCorrect } />
+            <LoginGreetUser user={ user } isPasswordCorrect={ isGood } />
           </div>
         ) }
 
         <div className="flex flex-row justify-center">
-          <PasswordStatusMessage isPasswordCorrect={ isPasswordCorrect } isPasswordFinished={ isPasswordFinished } />
+          <ShowMessage isGood={ isGood } isDone={ isDone } />
         </div>
       </div>
 
       <InputOTP
         maxLength={ 6 }
-        value={ value }
-        onChange={ handleOnInputChange }
+        value={ password }
+        onChange={ handleChange }
         className="bg-black text-white"
-        ref={ autoFocusInputRef }
+        ref={ inputRef }
         spellCheck={ false }
       >
         <InputOTPGroup className="flex w-full flex-row justify-center font-fun" spellCheck={ false }>
@@ -86,15 +92,18 @@ export default function AdminPasswordInput({ onPasswordEnteredStatus, user }: Ad
   );
 }
 
-function PasswordStatusMessage({
-  isPasswordCorrect,
-  isPasswordFinished,
+// this shows a message to tell them if it's good or bad
+function ShowMessage({
+  isGood,
+  isDone,
 }: {
-  isPasswordCorrect: boolean | null;
-  isPasswordFinished: boolean;
+  isGood: boolean | null;
+  isDone: boolean;
 }) {
-  if (isPasswordFinished) {
-    if (isPasswordCorrect) {
+  // if they finished typing
+  if (isDone) {
+    // if it's good
+    if (isGood) {
       return (
         <Typography
           variant="h5"
@@ -104,6 +113,7 @@ function PasswordStatusMessage({
         </Typography>
       );
     } else {
+      // if it's bad
       return (
         <Typography
           variant="h5"
@@ -114,6 +124,7 @@ function PasswordStatusMessage({
       );
     }
   } else {
+    // they're still typing
     return (
       <Typography variant="h5" className="font-fun text-3xl tracking-wider text-green-200">
         Please enter admin password
@@ -122,6 +133,7 @@ function PasswordStatusMessage({
   }
 }
 
+// this makes one box for typing
 function InputSlot({ index }: { index: number }) {
   return <InputOTPSlot index={ index } className="h-12 w-12 border-gray-300 pb-[4px] text-2xl" />;
 }
