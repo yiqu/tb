@@ -18,9 +18,11 @@ export function getFilteredBillDuesByMonth(
   } else if (monthParams === 'last-month') {
     const lastMonthLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('month').minus({ months: 1 });
     monthInt = lastMonthLuxon.month;
+    yearInt = lastMonthLuxon.year;
   } else if (monthParams === 'next-month') {
     const nextMonthLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('month').plus({ months: 1 });
     monthInt = nextMonthLuxon.month;
+    yearInt = nextMonthLuxon.year;
   }
 
   // use Luxon to get the start and end of the month

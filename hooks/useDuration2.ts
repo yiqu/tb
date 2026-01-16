@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import humanizeDuration from 'humanize-duration';
+import humanizeDuration, { Unit } from 'humanize-duration';
 
 const ONE_MINUTE_MILLI = 1_000 * 60;
 
@@ -42,6 +42,7 @@ export default function useDuration2(
   largest: number = 2,
   useShortText: boolean = false,
   useShortTextJustSeconds: boolean = false,
+  customUnits?: Unit[],
 ) {
   const [elapsed, setElapsed] = useState<number>(() => Date.now() - from);
 
@@ -80,7 +81,7 @@ export default function useDuration2(
     useShortTextJustSeconds ?
       shortEnglishJustSeconds(absoluteElapsed, {
         largest,
-        units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
+        units: customUnits ? customUnits : ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
         round: true,
         spacer: ' ',
         delimiter: ' ',
@@ -88,14 +89,14 @@ export default function useDuration2(
     : useShortText ?
       shortEnglish(absoluteElapsed, {
         largest,
-        units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
+        units: customUnits ? customUnits : ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
         round: true,
         spacer: '',
         delimiter: ' ',
       })
     : humanizeDuration(absoluteElapsed, {
         largest,
-        units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
+        units: customUnits ? customUnits : ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
         round: true,
       });
 

@@ -319,7 +319,6 @@ export async function getAllBills(
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
-
   const whereClause: any = {
     AND: [],
   };
