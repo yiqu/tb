@@ -10,7 +10,6 @@ import { TableCell } from '@/components/ui/table';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
-import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import SubscriptionsTableAddDueBillButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableAddDueBillButton';
@@ -19,6 +18,7 @@ import SubscriptionsTableEditSubscriptionButton from '@/app/(base)/subscriptions
 import SubscriptionsTableDeleteSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableDeleteSubscriptionButton';
 
 import DateDialogContent from '../dialogs/DateDialog';
+import LinkAnimated from '../components/LinkAnimated';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import { getFrequencyImageUrl, getSubscriptionLogoSize } from './table.utils';
 import SubscriptionsTableToggleSignedButton from './SubscriptionsTableToggleSignedButton';
@@ -178,12 +178,14 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     return (
       <TableCell>
         <div className="flex h-full flex-row items-center justify-between gap-x-2">
-          <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
-            <div className="flex flex-row items-center justify-start gap-x-2 text-wrap">
-              <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
-              <CenterUnderline label={ subName } className="wrap-break-word" />
-            </div>
-          </Link>
+          <LinkAnimated
+            href={ `/subscriptions/${subscription.id}` }
+            prefetch={ true }
+            label={ subName }
+            textClassName="wrap-break-word"
+            sectionClassName="gap-x-2 text-wrap"
+            startAdornment={ <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } /> }
+          />
           <div>
             { isFavorited ?
               <SubscriptionsTableEditFavoriteButton subscription={ subscription } />

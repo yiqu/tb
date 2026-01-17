@@ -1,20 +1,21 @@
-import Link from 'next/link';
 import { House } from 'lucide-react';
 
-import CenterUnderline from '@/fancy/components/text/underline-center';
+import RowStack from '@/shared/components/RowStack';
+import LinkAnimated from '@/shared/components/LinkAnimated';
 
+import Typography from '../typography/Typography';
 import { BreadcrumbItem, BreadcrumbLink } from '../ui/breadcrumb';
 
 export default function HomeSegment() {
   return (
     <BreadcrumbItem>
       <BreadcrumbLink asChild>
-        <Link href={ '/' } prefetch>
-          <section className="flex flex-row items-center justify-start gap-x-1">
+        <LinkAnimated href={ '/' } prefetch>
+          <RowStack className="items-center gap-x-1">
             <House size={ 14 } />
-            <CenterUnderline label="Home" />
-          </section>
-        </Link>
+            <Typography>Home</Typography>
+          </RowStack>
+        </LinkAnimated>
       </BreadcrumbLink>
     </BreadcrumbItem>
   );

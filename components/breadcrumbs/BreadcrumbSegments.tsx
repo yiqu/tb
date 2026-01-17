@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { Params } from 'next/dist/server/request/params';
+
+import RowStack from '@/shared/components/RowStack';
+import LinkAnimated from '@/shared/components/LinkAnimated';
 
 import { BreadcrumbSegmentIcon, BreadcrumbSegmentTitle } from './BreadCrumbsUtils';
 import { BreadcrumbItem, BreadcrumbPage, BreadcrumbLink, BreadcrumbSeparator } from '../ui/breadcrumb';
@@ -23,21 +25,21 @@ export default function BreadcrumbSegments() {
             { isLast ?
               <BreadcrumbItem>
                 <BreadcrumbPage>
-                  <section className={ `flex flex-row items-center justify-start gap-x-1` }>
+                  <RowStack className="items-center gap-x-1">
                     <BreadcrumbSegmentIcon path={ path } params={ params } isLast={ isLast } />
                     <BreadcrumbSegmentTitle path={ path } isLast={ isLast } paths={ paths } />
-                  </section>
+                  </RowStack>
                 </BreadcrumbPage>
               </BreadcrumbItem>
             : <>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={ href as any } prefetch>
-                    <section className={ `flex flex-row items-center justify-start gap-x-1` }>
+                  <LinkAnimated href={ href } prefetch>
+                    <RowStack className="items-center gap-x-1">
                       <BreadcrumbSegmentIcon path={ path } params={ params } isLast={ isLast } />
                       <BreadcrumbSegmentTitle path={ path } isLast={ isLast } paths={ paths } />
-                    </section>
-                  </Link>
+                    </RowStack>
+                  </LinkAnimated>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />

@@ -1,11 +1,10 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
 
-import { useRef, useEffect } from 'react';
 import { motion, Transition } from 'motion/react';
+import { useRef, useEffect, ReactNode } from 'react';
 
 interface UnderlineProps {
-  label: string;
+  label: ReactNode;
   className?: string;
   transition?: Transition;
   onClick?: () => void;
@@ -22,7 +21,7 @@ const CenterUnderline = ({
   underlinePaddingRatio = 0.01, // Default to 1% of font size
   ...props
 }: UnderlineProps) => {
-  const textRef = useRef<HTMLSpanElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateUnderlineStyles = () => {
@@ -52,14 +51,17 @@ const CenterUnderline = ({
   };
 
   return (
-    <motion.span
-      className={ `relative inline-block cursor-pointer ${className}` }
+    <motion.div
+      className={ `
+        relative inline-block cursor-pointer
+        ${className}
+      ` }
       whileHover="visible"
       onClick={ onClick }
       ref={ textRef }
       { ...props }
     >
-      <span>{ label }</span>
+      { label }
       <motion.span
         className="absolute left-1/2 -translate-x-1/2 bg-current"
         style={ {
@@ -69,7 +71,7 @@ const CenterUnderline = ({
         variants={ underlineVariants }
         transition={ transition }
       />
-    </motion.span>
+    </motion.div>
   );
 };
 

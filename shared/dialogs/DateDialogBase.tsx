@@ -39,13 +39,13 @@ export default function DateDialogContentBase({ dateString, isIso = false }: { d
         </div>
         <div className="grid grid-cols-3 items-center gap-4">
           <Typography>Relative</Typography>
-          <div className="col-span-2">
+          <div className="col-span-2 text-wrap wrap-break-word">
             <Typography>{ relativeDate }</Typography>
           </div>
         </div>
         <div className="grid grid-cols-3 items-center gap-4">
           <Typography>Relative</Typography>
-          <div className="col-span-2">
+          <div className="col-span-2 text-wrap wrap-break-word">
             <DateRelativeDisplay time={ dateString } includeParenthesis clientLoadingClassName="h-[20px] w-[40px]" showClientLoading={ true } />
           </div>
         </div>

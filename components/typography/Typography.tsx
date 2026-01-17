@@ -31,7 +31,7 @@ import { cn } from '@/lib/utils';
 // extrabold = 800
 // black = 900
 
-const typographyVariants = cva('scroll-m-20', {
+export const typographyVariants = cva('scroll-m-20', {
   variants: {
     variant: {
       h1: `text-4xl leading-10 font-semibold tracking-tight`,
@@ -66,6 +66,14 @@ const typographyVariants = cva('scroll-m-20', {
       labelvalue0: `text-[0.75rem] leading-4 tracking-normal`,
       labelvalue1: `text-[0.875rem] leading-5 tracking-normal`,
       labelvalue2: `text-[1rem] leading-6 tracking-normal`,
+
+      code0: `font-mono text-[0.75rem] leading-4 tracking-normal`,
+      code1: `font-mono text-[0.875rem] leading-5 tracking-normal`,
+      code2: `font-mono text-[1rem] leading-6 tracking-normal`,
+
+      italic0: `text-[0.75rem] leading-4 tracking-normal italic`,
+      italic1: `text-[0.875rem] leading-5 tracking-normal italic`,
+      italic2: `text-[1rem] leading-6 tracking-normal italic`,
     },
   },
   defaultVariants: { variant: 'body1' },
