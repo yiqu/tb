@@ -1,5 +1,6 @@
 /* eslint-disable prefer-destructuring */
 
+import Link from 'next/link';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import startCase from 'lodash/startCase';
@@ -9,12 +10,12 @@ import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import EditBillDialogFavoriteBillToggleButton from '@/components/bills/EditBillDialogFavoriteBillToggleButton';
 
-import LinkClient from './LinkClient';
+import LinkClientOld from './LinkClientOld';
 import DateDialogContent from '../dialogs/DateDialog';
-import LinkAnimated from '../components/LinkAnimated';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import DateDialogContentBase from '../dialogs/DateDialogBase';
 import { TableCellHoverWrapper } from './TableCellHoverWrapper';
@@ -52,12 +53,9 @@ export default function BillsTableCell({
           sec:gap-x-1
           two:gap-x-6
         ` }>
-          <LinkAnimated
-            href={ `/bills/${billDue.id}` }
-            prefetch={ true }
-            label={ useFormatter.format(cost) }
-            textClassName="truncate tabular-nums"
-          />
+          <Link href={ `/bills/${billDue.id}` } prefetch={ true }>
+            <CenterUnderline label={ useFormatter.format(cost) } className="truncate tabular-nums" />
+          </Link>
           <div>
             { isFavorited ?
               <EditBillDialogFavoriteBillToggleButton billDue={ billDue } buttonProps={ { variant: 'ghost' } } buttonClassName="size-6" />
@@ -191,12 +189,12 @@ export default function BillsTableCell({
     return (
       <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' } showHoverFilter={ showHoverFilter }>
         <TableCell>
-          <LinkClient href={ `/subscriptions/${billDue.subscription.id}` as any }>
+          <LinkClientOld href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true } className="inline-block">
             <div className="flex flex-row items-center justify-start gap-x-2">
               <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
-              <Typography variant="body1">{ subName }</Typography>
+              <CenterUnderline label={ subName } />
             </div>
-          </LinkClient>
+          </LinkClientOld>
         </TableCell>
       </TableCellHoverWrapper>
     );
