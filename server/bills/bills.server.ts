@@ -5,10 +5,10 @@ import z from 'zod';
 import { cache } from 'react';
 import { DateTime } from 'luxon';
 import uniqBy from 'lodash/uniqBy';
-import { cacheLife } from 'next/cache';
 // eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
 import { cacheTag, updateTag } from 'next/cache';
+import { cacheLife, revalidatePath } from 'next/cache';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
 import prisma from '@/lib/prisma';
@@ -88,6 +88,10 @@ export async function revalidateBillsForCurrentMonth() {
 
 export async function revalidateCurrentMonthBillsCount() {
   updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT);
+}
+
+export async function revalidateSubscriptionDetailsPathBySubscriptionId() {
+  revalidatePath(`/(base)/subscriptions/[subscriptionId]`, 'page');
 }
 
 export const getCurrentMonthBillsCountCached = cache(async (month: string, year: string) => {
@@ -1060,6 +1064,7 @@ export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, su
     revalidateBillsForCurrentMonth();
     updateTag(CACHE_TAG_BILL_DUES_BY_YEAR);
     updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
+    revalidateSubscriptionDetailsPathBySubscriptionId();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -1083,6 +1088,7 @@ export async function updateIsBillDueReimbursed(billDueId: string, isReimbursed:
     revalidateBillsForCurrentMonth();
     updateTag(CACHE_TAG_BILL_DUES_BY_YEAR);
     updateTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR);
+    revalidateSubscriptionDetailsPathBySubscriptionId();
 
     return billDue;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
