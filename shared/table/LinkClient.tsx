@@ -1,8 +1,8 @@
 'use client';
 
-import Link, { LinkProps } from 'next/link';
+import { LinkProps } from 'next/link';
 
-import { cn } from '@/lib/utils';
+import LinkAnimated from '../components/LinkAnimated';
 
 /**
  * This prevents the focus event that could trigger a hover card for example. Without this, it will close and then open hover card again.
@@ -10,10 +10,10 @@ import { cn } from '@/lib/utils';
  * @param props - The props to pass to the link
  * @returns
  */
-export default function LinkClient({ children, className, ...props }: { children: React.ReactNode; className?: string } & LinkProps<any>) {
+export default function LinkClient({ children, ...props }: { children: React.ReactNode } & LinkProps<any>) {
   return (
-    <Link prefetch={ true } className={ cn('inline-block', className) } onPointerDown={ (e) => e.preventDefault() } { ...props }>
+    <LinkAnimated prefetch={ true } onPointerDown={ (e) => e.preventDefault() } { ...props }>
       { children }
-    </Link>
+    </LinkAnimated>
   );
 }

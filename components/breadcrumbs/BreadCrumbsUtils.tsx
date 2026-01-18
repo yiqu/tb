@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import CenterUnderline from '@/fancy/components/text/underline-center';
 
 import Typography from '../typography/Typography';
 import BreadCrumbsEntityLeaf from './BreadCrumbsEntityLeaf';
@@ -195,5 +194,5 @@ export function BreadcrumbSegmentDisplay({ isLast, path }: { isLast?: boolean; p
     return <>{ path }</>;
   }
 
-  return <CenterUnderline label={ path } />;
+  return <>{ path }</>;
 }

@@ -177,7 +177,7 @@
     "better-tailwindcss/enforce-consistent-variable-syntax": ["warn", { "syntax": "shorthand" }],
     "better-tailwindcss/no-unnecessary-whitespace": ["warn"],
     "better-tailwindcss/no-duplicate-classes": ["warn"],
-    "better-tailwindcss/enforce-consistent-class-order": ["warn", { "order": "improved" }],
+    "better-tailwindcss/enforce-consistent-class-order": ["warn", { "order": "official" }],
     "better-tailwindcss/enforce-consistent-important-position": ["warn", { "position": "recommended" }]
   },
   "settings": {

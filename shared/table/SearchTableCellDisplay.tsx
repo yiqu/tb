@@ -14,7 +14,7 @@ import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import EditBillDialogFavoriteBillToggleButton from '@/components/bills/EditBillDialogFavoriteBillToggleButton';
 
-import LinkClient from './LinkClient';
+import LinkClientOld from './LinkClientOld';
 import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import DateDialogContentBase from '../dialogs/DateDialogBase';
@@ -189,12 +189,12 @@ export default function BillsTableCell({
     return (
       <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' } showHoverFilter={ showHoverFilter }>
         <TableCell>
-          <LinkClient href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true } className="inline-block">
+          <LinkClientOld href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true } className="inline-block">
             <div className="flex flex-row items-center justify-start gap-x-2">
               <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
               <CenterUnderline label={ subName } />
             </div>
-          </LinkClient>
+          </LinkClientOld>
         </TableCell>
       </TableCellHoverWrapper>
     );

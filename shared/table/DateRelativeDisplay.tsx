@@ -1,6 +1,8 @@
 'use client';
 
 import { DateTime } from 'luxon';
+import { ReactNode } from 'react';
+import { Unit } from 'humanize-duration';
 
 import { cn } from '@/lib/utils';
 import useIsClient from '@/hooks/useIsClient';
@@ -16,6 +18,7 @@ export default function DateRelativeDisplay({
   time,
   includeParenthesis = false,
   prefixText = '',
+  prefixIcon,
   postFixText = '',
   addSuffix = true,
   className = '',
@@ -28,11 +31,14 @@ export default function DateRelativeDisplay({
   overrideHideSeconds,
   isCompleted,
   title,
+  customUnits,
+  disableTitle,
   ...typographyProps
 }: {
   time: Date | string | null;
   includeParenthesis?: boolean;
   prefixText?: string;
+  prefixIcon?: ReactNode;
   postFixText?: string;
   addSuffix?: boolean;
   className?: string;
@@ -45,6 +51,8 @@ export default function DateRelativeDisplay({
   overrideHideSeconds?: boolean;
   isCompleted?: boolean;
   title?: string;
+  customUnits?: Unit[];
+  disableTitle?: boolean;
 } & TypographyProps) {
   const isClient = useIsClient();
 
@@ -70,7 +78,8 @@ export default function DateRelativeDisplay({
     updateIntervalValue = 1_000;
     useShortTextJustSecondsValue = true;
   }
-  const relativeTime = useDuration2(timestamp, updateIntervalValue, largestValue, useShortText, useShortTextJustSecondsValue);
+  const relativeTime = useDuration2(timestamp, updateIntervalValue, largestValue, useShortText, useShortTextJustSecondsValue, customUnits);
+  const relativeTimeTooltip = useDuration2(timestamp, updateIntervalValue, 6, false, false, customUnits);
 
   if (showClientLoading !== false && !isClient) {
     return <Skeleton className={ cn('h-5 w-[50%]', clientLoadingClassName) } />;
@@ -84,7 +93,19 @@ export default function DateRelativeDisplay({
   const relativeDate = addSuffix ? relativeTime : relativeTime.replace(/ ago$/, '').replace(/^in /, '');
 
   return (
-    <Typography className={ cn(className) } title={ title } { ...typographyProps }>
+    <Typography
+      className={ cn(className) }
+      title={
+        disableTitle ? undefined
+        : title ?
+          title
+        : (relativeTimeTooltip ?? '')
+      }
+      { ...typographyProps }
+    >
+      { prefixIcon ?
+        <span className="mr-1">{ prefixIcon }</span>
+      : null }
       { includeParenthesis ?
         `(${prefixText ? `${prefixText} ` : ''}${relativeDate}${postFixText ? ` ${postFixText}` : ''})`
       : `${prefixText ? `${prefixText} ` : ''}${relativeDate}${postFixText ? ` ${postFixText}` : ''}` }

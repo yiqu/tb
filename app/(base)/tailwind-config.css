@@ -50,6 +50,8 @@
   --green-1: #009933;
   --yellow-1: #ffcc00;
 
+  --color-link-internal: oklch(0.45 0.18 260);
+
   /* lg: max size of secondary monitor */
   --breakpoint-lg: 1920px;
   --breakpoint-sec: 1920px;
@@ -113,6 +115,8 @@
 
   --grey-1: oklch(0.38 0.02 57.13);
 
+  --color-link-internal: oklch(0.85 0.12 260);
+
   /* lg: max size of secondary monitor */
   --breakpoint-lg: 1920px;
   --breakpoint-sec: 1920px;
@@ -156,6 +160,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-link-internal: var(--color-chart-5);
 
   /* --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-geist-sans);
@@ -236,11 +242,11 @@
 
 @layer link-color-utils {
   :root {
-    --link-internal: #38613b;
+    --link-internal: var(--color-link-internal);
     --link-external-foreground: #2c58a8;
   }
   .dark {
-    --link-internal: #b6c89f;
+    --link-internal: var(--color-link-internal);
     --link-external-foreground: #2c58a8;
   }
 }
@@ -257,8 +263,8 @@
     a:not([role='menuitem']):not([data-slot='sidebar-menu-button']):not([data-slot='sidebar-menu-sub-button']):not([role='tab']):not(
         [data-slot='popover-trigger']
       ) {
-      /* color: var(--link-internal); */
-      font-weight: 500;
+      color: var(--link-internal);
+      font-weight: 400;
     }
 
     .text-lightish {
