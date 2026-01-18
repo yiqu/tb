@@ -18,9 +18,9 @@ export default function AllBillsPage({ searchParams }: PageProps<'/bills'>) {
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
       <BillsTableActionBar />
       <BillsTablePaginationWrapper searchParams={ searchParams } />
-      <Suspense fallback={ <BillsTableSkeleton /> }>
-        <BillsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
-      </Suspense>
+      { /* <Suspense fallback={ <BillsTableSkeleton /> }> */ }
+      <BillsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
+      { /* </Suspense> */ }
       <Suspense>
         <BillsTableActionDialog>
           <EditBillForm />
