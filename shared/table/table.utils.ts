@@ -264,6 +264,12 @@ export function getSubscriptionLogoUrl(subscriptionName: string) {
       logoDarkUrl = 'edu';
       break;
     }
+
+    case 'Claude AI Pro': {
+      logoLightUrl = 'claude-light';
+      logoDarkUrl = 'claude-dark';
+      break;
+    }
   }
 
   return {

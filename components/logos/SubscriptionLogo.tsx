@@ -215,7 +215,7 @@ export function getSubscriptionLogoUrl(subscriptionName: string): { light: strin
       break;
     }
 
-    case 'Sam\'s Club': {
+    case "Sam's Club": {
       logoLightUrl = 'samlogo';
       logoDarkUrl = 'samlogo';
       break;
@@ -227,6 +227,11 @@ export function getSubscriptionLogoUrl(subscriptionName: string): { light: strin
       break;
     }
 
+    case 'Claude AI Pro': {
+      logoLightUrl = 'claude-light';
+      logoDarkUrl = 'claude-dark';
+      break;
+    }
   }
 
   return {
