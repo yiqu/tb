@@ -116,7 +116,7 @@ export default function HistoryParentItem({
           </SidebarMenuButtonV1>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <SidebarMenuSub className="mr-0 pr-0">
+          <SidebarMenuSub className="">
             <HistoryListSection allHistoryEntriesResponse={ allHistoryEntries } />
           </SidebarMenuSub>
         </CollapsibleContent>

@@ -115,7 +115,7 @@ export default function FavoriteParentItem({ collapsableState, allFavoritesPromi
           </SidebarMenuButtonV1>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <SidebarMenuSub className="mr-0 pr-0">
+          <SidebarMenuSub className="">
             <FavoritesListSection allFavorites={ allFavorites } />
           </SidebarMenuSub>
         </CollapsibleContent>

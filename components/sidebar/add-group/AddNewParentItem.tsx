@@ -118,7 +118,7 @@ function AddNewItemsList() {
       <SidebarMenuSubItem>
         <SidebarMenuSubButtonParentWithActive url="bill">
           <Link href={ '/add/bill' } prefetch className="flex items-center">
-            <Calendar />
+            <Calendar className="size-4 stroke-primary" />
             <span>{ 'Due Bill' }</span>
           </Link>
         </SidebarMenuSubButtonParentWithActive>
@@ -126,7 +126,7 @@ function AddNewItemsList() {
       <SidebarMenuSubItem>
         <SidebarMenuSubButtonParentWithActive url="subscription">
           <Link href={ '/add/subscription' } prefetch className="flex items-center">
-            <ReceiptText />
+            <ReceiptText className="size-4 stroke-primary" />
             <span>{ 'Subscription' }</span>
           </Link>
         </SidebarMenuSubButtonParentWithActive>

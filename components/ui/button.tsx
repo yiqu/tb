@@ -53,6 +53,11 @@ const buttonVariants = cva(
           h-9 px-4 py-2
           has-[>svg]:px-3
         `,
+        xs: `
+          h-6 gap-1 rounded-md px-2 text-xs
+          has-[>svg]:px-1.5
+          [&_svg:not([class*='size-'])]:size-3
+        `,
         sm: `
           h-8 gap-1.5 rounded-md px-3
           has-[>svg]:px-2.5
@@ -62,6 +67,10 @@ const buttonVariants = cva(
           has-[>svg]:px-4
         `,
         icon: 'size-9',
+        'icon-xs': `
+          size-6 rounded-md
+          [&_svg:not([class*='size-'])]:size-3
+        `,
         'icon-sm': 'size-8',
         'icon-lg': 'size-10',
       },
@@ -78,19 +87,18 @@ type ButtonProps = React.ComponentProps<'button'> &
     asChild?: boolean;
   };
 
-function Button({
-  className,
-  variant,
-  size,
-  asChild = false,
-  ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
+function Button({ className, variant = 'default', size = 'default', asChild = false, ...props }: ButtonProps) {
   const Comp = asChild ? Slot : 'button';
 
-  return <Comp data-slot="button" className={ cn(buttonVariants({ variant, size, className })) } { ...props } />;
+  return (
+    <Comp
+      data-slot="button"
+      data-variant={ variant }
+      data-size={ size }
+      className={ cn(buttonVariants({ variant, size, className })) }
+      { ...props }
+    />
+  );
 }
 
 export { Button, buttonVariants, type ButtonProps };

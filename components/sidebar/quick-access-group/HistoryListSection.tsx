@@ -24,7 +24,7 @@ export default function HistoryListSection({ allHistoryEntriesResponse }: { allH
         .map((group: HistoryEntryGroup) => {
           return (
             <div key={ group.dateLabel }>
-              <Typography className="mb-2">{ group.dateLabel }</Typography>
+              <Typography className="mb-1">{ group.dateLabel }</Typography>
               { group.historyEntries.map((historyEntry: HistoryEntry) => {
                 return (
                   <HoverCard key={ historyEntry.id } openDelay={ 150 } closeDelay={ 50 }>
@@ -32,7 +32,7 @@ export default function HistoryListSection({ allHistoryEntriesResponse }: { allH
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButtonFavoritesParentWithActive favoriteId="">
                           <Link href={ `${historyEntry.url}` } prefetch className="flex w-full items-center justify-start">
-                            <History className="size-4" />
+                            <History className="size-4 stroke-primary" />
                             <HistoryItemNameParent entity={ historyEntry } />
                           </Link>
                         </SidebarMenuSubButtonFavoritesParentWithActive>
