@@ -712,7 +712,8 @@ async function getAllBillsByMonthAndYearParams(
 
 async function getAllBillsByYearFromParams(params: string | undefined, yearOffset?: number): Promise<BillDueWithSubscriptionByYear> {
   'use cache';
-
+  cacheLife('weeks');
+  
   let currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('year');
   let currentYear: number = currentDateLuxon.year;
 
@@ -737,7 +738,7 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
     currentYear = currentDateLuxon.year;
   }
 
-  cacheLife('weeks');
+
   // TODO test this tag invalidation
   cacheTag(CACHE_TAG_BILL_DUES_BY_YEAR, `${CACHE_TAG_BILL_DUES_BY_YEAR}-${currentYear}`);
 
