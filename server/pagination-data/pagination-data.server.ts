@@ -45,9 +45,10 @@ export async function getPaginationDataForPageId(pageId: string): Promise<Pagina
     }
 
     return paginationData;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getPaginationDataForPageId(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving pagination data for page id: ${pageId}. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving pagination data for page id: ${pageId}. Code: ${errorCode}`);
   }
 }
 
@@ -64,9 +65,10 @@ export async function upsertPaginationData(paginationData: PaginationDataUpserta
       updateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${paginationData.pageId}`);
 
       return updatedPaginationData;
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    } catch (error: unknown) {
       console.error('Server error at updating pagination data(): ', JSON.stringify(error));
-      throw new Error(`Error updating pagination data. Code: ${error.code}`);
+      const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+      throw new Error(`Error updating pagination data. Code: ${errorCode}`);
     }
   } else {
     // create new pagination data
@@ -78,9 +80,10 @@ export async function upsertPaginationData(paginationData: PaginationDataUpserta
       updateTag(`${CACHE_TAG_PAGINATION_DATA_PREFIX}${paginationData.pageId}`);
 
       return newPaginationData;
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    } catch (error: unknown) {
       console.error('Server error at adding pagination data(): ', JSON.stringify(error));
-      throw new Error(`Error creating pagination data. Code: ${error.code}`);
+      const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+      throw new Error(`Error creating pagination data. Code: ${errorCode}`);
     }
   }
 }

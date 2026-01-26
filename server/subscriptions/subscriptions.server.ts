@@ -112,9 +112,10 @@ export async function getAllSubscriptions(): Promise<SubscriptionOriginal[]> {
     });
 
     return subscriptions;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllSubscriptions(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving subscriptions. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving subscriptions. Code: ${errorCode}`);
   }
 }
 
@@ -135,7 +136,7 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
   cacheLife('weeks');
   cacheTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
-  const whereClause: any = {
+  const whereClause: Prisma.SubscriptionWhereInput = {
     AND: [],
   };
 
@@ -235,9 +236,9 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
       startIndex,
       endIndex,
     };
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllSubscriptionsWithBillDuesPaginated(): ', JSON.stringify(error));
-    const errorCode = error?.code || 'UNKNOWN';
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
     const errorMessage = error?.message || error?.toString() || 'Unknown error';
     throw new Error(`Error retrieving subscriptions with bill dues. Code: ${errorCode}, Message: ${errorMessage}`);
   }
@@ -260,9 +261,10 @@ async function getAllSubscriptionsWithBillDues(): Promise<SubscriptionWithBillDu
     });
 
     return subscriptions;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllSubscriptionsWithBillDues(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving subscriptions with bill dues. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving subscriptions with bill dues. Code: ${errorCode}`);
   }
 }
 
@@ -279,9 +281,10 @@ async function getAllSubscriptionsBare(): Promise<SubscriptionOriginal[]> {
     });
 
     return subscriptions;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllSubscriptionsBare(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving subscriptions. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving subscriptions. Code: ${errorCode}`);
   }
 }
 
@@ -303,9 +306,10 @@ export async function getSubscriptionWithBillDuesById(subscriptionId: string): P
     });
 
     return subscription;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getSubscriptionWithBillDuesById(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving subscription by id. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving subscription by id. Code: ${errorCode}`);
   }
 }
 
@@ -323,9 +327,10 @@ export async function getSubscriptionWithBillDuesByIdUncached(subscriptionId: st
     });
 
     return subscription;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getSubscriptionWithBillDuesById(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving subscription by id. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving subscription by id. Code: ${errorCode}`);
   }
 }
 
@@ -343,9 +348,10 @@ export async function getAllSubscriptionsWithBillDuesByIdsUncached(subscriptionI
     });
 
     return subscriptions;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllSubscriptionsWithBillDuesByIdsUncached(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving subscriptions by ids. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving subscriptions by ids. Code: ${errorCode}`);
   }
 }
 
@@ -426,9 +432,10 @@ export async function getSubscriptionBillsGroupedByYearById(subscriptionId: stri
     });
 
     return sortedBillsDueGroupedByYear;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getSubscriptionBillsGroupedByYearById(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving getSubscriptionBillsGroupedByYearById. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving getSubscriptionBillsGroupedByYearById. Code: ${errorCode}`);
   }
 }
 
@@ -463,9 +470,10 @@ export async function updateSubscription(
     revalidateBillDue();
 
     return subscription;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at updateSubscription(): ', JSON.stringify(error));
-    throw new Error(`Error updating subscription. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error updating subscription. Code: ${errorCode}`);
   }
 }
 
@@ -478,9 +486,10 @@ export async function getAllSubscriptionsCount(): Promise<number> {
     const subscriptions: SubscriptionOriginal[] = await prisma.subscription.findMany();
 
     return subscriptions.length;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllSubscriptionsCount(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving subscriptions count. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving subscriptions count. Code: ${errorCode}`);
   }
 }
 
@@ -503,9 +512,10 @@ export async function updateIsSubscriptionApproved(subscriptionId: string, isApp
     revalidateSubscriptionDetails(subscriptionId);
 
     return subscription;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at updateIsSubscriptionApproved(): ', JSON.stringify(error));
-    throw new Error(`Error updating subscription approved status. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error updating subscription approved status. Code: ${errorCode}`);
   }
 }
 
@@ -528,9 +538,10 @@ export async function updateIsSubscriptionSigned(subscriptionId: string, isSigne
     revalidateSubscriptionDetails(subscriptionId);
 
     return subscription;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at updateIsSubscriptionSigned(): ', JSON.stringify(error));
-    throw new Error(`Error updating subscription signed status. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error updating subscription signed status. Code: ${errorCode}`);
   }
 }
 
@@ -561,9 +572,10 @@ export async function createNewSubscription(payload: z.infer<typeof subscription
     revalidateBillDue();
 
     return subscription;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at createNewSubscription(): ', JSON.stringify(error));
-    throw new Error(`Error creating new subscription. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error creating new subscription. Code: ${errorCode}`);
   }
 }
 
@@ -600,9 +612,10 @@ export async function deleteSubscription(subscriptionId: string): Promise<Subscr
     revalidateBillDue();
 
     return subscription;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at deleteSubscription(): ', JSON.stringify(error));
-    throw new Error(`Error deleting subscription. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error deleting subscription. Code: ${errorCode}`);
   }
 }
 
@@ -622,8 +635,9 @@ export async function deleteAllSubscriptions(): Promise<void> {
     updateTag(CACHE_TAG_CURRENT_MONTH_DATE_DATA);
 
     return;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at deleteAllSubscriptions(): ', JSON.stringify(error));
-    throw new Error(`Error deleting all subscriptions. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error deleting all subscriptions. Code: ${errorCode}`);
   }
 }
