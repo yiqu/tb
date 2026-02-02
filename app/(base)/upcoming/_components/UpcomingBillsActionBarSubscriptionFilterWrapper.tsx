@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { Skeleton } from '@/components/ui-pre-19/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { SubscriptionOriginal } from '@/models/subscriptions/subscriptions.model';
 import { getAllSubscriptionsCached } from '@/server/subscriptions/subscriptions.server';
 

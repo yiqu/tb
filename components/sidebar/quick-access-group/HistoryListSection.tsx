@@ -32,7 +32,7 @@ export default function HistoryListSection({ allHistoryEntriesResponse }: { allH
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButtonFavoritesParentWithActive favoriteId="">
                           <Link href={ `${historyEntry.url}` } prefetch className="flex w-full items-center justify-start">
-                            <History className="size-4 stroke-primary" />
+                            <History className="size-4" />
                             <HistoryItemNameParent entity={ historyEntry } />
                           </Link>
                         </SidebarMenuSubButtonFavoritesParentWithActive>

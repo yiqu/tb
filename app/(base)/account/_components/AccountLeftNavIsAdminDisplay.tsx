@@ -2,6 +2,7 @@
 import { ShieldCheck } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
+import { GOOG_PALETTE } from '@/lib/color-palettes';
 import { UserProfile } from '@/models/user/user.model';
 import { getUserCached } from '@/server/user/user.server';
 import Typography from '@/components/typography/Typography';
@@ -17,10 +18,10 @@ export default async function AccountLeftNavIsAdminDisplay() {
 
   if (userProfile.isAdmin) {
     return (
-      <Badge variant="secondary" className="relative max-w-[6rem] overflow-hidden">
-        <ShineBorder shineColor={ ['#A07CFE', '#FE8FB5', '#FFBE7B'] } borderWidth={ 2 } duration={ 20 } />
+      <Badge variant="ghost" className="relative max-w-24 overflow-hidden">
+        <ShineBorder shineColor={ GOOG_PALETTE } borderWidth={ 2 } duration={ 20 } />
         <div className="flex flex-row items-center justify-start gap-x-2 truncate">
-          <ShieldCheck size={ 16 } className={ `text-green-800 dark:text-green-500` } />
+          <ShieldCheck size={ 16 } className="" />
           <Typography variant="body0" className="truncate">
             <AuroraText>Admin</AuroraText>
           </Typography>

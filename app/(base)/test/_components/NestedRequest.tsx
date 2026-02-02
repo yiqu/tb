@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { Activity, useState } from 'react';
 import { Dot, Folder, ChevronUp, FolderOpen, ChevronDown, ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import RowStack from '@/shared/components/RowStack';
 import ColumnStack from '@/shared/components/ColumnStack';
@@ -33,20 +34,20 @@ import {
  *   SidebarGroup   < - directive
  *     SidebarGroupContent
  *       SidebarMenu   < - In this section, show each key value in column stack
-  *         Collapsible
-  *           SidebarMenuItem
+ *         Collapsible
+ *           SidebarMenuItem
  *              CollapsibleTrigger
  *                SidebarMenuSub  < -- more key values
  *                   Collapsible
  *                     SidebarMenuSubItem
  *                       SidebarMenuSub
- * 
- * 
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  *   SidebarGroup < - directive
  *     SidebarGroupContent
  *       SidebarMenu
@@ -114,6 +115,8 @@ function NestedRequest({ req, index, totalCount }: { req: MockRequest; index: nu
                 <Typography>{ req.created_at }</Typography>
               </RowStack>
 
+              <ResourcesParent resources={ req.works } />
+
               <WorksParent works={ req.works } />
             </>
           : null }
@@ -150,11 +153,37 @@ function RequestHeader({
   );
 }
 
+function ResourcesParent({ resources }: { resources: MockWork[] }) {
+  const [isOpen, setIsOpen] = useState(true);
+
+  const handleOnOpenChange = () => {
+    setIsOpen(!isOpen);
+  };
+  return (
+    <Collapsible asChild className="" open={ isOpen } onOpenChange={ handleOnOpenChange }>
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton onClick={ handleOnOpenChange }>
+            { isOpen ?
+              <FolderOpen className="stroke-primary" />
+            : <Folder className="stroke-primary" /> }
+            <span>Resources (no Activity) ({ resources.length }):</span>
+            <ChevronRight className={ cn('ml-auto stroke-primary transition-transform duration-200', isOpen && 'rotate-90') } />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <WorkNameInput />
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+}
+
 function WorksParent({ works }: { works: MockWork[] }) {
   return (
     <>
       <RowStack className="items-center gap-x-2">
-        <Typography>Works ({ works.length }):</Typography>
+        <Typography>Works (with Activity) ({ works.length }):</Typography>
       </RowStack>
       { works.map((work: MockWork, index, arr) => {
         return <WorkDisplay work={ work } index={ index } totalCount={ arr.length } key={ work.work_id } />;
@@ -171,53 +200,60 @@ function WorkDisplay({ work, totalCount, index }: { work: MockWork; totalCount: 
   };
 
   return (
-    <Collapsible asChild className="" open={ isOpen } onOpenChange={ handleOnOpenChange } key={ work.work_id }>
-      <SidebarMenuItem>
-        <CollapsibleTrigger asChild>
-          <SidebarMenuButton>
-            { isOpen ?
-              <FolderOpen className="stroke-primary" />
-            : <Folder className="stroke-primary" /> }
-            <span>
-              Work ({ index + 1 }/{ totalCount })
-            </span>
-            <ChevronRight className={ cn('ml-auto stroke-primary transition-transform duration-200', isOpen && 'rotate-90') } />
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <SidebarMenuSub>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Work ID:</Typography>
-              <Typography>{ work.work_id }</Typography>
-            </RowStack>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Work Name:</Typography>
-              <Typography>{ work.work_name }</Typography>
-            </RowStack>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Work Status:</Typography>
-              <Typography>{ work.work_status }</Typography>
-            </RowStack>
-            <ColumnStack>
-              <Typography>Work Status:</Typography>
-              <ColumnStack className="pl-4">
-                <Typography>--hash: 1111:</Typography>
-              </ColumnStack>
+    <SidebarMenuItem>
+      <SidebarMenuButton onClick={ handleOnOpenChange }>
+        { isOpen ?
+          <FolderOpen className="stroke-primary" />
+        : <Folder className="stroke-primary" /> }
+        <span>
+          Work ({ index + 1 }/{ totalCount })
+        </span>
+        <ChevronRight className={ cn('ml-auto stroke-primary transition-transform duration-200', isOpen && 'rotate-90') } />
+      </SidebarMenuButton>
+      <Activity mode={ isOpen ? 'visible' : 'hidden' }>
+        <SidebarMenuSub>
+          <WorkNameInput />
+          <RowStack className="items-center gap-x-2">
+            <Typography>Work ID:</Typography>
+            <Typography>{ work.work_id }</Typography>
+          </RowStack>
+          <RowStack className="items-center gap-x-2">
+            <Typography>Work Name:</Typography>
+            <Typography>{ work.work_name }</Typography>
+          </RowStack>
+          <RowStack className="items-center gap-x-2">
+            <Typography>Work Status:</Typography>
+            <Typography>{ work.work_status }</Typography>
+          </RowStack>
+          <ColumnStack>
+            <Typography>Work Status:</Typography>
+            <ColumnStack className="pl-4">
+              <Typography>--hash: 1111:</Typography>
             </ColumnStack>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Work Created At:</Typography>
-              <Typography>{ work.work_created_at }</Typography>
-            </RowStack>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Work Updated At:</Typography>
-              <Typography>{ work.work_updated_at }</Typography>
-            </RowStack>
+          </ColumnStack>
+          <RowStack className="items-center gap-x-2">
+            <Typography>Work Created At:</Typography>
+            <Typography>{ work.work_created_at }</Typography>
+          </RowStack>
+          <RowStack className="items-center gap-x-2">
+            <Typography>Work Updated At:</Typography>
+            <Typography>{ work.work_updated_at }</Typography>
+          </RowStack>
 
-            <NodesParent datas={ work.nodes } />
-          </SidebarMenuSub>
-        </CollapsibleContent>
-      </SidebarMenuItem>
-    </Collapsible>
+          <NodesParent datas={ work.nodes } />
+        </SidebarMenuSub>
+      </Activity>
+    </SidebarMenuItem>
+  );
+}
+
+function WorkNameInput() {
+  const [name, setName] = useState('');
+  return (
+    <RowStack className="items-center gap-x-2">
+      <Typography>Work Name:</Typography>
+      <Input type="text" onChange={ (e) => setName(e.target.value) } value={ name } />
+    </RowStack>
   );
 }
 
@@ -242,54 +278,50 @@ function NodeDisplay({ node, totalCount, index }: { node: MockNode; totalCount: 
   };
 
   return (
-    <Collapsible asChild className="" open={ isOpen } onOpenChange={ handleOnOpenChange } key={ node.node_id }>
-      <SidebarMenuSubItem>
-        <CollapsibleTrigger asChild>
-          <SidebarMenuSubButton asChild>
-            <Button type="button" className="w-full" variant="ghost">
-              { isOpen ?
-                <FolderOpen className="stroke-primary" />
-              : <Folder className="stroke-primary" /> }
-              <span>
-                Node ({ index + 1 }/{ totalCount })
-              </span>
+    <SidebarMenuSubItem>
+      <SidebarMenuSubButton asChild>
+        <Button type="button" className="w-full" variant="ghost" onClick={ handleOnOpenChange }>
+          { isOpen ?
+            <FolderOpen className="stroke-primary" />
+          : <Folder className="stroke-primary" /> }
+          <span>
+            Node ({ index + 1 }/{ totalCount })
+          </span>
 
-              <ChevronRight className={ cn('ml-auto stroke-primary transition-transform duration-200', isOpen && 'rotate-90') } />
-            </Button>
-          </SidebarMenuSubButton>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <SidebarMenuSub>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Node ID:</Typography>
-              <Typography>{ node.node_id }</Typography>
-            </RowStack>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Node Name:</Typography>
-              <Typography>{ node.node_name }</Typography>
-            </RowStack>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Node Status:</Typography>
-              <Typography>{ node.node_status }</Typography>
-            </RowStack>
-            <ColumnStack>
-              <Typography>Node Status:</Typography>
-              <ColumnStack className="pl-4">
-                <Typography>--hash: 1111:</Typography>
-              </ColumnStack>
+          <ChevronRight className={ cn('ml-auto stroke-primary transition-transform duration-200', isOpen && 'rotate-90') } />
+        </Button>
+      </SidebarMenuSubButton>
+      <Activity mode={ isOpen ? 'visible' : 'hidden' }>
+        <SidebarMenuSub>
+          <RowStack className="items-center gap-x-2">
+            <Typography>Node ID:</Typography>
+            <Typography>{ node.node_id }</Typography>
+          </RowStack>
+          <RowStack className="items-center gap-x-2">
+            <Typography>Node Name:</Typography>
+            <Typography>{ node.node_name }</Typography>
+          </RowStack>
+          <RowStack className="items-center gap-x-2">
+            <Typography>Node Status:</Typography>
+            <Typography>{ node.node_status }</Typography>
+          </RowStack>
+          <ColumnStack>
+            <Typography>Node Status:</Typography>
+            <ColumnStack className="pl-4">
+              <Typography>--hash: 1111:</Typography>
             </ColumnStack>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Node Created At:</Typography>
-              <Typography>{ node.node_created_at }</Typography>
-            </RowStack>
-            <RowStack className="items-center gap-x-2">
-              <Typography>Node Updated At:</Typography>
-              <Typography>{ node.node_updated_at }</Typography>
-            </RowStack>
-          </SidebarMenuSub>
-        </CollapsibleContent>
-      </SidebarMenuSubItem>
-    </Collapsible>
+          </ColumnStack>
+          <RowStack className="items-center gap-x-2">
+            <Typography>Node Created At:</Typography>
+            <Typography>{ node.node_created_at }</Typography>
+          </RowStack>
+          <RowStack className="items-center gap-x-2">
+            <Typography>Node Updated At:</Typography>
+            <Typography>{ node.node_updated_at }</Typography>
+          </RowStack>
+        </SidebarMenuSub>
+      </Activity>
+    </SidebarMenuSubItem>
   );
 }
 

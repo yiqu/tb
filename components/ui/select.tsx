@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import * as SelectPrimitive from '@radix-ui/react-select';
+import { Select as SelectPrimitive } from 'radix-ui';
 import { CheckIcon, ChevronUpIcon, ChevronDownIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -42,9 +42,12 @@ function SelectTrigger({
           data-[size=sm]:h-8
           *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center
           *:data-[slot=select-value]:gap-2
-          dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:ring-destructive/40
+          dark:bg-input/30
+          dark:hover:bg-input/50
+          dark:aria-invalid:ring-destructive/40
           [&_svg]:pointer-events-none [&_svg]:shrink-0
-          [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground
+          [&_svg:not([class*='size-'])]:size-4
+          [&_svg:not([class*='text-'])]:text-muted-foreground
         `,
         className,
       ) }
@@ -61,7 +64,7 @@ function SelectTrigger({
 function SelectContent({
   className,
   children,
-  position = 'popper',
+  position = 'item-aligned',
   align = 'center',
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
@@ -124,14 +127,15 @@ function SelectItem({ className, children, ...props }: React.ComponentProps<type
           focus:bg-accent focus:text-accent-foreground
           data-[disabled]:pointer-events-none data-[disabled]:opacity-50
           [&_svg]:pointer-events-none [&_svg]:shrink-0
-          [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground
+          [&_svg:not([class*='size-'])]:size-4
+          [&_svg:not([class*='text-'])]:text-muted-foreground
           *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2
         `,
         className,
       ) }
       { ...props }
     >
-      <span className="absolute right-2 flex size-3.5 items-center justify-center">
+      <span data-slot="select-item-indicator" className="absolute right-2 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
           <CheckIcon className="size-4" />
         </SelectPrimitive.ItemIndicator>

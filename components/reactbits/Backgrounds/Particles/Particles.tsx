@@ -1,9 +1,4 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-param-reassign */
-/*
-	Installed from https://reactbits.dev/ts/tailwind/
-*/
+'use client';
 
 import React, { useRef, useEffect } from 'react';
 import { Mesh, Camera, Program, Renderer, Geometry } from 'ogl';
@@ -20,6 +15,7 @@ interface ParticlesProps {
   sizeRandomness?: number;
   cameraDistance?: number;
   disableRotation?: boolean;
+  pixelRatio?: number;
   className?: string;
 }
 
@@ -70,7 +66,14 @@ const vertex = /* glsl */ `
     mPos.z += sin(t * random.w + 6.28 * random.y) * mix(0.1, 1.5, random.z);
     
     vec4 mvPos = viewMatrix * mPos;
-    gl_PointSize = (uBaseSize * (1.0 + uSizeRandomness * (random.x - 0.5))) / length(mvPos.xyz);
+
+    if (uSizeRandomness == 0.0) {
+      gl_PointSize = uBaseSize;
+    } else {
+      gl_PointSize = (uBaseSize * (1.0 + uSizeRandomness * (random.x - 0.5))) / length(mvPos.xyz);
+    }
+    
+    gl_Position = projectionMatrix * mvPos;
     gl_Position = projectionMatrix * mvPos;
   }
 `;
@@ -111,6 +114,7 @@ const Particles: React.FC<ParticlesProps> = ({
   sizeRandomness = 1,
   cameraDistance = 20,
   disableRotation = false,
+  pixelRatio = 1,
   className,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -120,7 +124,7 @@ const Particles: React.FC<ParticlesProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
-    const renderer = new Renderer({ depth: false, alpha: true });
+    const renderer = new Renderer({ dpr: pixelRatio, depth: false, alpha: true });
     const { gl } = renderer;
     container.appendChild(gl.canvas);
     gl.clearColor(0, 0, 0, 0);
@@ -181,7 +185,7 @@ const Particles: React.FC<ParticlesProps> = ({
       uniforms: {
         uTime: { value: 0 },
         uSpread: { value: particleSpread },
-        uBaseSize: { value: particleBaseSize },
+        uBaseSize: { value: particleBaseSize * pixelRatio },
         uSizeRandomness: { value: sizeRandomness },
         uAlphaParticles: { value: alphaParticles ? 1 : 0 },
       },
@@ -232,6 +236,7 @@ const Particles: React.FC<ParticlesProps> = ({
         container.removeChild(gl.canvas);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     particleCount,
     particleSpread,
@@ -243,6 +248,7 @@ const Particles: React.FC<ParticlesProps> = ({
     sizeRandomness,
     cameraDistance,
     disableRotation,
+    pixelRatio,
   ]);
 
   return <div ref={ containerRef } className={ `

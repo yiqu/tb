@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Slot as SlotPrimitive } from 'radix-ui';
+import { Slot } from 'radix-ui';
 import { ChevronRight, MoreHorizontal } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -13,7 +13,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
     <ol
       data-slot="breadcrumb-list"
       className={ cn(`
-        flex flex-wrap items-center gap-1.5 text-sm wrap-break-word text-muted-foreground
+        flex flex-wrap items-center gap-1.5 text-sm break-words text-muted-foreground
         sm:gap-2.5
       `, className) }
       { ...props }
@@ -22,7 +22,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
 }
 
 function BreadcrumbItem({ className, ...props }: React.ComponentProps<'li'>) {
-  return <li data-slot="breadcrumb-item" className={ cn(`inline-flex items-center gap-1.5`, className) } { ...props } />;
+  return <li data-slot="breadcrumb-item" className={ cn('inline-flex items-center gap-1.5', className) } { ...props } />;
 }
 
 function BreadcrumbLink({
@@ -32,7 +32,7 @@ function BreadcrumbLink({
 }: React.ComponentProps<'a'> & {
   asChild?: boolean;
 }) {
-  const Comp = asChild ? SlotPrimitive.Slot : 'a';
+  const Comp = asChild ? Slot.Root : 'a';
 
   return <Comp data-slot="breadcrumb-link" className={ cn(`
     transition-colors

@@ -1,108 +1,168 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable no-unused-vars */
-/*
-	Installed from https://reactbits.dev/ts/tailwind/
-*/
+'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import { animated, useSprings, SpringValue } from '@react-spring/web';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React, { useRef, useState, useEffect } from 'react';
+import { SplitText as GSAPSplitText } from 'gsap/SplitText';
 
-interface SplitTextProps {
-  text?: string;
+gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
+
+export interface SplitTextProps {
+  text: string;
   className?: string;
   delay?: number;
-  animationFrom?: { opacity: number; transform: string };
-  animationTo?: { opacity: number; transform: string };
-  easing?: (t: number) => number;
+  duration?: number;
+  ease?: string | ((t: number) => number);
+  splitType?: 'chars' | 'words' | 'lines' | 'words, chars';
+  from?: gsap.TweenVars;
+  to?: gsap.TweenVars;
   threshold?: number;
   rootMargin?: string;
-  textAlign?: 'left' | 'right' | 'center' | 'justify' | 'initial' | 'inherit';
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
+  textAlign?: React.CSSProperties['textAlign'];
   onLetterAnimationComplete?: () => void;
 }
 
 const SplitText: React.FC<SplitTextProps> = ({
-  text = '',
+  text,
   className = '',
-  delay = 100,
-  animationFrom = { opacity: 0, transform: 'translate3d(0,40px,0)' },
-  animationTo = { opacity: 1, transform: 'translate3d(0,0,0)' },
-  easing = (t) => t,
+  delay = 50,
+  duration = 1.25,
+  ease = 'power3.out',
+  splitType = 'chars',
+  from = { opacity: 0, y: 40 },
+  to = { opacity: 1, y: 0 },
   threshold = 0.1,
   rootMargin = '-100px',
+  tag = 'p',
   textAlign = 'center',
   onLetterAnimationComplete,
 }) => {
-  const words = text.split(' ').map((w) => w.split(''));
-  const letters = words.flat();
-
-  const [inView, setInView] = useState(false);
   const ref = useRef<HTMLParagraphElement>(null);
-  const animatedCount = useRef(0);
+  const animationCompletedRef = useRef(false);
+  const onCompleteRef = useRef(onLetterAnimationComplete);
+  const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
+
+  // Keep callback ref updated
+  useEffect(() => {
+    onCompleteRef.current = onLetterAnimationComplete;
+  }, [onLetterAnimationComplete]);
 
   useEffect(() => {
-    if (!ref.current) return;
+    if (document.fonts.status === 'loaded') {
+      setFontsLoaded(true);
+    } else {
+      document.fonts.ready.then(() => {
+        setFontsLoaded(true);
+      });
+    }
+  }, []);
 
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          obs.unobserve(ref.current as Element);
+  useGSAP(
+    () => {
+      if (!ref.current || !text || !fontsLoaded) return;
+      // Prevent re-animation if already completed
+      if (animationCompletedRef.current) return;
+      const el = ref.current as HTMLElement & {
+        _rbsplitInstance?: GSAPSplitText;
+      };
+
+      if (el._rbsplitInstance) {
+        try {
+          el._rbsplitInstance.revert();
+        } catch (_) {}
+        el._rbsplitInstance = undefined;
+      }
+
+      const startPct = (1 - threshold) * 100;
+      const marginMatch = /^(-?\d+(?:\.\d+)?)(px|em|rem|%)?$/.exec(rootMargin);
+      const marginValue = marginMatch ? Number.parseFloat(marginMatch[1]) : 0;
+      const marginUnit = marginMatch ? marginMatch[2] || 'px' : 'px';
+      const sign =
+        marginValue === 0 ? ''
+        : marginValue < 0 ? `-=${Math.abs(marginValue)}${marginUnit}`
+        : `+=${marginValue}${marginUnit}`;
+      const start = `top ${startPct}%${sign}`;
+      let targets: Element[] = [];
+      const assignTargets = (self: GSAPSplitText) => {
+        if (splitType.includes('chars') && (self as GSAPSplitText).chars?.length) targets = (self as GSAPSplitText).chars;
+        if (targets.length === 0 && splitType.includes('words') && self.words.length > 0) targets = self.words;
+        if (targets.length === 0 && splitType.includes('lines') && self.lines.length > 0) targets = self.lines;
+        if (targets.length === 0) targets = self.chars || self.words || self.lines;
+      };
+      const splitInstance = new GSAPSplitText(el, {
+        type: splitType,
+        smartWrap: true,
+        autoSplit: splitType === 'lines',
+        linesClass: 'split-line',
+        wordsClass: 'split-word',
+        charsClass: 'split-char',
+        reduceWhiteSpace: false,
+        onSplit: (self: GSAPSplitText) => {
+          assignTargets(self);
+          return gsap.fromTo(
+            targets,
+            { ...from },
+            {
+              ...to,
+              duration,
+              ease,
+              stagger: delay / 1000,
+              scrollTrigger: {
+                trigger: el,
+                start,
+                once: true,
+                fastScrollEnd: true,
+                anticipatePin: 0.4,
+              },
+              onComplete: () => {
+                animationCompletedRef.current = true;
+                onCompleteRef.current?.();
+              },
+              willChange: 'transform, opacity',
+              force3D: true,
+            },
+          );
+        },
+      });
+      el._rbsplitInstance = splitInstance;
+      return () => {
+        for (const st of ScrollTrigger.getAll()) {
+          if (st.trigger === el) st.kill();
         }
-      },
-      { threshold, rootMargin },
+        try {
+          splitInstance.revert();
+        } catch (_) {}
+        el._rbsplitInstance = undefined;
+      };
+    },
+    {
+      dependencies: [text, delay, duration, ease, splitType, JSON.stringify(from), JSON.stringify(to), threshold, rootMargin, fontsLoaded],
+      scope: ref,
+    },
+  );
+
+  const renderTag = () => {
+    const style: React.CSSProperties = {
+      textAlign,
+      wordWrap: 'break-word',
+      willChange: 'transform, opacity',
+    };
+    const classes = `
+      split-parent inline-block overflow-hidden whitespace-normal
+      ${className}
+    `;
+    const Tag = (tag || 'p') as React.ElementType;
+
+    return (
+      <Tag ref={ ref } style={ style } className={ classes }>
+        { text }
+      </Tag>
     );
+  };
 
-    obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [threshold, rootMargin]);
-
-  const springs = useSprings(
-    letters.length,
-    letters.map((_, i) => ({
-      from: animationFrom,
-      to:
-        inView ?
-          async (next: (step: Record<string, string | number>) => Promise<void>) => {
-            await next(animationTo);
-            animatedCount.current += 1;
-            if (animatedCount.current === letters.length && onLetterAnimationComplete) {
-              onLetterAnimationComplete();
-            }
-          }
-        : animationFrom,
-      delay: i * delay,
-      config: { easing },
-    })),
-  );
-
-  return (
-    <p ref={ ref } className={ `split-parent inline overflow-hidden ${className}` } style={ { textAlign: textAlign } }>
-      { words.map((word, wIdx) => (
-        <span key={ wIdx } className="inline-block whitespace-nowrap">
-          { word.map((letter, lIdx) => {
-            const index = words.slice(0, wIdx).reduce((acc, w) => acc + w.length, 0) + lIdx;
-
-            return (
-              <animated.span
-                key={ index }
-                style={
-                  {
-                    ...springs[index],
-                    display: 'inline-block',
-                    willChange: 'transform, opacity',
-                  } as unknown as Record<string, SpringValue | string | number>
-                }
-              >
-                { letter }
-              </animated.span>
-            );
-          }) }
-          <span className="inline-block w-[0.3em]">&nbsp;</span>
-        </span>
-      )) }
-    </p>
-  );
+  return renderTag();
 };
 
 export default SplitText;

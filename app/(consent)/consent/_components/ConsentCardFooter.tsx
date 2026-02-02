@@ -48,7 +48,7 @@ export default function ConsentCardFooter() {
           onClick={ handleOnAccept }
           className="bg-primary text-sm text-background"
           dotClassName="bg-card"
-          postAnimationClassName="text-foreground bg-gradient-to-r from-white to-green-500"
+          postAnimationClassName="text-foreground "
           postAnimationIcon={ <Handshake size={ 18 } /> }
           disabled={ isAccepting }
           postAnimationText="Continue"

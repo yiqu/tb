@@ -9,10 +9,10 @@ const nextConfig: NextConfig = {
     turbopackFileSystemCacheForDev: true,
     browserDebugInfoInTerminal: false,
     // Cache dynamic pages in the Router Cache to prevent Suspense re-triggering on back navigation
-    staleTimes: {
-      dynamic: 30, // Cache dynamic pages for 30 seconds
-      static: 180, // Cache static pages for 3 minutes (default is 5 minutes)
-    },
+    // staleTimes: {
+    //   dynamic: 30, // Cache dynamic pages for 30 seconds
+    //   static: 180, // Cache static pages for 3 minutes (default is 5 minutes)
+    // },
   },
   reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
   cacheComponents: true,

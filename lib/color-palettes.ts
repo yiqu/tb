@@ -33,3 +33,10 @@ export const ELASTIC_PALETTE = ['#d7689d', '#f3d337', '#a0c443', '#66b5ae', '#5d
 
 export const UNDER_CONSTRUCTION_PALETTE = ['#111111', '#d60000', '#ffd914'];
 export const DIRT_PALETTE = ['#2c160a', '#56341b', '#81572a', '#a97e39', 'cfa949', 'f1d75c'];
+
+export const CASE_MATE_PALETTE = ['#84754e', '#a6192e', '#decba5', '#000000'];
+export const ADOBE_PALETTE = ['#ff0000', '#fbb034', '#ffdd00', '#c1d82f', '#00a4e4', '#8a7967', '#6a737b'];
+export const WEST_D_PALETTE = ['#005195', '#028948', '#ffd400', '#0067b3', '#9d0a0e', '#003369'];
+export const PHP_PALETTE = ['#8892be', '#4f5b93', '#99cc99'];
+export const RTG_PALETTE = ['#d73027', '#fc8d59', '#fee08b', '#ffffbf', '#d9ef8b', '#91cf60', '#1a9850'];
+export const OTP_PALETTE = ['#e66101', '#fdb863', '#5e3c99', '#f7f7f7'];

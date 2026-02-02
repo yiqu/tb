@@ -109,7 +109,7 @@ export default function BillsTableCell({
               title={ `${billDue.dateAdded}` }
               className={ `
                 flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
-                hover:border-border hover:bg-accent
+                hover:border-border hover:bg-background
               ` }
             >
               <Typography className="truncate">{ billDue.dateAddedInEst }</Typography>
@@ -142,7 +142,7 @@ export default function BillsTableCell({
             <div
               className={ `
                 flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
-                hover:border-border hover:bg-accent
+                hover:border-border hover:bg-background
               ` }
             >
               <div className="flex flex-row items-center justify-start gap-x-2">
@@ -209,7 +209,7 @@ export default function BillsTableCell({
               title={ `${billDue.updatedAt}` }
               className={ `
                 flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
-                hover:border-border hover:bg-accent
+                hover:border-border hover:bg-background
               ` }
             >
               { `${billDue.updatedAt}` === `${billDue.dateAdded}` ?

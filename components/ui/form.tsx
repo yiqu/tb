@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Slot as SlotPrimitive, Label as LabelPrimitive } from 'radix-ui';
+import { Slot } from 'radix-ui';
 import {
   Controller,
   FormProvider,
@@ -13,7 +13,10 @@ import {
 } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
-import { Label } from '@/components/ui/label';
+
+import type { Label as LabelPrimitive } from 'radix-ui';
+
+import { Label } from './label';
 
 const Form = FormProvider;
 
@@ -89,11 +92,11 @@ function FormLabel({ className, ...props }: React.ComponentProps<typeof LabelPri
   );
 }
 
-function FormControl({ ...props }: React.ComponentProps<typeof SlotPrimitive.Slot>) {
+function FormControl({ ...props }: React.ComponentProps<typeof Slot.Root>) {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
 
   return (
-    <SlotPrimitive.Slot
+    <Slot.Root
       data-slot="form-control"
       id={ formItemId }
       aria-describedby={ !error ? `${formDescriptionId}` : `${formDescriptionId} ${formMessageId}` }
@@ -118,10 +121,11 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   }
 
   return (
-    <p data-slot="form-message" id={ formMessageId } className={ cn(`text-sm text-destructive`, className) } { ...props }>
+    <p data-slot="form-message" id={ formMessageId } className={ cn('text-sm text-destructive', className) } { ...props }>
       { body }
     </p>
   );
 }
 
 export { Form, FormItem, FormLabel, FormField, FormControl, FormMessage, useFormField, FormDescription };
+

@@ -24,7 +24,7 @@ export default function FavoritesListSection({ allFavorites }: { allFavorites: F
               <SidebarMenuSubItem>
                 <SidebarMenuSubButtonFavoritesParentWithActive favoriteId="">
                   <Link href={ `${favorite.url}` } prefetch className="flex w-full items-center justify-start">
-                    <EntityDisplayMedia entity={ favorite.entityType } className="size-4 stroke-primary" />
+                    <EntityDisplayMedia entity={ favorite.entityType } className="size-4" />
                     <FavoriteItemNameParent entity={ favorite } />
                   </Link>
                 </SidebarMenuSubButtonFavoritesParentWithActive>

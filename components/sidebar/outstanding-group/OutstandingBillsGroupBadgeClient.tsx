@@ -13,7 +13,7 @@ export default function OutstandingBillsGroupBadgeClient() {
   }
 
   if (outstandingBillsAllTimeCount === undefined) {
-    return <BadgeLoading />;
+    return null;
   }
 
   if (outstandingBillsAllTimeCount === 0) {
@@ -22,10 +22,7 @@ export default function OutstandingBillsGroupBadgeClient() {
 
   return (
     <Badge
-      className={ `
-        relative bottom-3 -ml-2 rounded-full font-semibold text-red-700 tabular-nums
-        dark:text-red-400
-      ` }
+      className={ `relative bottom-3 -ml-2 rounded-full font-semibold tabular-nums` }
       variant="secondary"
       title="Not paid or not reimbursed bills"
     >

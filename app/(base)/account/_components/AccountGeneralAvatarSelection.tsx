@@ -56,16 +56,19 @@ export default function AccountGeneralAvatarSelection({ avatarId }: AccountGener
             return (
               <div key={ option.id } className="col-span-4">
                 <div className={ `flex w-full flex-col items-center justify-start gap-y-4` }>
-                  <Typography className={ `logo-text-color font-fun text-center` } variant="h3">
+                  <Typography className={ `logo-text-color text-center font-fun` } variant="h3">
                     <SplitText
                       text={ option.name }
                       className=""
-                      delay={ 160 }
-                      animationFrom={ { opacity: 0, transform: 'translate3d(0,50px,0)' } }
-                      animationTo={ { opacity: 1, transform: 'translate3d(0,0,0)' } }
-                      easing={ 'easeOutCubic' as any }
+                      delay={ 50 }
+                      duration={ 1.25 }
+                      ease="power3.out"
+                      splitType="chars"
+                      from={ { opacity: 0, y: 40 } }
+                      to={ { opacity: 1, y: 0 } }
                       threshold={ 0.2 }
                       rootMargin="-50px"
+                      textAlign="center"
                     />
                   </Typography>
                   <Image key={ option.id } src={ option.imageUrl } alt={ option.name } width={ 200 } height={ 200 } className="rounded-2xl" />

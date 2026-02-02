@@ -15,8 +15,8 @@ export default function NavHeaderText() {
       <div
         className={ cn(
           `
-            logo-text-color font-fun absolute top-[55%] left-0 w-full -translate-y-1/2 truncate text-[25px] transition-all duration-300
-            ease-out will-change-transform
+            absolute top-[55%] left-0 w-full -translate-y-1/2 truncate font-fun text-[25px] transition-all duration-300 ease-out
+            will-change-transform
           `,
           isSidebarCollapsed ? 'invisible translate-x-8 opacity-0' : `visible translate-x-0 opacity-100`,
         ) }

@@ -3,8 +3,8 @@
 import { DateTime } from 'luxon';
 
 import { EST_TIME_ZONE } from '@/lib/general.utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
-import { Skeleton } from '@/components/ui-pre-19/skeleton';
 
 import BillsActionBarDueDateFilter from '../../bills/_components/BillsActionBarDueDateFilter';
 
