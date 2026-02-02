@@ -101,9 +101,10 @@ export async function getAllFavoritesEntities(): Promise<FavoriteEntity[]> {
     });
 
     return withUrl;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllFavorites(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving favorites. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving favorites. Code: ${errorCode}`);
   }
 }
 
@@ -115,7 +116,7 @@ export async function getIsFavoriteByEntityTypeAndId(
   cacheLife('weeks');
   cacheTag(`${CACHE_TAG_FAVORITES_PREFIX}${entityType}-${id}`);
 
-  let queryObject: any = {};
+  let queryObject: Prisma.FavoriteEntityWhereInput = {};
 
   if (entityType === 'SUBSCRIPTION') {
     queryObject = {
@@ -135,9 +136,10 @@ export async function getIsFavoriteByEntityTypeAndId(
     });
 
     return favoriteEntity;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getIsFavoriteByEntityTypeAndId(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving is favorite by entity type and id: ${entityType} and ${id}. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving is favorite by entity type and id: ${entityType} and ${id}. Code: ${errorCode}`);
   }
 }
 
@@ -147,9 +149,6 @@ export async function toggleFavoriteBySubscriptionId(
   status: FavoriteActionType,
   favoriteEntityId?: string,
 ): Promise<z.infer<typeof FavoriteEntityResponse> | undefined> {
-  // delay for 1 second
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     if (status === 'CREATE') {
       const res = await prisma.favoriteEntity.create({
@@ -181,9 +180,10 @@ export async function toggleFavoriteBySubscriptionId(
       revalidateFavoritesAll();
       return res;
     }
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at toggleFavoriteBySubscriptionId(): ', JSON.stringify(error));
-    throw new Error(`Error updating favorite entity. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error updating favorite entity. Code: ${errorCode}`);
   }
 }
 
@@ -227,9 +227,10 @@ export async function toggleFavoriteByBillDueId(
       revalidateFavoritesAll();
       return res;
     }
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at toggleFavoriteByBillDueId(): ', JSON.stringify(error));
-    throw new Error(`Error updating favorite entity. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error updating favorite entity. Code: ${errorCode}`);
   }
 }
 
@@ -266,9 +267,10 @@ export async function toggleFavoriteByUrl(
       revalidateFavoritesAll();
       return res;
     }
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at toggleFavoriteByUrl(): ', JSON.stringify(error));
-    throw new Error(`Error updating favorite entity. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error updating favorite entity. Code: ${errorCode}`);
   }
 }
 
@@ -343,9 +345,10 @@ export async function getEntityByFavoriteTypeId(
       return billDue;
     }
     return null;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getFavoriteById(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving favorite by id. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving favorite by id. Code: ${errorCode}`);
   }
 }
 
@@ -355,8 +358,9 @@ export async function getEntityByUrl(url: string): Promise<FavoriteEntity | null
       where: { url },
     });
     return favoriteEntity;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getEntityByUrl(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving entity by url. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving entity by url. Code: ${errorCode}`);
   }
 }
