@@ -9,10 +9,8 @@
   --breakpoint-xxl: 3200px;
 
   /* lg: max size of secondary monitor */
-  --breakpoint-lg: 1920px;
   --breakpoint-sec: 1920px;
   /* xl: max size of primary monitor */
-  --breakpoint-xl: 2560px;
   --breakpoint-main: 2560px;
   /* 2xl: even bigger */
   --breakpoint-two: 2000px;

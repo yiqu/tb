@@ -229,15 +229,6 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
 @layer other-colors {
   :root {
     --color-kq-shadow: rgba(0, 0, 0, 0.1);
