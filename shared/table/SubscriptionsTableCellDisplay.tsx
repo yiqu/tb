@@ -130,7 +130,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
               title={ `${subscription.dateAdded}` }
               className={ `
                 flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
-                hover:border-border hover:bg-accent
+                hover:border-border hover:bg-background
               ` }
             >
               <Typography className="truncate">{ subscription.dateAddedInEst }</Typography>
@@ -253,7 +253,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
               title={ `${subscription.updatedAt}` }
               className={ `
                 flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
-                hover:border-border hover:bg-accent
+                hover:border-border hover:bg-background
               ` }
             >
               { `${subscription.updatedAt}` === `${subscription.dateAdded}` ?

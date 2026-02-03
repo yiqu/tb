@@ -13,8 +13,8 @@ function getFestiveLogo(): [string, string] {
   const currenMonth = currentDateLuxon.month;
   const currentDay = currentDateLuxon.day;
 
-  let imageUrlLight = '/images/leaf.png';
-  let imageUrlDark = '/images/leafnight.png';
+  let imageUrlLight = '/images/grad-hat.png';
+  let imageUrlDark = '/images/grad-hat.png';
 
   if (currenMonth === 11) {
     if (currentDay >= 1 && currentDay <= 25) {

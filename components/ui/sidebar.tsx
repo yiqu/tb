@@ -1,21 +1,18 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-unused-vars */
 'use client';
 
 import * as React from 'react';
-import { Slot } from '@radix-ui/react-slot';
+import { Slot } from 'radix-ui';
 import { PanelLeftIcon } from 'lucide-react';
-import { cva, VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-
-import { Input } from './input';
-import { Button } from './button';
-import { Skeleton } from './skeleton';
-import { Separator } from './separator';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from './tooltip';
-import { Sheet, SheetTitle, SheetHeader, SheetContent, SheetDescription } from './sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Sheet, SheetTitle, SheetHeader, SheetContent, SheetDescription } from '@/components/ui/sheet';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 1 * 60 * 24 * 365;
@@ -173,10 +170,10 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className={ `
+          className="
             w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground
             [&>button]:hidden
-          ` }
+          "
           style={
             {
               '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
@@ -196,10 +193,10 @@ function Sidebar({
 
   return (
     <div
-      className={ `
+      className="
         group peer hidden text-sidebar-foreground
         md:block
-      ` }
+      "
       data-state={ state }
       data-collapsible={ state === 'collapsed' ? collapsible : '' }
       data-variant={ variant }
@@ -252,11 +249,11 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className={ `
+          className="
             flex h-full w-full flex-col bg-sidebar
             group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border
             group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm
-          ` }
+          "
         >
           { children }
         </div>
@@ -316,7 +313,8 @@ function SidebarRail({ className, ...props }: React.ComponentProps<'button'>) {
           [[data-side=right][data-state=collapsed]_&]:cursor-w-resize
         `,
         `
-          group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full
+          group-data-[collapsible=offcanvas]:translate-x-0
+          group-data-[collapsible=offcanvas]:after:left-full
           hover:group-data-[collapsible=offcanvas]:bg-sidebar
         `,
         '[[data-side=left][data-collapsible=offcanvas]_&]:-right-2',
@@ -336,7 +334,8 @@ function SidebarInset({ className, ...props }: React.ComponentProps<'main'>) {
         'relative flex w-full flex-1 flex-col bg-background',
         `
           md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl
-          md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2
+          md:peer-data-[variant=inset]:shadow-sm
+          md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2
         `,
         className,
       ) }
@@ -391,7 +390,7 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function SidebarGroupLabel({ className, asChild = false, ...props }: React.ComponentProps<'div'> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : 'div';
+  const Comp = asChild ? Slot.Root : 'div';
 
   return (
     <Comp
@@ -413,7 +412,7 @@ function SidebarGroupLabel({ className, asChild = false, ...props }: React.Compo
 }
 
 function SidebarGroupAction({ className, asChild = false, ...props }: React.ComponentProps<'button'> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : 'button';
+  const Comp = asChild ? Slot.Root : 'button';
 
   return (
     <Comp
@@ -506,7 +505,7 @@ function SidebarMenuButton({
   isActive?: boolean;
   tooltip?: string | React.ComponentProps<typeof TooltipContent>;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
-  const Comp = asChild ? Slot : 'button';
+  const Comp = asChild ? Slot.Root : 'button';
   const { isMobile, state } = useSidebar();
 
   const button = (
@@ -547,7 +546,7 @@ function SidebarMenuAction({
   asChild?: boolean;
   showOnHover?: boolean;
 }) {
-  const Comp = asChild ? Slot : 'button';
+  const Comp = asChild ? Slot.Root : 'button';
 
   return (
     <Comp
@@ -683,7 +682,7 @@ function SidebarMenuSubButton({
   size?: 'sm' | 'md';
   isActive?: boolean;
 }) {
-  const Comp = asChild ? Slot : 'a';
+  const Comp = asChild ? Slot.Root : 'a';
 
   return (
     <Comp
@@ -700,10 +699,14 @@ function SidebarMenuSubButton({
           active:bg-sidebar-accent active:text-sidebar-accent-foreground
           disabled:pointer-events-none disabled:opacity-50
           aria-disabled:pointer-events-none aria-disabled:opacity-50
+          [&:active>svg:not([class*='text-'])]:text-sidebar-accent-foreground
+          [&:hover>svg:not([class*='text-'])]:text-sidebar-accent-foreground
           [&>span:last-child]:truncate
-          [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground
+          [&>svg]:size-4 [&>svg]:shrink-0
+          [&>svg:not([class*='text-'])]:text-muted-foreground
         `,
         'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
+        '[&[data-active=true]>svg:not([class*="text-"])]:text-sidebar-accent-foreground',
         size === 'sm' && 'text-xs',
         size === 'md' && 'text-sm',
         'group-data-[collapsible=icon]:hidden',

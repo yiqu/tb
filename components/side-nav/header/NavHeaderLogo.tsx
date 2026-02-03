@@ -9,8 +9,8 @@ interface Props {
 }
 
 export default function NavHeaderLogo({
-  imageUrlLight = '/images/leaf.png',
-  imageUrlDark = '/images/leafnight.png',
+  imageUrlLight = '/images/grad-hat.png',
+  imageUrlDark = '/images/grad-hat.png',
   size = LOGO_SIZE,
 }: Props) {
   return (

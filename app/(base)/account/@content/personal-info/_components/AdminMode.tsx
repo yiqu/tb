@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { Skeleton } from '@/components/ui-pre-19/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { CardTitle, CardDescription } from '@/components/ui/card';

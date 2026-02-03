@@ -1,12 +1,6 @@
-/* eslint-disable unicorn/no-array-for-each */
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/no-array-index-key */
-/*
-	Installed from https://reactbits.dev/ts/tailwind/
-*/
+'use client';
 
-import { motion, Transition } from 'framer-motion';
+import { motion, Easing, Transition } from 'motion/react';
 import { useRef, useMemo, useState, useEffect } from 'react';
 
 type BlurTextProps = {
@@ -19,7 +13,7 @@ type BlurTextProps = {
   rootMargin?: string;
   animationFrom?: Record<string, string | number>;
   animationTo?: Array<Record<string, string | number>>;
-  easing?: (t: number) => number;
+  easing?: Easing | Easing[];
   onAnimationComplete?: () => void;
   stepDuration?: number;
 };
@@ -31,9 +25,9 @@ const buildKeyframes = (
   const keys = new Set<string>([...Object.keys(from), ...steps.flatMap((s) => Object.keys(s))]);
 
   const keyframes: Record<string, Array<string | number>> = {};
-  keys.forEach((k) => {
+  for (const k of keys) {
     keyframes[k] = [from[k], ...steps.map((s) => s[k])];
-  });
+  }
   return keyframes;
 };
 
@@ -47,7 +41,7 @@ const BlurText: React.FC<BlurTextProps> = ({
   rootMargin = '0px',
   animationFrom,
   animationTo,
-  easing = (t) => t,
+  easing = (t: number) => t,
   onAnimationComplete,
   stepDuration = 0.35,
 }) => {
@@ -107,8 +101,8 @@ const BlurText: React.FC<BlurTextProps> = ({
           duration: totalDuration,
           times,
           delay: (index * delay) / 1000,
+          ease: easing,
         };
-        (spanTransition as any).ease = easing;
 
         return (
           <motion.span

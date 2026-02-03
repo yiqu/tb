@@ -3,7 +3,7 @@
 import { formatDistanceToNow } from 'date-fns';
 
 import useIsClient from '@/hooks/useIsClient';
-import { Skeleton } from '@/components/ui-pre-19/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
 
 export default function DateAddedDisplay({ timeStamp }: { timeStamp: string | null }) {

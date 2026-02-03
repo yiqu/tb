@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars */
-
 import { Suspense } from 'react';
 
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GOOG_PALETTE } from '@/lib/color-palettes';
 import DisplayCard from '@/shared/components/DisplayCard';
 import Typography from '@/components/typography/Typography';
 import Typewriter from '@/fancy/components/text/typewriter';
@@ -13,13 +12,10 @@ import { CardTitle, CardHeader, CardContent, CardDescription } from '@/component
 
 import ConsentCardFooter from './ConsentCardFooter';
 
-const PTO = ['#A07CFE', '#FE8FB5', '#FFBE7B'];
-const GOOG = ['#4285f4', '#34a853', '#fbbc05', '#ea4335'];
-
 export default function ConsentContentCard() {
   return (
-    <DisplayCard className="relative z-10 max-w-[40rem] overflow-hidden bg-background">
-      <ShineBorder shineColor={ GOOG } borderWidth={ 2 } />
+    <DisplayCard className="relative z-10 max-w-160 overflow-hidden bg-background">
+      <ShineBorder shineColor={ GOOG_PALETTE } borderWidth={ 2 } />
       <CardHeader>
         <CardTitle>
           <Typewriter

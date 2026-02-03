@@ -25,11 +25,7 @@ export const AuroraText2 = memo(
       ` }>
         <span className="sr-only">{ children }</span>
         <span
-          className={ `
-            relative animate-aurora
-            bg-[length:200%_auto]
-            bg-clip-text text-transparent
-          ` }
+          className={ `relative animate-aurora bg-[length:200%_auto] bg-clip-text text-transparent` }
           style={ gradientStyle }
           aria-hidden="true"
         >

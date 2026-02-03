@@ -24,6 +24,7 @@ export const APP_VIBE_OPTIONS = [
   'mocha-mousse',
   'elegant',
   'cyberpunk',
+  'sword-fairy',
 ] as const;
 
 export const APP_FONT_OPTIONS = [
@@ -71,6 +72,7 @@ export const APP_VIBE_OPTIONS_MAP: Record<AppVibe, string> = {
   softpop: "Softpop",
   "solar-dusk": "Solar Dusk",
   supabase: "Supabase",
+  "sword-fairy": "仙剑奇侠传",
   t3: "T3",
   vercel: "Vercel",
   vintage: "Vintage"

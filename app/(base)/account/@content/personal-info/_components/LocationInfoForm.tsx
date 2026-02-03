@@ -11,8 +11,8 @@ import { Map, Save, MapPin, Building, RotateCcw, NotebookTabs } from 'lucide-rea
 
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
-import { Separator } from '@/components/ui-pre-19/separator';
 import { HFInputField } from '@/components/hook-form/HFInput';
 import { CardFooter, CardContent } from '@/components/ui/card';
 import DurationDisplay from '@/shared/components/DurationDisplay';
@@ -69,7 +69,6 @@ export default function LocationInfoForm({ user, children }: LocationInfoFormPro
           userId: user.id,
         });
       });
-
     } else {
       window.alert('User has not been created');
     }

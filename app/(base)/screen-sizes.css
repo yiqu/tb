@@ -1,0 +1,17 @@
+@theme inline {
+  /* Breakpoints matching MUI theme.ts */
+  --breakpoint-xxs: 600px;
+  --breakpoint-xs: 750px;
+  --breakpoint-sm: 1300px;
+  --breakpoint-md: 1920px;
+  --breakpoint-lg: 2300px;
+  --breakpoint-xl: 2560px;
+  --breakpoint-xxl: 3200px;
+
+  /* lg: max size of secondary monitor */
+  --breakpoint-sec: 1920px;
+  /* xl: max size of primary monitor */
+  --breakpoint-main: 2560px;
+  /* 2xl: even bigger */
+  --breakpoint-two: 2000px;
+}

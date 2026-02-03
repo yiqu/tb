@@ -32,7 +32,7 @@
   --sidebar-border: oklch(0.8719 0.0198 302.1690);
   --sidebar-ring: oklch(0.6104 0.0767 299.7335);
 
-  --font-sans: var(--font-geist);
+  --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-lora);
   --font-mono: var(--font-fira-code);
   --font-fun: var(--font-cherry-bomb-one);
@@ -84,7 +84,7 @@
   --sidebar-border: oklch(0.2847 0.0346 291.2726);
   --sidebar-ring: oklch(0.7058 0.0777 302.0489);
 
-  --font-sans: var(--font-geist);
+  --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-lora);
   --font-mono: var(--font-fira-code);
   --font-fun: var(--font-cherry-bomb-one);
@@ -166,7 +166,7 @@
 @layer utilities {
   .font-sans {
     font-family:
-      var(--font-geist),
+      var(--font-geist-sans),
       ui-sans-serif,
       system-ui,
   }

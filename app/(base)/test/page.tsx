@@ -1,5 +1,5 @@
-import PagingTest from './_components/paging-test';
 import NestedRequest from './_components/NestedRequest';
+import ScreenSizeDisplay from './_components/ScreenSizeDisplay';
 
 interface PlaygroundPageProps {
   params: Promise<{ slug: string }>;

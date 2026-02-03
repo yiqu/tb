@@ -224,6 +224,7 @@ const VIBE_CSS_MAP: Record<AppVibe, string> = {
   softpop: '/vibes/softpop/tw.css',
   'solar-dusk': '/vibes/solar-dusk/tw.css',
   supabase: '/vibes/supabase/tw.css',
+  'sword-fairy': '/vibes/sword-fairy/tw.css',
   t3: '/vibes/t3/tw.css',
   vercel: '/vibes/vercel/tw.css',
   vintage: '/vibes/vintage/tw.css',
@@ -350,6 +351,9 @@ export function getFontVariableByVibe(vibe: AppVibe): string {
       break;
     case 'cyberpunk':
       result = `${outfit.variable} ${firaCode.variable}`;
+      break;
+    case 'sword-fairy':
+      result = `${outfit.variable} ${lora.variable} ${firaCode.variable}`;
       break;
   }
 
