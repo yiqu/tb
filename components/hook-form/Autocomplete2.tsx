@@ -148,14 +148,18 @@ function AutocompleteInputBase({
             role="combobox"
             aria-expanded={ open }
             aria-invalid={ hasError ? true : undefined }
-            className={ cn('w-full justify-between bg-transparent', hasError && `
-              border-red-500 font-normal
-              focus-visible:ring-red-500
-            `, className) }
+            className={ cn(
+              'w-full justify-between bg-transparent',
+              hasError && `
+                border-red-500 font-normal
+                focus-visible:ring-red-500
+              `,
+              className,
+            ) }
           >
             <div className="flex flex-wrap items-center gap-1.5">
               { currentValues.length === 0 ?
-                <span className={ cn('text-muted-foreground/50', labelClassName) }>{ placeholder }</span>
+                <span className={ cn(``, labelClassName) }>{ placeholder }</span>
               : multi ?
                 <>
                   { currentValues.map((value) => {

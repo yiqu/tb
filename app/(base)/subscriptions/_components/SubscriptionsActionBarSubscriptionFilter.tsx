@@ -11,7 +11,9 @@ interface SubscriptionsActionBarSubscriptionFilterProps {
   allSubscriptionsPromise: Promise<SubscriptionOriginal[]>;
 }
 
-export default function SubscriptionsActionBarSubscriptionFilter({ allSubscriptionsPromise }: SubscriptionsActionBarSubscriptionFilterProps) {
+export default function SubscriptionsActionBarSubscriptionFilter({
+  allSubscriptionsPromise,
+}: SubscriptionsActionBarSubscriptionFilterProps) {
   const subscriptions: SubscriptionOriginal[] = use(allSubscriptionsPromise);
 
   const subscriptionOptions = subscriptions.map((subscription) => ({
@@ -58,7 +60,7 @@ export default function SubscriptionsActionBarSubscriptionFilter({ allSubscripti
         onChange={ handleOnSubscriptionsChange }
         defaultValues={ selectedSubscriptions.subscriptions }
         multi={ true }
-        className="min-w-[15rem] bg-card"
+        className="min-w-60 bg-card"
         searchBy="label"
         badgeTextMaxLength={ 8 }
       />

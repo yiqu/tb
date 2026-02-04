@@ -3,25 +3,25 @@ import PageTitle from '@/components/headings/PageTitle';
 import LayoutParent from '@/components/layout/LayoutParent';
 import { AuroraText } from '@/components/magicui/aurora-text';
 import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
-import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
+import LayoutAutoGutter from '@/components/layout/LayoutAutoGutter';
 import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
 export default function AddNewEntityLayout({ children }: LayoutProps<'/add'>) {
   return (
     <div id="add-new-entity-layout-parent">
       <LayoutParent>
-        <LayoutWithGutter size="wider">
+        <LayoutAutoGutter>
           <section className="w-full">
             <PageTitle
               title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.add }>Add New</AuroraText> }
               subText="Add a new subscription or due bill."
             />
           </section>
-        </LayoutWithGutter>
+        </LayoutAutoGutter>
       </LayoutParent>
       <Separator />
       <LayoutChildrenParent>
-        <LayoutWithGutter size="wider">{ children }</LayoutWithGutter>
+        <LayoutAutoGutter>{ children }</LayoutAutoGutter>
       </LayoutChildrenParent>
     </div>
   );

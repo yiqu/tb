@@ -4,7 +4,6 @@ import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { CardFooter, CardContent } from '@/components/ui/card';
-import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
 import { SubscriptionOriginal } from '@/models/subscriptions/subscriptions.model';
 import { getAllSubscriptionsCached } from '@/server/subscriptions/subscriptions.server';
 
@@ -31,28 +30,26 @@ export default function AddNewBillPage() {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
       <AddNewEntityHeader type="bill" />
-      <LayoutWithGutter size="med" className="w-full">
-        <DisplayCard className="w-full">
-          <CardContent>
-            <AddNewBillFormWrapper>
-              <div className="flex w-full flex-col items-start justify-start gap-y-4">
-                <Suspense fallback={ <AddBillSubscriptionSelectSuspense /> }>
-                  <AddBillSubscriptionSelect allSubscriptionsPromise={ allSubscriptionsPromise } />
-                </Suspense>
-                <AddBillCostWatcher />
-                <AddBillDueDate />
-                <AddBillCurrency />
-                <AddBillIsPaid />
-                <AddBillIsReimbursed />
-                <AddBillConsecutiveAddStandalone />
-              </div>
-            </AddNewBillFormWrapper>
-          </CardContent>
-          <CardFooter>
-            <AddNewDueBillActions />
-          </CardFooter>
-        </DisplayCard>
-      </LayoutWithGutter>
+      <DisplayCard className="w-full">
+        <CardContent>
+          <AddNewBillFormWrapper>
+            <div className="flex w-full flex-col items-start justify-start gap-y-4">
+              <Suspense fallback={ <AddBillSubscriptionSelectSuspense /> }>
+                <AddBillSubscriptionSelect allSubscriptionsPromise={ allSubscriptionsPromise } />
+              </Suspense>
+              <AddBillCostWatcher />
+              <AddBillDueDate />
+              <AddBillCurrency />
+              <AddBillIsPaid />
+              <AddBillIsReimbursed />
+              <AddBillConsecutiveAddStandalone />
+            </div>
+          </AddNewBillFormWrapper>
+        </CardContent>
+        <CardFooter>
+          <AddNewDueBillActions />
+        </CardFooter>
+      </DisplayCard>
 
       <AddedBillDues />
     </div>

@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 
-import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
+import LayoutAutoGutter from '@/components/layout/LayoutAutoGutter';
 
 import AccountLeftNav from '../_components/AccountLeftNav';
 import AccountContentTabsParent from '../_components/AccountContentTabsParent';
@@ -20,7 +20,7 @@ interface AccountContentLayoutProps {
 
 export default function AccountContentLayout({ children }: AccountContentLayoutProps) {
   return (
-    <LayoutWithGutter size="med">
+    <LayoutAutoGutter>
       <div className="h-full w-full">
         <Grid container width="100%" spacing={ 4 }>
           <Grid size={ { xs: 1, sm: 3 } }>
@@ -31,6 +31,6 @@ export default function AccountContentLayout({ children }: AccountContentLayoutP
           </Grid>
         </Grid>
       </div>
-    </LayoutWithGutter>
+    </LayoutAutoGutter>
   );
 }

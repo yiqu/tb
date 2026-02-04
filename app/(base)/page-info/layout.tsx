@@ -6,7 +6,7 @@ import PageTitle from '@/components/headings/PageTitle';
 import LayoutParent from '@/components/layout/LayoutParent';
 import { AuroraText } from '@/components/magicui/aurora-text';
 import { APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
-import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
+import LayoutAutoGutter from '@/components/layout/LayoutAutoGutter';
 import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
 const layoutMetadata = getLayoutMetadata('Page Information', 'Page information.');
@@ -16,14 +16,14 @@ export default function PageInfoLayout({ children }: LayoutProps<'/page-info'>) 
   return (
     <div id="search-layout-parent">
       <LayoutParent>
-        <LayoutWithGutter size="wider">
+        <LayoutAutoGutter>
           <section className="w-full">
             <PageTitle
               title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.pageInfo }>Page Information</AuroraText> }
               subText="Page information."
             />
           </section>
-        </LayoutWithGutter>
+        </LayoutAutoGutter>
       </LayoutParent>
       <Separator />
       <LayoutChildrenParent>{ children }</LayoutChildrenParent>

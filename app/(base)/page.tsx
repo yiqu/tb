@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
 import LayoutParent from '@/components/layout/LayoutParent';
 import { AuroraText } from '@/components/magicui/aurora-text';
-import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
+import LayoutAutoGutter from '@/components/layout/LayoutAutoGutter';
 import { appName, APP_TITLE_GRADIENT_COLORS } from '@/constants/constants';
 import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 
@@ -18,22 +18,22 @@ export default function HomeDashboardPage({ searchParams }: PageProps<'/'>) {
   return (
     <div id="dashboard-page-parent">
       <LayoutParent>
-        <LayoutWithGutter size="wider">
+        <LayoutAutoGutter>
           <section className="w-full">
             <PageTitle
               title={ <AuroraText colors={ APP_TITLE_GRADIENT_COLORS.dashboard }>Dashboard</AuroraText> }
               subText="View and manage all your due bills with ease."
             />
           </section>
-        </LayoutWithGutter>
+        </LayoutAutoGutter>
       </LayoutParent>
-      
+
       <Separator />
 
       <LayoutChildrenParent>
-        <LayoutWithGutter size="wider">
+        <LayoutAutoGutter>
           <HomeDashboardWrapper searchParamsPromise={ searchParams } />
-        </LayoutWithGutter>
+        </LayoutAutoGutter>
       </LayoutChildrenParent>
     </div>
   );

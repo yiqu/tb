@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 
 import DisplayCard from '@/shared/components/DisplayCard';
 import { CardFooter, CardContent } from '@/components/ui/card';
-import LayoutWithGutter from '@/components/layout/LayoutWithGutter';
 import AddSubscriptionDialogContentFormWrapper from '@/components/subscriptions/AddSubscriptionDialogContentFormWrapper';
 
 import AddNewEntityHeader from '../_components/AddNewEntityHeader';
@@ -24,26 +23,24 @@ export default function AddNewSubscriptionPage() {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
       <AddNewEntityHeader type="subscription" />
-      <LayoutWithGutter size="med" className="w-full">
-        <DisplayCard className="w-full">
-          <CardContent>
-            <AddSubscriptionDialogContentFormWrapper redirectToNewSubscriptionAfterCreation>
-              <div className="flex w-full flex-col items-start justify-start gap-y-4">
-                <EditSubscriptionName />
-                <EditSubscriptionCost />
-                <EditSubscriptionCycleDuration />
-                <EditSubscriptionDescription />
-                <EditSubscriptionUrl />
-                <EditSubscriptionApproved />
-                <EditSubscriptionSigned />
-              </div>
-            </AddSubscriptionDialogContentFormWrapper>
-          </CardContent>
-          <CardFooter>
-            <AddNewEntityActions />
-          </CardFooter>
-        </DisplayCard>
-      </LayoutWithGutter>
+      <DisplayCard className="w-full">
+        <CardContent>
+          <AddSubscriptionDialogContentFormWrapper redirectToNewSubscriptionAfterCreation>
+            <div className="flex w-full flex-col items-start justify-start gap-y-4">
+              <EditSubscriptionName />
+              <EditSubscriptionCost />
+              <EditSubscriptionCycleDuration />
+              <EditSubscriptionDescription />
+              <EditSubscriptionUrl />
+              <EditSubscriptionApproved />
+              <EditSubscriptionSigned />
+            </div>
+          </AddSubscriptionDialogContentFormWrapper>
+        </CardContent>
+        <CardFooter>
+          <AddNewEntityActions />
+        </CardFooter>
+      </DisplayCard>
     </div>
   );
 }

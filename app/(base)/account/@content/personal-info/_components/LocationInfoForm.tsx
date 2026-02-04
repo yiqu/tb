@@ -1,6 +1,5 @@
 'use client';
 
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { z } from 'zod';
 import startCase from 'lodash/startCase';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -140,7 +139,10 @@ function FormSubmitButton({ lastUpdated }: { lastUpdated: string | null }) {
     <section className="flex flex-row items-center justify-between">
       { isDirty ?
         <Button size="default" variant="outline" type="button" onClick={ handleOnReset }>
-          <RotateCcw size={ 16 } className="text-orange-800 dark:text-orange-400" />
+          <RotateCcw size={ 16 } className="
+            text-orange-800
+            dark:text-orange-400
+          " />
           Reset
         </Button>
       : <DurationDisplay updatedAt={ lastUpdated } /> }
@@ -188,7 +190,7 @@ function FormErrorMessage() {
         { errorKeys.map((err) => {
           return (
             <section key={ err } className="flex flex-row gap-x-1">
-              <Typography variant="label1" className="min-w-[7rem]">
+              <Typography variant="label1" className="min-w-28">
                 { startCase(err) }:
               </Typography>
               <Typography variant="labelvalue1">{ `${formState.errors[err]?.message}` }</Typography>
