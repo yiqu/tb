@@ -66,7 +66,7 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
       : null }
       { isBillLoaded && data ?
         <EditBillDialogFormWrapper billDue={ data }>
-          <div className="px-4">{ children }</div>
+          { children }
           <StyledDialogFooter>
             <div className="flex w-full flex-row items-center justify-between gap-x-2">
               <DialogClose asChild>
@@ -92,7 +92,7 @@ export default function EditBillDialogContent({ billDueId, children }: { billDue
             </div>
           </StyledDialogFooter>
         </EditBillDialogFormWrapper>
-      : <div className="mb-4 flex flex-col justify-start gap-y-4 px-4">
+      : <div className="mb-4 flex flex-col justify-start gap-y-4">
         <Skeleton className="h-20 w-full" />
         <Skeleton className="h-20 w-full" />
         <Skeleton className="h-20 w-full" />

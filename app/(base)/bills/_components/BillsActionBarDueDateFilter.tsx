@@ -6,16 +6,8 @@ import { parseAsString, parseAsInteger, useQueryStates } from 'nuqs';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectItem,
-  SelectGroup,
-  SelectLabel,
-  SelectValue,
-  SelectContent,
-  SelectTrigger,
-  SelectSeparator,
-} from '@/components/ui/select';
+import { SelectContent } from '@/components/ui/custom/select';
+import { Select, SelectItem, SelectGroup, SelectLabel, SelectValue, SelectTrigger, SelectSeparator } from '@/components/ui/select';
 
 const YEAR_OPTIONS = [
   { label: '2020', value: '2020' },
@@ -185,10 +177,7 @@ export default function BillsActionBarDueDateFilter({ showOnlyYears, placeholder
             type="button"
             variant="ghost"
             size="sm"
-            className={ `
-              absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 p-0
-              hover:bg-background
-            ` }
+            className={ `absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 p-0` }
             onClick={ handleClearYearValue }
           >
             <X className="size-4" />

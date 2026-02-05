@@ -21,4 +21,5 @@
     "titleBar.inactiveForeground": "#ffffff99",
     "activityBar.activeBorder": "#d5e9de"
   },
+  "prisma.pinToPrisma6": true
 }

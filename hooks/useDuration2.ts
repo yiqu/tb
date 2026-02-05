@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import humanizeDuration, { Unit } from 'humanize-duration';
 
 const ONE_MINUTE_MILLI = 1_000 * 60;
+const HALF_MINUTE_MILLI = 1_000 * 30;
 
 // Create a custom short English language
 const shortEnglish = humanizeDuration.humanizer({
@@ -70,8 +71,14 @@ export default function useDuration2(
 
   // Handle very recent times
   if (absoluteElapsed < ONE_MINUTE_MILLI) {
+    if (absoluteElapsed < HALF_MINUTE_MILLI) {
+      if (useShortText) {
+        return isFuture ? 'in few sec' : 'few sec ago';
+      }
+      return isFuture ? 'in few seconds' : 'few seconds ago';
+    }
     if (useShortText) {
-      return isFuture ? 'in <1 min' : '<1 min ago';
+      return isFuture ? 'in < a min' : '< a min ago';
     }
     return isFuture ? 'in less than a minute' : 'less than a minute ago';
   }

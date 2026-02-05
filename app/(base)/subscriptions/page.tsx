@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 
+import ColumnStack from '@/shared/components/ColumnStack';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
@@ -19,7 +20,7 @@ export default function SubscriptionsPage({ searchParams }: PageProps<'/subscrip
   const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions);
 
   return (
-    <div className="flex w-full flex-col items-start justify-start gap-y-3">
+    <ColumnStack className="w-full gap-y-3">
       <SubscriptionsTableActionBar />
       <SubscriptionsTablePaginationWrapper searchParams={ searchParams } />
       <Suspense fallback={ <SubscriptionsTableSkeleton /> }>
@@ -40,6 +41,6 @@ export default function SubscriptionsPage({ searchParams }: PageProps<'/subscrip
           <AddNewBillDueDialogContentStandalone searchParams={ searchParams } />
         </AddNewBillDueDialogStandalone>
       </Suspense>
-    </div>
+    </ColumnStack>
   );
 }

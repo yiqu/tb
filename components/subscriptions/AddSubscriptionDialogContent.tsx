@@ -19,7 +19,7 @@ export default function AddSubscriptionDialogContent({ children }: { children: R
       }
     >
       <AddSubscriptionDialogContentFormWrapper>
-        <div className="px-4">{ children }</div>
+        { children }
         <AddSubscriptionDialogContentFooter />
       </AddSubscriptionDialogContentFormWrapper>
     </StyledDialogContent>
