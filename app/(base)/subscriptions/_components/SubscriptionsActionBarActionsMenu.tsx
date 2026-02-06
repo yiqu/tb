@@ -51,8 +51,8 @@ export default function SubscriptionsActionBarActionsMenu({ showDeleteAllSubscri
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="default">
-          <EllipsisVerticalIcon className="h-4 w-4" />
+        <Button variant="default" size="default">
+          <EllipsisVerticalIcon />
           Actions
         </Button>
       </DropdownMenuTrigger>

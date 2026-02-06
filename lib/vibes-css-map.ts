@@ -204,6 +204,16 @@ const robotoMono = Roboto_Mono({
 });
 
 const VIBE_CSS_MAP: Record<AppVibe, string> = {
+  'cosmic-night': '/vibes/cosmic-night/tw.css',
+  darkmatter: '/vibes/darkmatter/tw.css',
+  midnight: '/vibes/midnight/tw.css',
+  'northern-lights': '/vibes/northern-lights/tw.css',
+  'ocean-breeze': '/vibes/ocean-breeze/tw.css',
+  'sage-garden': '/vibes/sage-garden/tw.css',
+  'starry-night': '/vibes/starry-night/tw.css',
+  'violet-bloom': '/vibes/violet-bloom/tw.css',
+  'clean-slate': '/vibes/clean-slate/tw.css',
+  catppuccin: '/vibes/catppuccin/tw.css',
   'amber-minimal': '/vibes/amber-minimal/tw.css',
   'amethyst-haze': '/vibes/amethyst-haze/tw.css',
   'bubble-gum': '/vibes/bubble-gum/tw.css',
@@ -354,6 +364,36 @@ export function getFontVariableByVibe(vibe: AppVibe): string {
       break;
     case 'sword-fairy':
       result = `${outfit.variable} ${lora.variable} ${firaCode.variable}`;
+      break;
+    case 'catppuccin':
+      result = `${montserrat.variable} ${firaCode.variable}`;
+      break;
+    case 'clean-slate':
+      result = `${inter.variable} ${merriweather.variable} ${jetBrainsMono.variable}`;
+      break;
+    case 'cosmic-night':
+      result = `${inter.variable} ${jetBrainsMono.variable}`;
+      break;
+    case 'darkmatter':
+      result = `${geistSans.variable} ${jetBrainsMono.variable}`;
+      break;
+    case 'midnight':
+      result = `${montserrat.variable} ${sourceCodePro.variable}`;
+      break;
+    case 'northern-lights':
+      result = `${geistSans.variable} ${jetBrainsMono.variable} ${sourceSerif4.variable}`;
+      break;
+    case 'ocean-breeze':
+      result = `${dmSans.variable} ${lora.variable} ${ibmPlexMono.variable}`;
+      break;
+    case 'sage-garden':
+      result = `${geistSans.variable} ${jetBrainsMono.variable}`;
+      break;
+    case 'starry-night':
+      result = `${geistSans.variable} ${geistMono.variable}`;
+      break;
+    case 'violet-bloom':
+      result = `${geistSans.variable} ${lora.variable} ${ibmPlexMono.variable}`;
       break;
   }
 

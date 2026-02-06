@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import ColumnStack from '@/shared/components/ColumnStack';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
+import ContentStickyByScrollWrapper from '@/components/layout/ContentStickyByScrollWrapper';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
 
 import SubscriptionsTableParent from './_components/SubscriptionsTableParent';
@@ -21,11 +22,17 @@ export default function SubscriptionsPage({ searchParams }: PageProps<'/subscrip
 
   return (
     <ColumnStack className="w-full gap-y-3">
-      <SubscriptionsTableActionBar />
-      <SubscriptionsTablePaginationWrapper searchParams={ searchParams } />
+      <ContentStickyByScrollWrapper threshold={ 120 } hideAnimation="slideUp">
+        <ColumnStack className="w-full gap-y-3 py-3">
+          <SubscriptionsTableActionBar />
+          <SubscriptionsTablePaginationWrapper searchParams={ searchParams } />
+        </ColumnStack>
+      </ContentStickyByScrollWrapper>
+
       <Suspense fallback={ <SubscriptionsTableSkeleton /> }>
         <SubscriptionsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
       </Suspense>
+
       <Suspense>
         <SubscriptionsTableActionDialog>
           <EditSubscriptionDialogContentCard />

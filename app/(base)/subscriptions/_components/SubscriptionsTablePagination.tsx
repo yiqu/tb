@@ -2,6 +2,7 @@ import z from 'zod';
 import { Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import RowStack from '@/shared/components/RowStack';
 import { Separator } from '@/components/ui/separator';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import Typography from '@/components/typography/Typography';
@@ -44,7 +45,7 @@ export default async function SubscriptionsTablePagination({ searchParamsPromise
   const hasSearchParams: boolean = isSearchParamsExist(searchParams);
 
   return (
-    <ContentPaginationBarStickyWrapper>
+    <RowStack className="w-full justify-end">
       <div>{ `` }</div>
       <div className="flex flex-row items-center justify-end gap-x-4">
         { hasSearchParams ?
@@ -71,7 +72,7 @@ export default async function SubscriptionsTablePagination({ searchParamsPromise
           <SubscriptionsTablePaginationPageSelect totalPages={ totalPages } />
         </Suspense>
       </div>
-    </ContentPaginationBarStickyWrapper>
+    </RowStack>
   );
 }
 
