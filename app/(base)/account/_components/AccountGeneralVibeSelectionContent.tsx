@@ -5,8 +5,9 @@ import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 
 import { Form } from '@/components/ui/form';
-import HFSelect from '@/components/hook-form/HFSelect';
+import HFSelect, { HFSelectOption } from '@/components/hook-form/HFSelect';
 import { setSettingsApplicationVibe } from '@/server/settings/vibe-select';
+import VibeSelectionItemDisplay from '@/shared/components/VibeSelectionItemDisplay';
 import { generalSettingsVibeSchema } from '@/validators/settings/general/general.schema';
 import { AppVibe, APP_VIBE_OPTIONS_MAP, APP_VIBE_OPTIONS_LIST } from '@/models/settings/general-settings.models';
 
@@ -40,6 +41,7 @@ export default function AccountGeneralVibeSelectionContent({ vibe }: AccountGene
           placeholder="Select a vibe"
           formItemClassName="w-[50%]"
           onChanged={ () => methods.handleSubmit(onSubmit)() }
+          renderOption={ (option: HFSelectOption) => <VibeSelectionItemDisplay key={ option.value } option={ option } /> }
         />
       </form>
     </Form>

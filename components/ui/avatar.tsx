@@ -83,4 +83,3 @@ function AvatarGroupCount({ className, ...props }: React.ComponentProps<'div'>) 
 }
 
 export { Avatar, AvatarImage, AvatarBadge, AvatarGroup, AvatarFallback, AvatarGroupCount };
-

@@ -30,6 +30,7 @@ interface HFSelectProps {
   formItemClassName?: string;
   selectProps?: React.ComponentProps<typeof SelectPrimitive.Root>;
   onChanged?: (_value: string) => void;
+  renderOption?: (_option: HFSelectOption) => React.ReactNode;
 }
 
 export default function HFSelect({
@@ -46,6 +47,7 @@ export default function HFSelect({
   formItemClassName,
   selectProps,
   onChanged,
+  renderOption,
 }: HFSelectProps) {
   const hasOptions = options.length > 0;
   return (
@@ -96,6 +98,9 @@ export default function HFSelect({
                     <ListLoading />
                   : hasOptions ?
                     options.map((opt) => {
+                      if (renderOption) {
+                        return renderOption(opt);
+                      }
                       return (
                         <SelectItem key={ opt.value } value={ opt.value } className={ `${FONT_CSS_CLASSNAME[opt.value]}` }>
                           { opt.label }
