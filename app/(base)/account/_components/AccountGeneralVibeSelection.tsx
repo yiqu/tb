@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { Palette } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
@@ -13,7 +14,10 @@ export default function AccountGeneralVibeSelection() {
     <DisplayCard>
       <CardHeader>
         <CardTitle>
-          <Typography variant="h5">Vibe</Typography>
+          <Typography variant="h5" className="flex items-center gap-x-2">
+            <Palette className="" />
+            Vibe
+          </Typography>
         </CardTitle>
         <CardDescription>
           <Typography variant="body1">Pick a mood to set the tone for your visit.</Typography>

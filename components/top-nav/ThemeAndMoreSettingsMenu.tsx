@@ -24,8 +24,6 @@ export default function ThemeAndMoreSettingsMenu() {
         <Suspense fallback={ <VibeSelectionSkeleton /> }>
           <ThemeAndMoreSettingsMenuVibePickerParent />
         </Suspense>
-
-
         <DropdownMenuSeparator />
         <ThemeAndMoreSettingsMenuSettingsLink />
       </DropdownMenuContent>

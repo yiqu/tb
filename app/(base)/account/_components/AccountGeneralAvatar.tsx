@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { User } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';
@@ -12,7 +13,10 @@ export default function AccountGeneralAvatar() {
     <DisplayCard>
       <CardHeader>
         <CardTitle>
-          <Typography variant="h5">Avatar</Typography>
+          <Typography variant="h5" className="flex items-center gap-x-2">
+            <User className="" />
+            Avatar
+          </Typography>
         </CardTitle>
         <CardDescription>
           <Typography variant="body1">Select an avatar for your account.</Typography>

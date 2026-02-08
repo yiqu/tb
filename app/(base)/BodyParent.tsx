@@ -50,19 +50,19 @@ export default async function BodyParent({ children }: { children: React.ReactNo
 
       <body id="base-root-layout" className={ cn('font-sans antialiased') }>
         <AppTopLoader />
-        <InitColorSchemeScript defaultMode="light" attribute="data-mui-color-scheme" />
+        <InitColorSchemeScript defaultMode="system" attribute="data-mui-color-scheme" />
         <Preloads />
         <HistoryTrackerWrapper />
         <VibeProviderWrapper>
           <AppRouterCacheProvider options={ { enableCssLayer: true } }>
-            <MuiThemeProvider theme={ theme } defaultMode="light">
+            <MuiThemeProvider theme={ theme } defaultMode="system" modeStorageKey="mui-mode">
               <NuqsAdapter>
                 <TanstackQueryClientProvider>
                   <ReactQueryDevtools initialIsOpen={ false } buttonPosition="bottom-right" />
                   <ThemeProvider
                     attribute="class"
                     defaultTheme="light"
-                    enableSystem={ false }
+                    enableSystem
                     disableTransitionOnChange
                     storageKey="app-theme"
                   >

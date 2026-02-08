@@ -283,7 +283,7 @@ export const FONT_CSS_CLASSNAME: Record<AppFont, string> = {
 };
 
 export function getVibeStylesheetHref(vibe: AppVibe): string {
-  return VIBE_CSS_MAP[vibe] ?? VIBE_CSS_MAP.vercel;
+  return VIBE_CSS_MAP[vibe] ?? VIBE_CSS_MAP['amethyst-haze'];
 }
 
 export function getFontStylesheetHref(font: AppFont | undefined): string {

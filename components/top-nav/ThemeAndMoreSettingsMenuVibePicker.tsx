@@ -43,7 +43,11 @@ export default function ThemeAndMoreSettingsMenuVibePicker({ vibe }: Props) {
       "
     >
       <Typography variant="body1" className="flex shrink-0 items-center gap-x-2">
-        <Palette className="size-4" />
+        <Palette className="
+          size-4
+          hover:text-black!
+          dark:hover:text-white!
+        " />
         Vibe
       </Typography>
       { !isClient ?

@@ -5,8 +5,8 @@ import { useColorScheme } from '@mui/material/styles';
 
 import { useRef } from 'react';
 import { flushSync } from 'react-dom';
-import { Sun, Moon, SunMoon } from 'lucide-react';
 import { useTheme, UseThemeProps } from 'next-themes';
+import { Sun, Moon, SunMoon, Monitor } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -69,7 +69,7 @@ export default function ThemeAndMoreSettingsMenuThemeSwitcher() {
       className="flex items-center justify-between gap-x-3 hover:bg-transparent! hover:text-black! dark:hover:text-white!"
     >
       <Typography variant="body1" className="flex shrink-0 items-center gap-x-2">
-        <SunMoon className="size-4" />
+        <SunMoon className="size-4 hover:text-black! dark:hover:text-white!" />
         Theme
       </Typography>
       { !isClient ?
@@ -105,6 +105,18 @@ export default function ThemeAndMoreSettingsMenuThemeSwitcher() {
             } }
           >
           <Moon className="text-foreground!" />
+        </ToggleGroupItem>
+        <ToggleGroupItem
+            value="system"
+            aria-label="System theme"
+            className={ cn('size-7 cursor-pointer rounded-lg p-0', {
+              '': selectedTheme === 'system',
+            }) }
+            onClick={ (e) => {
+              clickedRef.current = e.currentTarget;
+            } }
+          >
+          <Monitor className="text-foreground!" />
         </ToggleGroupItem>
       </ToggleGroup>
       }

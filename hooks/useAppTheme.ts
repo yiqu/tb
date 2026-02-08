@@ -1,10 +1,10 @@
 import { useTheme } from 'next-themes';
 
 export default function useAppTheme() {
-  const { theme, setTheme, themes } = useTheme();
+  const { setTheme, themes, resolvedTheme } = useTheme();
 
-  const isDarkMode = theme === 'dark';
-  const isLightMode = theme === 'light';
+  const isDarkMode = resolvedTheme === 'dark';
+  const isLightMode = resolvedTheme === 'light';
 
   return {
     isDarkMode,
