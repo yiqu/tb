@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import RowStack from '@/shared/components/RowStack';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 
 export default function TopContent() {
   return (

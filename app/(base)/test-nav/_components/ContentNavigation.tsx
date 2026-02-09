@@ -22,9 +22,14 @@ type Props = {
   items: { id: number; name: string }[];
   inViewIds: string[];
   idPrefix: string;
+  onNavItemClickAction: (_itemId: string) => void;
 };
 
-export default function ContentNavigation({ items, inViewIds, idPrefix }: Props) {
+export default function ContentNavigation({ items, inViewIds, idPrefix, onNavItemClickAction }: Props) {
+  const handleOnNavItemClick = (itemId: string) => {
+    onNavItemClickAction(itemId);
+  };
+
   return (
     <SidebarContent>
       <SidebarGroup>
@@ -35,7 +40,15 @@ export default function ContentNavigation({ items, inViewIds, idPrefix }: Props)
         <SidebarGroupContent>
           <SidebarMenu className="">
             { items.map((item: { id: number; name: string }, index: number, array: { id: number; name: string }[]) => (
-              <NavigationItem key={ item.id } item={ item } index={ index } array={ array } isInView={ inViewIds.includes(`${idPrefix}-${item.id}`) } idPrefix={ idPrefix } />
+              <NavigationItem
+                key={ item.id }
+                item={ item }
+                index={ index }
+                array={ array }
+                isInView={ inViewIds.includes(`${idPrefix}-${item.id}`) }
+                idPrefix={ idPrefix }
+                onNavItemClick={ handleOnNavItemClick }
+              />
             )) }
           </SidebarMenu>
         </SidebarGroupContent>
@@ -50,20 +63,25 @@ function NavigationItem({
   array,
   isInView,
   idPrefix,
+  onNavItemClick,
 }: {
   item: { id: number; name: string };
   index: number;
   array: { id: number; name: string }[];
   isInView: boolean;
   idPrefix: string;
+  onNavItemClick: (_itemId: string) => void;
 }) {
   const isLastItem = index === array.length - 1;
 
   const handleOnNavItemClick = () => {
     const el = document.getElementById(`${idPrefix}-${item.id}`);
-    if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' });
+    onNavItemClick(`${idPrefix}-${item.id}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'instant', block: 'center' });
+    }
   };
-  
+
   return (
     <SidebarMenuItem className="w-full justify-between">
       <SidebarMenuButton asChild>
