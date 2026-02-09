@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 type UseCurrentInViewOptions = {
   /** Element IDs to observe for viewport intersection. */
@@ -7,8 +7,13 @@ type UseCurrentInViewOptions = {
   containerId?: string;
   /** IntersectionObserver threshold (0-1). Defaults to 0 (any pixel visible). */
   threshold?: number;
-  /** Optional ID to force select. */
-  forceSelectId?: string;
+};
+
+type UseCurrentInViewSmartReturn = {
+  /** The single active element ID, or `null` if none are visible. */
+  activeId: string | null;
+  /** Temporarily force-select an ID (e.g. on nav click). Auto-clears on next user scroll. */
+  forceSelect: (_id: string) => void;
 };
 
 /**
@@ -23,22 +28,50 @@ type UseCurrentInViewOptions = {
  * Supports lazily-mounted containers (e.g. dialogs/portals) by deferring setup
  * until the container element appears in the DOM.
  *
- * @returns The single active element ID, or `null` if none are visible.
+ * The returned `forceSelect` function temporarily overrides the active ID (e.g. on nav click).
+ * It auto-clears on the next user scroll so observer-based logic resumes.
  *
  * @example
  * ```tsx
- * const activeId = useCurrentInViewSmart({
+ * const { activeId, forceSelect } = useCurrentInViewSmart({
  *   ids: ['section-1', 'section-2', 'section-3'],
  *   containerId: 'my-scrollable-dialog', // optional, for portaled containers
  * });
  * // activeId: 'section-2' — the single best match
+ * // forceSelect('section-3') — temporarily locks to section-3
  * ```
  *
  * @see {@link useCurrentInView} for returning all visible IDs.
  */
-export default function useCurrentInViewSmart({ ids, containerId, threshold = 0, forceSelectId }: UseCurrentInViewOptions): string | null {
+export default function useCurrentInViewSmart({ ids, containerId, threshold = 0 }: UseCurrentInViewOptions): UseCurrentInViewSmartReturn {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [forceId, setForceId] = useState<string | null>(null);
   const inViewRef = useRef(new Set<string>());
+  const forceLockedRef = useRef(false);
+  const forceIdRef = useRef<string | null>(null);
+  const forceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // Keep ref in sync with state so the scroll handler (inside useEffect closure) can read it.
+  forceIdRef.current = forceId;
+
+  const forceSelect = useCallback((id: string) => {
+    setForceId(id);
+    forceLockedRef.current = true;
+
+    if (forceTimeoutRef.current) clearTimeout(forceTimeoutRef.current);
+
+    // Short delay so the programmatic scroll from scrollIntoView doesn't immediately clear.
+    forceTimeoutRef.current = setTimeout(() => {
+      forceLockedRef.current = false;
+    }, 100);
+  }, []);
+
+  // Cleanup force timeout on unmount.
+  useEffect(() => {
+    return () => {
+      if (forceTimeoutRef.current) clearTimeout(forceTimeoutRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const currentInView = inViewRef.current;
@@ -107,7 +140,13 @@ export default function useCurrentInViewSmart({ ids, containerId, threshold = 0,
         return bestId;
       };
 
-      const update = () => setActiveId(pickBestId());
+      const update = () => {
+        // Clear force selection on user scroll (after the lock window expires).
+        if (forceIdRef.current && !forceLockedRef.current) {
+          setForceId(null);
+        }
+        setActiveId(pickBestId());
+      };
 
       observer = new IntersectionObserver(
         (entries) => {
@@ -182,10 +221,5 @@ export default function useCurrentInViewSmart({ ids, containerId, threshold = 0,
     };
   }, [ids, containerId, threshold]);
 
-  // When forceSelectId is provided, bypass observer logic.
-  if (forceSelectId) {
-    return forceSelectId;
-  }
-
-  return activeId;
+  return { activeId: forceId ?? activeId, forceSelect };
 }
