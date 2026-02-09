@@ -61,7 +61,7 @@ function NavigationItem({
 
   const handleOnNavItemClick = () => {
     const el = document.getElementById(`${idPrefix}-${item.id}`);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) el.scrollIntoView({ behavior: 'instant', block: 'center' });
   };
   
   return (
