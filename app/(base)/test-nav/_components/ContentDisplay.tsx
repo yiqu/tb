@@ -12,9 +12,9 @@ export default function MainContentDisplay({ item, idPrefix }: Props) {
     <div id={ `${idPrefix}-${item.id}` }>
       <ColumnStack
         className={ cn('rounded-md border border-dashed', {
-          'h-40': item.name === 'small',
-          'h-60': item.name === 'medium',
-          'h-80': item.name === 'large',
+          'h-80': item.name === 'small',
+          'h-100': item.name === 'medium',
+          'h-150': item.name === 'large',
         }) }
       >
         <Typography variant="h5">{ item.id }</Typography>
