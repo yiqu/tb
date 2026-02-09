@@ -33,9 +33,9 @@ export default function StyledDialogContent({
       className={ cn(
         `
           max-h-[90vh] gap-y-0 overflow-x-auto overflow-y-auto px-0 pt-0 pb-0
-          sm:max-w-[600px]
-          two:w-[800px] two:max-w-[1000px]!
-          main:w-[1000px] main:max-w-[1200px]!
+          sm:max-w-[800px]
+          md:max-w-[1000px]
+          lg:max-w-[1200px]
         `,
         className,
       ) }

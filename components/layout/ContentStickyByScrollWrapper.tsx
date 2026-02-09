@@ -21,7 +21,7 @@ export default function ContentStickyByScrollWrapper({
   threshold = 50,
   containerId,
   className,
-  stickyClassName = 'top-12',
+  stickyClassName = '',
   hideAnimation = 'fade',
 }: ContentStickyByScrollWrapperProps) {
   const { scrolledUpOrWithinThreshold, isAtTop, isAreaScrollable } = useScrollHide(threshold, containerId);
@@ -31,7 +31,7 @@ export default function ContentStickyByScrollWrapper({
   return (
     <div
       className={ cn(
-        'sticky z-50 w-full bg-background duration-300',
+        'sticky top-12 z-50 w-full bg-background duration-300',
         isFade ? 'transition-opacity ease-out' : 'transition-all ease-in-out',
         stickyClassName,
         scrolledUpOrWithinThreshold ?

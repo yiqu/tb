@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import RowStack from '@/shared/components/RowStack';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 
 export default function TopContent() {
   return (
@@ -7,6 +8,7 @@ export default function TopContent() {
       <Button variant="outline">Refresh</Button>
       <Button variant="outline">Run</Button>
       <Button variant="outline">Stop</Button>
+    
     </RowStack>
   );
 }

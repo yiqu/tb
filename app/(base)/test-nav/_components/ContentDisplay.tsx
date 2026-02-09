@@ -4,18 +4,20 @@ import Typography from '@/components/typography/Typography';
 
 type Props = {
   item: { id: number; name: string };
+  idPrefix: string;
 };
 
-export default function MainContentDisplay({ item }: Props) {
+export default function MainContentDisplay({ item, idPrefix }: Props) {
   return (
-    <div id={ `content-${item.id}` }>
+    <div id={ `${idPrefix}-${item.id}` }>
       <ColumnStack
         className={ cn('rounded-md border border-dashed', {
           'h-40': item.name === 'small',
-          'h-140': item.name === 'medium',
-          'h-220': item.name === 'large',
+          'h-60': item.name === 'medium',
+          'h-80': item.name === 'large',
         }) }
       >
+        <Typography variant="h5">{ item.id }</Typography>
         <Typography variant="h6">{ item.name }</Typography>
       </ColumnStack>
     </div>

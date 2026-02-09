@@ -1,28 +1,20 @@
+import { Separator } from '@/components/ui/separator';
 import ColumnStack from '@/shared/components/ColumnStack';
-import ContentStickyByScrollWrapper from '@/components/layout/ContentStickyByScrollWrapper';
 
-import TopContent from './_components/TopContent';
-import ContentParent from './_components/ContentParent';
+import PageContent from './_components/PageContent';
+import DialogContent from './_components/DialogContent';
 
-interface PlaygroundPageProps {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
-
-export default function NAvigationPlaygroundPage({}: PlaygroundPageProps) {
+export default function NavigationPlaygroundPage({}: PageProps<'/test-nav'>) {
   return (
     <ColumnStack>
-      <ContentStickyByScrollWrapper threshold={ 120 } hideAnimation="slideUp">
-        <ColumnStack className="w-full gap-y-3 py-3">
-          <TopContent />
-        </ColumnStack>
-      </ContentStickyByScrollWrapper>
-      <ContentParent className="" items={ MOCK_ITEMS } />
+      <DialogContent ids={ MOCK_ITEMS.map((item) => `content-${item.id}`) } />
+      <Separator className="my-4" />
+      <PageContent />
     </ColumnStack>
   );
 }
 
-const MOCK_ITEMS: { id: number; name: string }[] = Array.from({ length: 200 }, (_, index) => {
+const MOCK_ITEMS: { id: number; name: string }[] = Array.from({ length: 10 }, (_, index) => {
   let chance = Math.random();
   let name = 'small';
   if (chance > 0.3) {

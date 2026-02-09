@@ -21,24 +21,21 @@ import {
 type Props = {
   items: { id: number; name: string }[];
   inViewIds: string[];
+  idPrefix: string;
 };
 
-export default function ContentNavigation({ items, inViewIds }: Props) {
+export default function ContentNavigation({ items, inViewIds, idPrefix }: Props) {
   return (
     <SidebarContent>
       <SidebarGroup>
         <SidebarGroupLabel>Navigation { items.length }</SidebarGroupLabel>
-        <SidebarGroupAction
-          onClick={ () => {
-            console.log('settings');
-          } }
-        >
+        <SidebarGroupAction>
           <Settings className="size-4" />
         </SidebarGroupAction>
         <SidebarGroupContent>
           <SidebarMenu className="">
             { items.map((item: { id: number; name: string }, index: number, array: { id: number; name: string }[]) => (
-              <NavigationItem key={ item.id } item={ item } index={ index } array={ array } isInView={ inViewIds.includes(`content-${item.id}`) } />
+              <NavigationItem key={ item.id } item={ item } index={ index } array={ array } isInView={ inViewIds.includes(`${idPrefix}-${item.id}`) } idPrefix={ idPrefix } />
             )) }
           </SidebarMenu>
         </SidebarGroupContent>
@@ -52,13 +49,21 @@ function NavigationItem({
   index,
   array,
   isInView,
+  idPrefix,
 }: {
   item: { id: number; name: string };
   index: number;
   array: { id: number; name: string }[];
   isInView: boolean;
+  idPrefix: string;
 }) {
   const isLastItem = index === array.length - 1;
+
+  const handleOnNavItemClick = () => {
+    const el = document.getElementById(`${idPrefix}-${item.id}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  
   return (
     <SidebarMenuItem className="w-full justify-between">
       <SidebarMenuButton asChild>
@@ -68,6 +73,7 @@ function NavigationItem({
             'text-red-500': isLastItem,
             'border border-green-500': isInView,
           }) }
+          onClick={ handleOnNavItemClick }
         >
           <Typography>{ index + 1 }</Typography>
           <Typography>{ item.name }</Typography>
