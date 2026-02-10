@@ -1,32 +1,23 @@
 'use client';
 
-import { useColorScheme } from '@mui/material/styles';
-
+import { useRef } from 'react';
 import { flushSync } from 'react-dom';
-import { useRef, useEffect } from 'react';
 import { Sun, Moon, Monitor } from 'lucide-react';
 import { useTheme, UseThemeProps } from 'next-themes';
 
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
+import useSyncMuiThemeWithNextThemes from '@/hooks/useSyncMuiTheme';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 export default function AccountGeneralColorModeSelectionContent() {
   const isClient = useClientOnly();
-
-  const { setTheme, theme, resolvedTheme }: UseThemeProps = useTheme();
-  const { setMode } = useColorScheme();
+  const { setTheme, theme }: UseThemeProps = useTheme();
   const clickedRef = useRef<HTMLButtonElement | null>(null);
+  useSyncMuiThemeWithNextThemes();
 
   const selectedTheme = theme;
-
-  // Keep MUI color scheme in sync with next-themes resolved value
-  useEffect(() => {
-    if (resolvedTheme === 'light' || resolvedTheme === 'dark') {
-      setMode(resolvedTheme);
-    }
-  }, [resolvedTheme, setMode]);
 
   const handleThemeToggle = async (nextTheme: string) => {
     if (nextTheme !== 'light' && nextTheme !== 'dark' && nextTheme !== 'system') return;

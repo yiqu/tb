@@ -21,10 +21,13 @@ export default function ThemeAndMoreSettingsMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-70" align="end" sideOffset={ 16 }>
         <ThemeAndMoreSettingsMenuThemeSwitcher />
+
         <Suspense fallback={ <VibeSelectionSkeleton /> }>
           <ThemeAndMoreSettingsMenuVibePickerParent />
         </Suspense>
+
         <DropdownMenuSeparator />
+
         <ThemeAndMoreSettingsMenuSettingsLink />
       </DropdownMenuContent>
     </DropdownMenu>
@@ -42,4 +45,3 @@ function VibeSelectionSkeleton() {
     </RowStack>
   );
 }
-

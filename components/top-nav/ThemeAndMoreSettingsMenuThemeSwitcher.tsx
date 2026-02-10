@@ -1,7 +1,4 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
-
-import { useColorScheme } from '@mui/material/styles';
 
 import { useRef } from 'react';
 import { flushSync } from 'react-dom';
@@ -12,25 +9,25 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import useSyncMuiThemeWithNextThemes from '@/hooks/useSyncMuiTheme';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 import Typography from '../typography/Typography';
 
 export default function ThemeAndMoreSettingsMenuThemeSwitcher() {
   const isClient = useClientOnly();
-  const { setTheme, theme, resolvedTheme }: UseThemeProps = useTheme();
-  const { setMode } = useColorScheme();
+  const { setTheme, theme }: UseThemeProps = useTheme();
   const clickedRef = useRef<HTMLButtonElement | null>(null);
+  useSyncMuiThemeWithNextThemes();
 
-  const selectedTheme = theme === 'system' ? 'system' : (resolvedTheme ?? 'light');
+  const selectedTheme = theme;
 
   const handleThemeToggle = async (nextTheme: string) => {
-    if (nextTheme !== 'light' && nextTheme !== 'dark') return;
+    if (nextTheme !== 'light' && nextTheme !== 'dark' && nextTheme !== 'system') return;
     if (!clickedRef.current) return;
 
     const applyTheme = () => {
       setTheme(nextTheme);
-      setMode(nextTheme);
     };
 
     if (!document.startViewTransition) {
@@ -66,10 +63,18 @@ export default function ThemeAndMoreSettingsMenuThemeSwitcher() {
   return (
     <DropdownMenuItem
       onSelect={ (event) => event.preventDefault() }
-      className="flex items-center justify-between gap-x-3 hover:bg-transparent! hover:text-black! dark:hover:text-white!"
+      className="
+        flex items-center justify-between gap-x-3
+        hover:bg-transparent! hover:text-black!
+        dark:hover:text-white!
+      "
     >
       <Typography variant="body1" className="flex shrink-0 items-center gap-x-2">
-        <SunMoon className="size-4 hover:text-black! dark:hover:text-white!" />
+        <SunMoon className="
+          size-4
+          hover:text-black!
+          dark:hover:text-white!
+        " />
         Theme
       </Typography>
       { !isClient ?
