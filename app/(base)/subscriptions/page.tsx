@@ -16,6 +16,8 @@ import SubscriptionsTablePaginationWrapper from './_components/SubscriptionsTabl
 import EditSubscriptionDialogContentCard from '../add/_components/EditSubscriptionDialogContentCard';
 import AddNewBillDueDialogContentStandalone from '../add/_components/AddNewBillDueDialogContentStandalone';
 import SubscriptionsTableAddSubscriptionDialog from './_components/SubscriptionsTableAddSubscriptionDialog';
+import SubscriptionDetailsDialogParent from './[subscriptionId]/_components/SubscriptionDetailsDialogParent';
+import SubscriptionDetailsDialogContent from './[subscriptionId]/_components/SubscriptionDetailsDialogContent';
 
 export default function SubscriptionsPage({ searchParams }: PageProps<'/subscriptions'>) {
   const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(SORT_DATA_PAGE_IDS.subscriptions);
@@ -48,6 +50,12 @@ export default function SubscriptionsPage({ searchParams }: PageProps<'/subscrip
           <AddNewBillDueDialogContentStandalone searchParams={ searchParams } />
         </AddNewBillDueDialogStandalone>
       </Suspense>
+
+      <SubscriptionDetailsDialogContent>
+        <Suspense fallback={ <div>Loading subscription details...</div> }>
+          <SubscriptionDetailsDialogParent />
+        </Suspense>
+      </SubscriptionDetailsDialogContent>
     </ColumnStack>
   );
 }

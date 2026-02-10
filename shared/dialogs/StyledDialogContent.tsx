@@ -17,6 +17,7 @@ type Props = {
   children: ReactNode;
   className?: string;
   contentWrapperClassName?: string;
+  titleActions?: ReactNode;
 } & React.ComponentProps<typeof DialogPrimitive.Content>;
 
 export default function StyledDialogContent({
@@ -26,6 +27,7 @@ export default function StyledDialogContent({
   showCloseButton = true,
   className,
   contentWrapperClassName,
+  titleActions,
   ...props
 }: Props) {
   return (
@@ -46,6 +48,7 @@ export default function StyledDialogContent({
       <HeaderWrapper>
         <RowStack className="items-center justify-between">
           <DialogTitle>{ headerTitle }</DialogTitle>
+          { titleActions }
           { showCloseButton ?
             <DialogClose asChild autoFocus={ false }>
               <Button variant="ghost" size="icon-sm" type="button" autoFocus={ false }>

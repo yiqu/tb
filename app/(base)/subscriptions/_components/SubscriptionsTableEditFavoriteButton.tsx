@@ -56,8 +56,7 @@ export default function SubscriptionsTableEditFavoriteButton({ subscription }: {
     <>
       <Button
         variant="ghost"
-        size="icon"
-        className="size-6"
+        size="icon-sm"
         type="button"
         onClick={ handleOnClick }
         title={ `Edit favorite: ${favoriteEntity?.name}` }

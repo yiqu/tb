@@ -10,7 +10,7 @@ export default function SubscriptionsTableSkeleton() {
     <DisplayCard className="h-[calc(100dvh-20rem)] w-full py-0">
       <div className={ `
         rounded-tl-md rounded-tr-md bg-sidebar-accent/70
-        dark:bg-sidebar-accent/100
+        dark:bg-sidebar-accent
       ` }>
         <div className="overflow-hidden rounded-md">
           <Skeleton className="h-10 w-full" />

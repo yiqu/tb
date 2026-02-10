@@ -12,7 +12,7 @@ import LayoutChildrenParent from '@/components/layout/LayoutChildrenParent';
 const layoutMetadata = getLayoutMetadata('Subscriptions', 'View and manage your subscriptions.');
 export const metadata: Metadata = layoutMetadata;
 
-export default function SubscriptionsLayout({ children, subscriptionDetailsModal }: LayoutProps<'/subscriptions'>) {
+export default function SubscriptionsLayout({ children }: LayoutProps<'/subscriptions'>) {
   return (
     <div id="subscriptions-layout-parent">
       <LayoutParent>
@@ -29,7 +29,6 @@ export default function SubscriptionsLayout({ children, subscriptionDetailsModal
       <LayoutChildrenParent>
         <LayoutAutoGutter>{ children }</LayoutAutoGutter>
       </LayoutChildrenParent>
-      { subscriptionDetailsModal }
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import ErrorCard from '@/components/status-cards/ErrorCard';
 import { getSubscriptionByIdQueryOptions } from '@/server/subscriptions/query/subscription.query';
 
@@ -18,7 +19,7 @@ export default function AddNewBillDueDialog({ subscriptionId }: { subscriptionId
   });
 
   if (isLoading) {
-    return null;
+    return <Skeleton className="h-100 w-full" />;
   }
 
   if (!data) {

@@ -17,7 +17,9 @@ import SubscriptionsTableAddDueBillButton from '@/app/(base)/subscriptions/_comp
 import SubscriptionsTableEditFavoriteButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableEditFavoriteButton';
 import SubscriptionsTableEditSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableEditSubscriptionButton';
 import SubscriptionsTableDeleteSubscriptionButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableDeleteSubscriptionButton';
+import SubscriptionDetailsDialogOpenButton from '@/app/(base)/subscriptions/[subscriptionId]/_components/SubscriptionDetailsDialogOpenButton';
 
+import RowStack from '../components/RowStack';
 import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import { getFrequencyImageUrl, getSubscriptionLogoSize } from './table.utils';
@@ -37,11 +39,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
 
     return (
       <TableCell>
-        <div className={ `
-          flex flex-row items-center justify-start gap-x-1
-          sec:gap-x-1
-          two:gap-x-6
-        ` }>
+        <div className={ `flex flex-row items-center justify-start gap-x-1` }>
           <Typography className="truncate tabular-nums">{ useFormatter.format(cost) }</Typography>
         </div>
       </TableCell>
@@ -177,19 +175,20 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
 
     return (
       <TableCell>
-        <div className="flex h-full flex-row items-center justify-between gap-x-2">
+        <RowStack className="h-full items-center justify-between gap-x-2">
           <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
-            <div className="flex flex-row items-center justify-start gap-x-2 text-wrap">
+            <RowStack className="items-center justify-start gap-x-2 text-wrap">
               <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
               <CenterUnderline label={ subName } className="wrap-break-word" />
-            </div>
+              <div>
+                { isFavorited ?
+                  <SubscriptionsTableEditFavoriteButton subscription={ subscription } />
+                : null }
+              </div>
+            </RowStack>
           </Link>
-          <div>
-            { isFavorited ?
-              <SubscriptionsTableEditFavoriteButton subscription={ subscription } />
-            : null }
-          </div>
-        </div>
+          <SubscriptionDetailsDialogOpenButton subscriptionId={ subscription.id } />
+        </RowStack>
       </TableCell>
     );
   }
