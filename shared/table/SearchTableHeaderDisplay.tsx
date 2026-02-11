@@ -5,17 +5,12 @@ import { ChevronUp, ChevronDown, LoaderCircle, ChevronsUpDown } from 'lucide-rea
 
 import { cn } from '@/lib/utils';
 import { TableHead } from '@/components/ui/table';
+import useColumnResize from '@/hooks/useColumnResize';
 import Typography from '@/components/typography/Typography';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
+import { useTableColumn, useTableColumnsActions } from '@/store/subscriptions/table.store';
 import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
-import {
-  SortData,
-  SortField,
-  SortDirection,
-  getNextSortDirection,
-  SEARCH_TABLE_COLUMN_TEXT,
-  SEARCH_TABLE_COLUMN_WIDTH,
-} from '@/shared/table/table.utils';
+import { SortData, SortField, SortDirection, getNextSortDirection, SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
 
 interface SearchTableHeaderDisplayProps {
   columnId: string;
@@ -28,6 +23,17 @@ interface SearchTableHeaderDisplayProps {
 
 export default function SearchTableHeaderDisplay({ columnId, index, length, sortData, pageId, sortable }: SearchTableHeaderDisplayProps) {
   const [isPending, startTransition] = useTransition();
+  const storeColumnId = columnId === 'actions' ? 'tableActions' : columnId;
+  const columnWidth = useTableColumn(storeColumnId);
+  const { setColumnWidth } = useTableColumnsActions();
+  const isLastColumn = index === length - 1;
+
+  const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
+    columnId: storeColumnId,
+    initialWidth: columnWidth,
+    minWidth: 50,
+    onWidthChange: setColumnWidth,
+  });
 
   const currentSortData: SortData = {
     direction: (sortData?.sortDirection as SortDirection) ?? '',
@@ -64,13 +70,13 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
 
   return (
     <TableHead
-      className={ cn('truncate', {
+      className={ cn('relative truncate', {
         'rounded-tl-md': index === 0,
-        'rounded-tr-md': index === length - 1,
+        'rounded-tr-md': isLastColumn,
         'cursor-pointer hover:bg-sidebar-accent/30 dark:hover:bg-sidebar-accent/30': sortable,
       }) }
       style={ {
-        width: SEARCH_TABLE_COLUMN_WIDTH[columnId],
+        width: `${currentWidth}px`,
       } }
       onClick={ handleOnHeaderClick.bind(null, columnId) }
     >
@@ -115,6 +121,15 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
           : null }
         </div>
       </span>
+      { !isLastColumn && (
+        <div
+          onPointerDown={ handleResizePointerDown }
+          className={ cn(`
+            absolute top-0 right-0 z-10 h-full w-1 cursor-col-resize
+            hover:bg-primary/50
+          `, { 'bg-primary/50': isResizing }) }
+        />
+      ) }
     </TableHead>
   );
 }

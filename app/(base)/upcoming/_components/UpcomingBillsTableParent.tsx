@@ -40,10 +40,7 @@ export default async function UpcomingBillsTableParent({ searchParamsPromise, pa
   return (
     <DisplayCard className="w-full pt-0">
       <CardContent className="overflow-x-auto border-b px-0">
-        <Table className={ `
-          table-auto
-          two:table-fixed
-        ` }>
+        <Table className="table-fixed">
           <TableHeader className={ `bg-muted` }>
             <TableRow className="hover:bg-transparent">
               { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {

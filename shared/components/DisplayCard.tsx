@@ -8,7 +8,7 @@ interface DisplayCardProps {
 
 export default function DisplayCard({ children, className, ...props }: DisplayCardProps & React.ComponentProps<'div'>) {
   return (
-    <Card className={ cn('rounded-md', className) } { ...props }>
+    <Card className={ cn('min-w-0 rounded-md', className) } { ...props }>
       { children }
     </Card>
   );
