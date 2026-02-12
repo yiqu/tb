@@ -1,7 +1,7 @@
 'use client';
 
 import { useOptimistic, useTransition } from 'react';
-import { ChevronUp, ChevronDown, LoaderCircle, ChevronsUpDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, GripVertical, LoaderCircle, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { TableHead } from '@/components/ui/table';
@@ -11,6 +11,8 @@ import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
 import { useTableColumn, useTableColumnsActions } from '@/store/subscriptions/table.store';
 import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import { SortData, SortField, SortDirection, getNextSortDirection, SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
+
+import type { DraggableProvidedDraggableProps, DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 
 import RowStack from '../components/RowStack';
 import WithTooltip from '../components/WithTooltip';
@@ -22,9 +24,24 @@ interface SearchTableHeaderDisplayProps {
   sortData: SortDataModel | null;
   pageId: SortDataPageId;
   sortable?: boolean;
+  ref?: React.Ref<HTMLTableCellElement>;
+  draggableProps?: DraggableProvidedDraggableProps;
+  dragHandleProps?: DraggableProvidedDragHandleProps | null;
+  isDragging?: boolean;
 }
 
-export default function SearchTableHeaderDisplay({ columnId, index, length, sortData, pageId, sortable }: SearchTableHeaderDisplayProps) {
+export default function SearchTableHeaderDisplay({
+  columnId,
+  index,
+  length,
+  sortData,
+  pageId,
+  sortable,
+  ref,
+  draggableProps,
+  dragHandleProps,
+  isDragging,
+}: SearchTableHeaderDisplayProps) {
   const [isPending, startTransition] = useTransition();
   const storeColumnId = columnId === 'actions' ? 'tableActions' : columnId;
   const columnWidth = useTableColumn(storeColumnId);
@@ -74,18 +91,30 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
 
   return (
     <TableHead
+      ref={ ref }
+      { ...draggableProps }
       className={ cn('relative truncate', {
         'rounded-tl-md': index === 0,
         'rounded-tr-md': isLastColumn,
         'border-l border-border': index !== 0,
         'bg-accent': isResizing,
+        'bg-accent shadow-md': isDragging,
       }) }
       style={ {
         width: `${currentWidth}px`,
+        ...draggableProps?.style,
       } }
       // onClick={ handleOnHeaderClick.bind(null, columnId) }
     >
       <RowStack className={ cn('flex flex-row items-center justify-start truncate select-none') }>
+        { dragHandleProps != null && (
+          <div { ...dragHandleProps } className={ `
+            flex cursor-grab items-center
+            active:cursor-grabbing
+          ` }>
+            <GripVertical className="size-4 min-w-4 text-muted-foreground/50" />
+          </div>
+        ) }
         <Typography
           variant="body1"
           className={ cn('flex flex-row items-center justify-between gap-x-1 truncate', {
