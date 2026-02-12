@@ -97,6 +97,13 @@ export const useTableColumn = (column: string) =>
   useTableColumnsStore((state) => (state[column as keyof TableColumnsState] as number) ?? 120);
 export const useTableActionColumnWidth = () => useTableColumnsStore((state) => state.tableActions);
 
+export const useTotalColumnsWidth = () =>
+  useTableColumnsStore((state) => {
+    // only add the values if they are a number
+    const values = Object.values(state as unknown as Record<string, number>).filter((value) => typeof value === 'number');
+    //const values = [state.name, state.billCycleDuration, state.description, state.url];
+    return values.reduce((acc: number, curr: number) => acc + curr, 0);
+  });
 
 export const useTableColumnsActions = () => useTableColumnsStore((state) => state.actions);
 

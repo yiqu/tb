@@ -12,6 +12,9 @@ import { useTableColumn, useTableColumnsActions } from '@/store/subscriptions/ta
 import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import { SortData, SortField, SortDirection, getNextSortDirection, SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
 
+import RowStack from '../components/RowStack';
+import WithTooltip from '../components/WithTooltip';
+
 interface SearchTableHeaderDisplayProps {
   columnId: string;
   index: number;
@@ -31,7 +34,8 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
   const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
     columnId: storeColumnId,
     initialWidth: columnWidth,
-    minWidth: 50,
+    minWidth: 120,
+    maxWidth: 800,
     onWidthChange: setColumnWidth,
   });
 
@@ -73,62 +77,65 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
       className={ cn('relative truncate', {
         'rounded-tl-md': index === 0,
         'rounded-tr-md': isLastColumn,
-        'cursor-pointer hover:bg-sidebar-accent/30 dark:hover:bg-sidebar-accent/30': sortable,
+        'border-l border-border': index !== 0,
+        'bg-accent': isResizing,
       }) }
       style={ {
         width: `${currentWidth}px`,
       } }
-      onClick={ handleOnHeaderClick.bind(null, columnId) }
+      // onClick={ handleOnHeaderClick.bind(null, columnId) }
     >
-      <span className="flex flex-row items-center justify-between gap-x-2 truncate select-none">
+      <RowStack className={ cn('flex flex-row items-center justify-start truncate select-none') }>
         <Typography
           variant="body1"
-          className={ cn('truncate', {
+          className={ cn('flex flex-row items-center justify-between gap-x-1 truncate', {
             'font-bold': isColumnSorted,
             'font-normal': !isColumnSorted,
+            'cursor-pointer rounded-md p-1.5 hover:bg-sidebar-accent/30 dark:hover:bg-sidebar-accent/30': sortable,
           }) }
           title={ SEARCH_TABLE_COLUMN_TEXT[columnId] ?? columnId }
+          onClick={ handleOnHeaderClick.bind(null, columnId) }
         >
           { SEARCH_TABLE_COLUMN_TEXT[columnId] ?? columnId }
         </Typography>
-        <div className="flex flex-row items-center justify-end gap-x-1">
-          { isPending ?
-            <LoaderCircle className={ `
-              size-3 animate-spin text-gray-500/70
-              dark:text-gray-200/30
-            ` } />
-          : null }
-          { isColumnSorted ?
-            <>
-              { sortDirection === 'asc' ?
-                <ChevronUp
-                  className={ cn('size-4', {
-                    'dark:text-gray-200/90': isPending,
-                  }) }
-                />
-              : <ChevronDown
-                  className={ cn('size-4', {
-                    'dark:text-gray-200/90': isPending,
-                  }) }
-                />
-              }
-            </>
-          : sortable ?
-            <ChevronsUpDown className={ `
-              size-4 min-w-4 text-gray-400/60
-              dark:text-gray-500/30
-            ` } />
-          : null }
-        </div>
-      </span>
+
+        { isPending ?
+          <LoaderCircle className={ `
+            size-3 animate-spin text-gray-500/70
+            dark:text-gray-200/30
+          ` } />
+        : isColumnSorted ?
+          <>
+            { sortDirection === 'asc' ?
+              <ChevronUp
+                className={ cn('size-4', {
+                  'dark:text-gray-200/90': isPending,
+                }) }
+              />
+            : <ChevronDown
+                className={ cn('size-4', {
+                  'dark:text-gray-200/90': isPending,
+                }) }
+              />
+            }
+          </>
+        : sortable ?
+          <ChevronsUpDown className={ `
+            size-4 min-w-4 text-gray-400/60
+            dark:text-gray-500/30
+          ` } />
+        : null }
+      </RowStack>
       { !isLastColumn && (
-        <div
-          onPointerDown={ handleResizePointerDown }
-          className={ cn(`
-            absolute top-0 right-0 z-10 h-full w-1 cursor-col-resize
-            hover:bg-primary/50
-          `, { 'bg-primary/50': isResizing }) }
-        />
+        <WithTooltip tooltip="Resize column">
+          <div
+            onPointerDown={ handleResizePointerDown }
+            className={ cn(`
+              absolute top-0 right-0 z-10 h-full w-1 cursor-col-resize
+              hover:bg-accent
+            `, { 'bg-accent': isResizing }) }
+          />
+        </WithTooltip>
       ) }
     </TableHead>
   );

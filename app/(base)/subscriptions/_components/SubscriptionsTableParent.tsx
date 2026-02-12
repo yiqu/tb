@@ -38,7 +38,7 @@ export default async function SubscriptionsTableParent({ searchParamsPromise, pa
 
   return (
     <DisplayCard className="w-full py-0 shadow-none">
-      <CardContent className="overflow-x-auto px-0">
+      <CardContent className="overflow-x-auto p-2">
         <SubscriptionsTableParentWrapper subscriptions={ subscriptions } />
       </CardContent>
     </DisplayCard>

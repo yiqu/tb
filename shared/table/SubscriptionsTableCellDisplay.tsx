@@ -61,7 +61,6 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
       <TableCell>
         <Typography
           className="text-wrap wrap-break-word"
-          title={ subscription.description ?? 'N/A' }
           variant={ subscription.description ? 'labelvalue1' : 'nodata1' }
         >
           { subscription.description ? subscription.description : 'N/A' }

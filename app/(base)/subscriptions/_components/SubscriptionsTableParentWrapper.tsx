@@ -2,6 +2,7 @@
 
 import useIsClient from '@/hooks/useIsClient';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
+import { useTotalColumnsWidth } from '@/store/subscriptions/table.store';
 import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { SearchTableColumn, SUBSCRIPTIONS_TABLE_COLUMN_IDS } from '@/shared/table/table.utils';
@@ -16,14 +17,15 @@ interface Props {
 
 export default function SubscriptionsTableParentWrapper({ subscriptions }: Props) {
   const isClient = useIsClient();
+  const totalColumnsWidth = useTotalColumnsWidth();
   const columnsSorted: SearchTableColumn[] = SUBSCRIPTIONS_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
-
+  
   if (!isClient) {
     return <SubscriptionsTableParentLoading />;
   }
 
   return (
-    <Table className="table-fixed">
+    <Table className="table-fixed" style={ { width: `${totalColumnsWidth}px`, minWidth: '100%' } }>
       <TableHeader className={ `bg-muted` }>
         <TableRow className="hover:bg-transparent">
           { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {
