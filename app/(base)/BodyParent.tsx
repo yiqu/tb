@@ -9,9 +9,11 @@ import { cn } from '@/lib/utils';
 import theme from '@/components/ui-mui/mui/theme';
 import Preloads from '@/components/preload/Preloads';
 import AppLayout from '@/components/layout/AppLayout';
+import { getAllCookiesAsObject } from '@/lib/cookies';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
+import { AppCookieProvider } from '@/providers/CookiesProvider';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { ScrollToTop } from '@/components/scroll-up/ScrollToTop';
 import VibeProviderWrapper from '@/providers/VibeProviderWrapper';
@@ -21,6 +23,7 @@ import HistoryTrackerWrapper from '@/components/history-tracker/HistoryTrackerWr
 import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server/settings/vibe-select';
 
 export default async function BodyParent({ children }: { children: React.ReactNode }) {
+  const cookies = await getAllCookiesAsObject();
   // Preload and apply the saved vibe and font stylesheets on the server to avoid flash
   // const [vibe, fontOverride] = await Promise.all([getSettingsApplicationVibe(), getSettingsApplicationFont()]);
 
@@ -59,15 +62,11 @@ export default async function BodyParent({ children }: { children: React.ReactNo
               <NuqsAdapter>
                 <TanstackQueryClientProvider>
                   <ReactQueryDevtools initialIsOpen={ false } buttonPosition="bottom-right" />
-                  <ThemeProvider
-                    attribute="class"
-                    defaultTheme="light"
-                    enableSystem
-                    disableTransitionOnChange
-                    storageKey="app-theme"
-                  >
+                  <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange storageKey="app-theme">
                     <TooltipProvider delayDuration={ 0 }>
-                      <AppLayout>{ children }</AppLayout>
+                      <AppCookieProvider initialValues={ cookies }>
+                        <AppLayout>{ children }</AppLayout>
+                      </AppCookieProvider>
                       <CustomToaster />
                     </TooltipProvider>
                   </ThemeProvider>

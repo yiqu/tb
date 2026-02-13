@@ -7,8 +7,8 @@ import LightRays from '@/components/reactbits/Backgrounds/LightRays/LightRays';
 import Particles from '@/components/reactbits/Backgrounds/Particles/Particles';
 import PixelBlast from '@/components/reactbits/Backgrounds/PixelBlast/PixelBlast';
 import ColorBends from '@/components/reactbits/Backgrounds/ColorBends/ColorBends';
+import Lightspeed from '@/components/reactbits/Backgrounds/Lightspeed/lightspeed';
 import LightPillar from '@/components/reactbits/Backgrounds/LightPillar/LightPillar';
-import LiquidChrome from '@/components/reactbits/Backgrounds/LiquidChrome/LiquidChrome';
 import FloatingLines from '@/components/reactbits/Backgrounds/FloatingLines/FloatingLines';
 import PrismaticBurst from '@/components/reactbits/Backgrounds/PrismaticBurst/PrismaticBurst';
 
@@ -32,7 +32,17 @@ export default function BackgroundThemeSelector({ currentMonth }: { currentMonth
     );
   }
   if (currentMonth === 2) {
-    return <LiquidChrome baseColor={ [0.2, 0.2, 0.4] } speed={ 0.2 } amplitude={ 0.4 } interactive={ false } />;
+    return (
+      <Lightspeed
+        width="100%"
+        height={ '100%' }
+        speed={ 0.2 }
+        primaryColor="#FF1744"
+        secondaryColor="#00E5FF"
+        tertiaryColor="#76FF03"
+        intensity={ 2.2 }
+      />
+    );
   }
   if (currentMonth === 3) {
     return (

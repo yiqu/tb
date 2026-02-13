@@ -63,11 +63,7 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
         <TableHeader className={ `bg-muted` }>
           <Droppable droppableId="table-columns" direction="horizontal">
             { (droppableProvided) => (
-              <TableRow
-                ref={ droppableProvided.innerRef }
-                { ...droppableProvided.droppableProps }
-                className="hover:bg-transparent"
-              >
+              <TableRow ref={ droppableProvided.innerRef } { ...droppableProvided.droppableProps } className="hover:bg-transparent">
                 { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => (
                   <Draggable key={ column.headerId } draggableId={ column.headerId } index={ index }>
                     { (draggableProvided, snapshot) => (
