@@ -32,7 +32,7 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": false,
-    "allowUnreachableCode": true
+    "allowUnreachableCode": false
   },
   "include": [
     "next-env.d.ts",
