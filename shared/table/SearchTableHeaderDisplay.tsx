@@ -50,8 +50,8 @@ export default function SearchTableHeaderDisplay({
   const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
     columnId: storeColumnId,
     initialWidth: columnWidth,
-    minWidth: 120,
-    maxWidth: 800,
+    minWidth: 80,
+    maxWidth: 1200,
     onWidthChange: setColumnWidth,
   });
 
