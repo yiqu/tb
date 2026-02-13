@@ -46,7 +46,6 @@ export default function SearchTableHeaderDisplay({
   const storeColumnId = columnId === 'actions' ? 'tableActions' : columnId;
   const columnWidth = useTableColumn(storeColumnId);
   const { setColumnWidth } = useTableColumnsActions();
-  const isLastColumn = index === length - 1;
 
   const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
     columnId: storeColumnId,
@@ -69,6 +68,7 @@ export default function SearchTableHeaderDisplay({
 
   const isColumnSorted: boolean = optimisticSortData.sort === columnId;
   const sortDirection: string | undefined = optimisticSortData.direction;
+  const isLastColumn = index === length - 1;
 
   const handleOnHeaderClick = (columnId: string) => {
     if (!sortable) {
@@ -101,10 +101,9 @@ export default function SearchTableHeaderDisplay({
         'bg-accent shadow-md': isDragging,
       }) }
       style={ {
-        width: `${currentWidth}px`,
+        width: isLastColumn ? '100%' : `${currentWidth}px`,
         ...draggableProps?.style,
       } }
-      // onClick={ handleOnHeaderClick.bind(null, columnId) }
     >
       <RowStack className={ cn('flex flex-row items-center justify-start truncate select-none') }>
         { dragHandleProps != null && (
