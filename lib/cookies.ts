@@ -12,6 +12,12 @@ export async function getAllCookies(): Promise<RequestCookie[]> {
   return cookieStore.getAll();
 }
 
+export async function getAllCookiesAsObject(): Promise<Record<string, string>> {
+  const cookieStore: ReadonlyRequestCookies = await cookies();
+  const allCookies = cookieStore.getAll();
+  return Object.fromEntries(allCookies.map((c) => [c.name, c.value]));
+}
+
 export async function getCookieByName(name: string): Promise<RequestCookie | undefined> {
   const cookieStore: ReadonlyRequestCookies = await cookies();
   return cookieStore.get(name);

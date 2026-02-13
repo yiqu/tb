@@ -42,8 +42,6 @@ export default function SubscriptionDetailsDialogParent() {
     );
   }
 
-  console.log('subscriptionId', subscriptionId);
-
   if (!subscriptionId) {
     return <NoResultsCard titleText="Subscription not found">Subscription ID not found</NoResultsCard>;
   }

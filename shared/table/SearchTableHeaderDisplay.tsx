@@ -1,21 +1,21 @@
 'use client';
 
 import { useOptimistic, useTransition } from 'react';
-import { ChevronUp, ChevronDown, LoaderCircle, ChevronsUpDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, GripVertical, LoaderCircle, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { TableHead } from '@/components/ui/table';
+import useColumnResize from '@/hooks/useColumnResize';
 import Typography from '@/components/typography/Typography';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
+import { useTableColumn, useTableColumnsActions } from '@/store/subscriptions/table.store';
 import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
-import {
-  SortData,
-  SortField,
-  SortDirection,
-  getNextSortDirection,
-  SEARCH_TABLE_COLUMN_TEXT,
-  SEARCH_TABLE_COLUMN_WIDTH,
-} from '@/shared/table/table.utils';
+import { SortData, SortField, SortDirection, getNextSortDirection, SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
+
+import type { DraggableProvidedDraggableProps, DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
+
+import RowStack from '../components/RowStack';
+import WithTooltip from '../components/WithTooltip';
 
 interface SearchTableHeaderDisplayProps {
   columnId: string;
@@ -24,10 +24,36 @@ interface SearchTableHeaderDisplayProps {
   sortData: SortDataModel | null;
   pageId: SortDataPageId;
   sortable?: boolean;
+  ref?: React.Ref<HTMLTableCellElement>;
+  draggableProps?: DraggableProvidedDraggableProps;
+  dragHandleProps?: DraggableProvidedDragHandleProps | null;
+  isDragging?: boolean;
 }
 
-export default function SearchTableHeaderDisplay({ columnId, index, length, sortData, pageId, sortable }: SearchTableHeaderDisplayProps) {
+export default function SearchTableHeaderDisplay({
+  columnId,
+  index,
+  length,
+  sortData,
+  pageId,
+  sortable,
+  ref,
+  draggableProps,
+  dragHandleProps,
+  isDragging,
+}: SearchTableHeaderDisplayProps) {
   const [isPending, startTransition] = useTransition();
+  const storeColumnId = columnId === 'actions' ? 'tableActions' : columnId;
+  const columnWidth = useTableColumn(storeColumnId);
+  const { setColumnWidth } = useTableColumnsActions();
+
+  const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
+    columnId: storeColumnId,
+    initialWidth: columnWidth,
+    minWidth: 80,
+    maxWidth: 1200,
+    onWidthChange: setColumnWidth,
+  });
 
   const currentSortData: SortData = {
     direction: (sortData?.sortDirection as SortDirection) ?? '',
@@ -42,6 +68,7 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
 
   const isColumnSorted: boolean = optimisticSortData.sort === columnId;
   const sortDirection: string | undefined = optimisticSortData.direction;
+  const isLastColumn = index === length - 1;
 
   const handleOnHeaderClick = (columnId: string) => {
     if (!sortable) {
@@ -64,57 +91,80 @@ export default function SearchTableHeaderDisplay({ columnId, index, length, sort
 
   return (
     <TableHead
-      className={ cn('truncate', {
+      ref={ ref }
+      { ...draggableProps }
+      className={ cn('relative truncate', {
         'rounded-tl-md': index === 0,
-        'rounded-tr-md': index === length - 1,
-        'cursor-pointer hover:bg-sidebar-accent/30 dark:hover:bg-sidebar-accent/30': sortable,
+        'rounded-tr-md': isLastColumn,
+        'border-l border-border': index !== 0,
+        'bg-accent': isResizing,
+        'bg-accent shadow-md': isDragging,
       }) }
       style={ {
-        width: SEARCH_TABLE_COLUMN_WIDTH[columnId],
+        width: isLastColumn ? '100%' : `${currentWidth}px`,
+        ...draggableProps?.style,
       } }
-      onClick={ handleOnHeaderClick.bind(null, columnId) }
     >
-      <span className="flex flex-row items-center justify-between gap-x-2 truncate select-none">
+      <RowStack className={ cn('flex flex-row items-center justify-start truncate select-none') }>
+        { dragHandleProps != null && (
+          <div { ...dragHandleProps } className={ `
+            flex cursor-grab items-center
+            active:cursor-grabbing
+          ` }>
+            <GripVertical className="size-4 min-w-4 text-muted-foreground/50" />
+          </div>
+        ) }
         <Typography
           variant="body1"
-          className={ cn('truncate', {
+          className={ cn('flex flex-row items-center justify-between gap-x-1 truncate', {
             'font-bold': isColumnSorted,
             'font-normal': !isColumnSorted,
+            'cursor-pointer rounded-md p-1.5 hover:bg-sidebar-accent/30 dark:hover:bg-sidebar-accent/30': sortable,
           }) }
           title={ SEARCH_TABLE_COLUMN_TEXT[columnId] ?? columnId }
+          onClick={ handleOnHeaderClick.bind(null, columnId) }
         >
           { SEARCH_TABLE_COLUMN_TEXT[columnId] ?? columnId }
         </Typography>
-        <div className="flex flex-row items-center justify-end gap-x-1">
-          { isPending ?
-            <LoaderCircle className={ `
-              size-3 animate-spin text-gray-500/70
-              dark:text-gray-200/30
-            ` } />
-          : null }
-          { isColumnSorted ?
-            <>
-              { sortDirection === 'asc' ?
-                <ChevronUp
-                  className={ cn('size-4', {
-                    'dark:text-gray-200/90': isPending,
-                  }) }
-                />
-              : <ChevronDown
-                  className={ cn('size-4', {
-                    'dark:text-gray-200/90': isPending,
-                  }) }
-                />
-              }
-            </>
-          : sortable ?
-            <ChevronsUpDown className={ `
-              size-4 min-w-4 text-gray-400/60
-              dark:text-gray-500/30
-            ` } />
-          : null }
-        </div>
-      </span>
+
+        { isPending ?
+          <LoaderCircle className={ `
+            size-3 animate-spin text-gray-500/70
+            dark:text-gray-200/30
+          ` } />
+        : isColumnSorted ?
+          <>
+            { sortDirection === 'asc' ?
+              <ChevronUp
+                className={ cn('size-4', {
+                  'dark:text-gray-200/90': isPending,
+                }) }
+              />
+            : <ChevronDown
+                className={ cn('size-4', {
+                  'dark:text-gray-200/90': isPending,
+                }) }
+              />
+            }
+          </>
+        : sortable ?
+          <ChevronsUpDown className={ `
+            size-4 min-w-4 text-gray-400/60
+            dark:text-gray-500/30
+          ` } />
+        : null }
+      </RowStack>
+      { !isLastColumn && (
+        <WithTooltip tooltip="Resize column">
+          <div
+            onPointerDown={ handleResizePointerDown }
+            className={ cn(`
+              absolute top-0 right-0 z-10 h-full w-1 cursor-col-resize
+              hover:bg-accent
+            `, { 'bg-accent': isResizing }) }
+          />
+        </WithTooltip>
+      ) }
     </TableHead>
   );
 }

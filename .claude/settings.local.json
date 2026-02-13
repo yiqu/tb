@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell:*)",
+      "Bash(node -e:*)",
+      "Bash(node:*)",
+      "Bash(ls -la \"c:\\\\Users\\\\Kevin\\\\workspace\\\\tb\\\\shared\\\\table\"\" 2>/dev/null || ls -la \"c:/Users/Kevin/workspace/tb/shared/table/\" 2>/dev/null || find \"c:UsersKevinworkspacetb\" -type d -name \"table \")"
+    ]
+  }
+}

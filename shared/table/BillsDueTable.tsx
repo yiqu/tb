@@ -16,10 +16,7 @@ interface BillsDueTableProps {
 
 export default function BillsDueTable({ billDues, columns, sortData, pageId, tableId }: BillsDueTableProps) {
   return (
-    <Table className={ `
-      table-auto
-      two:table-fixed
-    ` } id={ tableId ?? 'bills-table' }>
+    <Table className="table-fixed" id={ tableId ?? 'bills-table' }>
       <TableHeader className={ `bg-muted` }>
         <TableRow className="hover:bg-transparent">
           { columns.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {
