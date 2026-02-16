@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { Params } from 'next/dist/server/request/params';
 
 import RowStack from '@/shared/components/RowStack';
-import LinkAnimated from '@/shared/components/LinkAnimated';
 
 import { BreadcrumbSegmentIcon, BreadcrumbSegmentTitle } from './BreadCrumbsUtils';
 import { BreadcrumbItem, BreadcrumbPage, BreadcrumbLink, BreadcrumbSeparator } from '../ui/breadcrumb';
@@ -34,12 +34,12 @@ export default function BreadcrumbSegments() {
             : <>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <LinkAnimated href={ href } prefetch>
+                  <Link href={ href } prefetch>
                     <RowStack className="items-center gap-x-1">
                       <BreadcrumbSegmentIcon path={ path } params={ params } isLast={ isLast } />
                       <BreadcrumbSegmentTitle path={ path } isLast={ isLast } paths={ paths } />
                     </RowStack>
-                  </LinkAnimated>
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />

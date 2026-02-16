@@ -58,5 +58,53 @@ function getFestiveLogo(): [string, string] {
     }
   }
 
+  if (currenMonth === 2) {
+    if (currentDay >= 1 && currentDay <= 14) {
+      imageUrlLight = '/header-logo/winter.png';
+      imageUrlDark = '/header-logo/winter.png';
+    } else if (currentDay >= 15 && currentDay < 17) {
+      imageUrlLight = '/header-logo/cny1.png';
+      imageUrlDark = '/header-logo/cny1.png';
+    } else if (currentDay >= 17 && currentDay < 18) {
+      imageUrlLight = '/header-logo/cny2.png';
+      imageUrlDark = '/header-logo/cny2.png';
+    } else if (currentDay > 18 && currentDay <= 20) {
+      imageUrlLight = '/header-logo/cny3.png';
+      imageUrlDark = '/header-logo/cny3.png';
+    } else if (currentDay === 21) {
+      imageUrlLight = '/header-logo/esther.png';
+      imageUrlDark = '/header-logo/esther.png';
+    } else {
+      imageUrlLight = '/header-logo/snowtree.png';
+      imageUrlDark = '/header-logo/snowtree.png';
+    }
+  }
+
+  if (currenMonth === 3) {
+    if (currentDay === 20) {
+      imageUrlLight = '/header-logo/butterflies.png';
+      imageUrlDark = '/header-logo/butterflies.png';
+    } else if (currentDay > 21 && currentDay <= 23) {
+      imageUrlLight = '/header-logo/cherryblossom.png';
+      imageUrlDark = '/header-logo/cherryblossom.png';
+    } else if (currentDay > 23 && currentDay <= 31) {
+      imageUrlLight = '/header-logo/cherryblossom1.png';
+      imageUrlDark = '/header-logo/cherryblossom1.png';
+    }
+  }
+
+  if (currenMonth === 4) {
+    if (currentDay >= 1 && currentDay <= 4) {
+      imageUrlLight = '/header-logo/tulips.png';
+      imageUrlDark = '/header-logo/tulips.png';
+    } else if (currentDay === 5) {
+      imageUrlLight = '/header-logo/hbd.png';
+      imageUrlDark = '/header-logo/hbd.png';
+    } else if (currentDay > 20 && currentDay <= 30) {
+      imageUrlLight = '/header-logo/butterflies.png';
+      imageUrlDark = '/header-logo/butterflies.png';
+    }
+  }
+
   return [imageUrlLight, imageUrlDark];
 }

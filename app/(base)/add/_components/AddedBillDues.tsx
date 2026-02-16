@@ -5,19 +5,12 @@ import DisplayCard from '@/shared/components/DisplayCard';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { useGetRecentlyAddedBillDues } from '@/store/bills/bills.store';
-import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS } from '@/shared/table/table.utils';
+import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
 import { SortDataModel, getSortDataWithPageId } from '@/models/sort-data/SortData.model';
 import { CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
-const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal)
-  .map((column: SearchTableColumn) => {
-    return {
-      ...column,
-      sortable: false,
-    };
-  })
-  .filter((column: SearchTableColumn) => column.headerId !== 'actions');
-  
+const columnsSorted: string[] = BILLS_TABLE_COLUMNS.filter((column: string) => column !== 'tableActions');
+
 const sortData: SortDataModel = getSortDataWithPageId(SORT_DATA_PAGE_IDS.addNewBillDueRecentlyAdded);
 
 export default function AddedBillDues() {

@@ -394,7 +394,6 @@ const ParallaxCards = ({
         perspective: `${perspective}px`,
       } }
       onClick={ (e) => {
-        console.log('Wrapper clicked', e.target);
       } }
     >
       <div
@@ -413,7 +412,6 @@ const ParallaxCards = ({
             } }
             onClick={ (e) => {
               e.stopPropagation();
-              console.log('Card clicked!', idx, imageUrl);
               handleCardClick(idx, imageUrl);
             } }
             type="button"

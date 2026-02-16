@@ -14,7 +14,7 @@ import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import EditBillDialogFavoriteBillToggleButton from '@/components/bills/EditBillDialogFavoriteBillToggleButton';
 
-import LinkClientOld from './LinkClientOld';
+import RowStack from '../components/RowStack';
 import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import DateDialogContentBase from '../dialogs/DateDialogBase';
@@ -188,13 +188,13 @@ export default function BillsTableCell({
     const subName = billDue.subscription.name;
     return (
       <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' } showHoverFilter={ showHoverFilter }>
-        <TableCell>
-          <LinkClientOld href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true } className="inline-block">
-            <div className="flex flex-row items-center justify-start gap-x-2">
+        <TableCell className="overflow-hidden whitespace-normal">
+          <Link href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true }>
+            <RowStack className="min-w-0 items-center justify-start gap-x-2">
               <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
-              <CenterUnderline label={ subName } />
-            </div>
-          </LinkClientOld>
+              <Typography className="wrap-break-word">{ subName }</Typography>
+            </RowStack>
+          </Link>
         </TableCell>
       </TableCellHoverWrapper>
     );
@@ -237,7 +237,7 @@ export default function BillsTableCell({
     );
   }
 
-  if (colId === 'actions') {
+  if (colId === 'tableActions') {
     return (
       <TableCell className="">
         <div className="flex w-full flex-row items-center justify-start gap-x-1">

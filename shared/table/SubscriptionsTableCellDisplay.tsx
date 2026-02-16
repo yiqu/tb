@@ -279,7 +279,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     );
   }
 
-  if (colId === 'actions') {
+  if (colId === 'tableActions') {
     return (
       <TableCell className="">
         <div className="flex w-full flex-row items-center justify-start gap-x-1">

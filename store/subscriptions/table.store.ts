@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { useShallow } from 'zustand/react/shallow';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 // export const SEARCH_TABLE_COLUMN_WIDTH = {
@@ -42,7 +41,63 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 //   { headerId: 'actions', ordinal: 13, sortable: false },
 // ];
 
+// export const SEARCH_TABLE_COLUMN_IDS: SearchTableColumn[] = [
+//   { headerId: 'cost', ordinal: 0, sortable: true },
+//   { headerId: 'frequency', ordinal: 0.5, sortable: true },
+//   // { headerId: 'id', ordinal: 7 },
+//   { headerId: 'dateAdded', ordinal: 5, sortable: true },
+//   { headerId: 'dueDate', ordinal: 2, sortable: true },
+//   { headerId: 'paid', ordinal: 3, sortable: true },
+//   { headerId: 'reimbursed', ordinal: 4, sortable: true },
+//   { headerId: 'subscription', ordinal: 1, sortable: true },
+//   { headerId: 'updatedAt', ordinal: 6, sortable: true },
+//   { headerId: 'actions', ordinal: 8, sortable: false },
+// ];
+
+export type TableId = 'subscriptions' | 'bills';
+
+export const SUBSCRIPTIONS_TABLE_COLUMNS = [
+  'name',
+  'billCycleDuration',
+  'description',
+  'url',
+  'cost',
+  'billDuesCurrentYearCount',
+  'billDuesCurrentYearTotalCost',
+  'totalBillsAllTimeCount',
+  'totalBillsAllTimeTotalCost',
+  'approved',
+  'signed',
+  'dateAdded',
+  'updatedAt',
+  'tableActions',
+];
+export const BILLS_TABLE_COLUMNS = [
+  'cost',
+  'frequency',
+  'dateAdded',
+  'dueDate',
+  'paid',
+  'reimbursed',
+  'subscription',
+  'updatedAt',
+  'tableActions',
+];
+
+export const unsortableSubscriptionsColumns: Record<string, boolean> = {
+  tableActions: false,
+};
+export const unsortableBillsColumns: Record<string, boolean> = {
+  tableActions: false,
+};
+
 type TableColumnsState = {
+  frequency: number;
+  dueDate: number;
+  paid: number;
+  reimbursed: number;
+  subscription: number;
+
   name: number;
   billCycleDuration: number;
   description: number;
@@ -58,7 +113,7 @@ type TableColumnsState = {
   updatedAt: number;
   tableActions: number;
 
-  columnOrdinal: {
+  subscriptionsTableColumnOrdinal: {
     name: number;
     billCycleDuration: number;
     description: number;
@@ -75,16 +130,34 @@ type TableColumnsState = {
     tableActions: number;
   };
 
+  billsTableColumnOrdinal: {
+    cost: number;
+    frequency: number;
+    subscription: number;
+    dueDate: number;
+    paid: number;
+    reimbursed: number;
+    dateAdded: number;
+    updatedAt: number;
+    tableActions: number;
+  };
+
   actions: {
     setColumnWidth: (_column: string, _width: number) => void;
-    updateColumnOrdinal: (_column: string, _ordinal: number) => void;
-    reorderColumns: (_ordinals: Partial<TableColumnsState['columnOrdinal']>) => void;
+    reorderSubscriptionsColumns: (_ordinals: Partial<TableColumnsState['subscriptionsTableColumnOrdinal']>) => void;
+    reorderBillsColumns: (_ordinals: Partial<TableColumnsState['billsTableColumnOrdinal']>) => void;
   };
 };
 
 const useTableColumnsStore = create<TableColumnsState>()(
   persist(
     (set) => ({
+      frequency: 130, // 7rem
+      dueDate: 180, // 7rem
+      paid: 110, // 7rem
+      reimbursed: 110, // 7rem
+      subscription: 180, // 7rem
+
       name: 192, // 12rem
       billCycleDuration: 112, // 7rem
       description: 176, // 11rem
@@ -100,7 +173,7 @@ const useTableColumnsStore = create<TableColumnsState>()(
       updatedAt: 128, // 8rem
       tableActions: 112, // 7rem (actions)
 
-      columnOrdinal: {
+      subscriptionsTableColumnOrdinal: {
         approved: 9,
         billCycleDuration: 2,
         billDuesCurrentYearCount: 5,
@@ -118,24 +191,36 @@ const useTableColumnsStore = create<TableColumnsState>()(
         actions: 13,
       },
 
+      billsTableColumnOrdinal: {
+        cost: 0,
+        frequency: 1,
+        subscription: 2,
+        dueDate: 3,
+        paid: 4,
+        reimbursed: 5,
+        dateAdded: 6,
+        updatedAt: 7,
+        tableActions: 8,
+      },
+
       actions: {
         setColumnWidth: (column, width) => {
           set((_state) => ({
             [column]: width,
           }));
         },
-        updateColumnOrdinal: (column, ordinal) => {
+        reorderSubscriptionsColumns: (ordinals) => {
           set((_state) => ({
-            columnOrdinal: {
-              ..._state.columnOrdinal,
-              [column as keyof TableColumnsState['columnOrdinal']]: ordinal,
+            subscriptionsTableColumnOrdinal: {
+              ..._state.subscriptionsTableColumnOrdinal,
+              ...ordinals,
             },
           }));
         },
-        reorderColumns: (ordinals) => {
+        reorderBillsColumns: (ordinals) => {
           set((_state) => ({
-            columnOrdinal: {
-              ..._state.columnOrdinal,
+            billsTableColumnOrdinal: {
+              ..._state.billsTableColumnOrdinal,
               ...ordinals,
             },
           }));
@@ -146,6 +231,12 @@ const useTableColumnsStore = create<TableColumnsState>()(
       name: 'subscriptions-table-columns-store',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
+        frequency: state.frequency,
+        dueDate: state.dueDate,
+        paid: state.paid,
+        reimbursed: state.reimbursed,
+        subscription: state.subscription,
+
         name: state.name,
         billCycleDuration: state.billCycleDuration,
         description: state.description,
@@ -159,37 +250,40 @@ const useTableColumnsStore = create<TableColumnsState>()(
         signed: state.signed,
         dateAdded: state.dateAdded,
         updatedAt: state.updatedAt,
-        columnOrdinal: state.columnOrdinal,
+
+        subscriptionsTableColumnOrdinal: state.subscriptionsTableColumnOrdinal,
+        billsTableColumnOrdinal: state.billsTableColumnOrdinal,
       }),
     },
   ),
 );
 
 export const useTableColumn = (column: string) =>
-  useTableColumnsStore((state) => (state[column as keyof TableColumnsState] as number) ?? 120);
+  useTableColumnsStore((state) => {
+    return (state[column as keyof TableColumnsState] as number) ?? 120;
+  });
 export const useTableActionColumnWidth = () => useTableColumnsStore((state) => state.tableActions);
 
-export const useTotalColumnsWidth = () =>
+export const useTotalColumnsWidth = (tableId: TableId) =>
   useTableColumnsStore((state) => {
     // only add the values if they are a number
-    const values = Object.values(state as unknown as Record<string, number>).filter((value) => typeof value === 'number');
-    //const values = [state.name, state.billCycleDuration, state.description, state.url];
-    return values.reduce((acc: number, curr: number) => acc + curr, 0);
+    if (tableId === 'subscriptions') {
+      return SUBSCRIPTIONS_TABLE_COLUMNS.reduce((acc: number, curr: string) => acc + (state[curr as keyof TableColumnsState] as number), 0);
+    } else if (tableId === 'bills') {
+      return BILLS_TABLE_COLUMNS.reduce((acc: number, curr: string) => acc + (state[curr as keyof TableColumnsState] as number), 0);
+    }
+    return 0;
   });
 
-export const useColumnOrdinal = (column: string) =>
-  useTableColumnsStore((state) => state.columnOrdinal[column as keyof TableColumnsState['columnOrdinal']] ?? 0);
-
-export const useColumnOrdinalObject = () => useTableColumnsStore((state) => state.columnOrdinal);
-
-export const useColumnsOrderedByOrdinal = () =>
-  useTableColumnsStore(
-    useShallow((state) => {
-      return Object.entries(state.columnOrdinal)
-        .sort((a, b) => a[1] - b[1])
-        .map(([key, _value]) => key);
-    }),
-  );
+export const useColumnOrdinalObject = (tableId: TableId) =>
+  useTableColumnsStore((state) => {
+    if (tableId === 'subscriptions') {
+      return state.subscriptionsTableColumnOrdinal;
+    } else if (tableId === 'bills') {
+      return state.billsTableColumnOrdinal;
+    }
+    return {};
+  });
 
 export const useTableColumnsActions = () => useTableColumnsStore((state) => state.actions);
 

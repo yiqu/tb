@@ -32,7 +32,8 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": false,
-    "allowUnreachableCode": false
+    "allowUnreachableCode": false,
+    "forceConsistentCasingInFileNames": false
   },
   "include": [
     "next-env.d.ts",

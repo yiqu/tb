@@ -4,44 +4,35 @@ export type SearchTableColumn = {
   sortable?: boolean;
 };
 
-export const SEARCH_TABLE_COLUMN_IDS: SearchTableColumn[] = [
-  { headerId: 'cost', ordinal: 0, sortable: true },
-  { headerId: 'frequency', ordinal: 0.5, sortable: true },
-  // { headerId: 'id', ordinal: 7 },
-  { headerId: 'dateAdded', ordinal: 5, sortable: true },
-  { headerId: 'dueDate', ordinal: 2, sortable: true },
-  { headerId: 'paid', ordinal: 3, sortable: true },
-  { headerId: 'reimbursed', ordinal: 4, sortable: true },
-  { headerId: 'subscription', ordinal: 1, sortable: true },
-  { headerId: 'updatedAt', ordinal: 6, sortable: true },
-  { headerId: 'actions', ordinal: 8, sortable: false },
-];
+// export const SEARCH_TABLE_COLUMN_IDS: SearchTableColumn[] = [
+//   { headerId: 'cost', ordinal: 0, sortable: true },
+//   { headerId: 'frequency', ordinal: 0.5, sortable: true },
+//   // { headerId: 'id', ordinal: 7 },
+//   { headerId: 'dateAdded', ordinal: 5, sortable: true },
+//   { headerId: 'dueDate', ordinal: 2, sortable: true },
+//   { headerId: 'paid', ordinal: 3, sortable: true },
+//   { headerId: 'reimbursed', ordinal: 4, sortable: true },
+//   { headerId: 'subscription', ordinal: 1, sortable: true },
+//   { headerId: 'updatedAt', ordinal: 6, sortable: true },
+//   { headerId: 'actions', ordinal: 8, sortable: false },
+// ];
 
-export const SUBSCRIPTIONS_TABLE_COLUMN_IDS: SearchTableColumn[] = [
-  { headerId: 'name', ordinal: 0, sortable: true },
-  { headerId: 'billCycleDuration', ordinal: 1, sortable: true },
-  { headerId: 'description', ordinal: 2, sortable: true },
-  { headerId: 'url', ordinal: 3, sortable: true },
-  { headerId: 'cost', ordinal: 4, sortable: true },
-  { headerId: 'billDuesCurrentYearCount', ordinal: 5, sortable: true },
-  { headerId: 'billDuesCurrentYearTotalCost', ordinal: 6, sortable: true },
-  { headerId: 'totalBillsAllTimeCount', ordinal: 7, sortable: true },
-  { headerId: 'totalBillsAllTimeTotalCost', ordinal: 8, sortable: true },
-  { headerId: 'approved', ordinal: 9, sortable: true },
-  { headerId: 'signed', ordinal: 10, sortable: true },
-  { headerId: 'dateAdded', ordinal: 11, sortable: true },
-  { headerId: 'updatedAt', ordinal: 12, sortable: true },
-  { headerId: 'actions', ordinal: 13, sortable: false },
-];
-
-export const getSearchTableColumnWidth = (columnId: string): string | undefined => {
-  switch (columnId) {
-    case 'id':
-      return '10rem';
-    default:
-      return;
-  }
-};
+// export const SUBSCRIPTIONS_TABLE_COLUMN_IDS: SearchTableColumn[] = [
+//   { headerId: 'name', ordinal: 0, sortable: true },
+//   { headerId: 'billCycleDuration', ordinal: 1, sortable: true },
+//   { headerId: 'description', ordinal: 2, sortable: true },
+//   { headerId: 'url', ordinal: 3, sortable: true },
+//   { headerId: 'cost', ordinal: 4, sortable: true },
+//   { headerId: 'billDuesCurrentYearCount', ordinal: 5, sortable: true },
+//   { headerId: 'billDuesCurrentYearTotalCost', ordinal: 6, sortable: true },
+//   { headerId: 'totalBillsAllTimeCount', ordinal: 7, sortable: true },
+//   { headerId: 'totalBillsAllTimeTotalCost', ordinal: 8, sortable: true },
+//   { headerId: 'approved', ordinal: 9, sortable: true },
+//   { headerId: 'signed', ordinal: 10, sortable: true },
+//   { headerId: 'dateAdded', ordinal: 11, sortable: true },
+//   { headerId: 'updatedAt', ordinal: 12, sortable: true },
+//   { headerId: 'actions', ordinal: 13, sortable: false },
+// ];
 
 export const SEARCH_TABLE_COLUMN_WIDTH = {
   id: '4rem',
@@ -50,7 +41,7 @@ export const SEARCH_TABLE_COLUMN_WIDTH = {
   dueDate: '16rem',
   subscription: '20rem',
   updatedAt: '8rem',
-  actions: '7rem',
+  tableActions: '7rem',
   dateAdded: '8rem',
   paid: '5rem',
   reimbursed: '7rem',
@@ -76,7 +67,7 @@ export const SEARCH_TABLE_COLUMN_TEXT = {
   reimbursed: 'Reimbursed',
   subscription: 'Subscription',
   updatedAt: 'Updated At',
-  actions: 'Actions',
+  tableActions: 'Actions',
   name: 'Name',
   description: 'Description',
   url: 'URL',
@@ -120,6 +111,27 @@ export function getNextSortDirection(currentSortData: SortData, nextSortField: S
     sort: nextDirection === '' ? '' : nextSortField,
     direction: nextDirection,
   };
+}
+
+export function getSortInfoText(
+  columnId: string,
+  sortable: boolean,
+  isColumnSorted: boolean,
+  sortDirection: SortDirection,
+  nextSortData: SortData,
+) {
+  const sortInfoText: string = `${SEARCH_TABLE_COLUMN_TEXT[columnId] ?? columnId} ${
+    sortable ?
+      `(${
+        isColumnSorted ?
+          sortDirection === 'asc' ?
+            'asc.'
+          : 'desc.'
+        : `click to sort ${nextSortData.direction === 'asc' ? 'asc.' : 'desc.'}`
+      })`
+    : ''
+  }`;
+  return sortInfoText;
 }
 
 export function getSearchTableColumns() {}
@@ -238,6 +250,18 @@ export function getSubscriptionLogoUrl(subscriptionName: string) {
     case 'T3 Chat': {
       logoLightUrl = 'chat_t3';
       logoDarkUrl = 'chat_t3';
+      break;
+    }
+
+    case 'T3 Credits': {
+      logoLightUrl = 'chat_t3';
+      logoDarkUrl = 'chat_t3';
+      break;
+    }
+
+    case 'React Bits Pro': {
+      logoLightUrl = 'reactbits';
+      logoDarkUrl = 'reactbits';
       break;
     }
 
