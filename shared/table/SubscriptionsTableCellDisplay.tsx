@@ -10,7 +10,6 @@ import { TableCell } from '@/components/ui/table';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
-import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import SubscriptionsTableAddDueBillButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableAddDueBillButton';
@@ -59,10 +58,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
   if (colId === 'description') {
     return (
       <TableCell>
-        <Typography
-          className="text-wrap wrap-break-word"
-          variant={ subscription.description ? 'labelvalue1' : 'nodata1' }
-        >
+        <Typography className="text-wrap wrap-break-word" variant={ subscription.description ? 'labelvalue1' : 'nodata1' }>
           { subscription.description ? subscription.description : 'N/A' }
         </Typography>
       </TableCell>
@@ -178,7 +174,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
           <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
             <RowStack className="items-center justify-start gap-x-2 text-wrap">
               <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
-              <CenterUnderline label={ subName } className="wrap-break-word" />
+              <Typography className="wrap-break-word">{ subName }</Typography>
               <div>
                 { isFavorited ?
                   <SubscriptionsTableEditFavoriteButton subscription={ subscription } />

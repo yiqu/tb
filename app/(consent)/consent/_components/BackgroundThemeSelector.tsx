@@ -12,6 +12,8 @@ import LightPillar from '@/components/reactbits/Backgrounds/LightPillar/LightPil
 import FloatingLines from '@/components/reactbits/Backgrounds/FloatingLines/FloatingLines';
 import PrismaticBurst from '@/components/reactbits/Backgrounds/PrismaticBurst/PrismaticBurst';
 
+import LogoGrid from './LogoGrid';
+
 export default function BackgroundThemeSelector({ currentMonth }: { currentMonth: number }) {
   if (currentMonth === 1) {
     return (
@@ -32,6 +34,9 @@ export default function BackgroundThemeSelector({ currentMonth }: { currentMonth
     );
   }
   if (currentMonth === 2) {
+    return (
+      <LogoGrid />
+    );
     return (
       <Lightspeed
         width="100%"

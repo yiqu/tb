@@ -1,4 +1,3 @@
-/* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
 
 import gsap from 'gsap';
@@ -38,7 +37,7 @@ export interface DraggableGridProps {
   /** Intro animation duration in seconds */
   introDuration?: number;
   /** Callback when an item is clicked */
-  onItemClick?: (_item: GridItem, _index: number) => void;
+  onItemClick?: (item: GridItem, index: number) => void;
   /** Additional CSS classes for the main container */
   className?: string;
   /** Additional CSS classes for grid container */
@@ -55,8 +54,6 @@ export interface DraggableGridProps {
   gap?: number;
   /** Wheel scroll smoothing duration in seconds (0.1-1.0) */
   wheelSmoothing?: number;
-  /** Offset from the computed center position on startup (in pixels). Negative x shifts left, positive x shifts right. */
-  initialOffset?: { x?: number; y?: number };
 }
 
 const DraggableGrid: React.FC<DraggableGridProps> = ({
@@ -75,7 +72,6 @@ const DraggableGrid: React.FC<DraggableGridProps> = ({
   scale = 1,
   gap = 5,
   wheelSmoothing = 0.3,
-  initialOffset = { x: 0, y: 0 },
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -188,8 +184,8 @@ const DraggableGrid: React.FC<DraggableGridProps> = ({
         const gridHeight = gridRef.current.offsetHeight;
         const { width: containerWidth, height: containerHeight } = getContainerDimensions();
 
-        const centerX = (containerWidth - gridWidth) / 2 + (initialOffset.x ?? 0);
-        const centerY = (containerHeight - gridHeight) / 2 + (initialOffset.y ?? 0);
+        const centerX = (containerWidth - gridWidth) / 2;
+        const centerY = (containerHeight - gridHeight) / 2;
 
         gsap.set(gridRef.current, { x: centerX, y: centerY });
 
@@ -316,116 +312,6 @@ const DraggableGrid: React.FC<DraggableGridProps> = ({
   const handleItemClick = (item: GridItem, index: number, e: React.MouseEvent) => {
     if (isDragging) return;
     e.stopPropagation();
-
-    const target = (e.currentTarget as HTMLElement).querySelector('.product > div');
-    if (target) {
-      gsap.killTweensOf(target);
-      const tl = gsap.timeline();
-
-      if (Math.random() < 0.5) {
-        // Wiggle animation
-        tl.to(target, {
-          y: -80,
-          rotation: -25,
-          scale: 1.3,
-          duration: 0.3,
-          ease: 'power3.out',
-        })
-          .to(target, {
-            y: 20,
-            rotation: 30,
-            scale: 1.1,
-            duration: 0.3,
-            ease: 'power2.inOut',
-          })
-          .to(target, {
-            y: -50,
-            rotation: -20,
-            scale: 1.25,
-            duration: 0.3,
-            ease: 'power2.inOut',
-          })
-          .to(target, {
-            y: 15,
-            rotation: 15,
-            scale: 1.08,
-            duration: 0.25,
-            ease: 'power2.inOut',
-          })
-          .to(target, {
-            y: -25,
-            rotation: -10,
-            scale: 1.12,
-            duration: 0.25,
-            ease: 'power2.inOut',
-          })
-          .to(target, {
-            y: 8,
-            rotation: 5,
-            scale: 1.03,
-            duration: 0.2,
-            ease: 'power2.inOut',
-          })
-          .to(target, {
-            y: 0,
-            rotation: 0,
-            scale: 1,
-            duration: 0.4,
-            ease: 'elastic.out(1.2, 0.4)',
-          });
-      } else {
-        // Jump up and down animation
-        tl.to(target, {
-          y: -120,
-          scale: 1.2,
-          duration: 0.3,
-          ease: 'power3.out',
-        })
-          .to(target, {
-            y: 0,
-            scale: 0.9,
-            duration: 0.25,
-            ease: 'power3.in',
-          })
-          .to(target, {
-            y: -70,
-            scale: 1.15,
-            duration: 0.25,
-            ease: 'power2.out',
-          })
-          .to(target, {
-            y: 0,
-            scale: 0.92,
-            duration: 0.2,
-            ease: 'power3.in',
-          })
-          .to(target, {
-            y: -35,
-            scale: 1.08,
-            duration: 0.2,
-            ease: 'power2.out',
-          })
-          .to(target, {
-            y: 0,
-            scale: 0.95,
-            duration: 0.18,
-            ease: 'power2.in',
-          })
-          .to(target, {
-            y: -12,
-            scale: 1.03,
-            duration: 0.15,
-            ease: 'power2.out',
-          })
-          .to(target, {
-            y: 0,
-            scale: 1,
-            duration: 0.3,
-            ease: 'elastic.out(1, 0.5)',
-          });
-      }
-    }
-
     onItemClick?.(item, index);
   };
 
@@ -474,7 +360,13 @@ const DraggableGrid: React.FC<DraggableGridProps> = ({
                     <img
                       src={ item.image }
                       alt={ item.alt || `Item ${item.id}` }
-                      className="absolute h-full w-full object-cover transition-transform duration-300 ease-in-out will-change-transform hover:scale-105"
+                      className="
+
+                        absolute h-full w-full object-cover transition-transform duration-300 ease-in-out will-change-transform
+
+                        hover:scale-105
+
+                      "
                       draggable={ false }
                     />
                   </div>

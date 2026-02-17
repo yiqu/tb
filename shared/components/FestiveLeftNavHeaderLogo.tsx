@@ -63,11 +63,11 @@ function getFestiveLogo(): [string, string] {
       imageUrlLight = '/header-logo/winter.png';
       imageUrlDark = '/header-logo/winter.png';
     } else if (currentDay >= 15 && currentDay < 17) {
-      imageUrlLight = '/header-logo/cny1.png';
-      imageUrlDark = '/header-logo/cny1.png';
+      imageUrlLight = '/header-logo/cny3.png';
+      imageUrlDark = '/header-logo/cny3.png';
     } else if (currentDay >= 17 && currentDay < 18) {
-      imageUrlLight = '/header-logo/cny2.png';
-      imageUrlDark = '/header-logo/cny2.png';
+      imageUrlLight = '/header-logo/cny3.png';
+      imageUrlDark = '/header-logo/cny3.png';
     } else if (currentDay > 18 && currentDay <= 20) {
       imageUrlLight = '/header-logo/cny3.png';
       imageUrlDark = '/header-logo/cny3.png';
@@ -81,7 +81,10 @@ function getFestiveLogo(): [string, string] {
   }
 
   if (currenMonth === 3) {
-    if (currentDay === 20) {
+    if (currentDay === 3) {
+      imageUrlLight = '/header-logo/cny1.png';
+      imageUrlDark = '/header-logo/cny1.png';
+    } else if (currentDay === 20) {
       imageUrlLight = '/header-logo/butterflies.png';
       imageUrlDark = '/header-logo/butterflies.png';
     } else if (currentDay > 21 && currentDay <= 23) {

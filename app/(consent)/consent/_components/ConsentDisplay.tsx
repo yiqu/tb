@@ -7,6 +7,7 @@ import RowStack from '@/shared/components/RowStack';
 import { WEST_D_PALETTE } from '@/lib/color-palettes';
 import Typography from '@/components/typography/Typography';
 import { AuroraText } from '@/components/magicui/aurora-text';
+import CustomToaster from '@/components/toaster/CustomToaster';
 
 import TodayDate from './TodayDate';
 import ConsentTitleLogo from './ConsentTitleLogo';
@@ -21,6 +22,7 @@ export default async function ConsentDisplay() {
   const currentMonth = DateTime.now().setZone(EST_TIME_ZONE).month;
   return (
     <div className="fixed inset-0 flex h-full w-full flex-col items-center justify-center">
+      <CustomToaster />
       <BackgroundThemeSelector currentMonth={ currentMonth } />
       <div className="fixed">
         <RowStack className="items-center justify-between">
