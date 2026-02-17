@@ -10,11 +10,10 @@ import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
-import CenterUnderline from '@/fancy/components/text/underline-center';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import EditBillDialogFavoriteBillToggleButton from '@/components/bills/EditBillDialogFavoriteBillToggleButton';
 
-import LinkClientOld from './LinkClientOld';
+import RowStack from '../components/RowStack';
 import DateDialogContent from '../dialogs/DateDialog';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import DateDialogContentBase from '../dialogs/DateDialogBase';
@@ -54,7 +53,7 @@ export default function BillsTableCell({
           two:gap-x-6
         ` }>
           <Link href={ `/bills/${billDue.id}` } prefetch={ true }>
-            <CenterUnderline label={ useFormatter.format(cost) } className="truncate tabular-nums" />
+            <Typography className="wrap-break-word tabular-nums">{ useFormatter.format(cost) }</Typography>
           </Link>
           <div>
             { isFavorited ?
@@ -102,17 +101,17 @@ export default function BillsTableCell({
 
   if (colId === 'dateAdded') {
     return (
-      <TableCell>
+      <TableCell className="wrap-break-word whitespace-normal">
         <Popover>
           <PopoverTrigger asChild>
             <div
               title={ `${billDue.dateAdded}` }
               className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
+                flex cursor-pointer flex-col gap-y-1 rounded-md border border-transparent p-1 select-none
                 hover:border-border hover:bg-background
               ` }
             >
-              <Typography className="truncate">{ billDue.dateAddedInEst }</Typography>
+              <Typography className="wrap-break-word">{ billDue.dateAddedInEst }</Typography>
               <DateRelativeDisplay
                 time={ billDue.dateAdded as any }
                 largest={ 2 }
@@ -136,20 +135,20 @@ export default function BillsTableCell({
     const dueDate: string | undefined = billDue.dueDateInEst;
     const isCompleted = billDue.reimbursed && billDue.paid;
     return (
-      <TableCell>
+      <TableCell className="wrap-break-word whitespace-normal">
         <Popover>
           <PopoverTrigger asChild>
             <div
               className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
+                flex cursor-pointer flex-col gap-y-1 rounded-md border border-transparent p-1 select-none
                 hover:border-border hover:bg-background
               ` }
             >
               <div className="flex flex-row items-center justify-start gap-x-2">
-                <Typography>{ dueDate }</Typography>
+                <Typography className="wrap-break-word">{ dueDate }</Typography>
                 <SearchTableCellDisplayDueDateIcon date={ billDue.dueDate } billDue={ billDue } />
               </div>
-              <DateRelativeDisplay time={ billDue.dueDate as any } className="truncate" isCompleted={ isCompleted } />
+              <DateRelativeDisplay time={ billDue.dueDate as any } className="wrap-break-word" isCompleted={ isCompleted } />
             </div>
           </PopoverTrigger>
           <PopoverContent>
@@ -188,13 +187,13 @@ export default function BillsTableCell({
     const subName = billDue.subscription.name;
     return (
       <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' } showHoverFilter={ showHoverFilter }>
-        <TableCell>
-          <LinkClientOld href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true } className="inline-block">
-            <div className="flex flex-row items-center justify-start gap-x-2">
+        <TableCell className="overflow-hidden whitespace-normal">
+          <Link href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true }>
+            <RowStack className="min-w-0 items-center justify-start gap-x-2">
               <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
-              <CenterUnderline label={ subName } />
-            </div>
-          </LinkClientOld>
+              <Typography className="wrap-break-word">{ subName }</Typography>
+            </RowStack>
+          </Link>
         </TableCell>
       </TableCellHoverWrapper>
     );
@@ -202,20 +201,20 @@ export default function BillsTableCell({
 
   if (colId === 'updatedAt') {
     return (
-      <TableCell>
+      <TableCell className="wrap-break-word whitespace-normal">
         <Popover>
           <PopoverTrigger asChild>
             <div
               title={ `${billDue.updatedAt}` }
               className={ `
-                flex cursor-pointer flex-col gap-y-1 truncate rounded-md border border-transparent p-1 select-none
+                flex cursor-pointer flex-col gap-y-1 rounded-md border border-transparent p-1 select-none
                 hover:border-border hover:bg-background
               ` }
             >
               { `${billDue.updatedAt}` === `${billDue.dateAdded}` ?
                 <Typography variant="nodata1">N/A</Typography>
               : <>
-                <Typography className="truncate">{ billDue.updatedAtInEst }</Typography>
+                <Typography className="wrap-break-word">{ billDue.updatedAtInEst }</Typography>
                 <DateRelativeDisplay
                     time={ billDue.updatedAt as any }
                     largest={ 2 }
@@ -237,7 +236,7 @@ export default function BillsTableCell({
     );
   }
 
-  if (colId === 'actions') {
+  if (colId === 'tableActions') {
     return (
       <TableCell className="">
         <div className="flex w-full flex-row items-center justify-start gap-x-1">

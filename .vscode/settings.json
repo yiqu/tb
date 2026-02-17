@@ -21,5 +21,13 @@
     "titleBar.inactiveForeground": "#ffffff99",
     "activityBar.activeBorder": "#d5e9de"
   },
-  "prisma.pinToPrisma6": true
+  "prisma.pinToPrisma6": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.cursor": true,
+    "**/.agents": true,
+    "**/.claude": true,
+    "**/.next": true
+  }
+  
 }

@@ -18,7 +18,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider defaultOpen={ isSideNavOpen }>
       <NavSidebar />
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <TopNavWrapper>
           <TopNav />
         </TopNavWrapper>

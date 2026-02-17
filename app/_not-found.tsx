@@ -1,6 +1,7 @@
 /* eslint-disable better-tailwindcss/no-unnecessary-whitespace */
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 
+import Link from 'next/link';
 import { Borel, Geist, Caveat, Geist_Mono, Lilita_One, Cherry_Bomb_One } from 'next/font/google';
 
 import Typography from '@/components/typography/Typography';
@@ -58,11 +59,11 @@ export default function NotFound() {
             <Typography variant="body1" className="text-center">
               404: The page you are looking for does not exist.
             </Typography>
-            <Typography variant="body1" className="text-center">
-              <a href="/">
-                <CenterUnderline label="Take me back home." />
-              </a>
-            </Typography>
+            <Link href="/">
+              <Typography variant="body1" className="text-center">
+                Take me back home.
+              </Typography>
+            </Link>
           </div>
         </PageNotFoundCard>
       </div>

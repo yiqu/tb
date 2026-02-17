@@ -42,3 +42,8 @@ next-env.d.ts
 
 # prisma
 /app/generated/prisma
+
+# agent and skills
+.agents/
+.claude/
+.cursor/

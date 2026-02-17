@@ -1,10 +1,16 @@
 'use client';
 
+import { useTheme } from 'next-themes';
 import { Toaster, ToastBar } from 'react-hot-toast';
+
+import RowStack from '@/shared/components/RowStack';
 
 import CustomToasterCloseButton from './CustomToasterCloseButton';
 
 function CustomToaster() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+
   return (
     <Toaster
       position="top-center"
@@ -20,19 +26,22 @@ function CustomToaster() {
         },
         style: {
           maxWidth: '40rem',
+          background: isDark ? '#1c1c1e' : '#fff',
+          color: isDark ? '#f5f5f7' : '#1c1c1e',
+          borderColor: isDark ? '#38383a' : '#e5e5e5',
         },
       } }
     >
       { (t) => (
         <ToastBar toast={ t }>
           { ({ icon, message }) => (
-            <div className="flex flex-row items-center justify-between font-sans">
-              <div className="flex flex-row items-center justify-start">
+            <RowStack className="items-center justify-between">
+              <RowStack className="items-center justify-start">
                 { icon }
                 <div>{ message }</div>
-              </div>
+              </RowStack>
               { t.type !== 'loading' && <CustomToasterCloseButton t={ t } /> }
-            </div>
+            </RowStack>
           ) }
         </ToastBar>
       ) }
@@ -41,3 +50,4 @@ function CustomToaster() {
 }
 
 export default CustomToaster;
+

@@ -1,14 +1,14 @@
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import { unsortableBillsColumns } from '@/store/subscriptions/table.store';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { SortDataModel, SortDataPageId } from '@/models/sort-data/SortData.model';
 
-import { SearchTableColumn } from './table.utils';
 import BillsTableParentRow from './BillsDueTableParentRow';
 import SearchTableHeaderDisplay from './SearchTableHeaderDisplay';
 
 interface BillsDueTableProps {
   billDues: BillDueWithSubscription[];
-  columns: SearchTableColumn[];
+  columns: string[];
   sortData: SortDataModel;
   pageId: SortDataPageId;
   tableId?: string;
@@ -16,22 +16,19 @@ interface BillsDueTableProps {
 
 export default function BillsDueTable({ billDues, columns, sortData, pageId, tableId }: BillsDueTableProps) {
   return (
-    <Table className={ `
-      table-auto
-      two:table-fixed
-    ` } id={ tableId ?? 'bills-table' }>
+    <Table className="table-fixed" id={ tableId ?? 'bills-table' }>
       <TableHeader className={ `bg-muted` }>
         <TableRow className="hover:bg-transparent">
-          { columns.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {
+          { columns.map((column: string, index: number, array: string[]) => {
             return (
               <SearchTableHeaderDisplay
-                key={ column.headerId }
-                columnId={ column.headerId }
+                key={ column }
+                columnId={ column }
                 index={ index }
                 length={ array.length }
                 sortData={ sortData }
                 pageId={ pageId }
-                sortable={ column.sortable ?? false }
+                sortable={ unsortableBillsColumns[column] ?? true }
               />
             );
           }) }

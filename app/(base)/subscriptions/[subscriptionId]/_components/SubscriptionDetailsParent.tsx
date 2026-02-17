@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import ColumnStack from '@/shared/components/ColumnStack';
 import EditBillForm from '@/components/bills/EditBillForm';
 import Typography from '@/components/typography/Typography';
 import AddNewBillDueDialog from '@/app/(base)/add/_components/AddNewBillDueDialog';
@@ -27,19 +28,19 @@ export default async function SubscriptionDetailsParent({ paramsPromise }: Subsc
   }
 
   return (
-    <div className="flex w-full flex-col items-start justify-start">
-      <div className="flex w-full flex-col items-start justify-start gap-y-6">
+    <ColumnStack className="w-full">
+      <ColumnStack className="w-full gap-y-6">
         <SubscriptionDetailsMetadata subscription={ subscription } />
         <Suspense fallback={ <TableLoading /> }>
           <SubscriptionDetailsBillsTableParentParent subscriptionId={ subscriptionId } subscription={ subscription } />
         </Suspense>
-      </div>
+      </ColumnStack>
       <BillsTableActionDialog>
         <EditBillForm />
       </BillsTableActionDialog>
       <AddNewBillDueDialog subscriptionId={ subscriptionId } />
       <EditSubscriptionDialog subscriptionId={ subscriptionId } />
-    </div>
+    </ColumnStack>
   );
 }
 

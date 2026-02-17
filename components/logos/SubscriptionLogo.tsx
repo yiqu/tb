@@ -1,7 +1,10 @@
 import Image from 'next/image';
 
+import { cn } from '@/lib/utils';
+
 interface SubscriptionLogoProps {
   subscriptionName: string;
+  className?: string;
   height?: number;
 }
 
@@ -240,13 +243,29 @@ export function getSubscriptionLogoUrl(subscriptionName: string): { light: strin
   };
 }
 
-export default function SubscriptionLogo({ subscriptionName, height = 100 }: SubscriptionLogoProps): React.ReactNode {
+export default function SubscriptionLogo({ subscriptionName, className, height = 100 }: SubscriptionLogoProps): React.ReactNode {
   const { light, dark } = getSubscriptionLogoUrl(subscriptionName);
   return (
     <>
-      <Image src={ light } width={ height } height={ height } alt="logo" className="shrink-0" data-hide-on-theme="dark" priority />
+      <Image
+        src={ light }
+        width={ height }
+        height={ height }
+        alt="logo"
+        className={ cn('shrink-0', className) }
+        data-hide-on-theme="dark"
+        priority
+      />
 
-      <Image src={ dark } width={ height } height={ height } alt="logo" className="shrink-0" data-hide-on-theme="light" priority />
+      <Image
+        src={ dark }
+        width={ height }
+        height={ height }
+        alt="logo"
+        className={ cn('shrink-0', className) }
+        data-hide-on-theme="light"
+        priority
+      />
     </>
   );
 }

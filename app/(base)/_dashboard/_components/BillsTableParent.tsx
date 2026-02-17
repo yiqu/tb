@@ -8,18 +8,15 @@ import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import Typography from '@/components/typography/Typography';
 import { CardFooter, CardContent } from '@/components/ui/card';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
-import BillsTableParentRow from '@/shared/table/BillsDueTableParentRow';
-import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
-import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
-import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS } from '@/shared/table/table.utils';
 import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 import { getAllBillsCached, getCurrentMonthDateDataCached } from '@/server/bills/bills.server';
-import { CurrentMonthDateData, BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
+import { CurrentMonthDateData, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
 import DateRangeEpochButton from './DateRangeEpochButton';
 import { appendMonthAndYearToSearchParams } from './dashboard.utils';
+import BillsTableParentContent from '../../bills/_components/BillsTableParentContent';
 interface BillsTableParentProps {
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
   paginationPromise: Promise<PaginationDataModel | null>;
@@ -37,7 +34,6 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
   const pagination: PaginationDataModel | null = await paginationPromise;
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.dashboard_current_month);
   const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, pagination, searchParams);
-  const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
   if (billDues.billDues.length === 0) {
     const { monthParams } = billDues;
@@ -70,22 +66,25 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
   return (
     <DisplayCard className="w-full pt-0 shadow-none">
       <CardContent className="overflow-x-auto border-b px-0">
-        <Table className={ `
-          table-auto
-          two:table-fixed
-        ` } id="bills-table">
+        <BillsTableParentContent
+          billDues={ billDues }
+          tableId="dashboard-bills-table"
+          sortData={ billDues.sortData }
+          pageId={ SORT_DATA_PAGE_IDS.dashboard_current_month }
+        />
+        { /* <Table className="table-fixed" id="bills-table">
           <TableHeader className={ `bg-muted` }>
             <TableRow className="hover:bg-transparent">
-              { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {
+              { columnsSorted.map((column: string, index: number, array: string[]) => {
                 return (
                   <SearchTableHeaderDisplay
-                    key={ column.headerId }
-                    columnId={ column.headerId }
+                    key={ column }
+                    columnId={ column }
                     index={ index }
                     length={ array.length }
                     sortData={ billDues.sortData }
                     pageId={ SORT_DATA_PAGE_IDS.dashboard_current_month }
-                    sortable={ column.sortable ?? false }
+                    sortable={ unsortableBillsColumns[column] ?? true }
                   />
                 );
               }) }
@@ -96,7 +95,7 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
               <BillsTableParentRow key={ billDue.id } billDue={ billDue } columns={ columnsSorted } />
             )) }
           </TableBody>
-        </Table>
+        </Table> */ }
       </CardContent>
       <CardFooter className="flex w-full flex-row items-center justify-between">
         <div>

@@ -7,14 +7,11 @@ import { getAllBillsCached } from '@/server/bills/bills.server';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import NoResultsCard from '@/components/status-cards/NoResultsCard';
 import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
-import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
-import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
+import { BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
-import { SearchTableColumn, SEARCH_TABLE_COLUMN_IDS } from '@/shared/table/table.utils';
-import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
-import BillsTableParentRow from './BillsTableParentRow';
+import BillsTableParentContent from './BillsTableParentContent';
 import DateRangeEpochButton from '../../_dashboard/_components/DateRangeEpochButton';
 
 interface BillsTableParentProps {
@@ -27,7 +24,6 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
   const pagination: PaginationDataModel | null = await paginationPromise;
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
   const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, pagination, searchParams);
-  const columnsSorted: SearchTableColumn[] = SEARCH_TABLE_COLUMN_IDS.sort((a, b) => a.ordinal - b.ordinal);
 
   if (billDues.billDues.length === 0) {
     return (
@@ -40,33 +36,7 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
   return (
     <DisplayCard className="w-full pt-0">
       <CardContent className="overflow-x-auto border-b px-0">
-        <Table className={ `
-          table-auto
-          two:table-fixed
-        ` } id="bills-table">
-          <TableHeader className={ `bg-muted` }>
-            <TableRow className="hover:bg-transparent">
-              { columnsSorted.map((column: SearchTableColumn, index: number, array: SearchTableColumn[]) => {
-                return (
-                  <SearchTableHeaderDisplay
-                    key={ column.headerId }
-                    columnId={ column.headerId }
-                    index={ index }
-                    length={ array.length }
-                    sortData={ billDues.sortData }
-                    pageId={ SORT_DATA_PAGE_IDS.search }
-                    sortable={ column.sortable ?? false }
-                  />
-                );
-              }) }
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            { billDues.billDues.map((billDue: BillDueWithSubscription) => (
-              <BillsTableParentRow key={ billDue.id } billDue={ billDue } />
-            )) }
-          </TableBody>
-        </Table>
+        <BillsTableParentContent billDues={ billDues } sortData={ sortData } pageId={ SORT_DATA_PAGE_IDS.search } />
       </CardContent>
       <CardFooter className="flex w-full flex-row items-center justify-between">
         <div>
