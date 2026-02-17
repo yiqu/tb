@@ -37,17 +37,17 @@ export default function BackgroundThemeSelector({ currentMonth }: { currentMonth
     return (
       <LogoGrid />
     );
-    return (
-      <Lightspeed
-        width="100%"
-        height={ '100%' }
-        speed={ 0.2 }
-        primaryColor="#FF1744"
-        secondaryColor="#00E5FF"
-        tertiaryColor="#76FF03"
-        intensity={ 2.2 }
-      />
-    );
+    // return (
+    //   <Lightspeed
+    //     width="100%"
+    //     height={ '100%' }
+    //     speed={ 0.2 }
+    //     primaryColor="#FF1744"
+    //     secondaryColor="#00E5FF"
+    //     tertiaryColor="#76FF03"
+    //     intensity={ 2.2 }
+    //   />
+    // );
   }
   if (currentMonth === 3) {
     return (
