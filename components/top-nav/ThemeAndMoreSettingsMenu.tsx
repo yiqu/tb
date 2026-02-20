@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Palette, Settings2 } from 'lucide-react';
+import { Palette, Settings2, ListChevronsDownUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import RowStack from '@/shared/components/RowStack';
@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSep
 
 import { Skeleton } from '../ui/skeleton';
 import Typography from '../typography/Typography';
+import ThemeAndMoreCompactToggleParent from './ThemeAndMoreCompactToggleParent';
 import ThemeAndMoreSettingsMenuSettingsLink from './ThemeAndMoreSettingsMenuSettingsLink';
 import ThemeAndMoreSettingsMenuThemeSwitcher from './ThemeAndMoreSettingsMenuThemeSwitcher';
 import ThemeAndMoreSettingsMenuVibePickerParent from './ThemeAndMoreSettingsMenuVibePickerParent';
@@ -19,8 +20,12 @@ export default function ThemeAndMoreSettingsMenu() {
           <Settings2 />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-70" align="end" sideOffset={ 16 }>
+      <DropdownMenuContent className="flex min-w-70 flex-col gap-y-2" align="end" sideOffset={ 16 }>
         <ThemeAndMoreSettingsMenuThemeSwitcher />
+
+        <Suspense fallback={ <CompactToggleSkeleton /> }>
+          <ThemeAndMoreCompactToggleParent />
+        </Suspense>
 
         <Suspense fallback={ <VibeSelectionSkeleton /> }>
           <ThemeAndMoreSettingsMenuVibePickerParent />
@@ -40,6 +45,18 @@ function VibeSelectionSkeleton() {
       <Typography variant="body1" className="flex shrink-0 items-center gap-x-2">
         <Palette className="size-4" />
         Vibe
+      </Typography>
+      <Skeleton className="h-full w-full" />
+    </RowStack>
+  );
+}
+
+function CompactToggleSkeleton() {
+  return (
+    <RowStack className="h-8 w-full gap-x-2 px-2">
+      <Typography variant="body1" className="flex shrink-0 items-center gap-x-2">
+        <ListChevronsDownUp className="size-4" />
+        Compact Mode
       </Typography>
       <Skeleton className="h-full w-full" />
     </RowStack>

@@ -10,7 +10,6 @@ export default function TopNavRightActionButtons() {
       <TopNavWelcomeButton />
       <ResourcesDropdownMenuButton />
       <ThemeAndMoreSettingsMenu />
-      { /* <ThemeToggleButtonParent /> */ }
     </div>
   );
 }

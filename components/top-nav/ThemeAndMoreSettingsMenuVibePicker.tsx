@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Palette } from 'lucide-react';
+import { Palette, RefreshCcw } from 'lucide-react';
+import { useOptimistic, useTransition } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
@@ -20,16 +20,20 @@ interface Props {
 
 export default function ThemeAndMoreSettingsMenuVibePicker({ vibe }: Props) {
   const isClient = useClientOnly();
-  const [currentVibe, setCurrentVibe] = useState<AppVibe>(vibe);
+  const [isPending, startTransition] = useTransition();
+  const [optimisticVibe, setOptimisticVibe] = useOptimistic(vibe);
 
   const handleVibeChange = (nextVibe: string) => {
-    const vibe = nextVibe as AppVibe;
-    setCurrentVibe(vibe);
-
-    toast.promise(setSettingsApplicationVibe(vibe), {
-      loading: 'Updating vibe...',
-      success: () => `Vibe updated to ${APP_VIBE_OPTIONS_MAP[vibe]}.`,
-      error: (error: Error) => `Failed to update vibe. ${error.message}`,
+    const selected = nextVibe as AppVibe;
+    startTransition(async () => {
+      setOptimisticVibe(selected);
+      try {
+        await setSettingsApplicationVibe(selected);
+        toast.remove();
+        toast.success(`Vibe updated to ${APP_VIBE_OPTIONS_MAP[selected]}.`);
+      } catch (error) {
+        toast.error(`Failed to update vibe. ${(error as Error).message}`);
+      }
     });
   };
 
@@ -43,16 +47,18 @@ export default function ThemeAndMoreSettingsMenuVibePicker({ vibe }: Props) {
       "
     >
       <Typography variant="body1" className="flex shrink-0 items-center gap-x-2">
-        <Palette className="
+        { isPending ?
+          <RefreshCcw className="size-4 animate-spin" />
+        : <Palette className="
           size-4
           hover:text-black!
           dark:hover:text-white!
-        " />
+        " /> }
         Vibe
       </Typography>
       { !isClient ?
         <Skeleton className="h-8 w-28 rounded-md" />
-      : <Select value={ currentVibe } onValueChange={ handleVibeChange }>
+      : <Select value={ optimisticVibe } onValueChange={ handleVibeChange }>
         <SelectTrigger size="sm" className="
           max-w-52 min-w-52 cursor-pointer bg-muted/70
           dark:bg-muted/30

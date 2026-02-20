@@ -12,6 +12,8 @@ export const SIDEBAR_COLLAPSABLE_HISTORY = 'sidebar-collapsable-history';
 export const SIDEBAR_COLLAPSABLE_ADD_NEW = 'sidebar-collapsable-add-new';
 
 export const SETTINGS_USER_AVATAR_COOKIE_NAME = 'settings-user-avatar';
+export const SETTINGS_APPLICATION_COMPACT_MODE_COOKIE_NAME = 'settings-application-compact-mode';
+export const SETTINGS_APPLICATION_ADMIN_MODE_COOKIE_NAME = 'settings-application-admin-mode';
 export const SETTINGS_USER_VIBE_COOKIE_NAME = 'settings-user-vibe';
 export const SETTINGS_USER_FONT_COOKIE_NAME = 'settings-user-font-override';
 
