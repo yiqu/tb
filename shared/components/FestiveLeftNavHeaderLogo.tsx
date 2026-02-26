@@ -109,5 +109,13 @@ function getFestiveLogo(): [string, string] {
     }
   }
 
+  if (currenMonth === 10) {
+    if (currentDay === 21) {
+      imageUrlLight = '/header-logo/hannah.png';
+      imageUrlDark = '/header-logo/hannah.png';
+    } else if (currentDay === 22) {
+    }
+  }
+
   return [imageUrlLight, imageUrlDark];
 }
