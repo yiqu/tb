@@ -1,5 +1,6 @@
 import ColumnStack from '@/shared/components/ColumnStack';
 import ContentStickyByScrollWrapper from '@/components/layout/ContentStickyByScrollWrapper';
+import LayoutContentActionPaginationWrapper from '@/components/layout/LayoutContentActionPaginationWrapper';
 
 import { MOCK_ITEMS } from './utils';
 import TopContent from './TopContent';
@@ -9,9 +10,9 @@ export default function PageContent({ isDialogMode, scrollableContentId }: { isD
   return (
     <ColumnStack>
       <ContentStickyByScrollWrapper threshold={ 120 } hideAnimation="slideUp" stickyClassName={ isDialogMode ? 'top-[66px]' : 'top-12' }>
-        <ColumnStack className="w-full gap-y-3 py-3">
+        <LayoutContentActionPaginationWrapper>
           <TopContent />
-        </ColumnStack>
+        </LayoutContentActionPaginationWrapper>
       </ContentStickyByScrollWrapper>
       <ContentParent className="" items={ MOCK_ITEMS } scrollableContentId={ scrollableContentId } isDialogMode={ isDialogMode } />
     </ColumnStack>

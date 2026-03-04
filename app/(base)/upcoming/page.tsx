@@ -1,11 +1,12 @@
 import { Suspense } from 'react';
 
-import ColumnStack from '@/shared/components/ColumnStack';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import EditBillForm from '@/components/bills/EditBillForm';
+import LayoutPageContentWrapper from '@/components/layout/LayoutPageContentWrapper';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import ContentStickyByScrollWrapper from '@/components/layout/ContentStickyByScrollWrapper';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
+import LayoutContentActionPaginationWrapper from '@/components/layout/LayoutContentActionPaginationWrapper';
 
 import UpcomingBillsTableParent from './_components/UpcomingBillsTableParent';
 import BillsTableActionDialog from '../bills/_components/BillsTableActionDialog';
@@ -17,12 +18,12 @@ export default function UpcomingBillsPage({ searchParams }: PageProps<'/upcoming
   const paginationPromise: Promise<PaginationDataModel | null> = getPaginationDataForPageIdCached(SORT_DATA_PAGE_IDS.upcoming);
 
   return (
-    <ColumnStack className="w-full gap-y-3">
+    <LayoutPageContentWrapper>
       <ContentStickyByScrollWrapper threshold={ 120 } hideAnimation="slideUp">
-        <ColumnStack className="w-full gap-y-3 py-3">
+        <LayoutContentActionPaginationWrapper>
           <UpcomingBillsTableActionBar />
           <UpcomingBillsTablePaginationWrapper searchParams={ searchParams } />
-        </ColumnStack>
+        </LayoutContentActionPaginationWrapper>
       </ContentStickyByScrollWrapper>
 
       <Suspense fallback={ <UpcomingBillsTableSkeleton /> }>
@@ -33,6 +34,6 @@ export default function UpcomingBillsPage({ searchParams }: PageProps<'/upcoming
           <EditBillForm />
         </BillsTableActionDialog>
       </Suspense>
-    </ColumnStack>
+    </LayoutPageContentWrapper>
   );
 }

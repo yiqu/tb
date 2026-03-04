@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { Suspense } from 'react';
 import { ClockAlert, CalendarArrowUp } from 'lucide-react';
 
+import Link from '@/shared/components/Link';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SidebarMenu, SidebarGroup, SidebarMenuItem, SidebarGroupLabel } from '@/components/ui/sidebar';

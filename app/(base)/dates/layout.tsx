@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 
-import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
 import LayoutParent from '@/components/layout/LayoutParent';
 import { AuroraText } from '@/components/magicui/aurora-text';
@@ -26,7 +25,6 @@ export default function DatesLayout({ children }: LayoutProps<'/dates'>) {
           </section>
         </LayoutWithGutter>
       </LayoutParent>
-      <Separator />
       <LayoutChildrenParent>
         <LayoutWithGutter size="wider">{ children }</LayoutWithGutter>
       </LayoutChildrenParent>

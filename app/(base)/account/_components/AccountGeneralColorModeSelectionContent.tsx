@@ -32,11 +32,15 @@ export default function AccountGeneralColorModeSelectionContent() {
       return;
     }
 
-    await document.startViewTransition(() => {
+    document.documentElement.classList.add('theme-transition');
+
+    const transition = document.startViewTransition(() => {
       flushSync(() => {
         applyTheme();
       });
-    }).ready;
+    });
+
+    await transition.ready;
 
     const { top, left, width, height } = clickedRef.current.getBoundingClientRect();
     const y = top + height / 2;
@@ -55,6 +59,10 @@ export default function AccountGeneralColorModeSelectionContent() {
         pseudoElement: '::view-transition-new(root)',
       },
     );
+
+    transition.finished.then(() => {
+      document.documentElement.classList.remove('theme-transition');
+    });
   };
 
   if (!isClient) {

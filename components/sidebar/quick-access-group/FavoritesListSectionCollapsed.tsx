@@ -1,5 +1,4 @@
-import Link from 'next/link';
-
+import Link from '@/shared/components/Link';
 import { Separator } from '@/components/ui/separator';
 
 export default function FavoritesListSectionCollapsed() {

@@ -4,10 +4,10 @@ import { appName } from '@/constants/constants';
 
 import type { Metadata } from 'next';
 
-import './tailwind-config.css';
 import './globals.css';
 import './scrollbar.css';
 import './animations.css';
+import './tailwind-config.css';
 import LayoutBody from './LayoutBody';
 
 export const metadata: Metadata = {
@@ -20,10 +20,8 @@ export const metadata: Metadata = {
 
 export default function BaseRootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <>
-      <Suspense>
-        <LayoutBody>{ children }</LayoutBody>
-      </Suspense>
-    </>
+    <Suspense>
+      <LayoutBody>{ children }</LayoutBody>
+    </Suspense>
   );
 }

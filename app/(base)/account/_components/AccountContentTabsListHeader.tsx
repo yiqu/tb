@@ -1,5 +1,4 @@
-import Link from 'next/link';
-
+import Link from '@/shared/components/Link';
 import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { AccountTabListItem } from './account.utils';

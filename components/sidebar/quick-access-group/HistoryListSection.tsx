@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { History } from 'lucide-react';
 import startCase from 'lodash/startCase';
 
+import Link from '@/shared/components/Link';
 import useIsClient from '@/hooks/useIsClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getParamsAsObject } from '@/lib/url.utils';

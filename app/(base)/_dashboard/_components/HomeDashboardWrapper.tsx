@@ -1,6 +1,9 @@
 import z from 'zod';
 
 import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
+import LayoutPageContentWrapper from '@/components/layout/LayoutPageContentWrapper';
+import ContentStickyByScrollWrapper from '@/components/layout/ContentStickyByScrollWrapper';
+import LayoutContentActionPaginationWrapper from '@/components/layout/LayoutContentActionPaginationWrapper';
 
 import BillsCurrentMonth from './BillsCurrentMonth';
 import DashboardDateTitle from './DashboardDateTitle';
@@ -13,11 +16,16 @@ type Props = {
 
 export default function HomeDashboardWrapper({ searchParamsPromise }: Props) {
   return (
-    <div className="flex w-full flex-col gap-y-6">
-      <DashboardDateTitle searchParamsPromise={ searchParamsPromise } />
+    <LayoutPageContentWrapper>
+      <ContentStickyByScrollWrapper threshold={ 120 } hideAnimation="slideUp">
+        <LayoutContentActionPaginationWrapper>
+          <DashboardDateTitle searchParamsPromise={ searchParamsPromise } />
+        </LayoutContentActionPaginationWrapper>
+      </ContentStickyByScrollWrapper>
+
       <SummarySectionCards searchParamsPromise={ searchParamsPromise } />
       <BillsCurrentMonth searchParamsPromise={ searchParamsPromise } />
       <YearDueChartParent />
-    </div>
+    </LayoutPageContentWrapper>
   );
 }

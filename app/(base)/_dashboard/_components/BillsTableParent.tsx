@@ -1,7 +1,7 @@
 import z from 'zod';
-import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
+import Link from '@/shared/components/Link';
 import { Button } from '@/components/ui/button';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';

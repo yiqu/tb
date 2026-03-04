@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { Search } from 'lucide-react';
 
+import Link from '@/shared/components/Link';
 import { SidebarMenu, SidebarGroup, SidebarMenuItem, SidebarGroupLabel } from '@/components/ui/sidebar';
 
 import SidebarMenuButtonParentWithActive from '../SidebarMenuButtonParentWithActive';

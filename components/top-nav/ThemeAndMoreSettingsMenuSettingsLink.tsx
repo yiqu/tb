@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { Settings } from 'lucide-react';
+
+import Link from '@/shared/components/Link';
 
 import { DropdownMenuItem } from '../ui/dropdown-menu';
 

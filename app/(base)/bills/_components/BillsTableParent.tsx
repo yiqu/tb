@@ -34,7 +34,7 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
   }
 
   return (
-    <DisplayCard className="w-full pt-0">
+    <DisplayCard className="w-full overflow-hidden pt-0">
       <CardContent className="overflow-x-auto border-b px-0">
         <BillsTableParentContent billDues={ billDues } sortData={ sortData } pageId={ SORT_DATA_PAGE_IDS.search } />
       </CardContent>

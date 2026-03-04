@@ -1,7 +1,5 @@
 'use client';
-
-import Link from 'next/link';
-
+import Link from '@/shared/components/Link';
 import useIsClient from '@/hooks/useIsClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import Typography from '@/components/typography/Typography';

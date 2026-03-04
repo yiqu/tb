@@ -1,10 +1,9 @@
 import z from 'zod';
 
-import { CardContent } from '@/components/ui/card';
-import DisplayCard from '@/shared/components/DisplayCard';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import NoResultsCard from '@/components/status-cards/NoResultsCard';
+import TableDisplayCard from '@/shared/components/TableDisplayCard';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { subscriptionSearchParamsSchema } from '@/validators/subscriptions/subscriptions.schema';
@@ -37,10 +36,8 @@ export default async function SubscriptionsTableParent({ searchParamsPromise, pa
   }
 
   return (
-    <DisplayCard className="w-full py-0 shadow-none">
-      <CardContent className="overflow-x-auto p-2">
-        <SubscriptionsTableParentWrapper subscriptions={ subscriptions } />
-      </CardContent>
-    </DisplayCard>
+    <TableDisplayCard>
+      <SubscriptionsTableParentWrapper subscriptions={ subscriptions } />
+    </TableDisplayCard>
   );
 }

@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { Suspense } from 'react';
 import { Info, Brush, Shield, Settings, UserRound, ScrollText, Presentation } from 'lucide-react';
 
+import Link from '@/shared/components/Link';
 import { DropdownMenuItem, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 import FooterAvatarLogo from './FooterAvatarLogo';

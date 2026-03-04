@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/shared/components/Link';
 
 export default function NotFound() {
   return (

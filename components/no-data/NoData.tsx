@@ -1,5 +1,4 @@
-import Link from 'next/link';
-
+import Link from '@/shared/components/Link';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 
 import Typography from '../typography/Typography';

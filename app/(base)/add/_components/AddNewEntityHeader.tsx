@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import startCase from 'lodash/startCase';
 import { EllipsisVerticalIcon } from 'lucide-react';
 
+import Link from '@/shared/components/Link';
 import { Button } from '@/components/ui/button';
 import BillLogo from '@/components/logos/BillLogo';
 import Typography from '@/components/typography/Typography';

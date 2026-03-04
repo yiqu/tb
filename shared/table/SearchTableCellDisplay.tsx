@@ -1,10 +1,10 @@
 /* eslint-disable prefer-destructuring */
 
-import Link from 'next/link';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import startCase from 'lodash/startCase';
 
+import Link from '@/shared/components/Link';
 import { TableCell } from '@/components/ui/table';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';

@@ -1,5 +1,4 @@
-import Link from 'next/link';
-
+import Link from '@/shared/components/Link';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import { BillDueWithSubscriptionByYear } from '@/models/bills/bills.model';
@@ -25,8 +24,8 @@ export default async function NextYearContentTextSection({ selectedMonthYear }: 
       <Typography className="">
         <Link href={ `/bills?year=${nextYearData.yearParams}` } prefetch>
           Next year ({ nextYearData.yearParams }):
-        </Link>
-        { ' ' }there will be <span className="font-semibold tabular-nums">{ nextYearData.totalBillsCount }</span> bill
+        </Link>{ ' ' }
+        there will be <span className="font-semibold tabular-nums">{ nextYearData.totalBillsCount }</span> bill
         { isBillsCountSingle ? '' : 's' } out of <span className="font-semibold tabular-nums">{ nextYearData.totalSubscriptionsCount }</span>{ ' ' }
         subscription
         { isSubscriptionsCountSingle ? '' : 's' }.

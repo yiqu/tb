@@ -1,7 +1,27 @@
 import { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
+import { getSettingsApplicationCompactMode } from '@/server/settings/app-settings';
 
-export default function LayoutChildrenParent({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={ cn('my-6', className) }>{ children }</div>;
+import { Separator } from '../ui/separator';
+
+export default async function LayoutChildrenParent({ children, className }: { children: ReactNode; className?: string }) {
+  const compactMode = await getSettingsApplicationCompactMode();
+  return (
+    <>
+      { compactMode ? null : <Separator /> }
+      <div
+        className={ cn(
+          'my-6',
+          {
+            'mt-0': compactMode,
+          },
+          className,
+        ) }
+        id="layout-children-parent"
+      >
+        { children }
+      </div>
+    </>
+  );
 }

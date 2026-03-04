@@ -1,8 +1,9 @@
 import { ReactNode } from 'react';
-import Link, { LinkProps } from 'next/link';
+import { LinkProps } from 'next/link';
 import { VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
+import Link from '@/shared/components/Link';
 import CenterUnderline from '@/fancy/components/text/underline-center';
 import Typography, { typographyVariants } from '@/components/typography/Typography';
 
