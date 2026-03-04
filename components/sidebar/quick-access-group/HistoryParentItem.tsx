@@ -1,11 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useOptimistic, useTransition } from 'react';
 import { History, ChevronRight } from 'lucide-react';
 import { use, useRef, useState, useEffect } from 'react';
 
+import Link from '@/shared/components/Link';
 import { Skeleton } from '@/components/ui/skeleton';
 import useSideBarState from '@/hooks/useSideBarState';
 import { Separator } from '@/components/ui/separator';

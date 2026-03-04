@@ -1,11 +1,11 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
 
-import Link from 'next/link';
 import { useRef, useState, useEffect } from 'react';
 import { useOptimistic, useTransition } from 'react';
 import { Plus, Calendar, ReceiptText, ChevronRight } from 'lucide-react';
 
+import Link from '@/shared/components/Link';
 import { Skeleton } from '@/components/ui/skeleton';
 import useSideBarState from '@/hooks/useSideBarState';
 import { Separator } from '@/components/ui/separator';

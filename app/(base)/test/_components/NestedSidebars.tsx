@@ -1,15 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { File, Folder, FolderOpen, ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import Link from '@/shared/components/Link';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   SidebarMenu,
   SidebarMenuSub,
@@ -40,12 +36,7 @@ function NestedSidebarItem({ item, level = 0 }: NestedItemProps) {
                   <FolderOpen className="stroke-primary" />
                 : <Folder className="stroke-primary" /> }
                 <span>{ item.label }</span>
-                <ChevronRight
-                  className={ cn(
-                    'ml-auto stroke-primary transition-transform duration-200',
-                    isOpen && 'rotate-90',
-                  ) }
-                />
+                <ChevronRight className={ cn('ml-auto stroke-primary transition-transform duration-200', isOpen && 'rotate-90') } />
               </SidebarMenuButton>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -83,12 +74,7 @@ function NestedSidebarItem({ item, level = 0 }: NestedItemProps) {
                 <FolderOpen className="stroke-primary" />
               : <Folder className="stroke-primary" /> }
               <span>{ item.label }</span>
-              <ChevronRight
-                className={ cn(
-                  'ml-auto stroke-primary transition-transform duration-200',
-                  isOpen && 'rotate-90',
-                ) }
-              />
+              <ChevronRight className={ cn('ml-auto stroke-primary transition-transform duration-200', isOpen && 'rotate-90') } />
             </SidebarMenuSubButton>
           </CollapsibleTrigger>
           <CollapsibleContent>
@@ -125,7 +111,6 @@ export default function NestedSidebars() {
   );
 }
 
-
 type NestedItem = {
   id: string;
   label: string;
@@ -136,242 +121,242 @@ type NestedItem = {
 
 const mockJsonDataWithNestedLevelDatas: NestedItem[] = [
   {
-    id: "1",
-    label: "Dashboard",
-    icon: "dashboard",
-    href: "/dashboard",
+    id: '1',
+    label: 'Dashboard',
+    icon: 'dashboard',
+    href: '/dashboard',
   },
   {
-    id: "2",
-    label: "Products",
-    icon: "inventory",
+    id: '2',
+    label: 'Products',
+    icon: 'inventory',
     children: [
       {
-        id: "2-1",
-        label: "All Products",
-        href: "/products",
+        id: '2-1',
+        label: 'All Products',
+        href: '/products',
       },
       {
-        id: "2-2",
-        label: "Categories",
+        id: '2-2',
+        label: 'Categories',
         children: [
           {
-            id: "2-2-1",
-            label: "Electronics",
+            id: '2-2-1',
+            label: 'Electronics',
             children: [
               {
-                id: "2-2-1-1",
-                label: "Phones",
-                href: "/products/categories/electronics/phones",
+                id: '2-2-1-1',
+                label: 'Phones',
+                href: '/products/categories/electronics/phones',
               },
               {
-                id: "2-2-1-2",
-                label: "Laptops",
-                href: "/products/categories/electronics/laptops",
+                id: '2-2-1-2',
+                label: 'Laptops',
+                href: '/products/categories/electronics/laptops',
               },
               {
-                id: "2-2-1-3",
-                label: "Tablets",
-                href: "/products/categories/electronics/tablets",
+                id: '2-2-1-3',
+                label: 'Tablets',
+                href: '/products/categories/electronics/tablets',
               },
             ],
           },
           {
-            id: "2-2-2",
-            label: "Clothing",
+            id: '2-2-2',
+            label: 'Clothing',
             children: [
               {
-                id: "2-2-2-1",
-                label: "Men",
-                href: "/products/categories/clothing/men",
+                id: '2-2-2-1',
+                label: 'Men',
+                href: '/products/categories/clothing/men',
               },
               {
-                id: "2-2-2-2",
-                label: "Women",
-                href: "/products/categories/clothing/women",
+                id: '2-2-2-2',
+                label: 'Women',
+                href: '/products/categories/clothing/women',
               },
             ],
           },
           {
-            id: "2-2-3",
-            label: "Home & Garden",
-            href: "/products/categories/home-garden",
+            id: '2-2-3',
+            label: 'Home & Garden',
+            href: '/products/categories/home-garden',
           },
         ],
       },
       {
-        id: "2-3",
-        label: "Inventory",
-        href: "/products/inventory",
+        id: '2-3',
+        label: 'Inventory',
+        href: '/products/inventory',
       },
     ],
   },
   {
-    id: "3",
-    label: "Orders",
-    icon: "shopping_cart",
+    id: '3',
+    label: 'Orders',
+    icon: 'shopping_cart',
     children: [
       {
-        id: "3-1",
-        label: "All Orders",
-        href: "/orders",
+        id: '3-1',
+        label: 'All Orders',
+        href: '/orders',
       },
       {
-        id: "3-2",
-        label: "Order Status",
+        id: '3-2',
+        label: 'Order Status',
         children: [
           {
-            id: "3-2-1",
-            label: "Pending",
-            href: "/orders/status/pending",
+            id: '3-2-1',
+            label: 'Pending',
+            href: '/orders/status/pending',
           },
           {
-            id: "3-2-2",
-            label: "Processing",
+            id: '3-2-2',
+            label: 'Processing',
             children: [
               {
-                id: "3-2-2-1",
-                label: "Payment Verified",
-                href: "/orders/status/processing/payment-verified",
+                id: '3-2-2-1',
+                label: 'Payment Verified',
+                href: '/orders/status/processing/payment-verified',
               },
               {
-                id: "3-2-2-2",
-                label: "Packing",
-                href: "/orders/status/processing/packing",
+                id: '3-2-2-2',
+                label: 'Packing',
+                href: '/orders/status/processing/packing',
               },
               {
-                id: "3-2-2-3",
-                label: "Ready to Ship",
-                href: "/orders/status/processing/ready-to-ship",
+                id: '3-2-2-3',
+                label: 'Ready to Ship',
+                href: '/orders/status/processing/ready-to-ship',
               },
             ],
           },
           {
-            id: "3-2-3",
-            label: "Shipped",
-            href: "/orders/status/shipped",
+            id: '3-2-3',
+            label: 'Shipped',
+            href: '/orders/status/shipped',
           },
           {
-            id: "3-2-4",
-            label: "Delivered",
-            href: "/orders/status/delivered",
+            id: '3-2-4',
+            label: 'Delivered',
+            href: '/orders/status/delivered',
           },
         ],
       },
       {
-        id: "3-3",
-        label: "Returns",
+        id: '3-3',
+        label: 'Returns',
         children: [
           {
-            id: "3-3-1",
-            label: "Return Requests",
-            href: "/orders/returns/requests",
+            id: '3-3-1',
+            label: 'Return Requests',
+            href: '/orders/returns/requests',
           },
           {
-            id: "3-3-2",
-            label: "Refunds",
+            id: '3-3-2',
+            label: 'Refunds',
             children: [
               {
-                id: "3-3-2-1",
-                label: "Pending Refunds",
-                href: "/orders/returns/refunds/pending",
+                id: '3-3-2-1',
+                label: 'Pending Refunds',
+                href: '/orders/returns/refunds/pending',
               },
               {
-                id: "3-3-2-2",
-                label: "Completed Refunds",
-                href: "/orders/returns/refunds/completed",
+                id: '3-3-2-2',
+                label: 'Completed Refunds',
+                href: '/orders/returns/refunds/completed',
               },
             ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "4",
-    label: "Users",
-    icon: "people",
-    children: [
-      {
-        id: "4-1",
-        label: "All Users",
-        href: "/users",
-      },
-      {
-        id: "4-2",
-        label: "Roles & Permissions",
-        children: [
-          {
-            id: "4-2-1",
-            label: "Admin",
-            children: [
-              {
-                id: "4-2-1-1",
-                label: "Super Admin",
-                href: "/users/roles/admin/super",
-              },
-              {
-                id: "4-2-1-2",
-                label: "Moderator",
-                href: "/users/roles/admin/moderator",
-              },
-            ],
-          },
-          {
-            id: "4-2-2",
-            label: "Customer",
-            href: "/users/roles/customer",
-          },
-          {
-            id: "4-2-3",
-            label: "Vendor",
-            href: "/users/roles/vendor",
           },
         ],
       },
     ],
   },
   {
-    id: "5",
-    label: "Settings",
-    icon: "settings",
+    id: '4',
+    label: 'Users',
+    icon: 'people',
     children: [
       {
-        id: "5-1",
-        label: "General",
-        href: "/settings/general",
+        id: '4-1',
+        label: 'All Users',
+        href: '/users',
       },
       {
-        id: "5-2",
-        label: "Security",
+        id: '4-2',
+        label: 'Roles & Permissions',
         children: [
           {
-            id: "5-2-1",
-            label: "Authentication",
+            id: '4-2-1',
+            label: 'Admin',
             children: [
               {
-                id: "5-2-1-1",
-                label: "Two-Factor Auth",
-                href: "/settings/security/auth/2fa",
+                id: '4-2-1-1',
+                label: 'Super Admin',
+                href: '/users/roles/admin/super',
               },
               {
-                id: "5-2-1-2",
-                label: "SSO Settings",
-                href: "/settings/security/auth/sso",
+                id: '4-2-1-2',
+                label: 'Moderator',
+                href: '/users/roles/admin/moderator',
               },
             ],
           },
           {
-            id: "5-2-2",
-            label: "Privacy",
-            href: "/settings/security/privacy",
+            id: '4-2-2',
+            label: 'Customer',
+            href: '/users/roles/customer',
+          },
+          {
+            id: '4-2-3',
+            label: 'Vendor',
+            href: '/users/roles/vendor',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: '5',
+    label: 'Settings',
+    icon: 'settings',
+    children: [
+      {
+        id: '5-1',
+        label: 'General',
+        href: '/settings/general',
+      },
+      {
+        id: '5-2',
+        label: 'Security',
+        children: [
+          {
+            id: '5-2-1',
+            label: 'Authentication',
+            children: [
+              {
+                id: '5-2-1-1',
+                label: 'Two-Factor Auth',
+                href: '/settings/security/auth/2fa',
+              },
+              {
+                id: '5-2-1-2',
+                label: 'SSO Settings',
+                href: '/settings/security/auth/sso',
+              },
+            ],
+          },
+          {
+            id: '5-2-2',
+            label: 'Privacy',
+            href: '/settings/security/privacy',
           },
         ],
       },
       {
-        id: "5-3",
-        label: "Notifications",
-        href: "/settings/notifications",
+        id: '5-3',
+        label: 'Notifications',
+        href: '/settings/notifications',
       },
     ],
   },

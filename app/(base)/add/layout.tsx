@@ -1,4 +1,3 @@
-import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
 import LayoutParent from '@/components/layout/LayoutParent';
 import { AuroraText } from '@/components/magicui/aurora-text';
@@ -19,7 +18,6 @@ export default function AddNewEntityLayout({ children }: LayoutProps<'/add'>) {
           </section>
         </LayoutAutoGutter>
       </LayoutParent>
-      <Separator />
       <LayoutChildrenParent>
         <LayoutAutoGutter>{ children }</LayoutAutoGutter>
       </LayoutChildrenParent>

@@ -1,5 +1,6 @@
-import Link from 'next/link';
 import { Presentation } from 'lucide-react';
+
+import Link from '@/shared/components/Link';
 
 import { Button } from '../ui/button';
 

@@ -5,6 +5,7 @@ import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import ContentStickyByScrollWrapper from '@/components/layout/ContentStickyByScrollWrapper';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
+import LayoutContentActionPaginationWrapper from '@/components/layout/LayoutContentActionPaginationWrapper';
 
 import SubscriptionsTableParent from './_components/SubscriptionsTableParent';
 import SubscriptionsTableSkeleton from './_components/SubscriptionsTableSkeleton';
@@ -25,10 +26,10 @@ export default function SubscriptionsPage({ searchParams }: PageProps<'/subscrip
   return (
     <ColumnStack className="w-full gap-y-3">
       <ContentStickyByScrollWrapper threshold={ 120 } hideAnimation="slideUp">
-        <ColumnStack className="w-full gap-y-3 py-3">
+        <LayoutContentActionPaginationWrapper>
           <SubscriptionsTableActionBar />
           <SubscriptionsTablePaginationWrapper searchParams={ searchParams } />
-        </ColumnStack>
+        </LayoutContentActionPaginationWrapper>
       </ContentStickyByScrollWrapper>
 
       <Suspense fallback={ <SubscriptionsTableSkeleton /> }>

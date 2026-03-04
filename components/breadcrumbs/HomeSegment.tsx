@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { House } from 'lucide-react';
 
+import Link from '@/shared/components/Link';
 import RowStack from '@/shared/components/RowStack';
 
 import Typography from '../typography/Typography';

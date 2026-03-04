@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         <TopNavWrapper>
           <TopNav />
         </TopNavWrapper>
-        <main className="flex w-full flex-1 flex-col gap-4 px-4 py-0" id="main-content">
+        <main className="flex w-full flex-1 flex-col gap-4 px-0 py-0" id="main-content">
           { children }
         </main>
       </SidebarInset>

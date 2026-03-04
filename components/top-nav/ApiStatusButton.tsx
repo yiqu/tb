@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/shared/components/Link';
 
 import ApiStatusButtonContent from './ApiStatusButtonContent';
 import ApiStatusButtonWrapper from './ApiStatusButtonWrapper';

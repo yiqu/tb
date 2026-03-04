@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { Params } from 'next/dist/server/request/params';
 
+import Link from '@/shared/components/Link';
 import RowStack from '@/shared/components/RowStack';
 
 import { BreadcrumbSegmentIcon, BreadcrumbSegmentTitle } from './BreadCrumbsUtils';

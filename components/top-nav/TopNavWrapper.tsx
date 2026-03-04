@@ -5,9 +5,11 @@ import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import useHasScrolled from '@/hooks/has-scrolled';
 import { useClientOnly } from '@/hooks/useClientOnly';
+import { useAppSetting } from '@/providers/AppSettingProvider';
 
 export default function TopNavWrapper({ children }: { children: ReactNode }) {
   const { hasScrolled } = useHasScrolled();
+  const { isCompactMode } = useAppSetting();
   const isClient = useClientOnly();
 
   if (!isClient) {
@@ -35,7 +37,7 @@ export default function TopNavWrapper({ children }: { children: ReactNode }) {
           group-has-data-[collapsible=icon]/sidebar-wrapper:h-12
         `,
         {
-          'border-border': hasScrolled,
+          'border-border': isCompactMode || hasScrolled,
         },
       ) }
     >
@@ -43,21 +45,3 @@ export default function TopNavWrapper({ children }: { children: ReactNode }) {
     </header>
   );
 }
-
-// return (
-//   <header
-//     className={ cn(
-//       `
-//         sticky top-0 z-21 flex h-16 shrink-0 flex-row items-center justify-between gap-2 bg-background/95 backdrop-blur
-//         transition-[width,height] ease-linear
-//         group-has-data-[collapsible=icon]/sidebar-wrapper:h-12
-//         supports-[backdrop-filter]:bg-background/60
-//       `,
-//       {
-//         'kq-light-shadow': hasScrolled,
-//       },
-//     ) }
-//   >
-//     { children }
-//   </header>
-// );

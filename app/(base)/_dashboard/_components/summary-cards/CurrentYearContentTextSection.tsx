@@ -1,5 +1,4 @@
-import Link from 'next/link';
-
+import Link from '@/shared/components/Link';
 import Typography from '@/components/typography/Typography';
 import { BillDueWithSubscriptionByYear } from '@/models/bills/bills.model';
 import SubscriptionLogoAvatar from '@/components/logos/SubscriptionLogoAvatar';

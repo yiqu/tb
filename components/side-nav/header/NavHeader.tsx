@@ -1,5 +1,4 @@
-import Link from 'next/link';
-
+import Link from '@/shared/components/Link';
 import FestiveLeftNavHeaderLogo from '@/shared/components/FestiveLeftNavHeaderLogo';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 

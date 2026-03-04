@@ -54,9 +54,9 @@
 
   --color-link-internal: oklch(0.45 0.18 260);
 
-  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   --font-fun: var(--font-cherry-bomb-one), cursive;
 }
 
@@ -338,7 +338,7 @@
     @apply text-base leading-6 font-semibold tracking-normal;
   }
   .p {
-    @apply text-[0.875rem] leading-5 tracking-normal [&:not(:first-child)]:mt-6;
+    @apply text-[0.875rem] leading-5 tracking-normal not-first:mt-6;
   }
   .body0 {
     @apply text-[0.75rem] leading-4 tracking-normal;

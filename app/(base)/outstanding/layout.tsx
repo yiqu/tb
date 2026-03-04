@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 
 import { getLayoutMetadata } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
 import PageTitle from '@/components/headings/PageTitle';
 import LayoutParent from '@/components/layout/LayoutParent';
 import { AuroraText } from '@/components/magicui/aurora-text';
@@ -25,7 +24,6 @@ export default function OutstandingLayout({ children }: LayoutProps<'/outstandin
           </section>
         </LayoutAutoGutter>
       </LayoutParent>
-      <Separator />
       <LayoutChildrenParent>
         <LayoutAutoGutter>{ children }</LayoutAutoGutter>
       </LayoutChildrenParent>

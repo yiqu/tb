@@ -1,12 +1,11 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 'use client';
-
-import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
 import { useOptimistic, useTransition } from 'react';
 
+import Link from '@/shared/components/Link';
 import useSideBarState from '@/hooks/useSideBarState';
 import { LinkItem, NestNavListItem } from '@/models/NavItem.models';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -85,7 +84,7 @@ export default function NavExpandableItem({ item, isCollapsed }: NavExpandableIt
           <PopoverContent
             side="right"
             align="start"
-            className="max-h-[55rem] w-72 overflow-auto p-2"
+            className="max-h-220 w-72 overflow-auto p-2"
             onMouseEnter={ handleMouseEnter }
             onMouseLeave={ handleMouseLeave }
           >

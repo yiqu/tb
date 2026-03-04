@@ -25,11 +25,15 @@ export default function ThemeToggleAnimatedButton({ ...btnProps }: React.Compone
   const changeTheme = async () => {
     if (!buttonRef.current) return;
 
-    await document.startViewTransition(() => {
+    document.documentElement.classList.add('theme-transition');
+
+    const transition = document.startViewTransition(() => {
       flushSync(() => {
         handleOnThemeUpdate();
       });
-    }).ready;
+    });
+
+    await transition.ready;
 
     const { top, left, width, height } = buttonRef.current.getBoundingClientRect();
     const y = top + height / 2;
@@ -49,6 +53,10 @@ export default function ThemeToggleAnimatedButton({ ...btnProps }: React.Compone
         pseudoElement: '::view-transition-new(root)',
       },
     );
+
+    transition.finished.then(() => {
+      document.documentElement.classList.remove('theme-transition');
+    });
   };
 
   const handleOnThemeUpdate = () => {
