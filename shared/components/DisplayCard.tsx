@@ -6,10 +6,6 @@ interface DisplayCardProps {
   className?: string;
 }
 
-export default function DisplayCard({ children, className, ...props }: DisplayCardProps & React.ComponentProps<'div'>) {
-  return (
-    <Card className={ cn('min-w-0 rounded-md', className) } { ...props }>
-      { children }
-    </Card>
-  );
+export default function DisplayCard({ children, className }: DisplayCardProps) {
+  return <Card className={ cn('h-full w-full min-w-0 rounded-md', className) }>{ children }</Card>;
 }

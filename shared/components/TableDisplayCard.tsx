@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
 
 import { CardContent } from '@/components/ui/card';
-import DisplayCard from '@/app/(base)/account/@content/personal-info/_components/DisplayCard';
+
+import DisplayCard from './DisplayCard';
 
 export default function TableDisplayCard({ children }: { children: ReactNode }) {
   return (
