@@ -72,30 +72,6 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
           sortData={ billDues.sortData }
           pageId={ SORT_DATA_PAGE_IDS.dashboard_current_month }
         />
-        { /* <Table className="table-fixed" id="bills-table">
-          <TableHeader className={ `bg-muted` }>
-            <TableRow className="hover:bg-transparent">
-              { columnsSorted.map((column: string, index: number, array: string[]) => {
-                return (
-                  <SearchTableHeaderDisplay
-                    key={ column }
-                    columnId={ column }
-                    index={ index }
-                    length={ array.length }
-                    sortData={ billDues.sortData }
-                    pageId={ SORT_DATA_PAGE_IDS.dashboard_current_month }
-                    sortable={ unsortableBillsColumns[column] ?? true }
-                  />
-                );
-              }) }
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            { billDues.billDues.map((billDue: BillDueWithSubscription) => (
-              <BillsTableParentRow key={ billDue.id } billDue={ billDue } columns={ columnsSorted } />
-            )) }
-          </TableBody>
-        </Table> */ }
       </CardContent>
       <CardFooter className="flex w-full flex-row items-center justify-between">
         <div>

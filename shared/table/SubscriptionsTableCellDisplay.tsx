@@ -6,7 +6,6 @@ import startCase from 'lodash/startCase';
 import { ExternalLinkIcon } from 'lucide-react';
 
 import Link from '@/shared/components/Link';
-import { TableCell } from '@/components/ui/table';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
@@ -20,6 +19,7 @@ import SubscriptionDetailsDialogOpenButton from '@/app/(base)/subscriptions/[sub
 
 import RowStack from '../components/RowStack';
 import DateDialogContent from '../dialogs/DateDialog';
+import FormattedTableCell from './FormattedTableCell';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import { getFrequencyImageUrl, getSubscriptionLogoSize } from './table.utils';
 import SubscriptionsTableToggleSignedButton from './SubscriptionsTableToggleSignedButton';
@@ -28,7 +28,17 @@ import SubscriptionsTableCellDisplayCurrentYearCount from './SubscriptionsTableC
 
 const useFormatter = getUSDFormatter(2, 2);
 
-export default function SubscriptionsTableCellDisplay({ colId, subscription }: { colId: string; subscription: SubscriptionWithBillDues }) {
+export default function SubscriptionsTableCellDisplay({
+  colId,
+  subscription,
+  showVerticalBorder,
+  isSticky,
+}: {
+  colId: string;
+  subscription: SubscriptionWithBillDues;
+  showVerticalBorder?: boolean;
+  isSticky?: boolean;
+}) {
   if (colId === 'cost') {
     let { cost } = subscription;
 
@@ -37,48 +47,48 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     }
 
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <div className={ `flex flex-row items-center justify-start gap-x-1` }>
           <Typography className="truncate tabular-nums">{ useFormatter.format(cost) }</Typography>
         </div>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'id') {
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <Typography className="truncate" title={ subscription.id }>
           { subscription.id }
         </Typography>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'description') {
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <Typography className="text-wrap wrap-break-word" variant={ subscription.description ? 'labelvalue1' : 'nodata1' }>
           { subscription.description ? subscription.description : 'N/A' }
         </Typography>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'url') {
     if (!subscription.url) {
       return (
-        <TableCell>
+        <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
           <Typography className="truncate" variant="nodata1">
             N/A
           </Typography>
-        </TableCell>
+        </FormattedTableCell>
       );
     }
 
     // wrap text to next line if it is too long
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <Link href={ (subscription.url ?? '') as any } target="_blank" rel="noopener noreferrer">
           <div className="flex flex-row items-start justify-start gap-x-1 text-wrap">
             <Typography className="break-all" title={ subscription.url ?? 'N/A' }>
@@ -87,14 +97,14 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
             <ExternalLinkIcon className="mt-0.5 h-4 w-4 shrink-0" />
           </div>
         </Link>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'billCycleDuration') {
     const freq: string = subscription.billCycleDuration;
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <div className={ `
           flex flex-row items-center justify-start gap-x-1
           sec:gap-x-1
@@ -110,13 +120,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
 
           <Typography className="truncate">{ startCase(freq) }</Typography>
         </div>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'dateAdded') {
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <Popover>
           <PopoverTrigger asChild>
             <div
@@ -142,25 +152,25 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
             </Suspense>
           </PopoverContent>
         </Popover>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'approved') {
     const isApproved = !!subscription.approved;
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <SubscriptionsTableToggleApprovedButton isApproved={ isApproved } subscriptionId={ subscription.id } />
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'signed') {
     const isSigned = !!subscription.signed;
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <SubscriptionsTableToggleSignedButton isSigned={ isSigned } subscriptionId={ subscription.id } />
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
@@ -169,7 +179,7 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
     const isFavorited: boolean = (subscription.favorites ?? []).length > 0;
 
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <RowStack className="h-full items-center justify-between gap-x-2">
           <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
             <RowStack className="items-center justify-start gap-x-2 text-wrap">
@@ -184,21 +194,21 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
           </Link>
           <SubscriptionDetailsDialogOpenButton subscriptionId={ subscription.id } />
         </RowStack>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'billDuesCurrentYearCount') {
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <SubscriptionsTableCellDisplayCurrentYearCount subscription={ subscription } />
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'billDuesCurrentYearTotalCost') {
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <Typography
           className="truncate"
           variant={ subscription.billDuesCurrentYearTotalCost ? 'labelvalue1' : 'nodata1' }
@@ -206,13 +216,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
         >
           { useFormatter.format(subscription.billDuesCurrentYearTotalCost ?? 0) }
         </Typography>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'totalBillsAllTimeCount') {
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <Typography
           className="truncate"
           variant={ subscription.totalBillsAllTimeCount ? 'labelvalue1' : 'nodata1' }
@@ -220,13 +230,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
         >
           { subscription.totalBillsAllTimeCount === undefined ? 'N/A' : subscription.totalBillsAllTimeCount.toLocaleString() }
         </Typography>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'totalBillsAllTimeTotalCost') {
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <Typography
           className="truncate"
           variant={ subscription.totalBillsAllTimeTotalCost ? 'labelvalue1' : 'nodata1' }
@@ -234,13 +244,13 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
         >
           { subscription.totalBillsAllTimeTotalCost === undefined ? 'N/A' : useFormatter.format(subscription.totalBillsAllTimeTotalCost) }
         </Typography>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'updatedAt') {
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <Popover>
           <PopoverTrigger asChild>
             <div
@@ -271,25 +281,25 @@ export default function SubscriptionsTableCellDisplay({ colId, subscription }: {
             </Suspense>
           </PopoverContent>
         </Popover>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'tableActions') {
     return (
-      <TableCell className="">
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <div className="flex w-full flex-row items-center justify-start gap-x-1">
           <SubscriptionsTableAddDueBillButton subscription={ subscription } />
           <SubscriptionsTableEditSubscriptionButton subscription={ subscription } />
           <SubscriptionsTableDeleteSubscriptionButton subscription={ subscription } />
         </div>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   return (
-    <TableCell>
+    <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
       <span>N/A</span>
-    </TableCell>
+    </FormattedTableCell>
   );
 }

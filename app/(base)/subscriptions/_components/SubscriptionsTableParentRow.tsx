@@ -15,8 +15,14 @@ export default function SubscriptionsTableParentRow({ subscription }: { subscrip
   );
   return (
     <SubscriptionsTableParentRowWrapper key={ subscription.id } subscription={ subscription }>
-      { columnsSorted.map((column: string) => (
-        <SubscriptionsTableCellDisplay key={ column } colId={ column } subscription={ subscription } />
+      { columnsSorted.map((column: string, index: number) => (
+        <SubscriptionsTableCellDisplay
+          key={ column }
+          colId={ column }
+          subscription={ subscription }
+          showVerticalBorder={ index !== columnsSorted.length - 1 }
+          isSticky={ index === 0 }
+        />
       )) }
     </SubscriptionsTableParentRowWrapper>
   );

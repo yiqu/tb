@@ -5,9 +5,10 @@ import { Draggable, Droppable, DragDropContext, type DropResult } from '@hello-p
 
 import useIsClient from '@/hooks/useIsClient';
 import BillsTableLoading from '@/shared/loading/BillsTableLoading';
-import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
+import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
+import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
-import { SortDataModel, SortDataPageId } from '@/models/sort-data/SortData.model';
+import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 import {
   BILLS_TABLE_COLUMNS,
@@ -63,6 +64,10 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
     [columnsSorted, reorderBillsColumns],
   );
 
+  const handleOnSortUpdate = (sortDataToUpdate: SortDataUpsertable) => {
+    upsertSortData2(sortDataToUpdate);
+  };
+
   if (!isClient) {
     return <BillsTableLoading rowCount={ loadingMaskRowCount } />;
   }
@@ -80,7 +85,7 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
                       <Draggable key={ column } draggableId={ column } index={ index }>
                         { (draggableProvided, snapshot) => {
                           return (
-                            <SearchTableHeaderDisplay
+                            <FormattedTableHeader
                               ref={ draggableProvided.innerRef }
                               draggableProps={ draggableProvided.draggableProps }
                               dragHandleProps={ draggableProvided.dragHandleProps }
@@ -91,6 +96,7 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
                               sortData={ sortData }
                               pageId={ pageId }
                               sortable={ unsortableBillsColumns[column] ?? true }
+                              onSortUpdate={ handleOnSortUpdate }
                             />
                           );
                         } }
