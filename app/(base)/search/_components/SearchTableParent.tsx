@@ -5,8 +5,8 @@ import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { getAllBillsCached } from '@/server/bills/bills.server';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import SearchTableCell from '@/shared/table/SearchTableCellDisplay';
+import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
 import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
-import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
@@ -24,7 +24,7 @@ export default async function SearchTableParent() {
             <TableRow className="hover:bg-transparent">
               { columnsSorted.map((column: string, index: number, array: string[]) => {
                 return (
-                  <SearchTableHeaderDisplay
+                  <FormattedTableHeader
                     key={ column }
                     columnId={ column }
                     index={ index }

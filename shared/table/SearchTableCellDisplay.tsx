@@ -5,7 +5,6 @@ import { Suspense } from 'react';
 import startCase from 'lodash/startCase';
 
 import Link from '@/shared/components/Link';
-import { TableCell } from '@/components/ui/table';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
@@ -15,6 +14,7 @@ import EditBillDialogFavoriteBillToggleButton from '@/components/bills/EditBillD
 
 import RowStack from '../components/RowStack';
 import DateDialogContent from '../dialogs/DateDialog';
+import FormattedTableCell from './FormattedTableCell';
 import DateRelativeDisplay from './DateRelativeDisplay';
 import DateDialogContentBase from '../dialogs/DateDialogBase';
 import { TableCellHoverWrapper } from './TableCellHoverWrapper';
@@ -31,10 +31,14 @@ export default function BillsTableCell({
   colId,
   billDue,
   showHoverFilter,
+  isSticky,
+  showVerticalBorder,
 }: {
   colId: string;
   billDue: BillDueWithSubscription;
   showHoverFilter?: boolean;
+  isSticky?: boolean;
+  showVerticalBorder?: boolean;
 }) {
   if (colId === 'cost') {
     let { cost } = billDue;
@@ -46,7 +50,7 @@ export default function BillsTableCell({
     const isFavorited: boolean = (billDue.favorites ?? []).length > 0;
 
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <div className={ `
           flex flex-row items-center justify-between gap-x-1
           sec:gap-x-1
@@ -61,17 +65,17 @@ export default function BillsTableCell({
             : null }
           </div>
         </div>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'id') {
     return (
-      <TableCell>
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <Typography className="truncate" title={ billDue.id }>
           { billDue.id }
         </Typography>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
@@ -79,7 +83,7 @@ export default function BillsTableCell({
     const freq: string = billDue.subscription.billCycleDuration;
     return (
       <TableCellHoverWrapper payload={ freq } columnId={ colId } showHoverFilter={ showHoverFilter }>
-        <TableCell>
+        <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
           <div className={ `
             flex flex-row items-center justify-start gap-x-1
             sec:gap-x-1
@@ -94,14 +98,14 @@ export default function BillsTableCell({
             />
             <Typography className="truncate">{ startCase(freq) }</Typography>
           </div>
-        </TableCell>
+        </FormattedTableCell>
       </TableCellHoverWrapper>
     );
   }
 
   if (colId === 'dateAdded') {
     return (
-      <TableCell className="wrap-break-word whitespace-normal">
+      <FormattedTableCell isSticky={ isSticky } className="wrap-break-word whitespace-normal" showVerticalBorder={ showVerticalBorder }>
         <Popover>
           <PopoverTrigger asChild>
             <div
@@ -127,7 +131,7 @@ export default function BillsTableCell({
             </Suspense>
           </PopoverContent>
         </Popover>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
@@ -135,7 +139,7 @@ export default function BillsTableCell({
     const dueDate: string | undefined = billDue.dueDateInEst;
     const isCompleted = billDue.reimbursed && billDue.paid;
     return (
-      <TableCell className="wrap-break-word whitespace-normal">
+      <FormattedTableCell isSticky={ isSticky } className="wrap-break-word whitespace-normal" showVerticalBorder={ showVerticalBorder }>
         <Popover>
           <PopoverTrigger asChild>
             <div
@@ -157,7 +161,7 @@ export default function BillsTableCell({
             </Suspense>
           </PopoverContent>
         </Popover>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
@@ -165,9 +169,9 @@ export default function BillsTableCell({
     const isPaid = !!billDue.paid;
     return (
       <TableCellHoverWrapper payload={ 'paid-only' } columnId={ 'paymentStatus' } showHoverFilter={ showHoverFilter }>
-        <TableCell>
+        <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
           <BillsTableTogglePaidButton isPaid={ isPaid } billDueId={ billDue.id } subscriptionId={ billDue.subscriptionId } />
-        </TableCell>
+        </FormattedTableCell>
       </TableCellHoverWrapper>
     );
   }
@@ -176,9 +180,9 @@ export default function BillsTableCell({
     const isReimbursed = !!billDue.reimbursed;
     return (
       <TableCellHoverWrapper payload={ 'reimbursed-only' } columnId={ 'paymentStatus' } showHoverFilter={ showHoverFilter }>
-        <TableCell>
+        <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
           <BillsTableToggleReimbursedButton isReimbursed={ isReimbursed } billDueId={ billDue.id } subscriptionId={ billDue.subscriptionId } />
-        </TableCell>
+        </FormattedTableCell>
       </TableCellHoverWrapper>
     );
   }
@@ -187,21 +191,21 @@ export default function BillsTableCell({
     const subName = billDue.subscription.name;
     return (
       <TableCellHoverWrapper payload={ billDue.subscription.id } columnId={ 'subscriptions' } showHoverFilter={ showHoverFilter }>
-        <TableCell className="overflow-hidden whitespace-normal">
+        <FormattedTableCell isSticky={ isSticky } className="overflow-hidden whitespace-normal" showVerticalBorder={ showVerticalBorder }>
           <Link href={ `/subscriptions/${billDue.subscription.id}` as any } prefetch={ true }>
             <RowStack className="min-w-0 items-center justify-start gap-x-2">
               <SubscriptionLogo subscriptionName={ subName } height={ getSubscriptionLogoSize(subName) } />
               <Typography className="wrap-break-word">{ subName }</Typography>
             </RowStack>
           </Link>
-        </TableCell>
+        </FormattedTableCell>
       </TableCellHoverWrapper>
     );
   }
 
   if (colId === 'updatedAt') {
     return (
-      <TableCell className="wrap-break-word whitespace-normal">
+      <FormattedTableCell isSticky={ isSticky } className="wrap-break-word whitespace-normal" showVerticalBorder={ showVerticalBorder }>
         <Popover>
           <PopoverTrigger asChild>
             <div
@@ -232,24 +236,24 @@ export default function BillsTableCell({
             </Suspense>
           </PopoverContent>
         </Popover>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   if (colId === 'tableActions') {
     return (
-      <TableCell className="">
+      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
         <div className="flex w-full flex-row items-center justify-start gap-x-1">
           <BillsTableEditBillButton billDue={ billDue } />
           <BillsTableDeleteBillButton billDue={ billDue } />
         </div>
-      </TableCell>
+      </FormattedTableCell>
     );
   }
 
   return (
-    <TableCell>
+    <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
       <span>N/A</span>
-    </TableCell>
+    </FormattedTableCell>
   );
 }

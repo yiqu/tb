@@ -70,6 +70,7 @@ export const SORT_DATA_PAGE_IDS = {
   outstanding: 'outstanding',
   upcoming: 'upcoming',
   addNewBillDueRecentlyAdded: 'add-new-bill-due-recently-added',
+  subscriptionDetailsBillsBillsTable: 'subscription-details-bills-bills-table',
 } as const;
 
 // pagination

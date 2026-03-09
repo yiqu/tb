@@ -15,8 +15,15 @@ export default function BillsTableParentRow({ billDue }: { billDue: BillDueWithS
   );
   return (
     <BillsTableParentRowWrapper key={ billDue.id } billDue={ billDue }>
-      { columnsSorted.map((column: string) => (
-        <BillsTableCell key={ column } colId={ column } billDue={ billDue } showHoverFilter />
+      { columnsSorted.map((column: string, index: number) => (
+        <BillsTableCell
+          key={ column }
+          colId={ column }
+          billDue={ billDue }
+          showHoverFilter
+          isSticky={ index === 0 }
+          showVerticalBorder={ index !== columnsSorted.length - 1 }
+        />
       )) }
     </BillsTableParentRowWrapper>
   );

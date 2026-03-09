@@ -5,7 +5,9 @@ import { Draggable, Droppable, DragDropContext, type DropResult } from '@hello-p
 
 import useIsClient from '@/hooks/useIsClient';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
-import SearchTableHeaderDisplay from '@/shared/table/SearchTableHeaderDisplay';
+import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
+import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
+import { SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { SubscriptionWithBillDues, SubscriptionWithBillDuesAndSortData } from '@/models/subscriptions/subscriptions.model';
 import {
@@ -58,6 +60,10 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
     [columnsSorted, reorderSubscriptionsColumns],
   );
 
+  const handleOnSortUpdate = (sortDataToUpdate: SortDataUpsertable) => {
+    upsertSortData2(sortDataToUpdate);
+  };
+
   if (!isClient) {
     return <SubscriptionsTableParentLoading />;
   }
@@ -72,7 +78,7 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
                 { columnsSorted.map((column: string, index: number, array: string[]) => (
                   <Draggable key={ column } draggableId={ column } index={ index }>
                     { (draggableProvided, snapshot) => (
-                      <SearchTableHeaderDisplay
+                      <FormattedTableHeader
                         ref={ draggableProvided.innerRef }
                         draggableProps={ draggableProvided.draggableProps }
                         dragHandleProps={ draggableProvided.dragHandleProps }
@@ -83,6 +89,7 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
                         sortData={ subscriptions.sortData }
                         pageId={ SORT_DATA_PAGE_IDS.subscriptions }
                         sortable={ unsortableSubscriptionsColumns[column] ?? true }
+                        onSortUpdate={ handleOnSortUpdate }
                       />
                     ) }
                   </Draggable>
