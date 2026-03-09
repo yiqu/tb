@@ -1,5 +1,7 @@
 ## Subscription Manager
 
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/yiqu/tb?utm_source=oss&utm_medium=github&utm_campaign=yiqu%2Ftb&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+
 > ⚠️⚠️⚠️  **CRITICAL SETUP STEP**  ⚠️⚠️⚠️
 >
 > Before running locally, you MUST create a `.env` file in the project root. The app will not start or behave correctly without required environment variables.
