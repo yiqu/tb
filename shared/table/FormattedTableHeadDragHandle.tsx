@@ -9,7 +9,7 @@ type FormattedTableHeadDragHandleProps = {
 };
 
 export default function FormattedTableHeadDragHandle({ dragHandleProps }: FormattedTableHeadDragHandleProps) {
-  if (dragHandleProps === null) {
+  if (dragHandleProps == null) {
     return null;
   }
 

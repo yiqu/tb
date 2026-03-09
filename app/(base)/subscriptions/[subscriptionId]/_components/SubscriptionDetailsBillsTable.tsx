@@ -36,7 +36,7 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
                     index={ index }
                     length={ array.length }
                     sortData={ null }
-                    pageId={ SORT_DATA_PAGE_IDS.search }
+                    pageId={ SORT_DATA_PAGE_IDS.subscriptionDetailsBillsBillsTable }
                     onSortUpdate={ handleOnSortUpdate }
                   />
                 );

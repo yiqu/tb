@@ -77,7 +77,7 @@ export default function FormattedTableHeader({
   });
 
   const nextSortData: SortData = getNextSortDirection(optimisticSortData, columnId as SortField);
-  const isColumnSorted: boolean = optimisticSortData.sort === columnId;
+  const isColumnSorted: boolean = optimisticSortData.sort === columnId && optimisticSortData.direction !== '';
   const sortDirection: string | undefined = optimisticSortData.direction;
   const isLastColumn = index === length - 1;
   const columnSortTooltip: string = getSortInfoText(columnId, !!sortable, isColumnSorted, sortDirection as SortDirection, nextSortData);
