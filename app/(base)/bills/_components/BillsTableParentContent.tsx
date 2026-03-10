@@ -86,6 +86,7 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
                         { (draggableProvided, snapshot) => {
                           return (
                             <FormattedTableHeader
+                              tableId="bills"
                               ref={ draggableProvided.innerRef }
                               draggableProps={ draggableProvided.draggableProps }
                               dragHandleProps={ draggableProvided.dragHandleProps }
