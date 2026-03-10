@@ -37,6 +37,7 @@ export default function FormattedTableHeadMenu({ columnId, tableId }: FormattedT
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Column actions"
           className={ cn(
             `
               ml-auto flex size-6 shrink-0 items-center justify-center rounded-md transition-opacity
@@ -45,6 +46,7 @@ export default function FormattedTableHeadMenu({ columnId, tableId }: FormattedT
             isCompactMode && !isOpen && `
               opacity-0
               group-hover/header:opacity-100
+              focus-visible:opacity-100
             `,
             isOpen && 'opacity-100',
           ) }

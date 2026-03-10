@@ -31,7 +31,7 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
               { columnsSorted.map((column: string, index: number, array: string[]) => {
                 return (
                   <FormattedTableHeader
-                    tableId="subscriptions"
+                    tableId="bills"
                     key={ column }
                     columnId={ column }
                     index={ index }
