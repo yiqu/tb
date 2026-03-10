@@ -28,7 +28,7 @@ type Props = {
   loadingMaskRowCount?: number;
 };
 
-export default function BillsTableParentContent({ billDues, tableId, sortData, pageId, loadingMaskRowCount = 6 }: Props) {
+export default function BillsTableParentContent({ billDues, tableId, sortData, pageId, loadingMaskRowCount = 15 }: Props) {
   const isClient = useIsClient();
   const totalColumnsWidth = useTotalColumnsWidth('bills');
 

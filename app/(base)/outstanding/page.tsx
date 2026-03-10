@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import EditBillForm from '@/components/bills/EditBillForm';
+import BillsTableLoading from '@/shared/loading/BillsTableLoading';
 import LayoutPageContentWrapper from '@/components/layout/LayoutPageContentWrapper';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import ContentStickyByScrollWrapper from '@/components/layout/ContentStickyByScrollWrapper';
@@ -10,7 +11,6 @@ import LayoutContentActionPaginationWrapper from '@/components/layout/LayoutCont
 
 import BillsTableActionDialog from '../bills/_components/BillsTableActionDialog';
 import OutstandingBillsTableParent from './_components/OutstandingBillsTableParent';
-import OutstandingBillsTableSkeleton from './_components/OutstandingBillsTableSkeleton';
 import OutstandingBillsTableActionBar from './_components/OutstandingBillsTableActionBar';
 import OutstandingBillsTablePaginationWrapper from './_components/OutstandingBillsTablePaginationWrapper';
 
@@ -26,7 +26,7 @@ export default function OutstandingBillsPage({ searchParams }: PageProps<'/outst
         </LayoutContentActionPaginationWrapper>
       </ContentStickyByScrollWrapper>
 
-      <Suspense fallback={ <OutstandingBillsTableSkeleton /> }>
+      <Suspense fallback={ <BillsTableLoading rowCount={ 15 } /> }>
         <OutstandingBillsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
       </Suspense>
       <Suspense>
