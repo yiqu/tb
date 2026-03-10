@@ -5,6 +5,7 @@ import { Draggable, Droppable, DragDropContext, type DropResult } from '@hello-p
 
 import useIsClient from '@/hooks/useIsClient';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
+import BillsTableLoading from '@/shared/loading/BillsTableLoading';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
 import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
 import { SortDataUpsertable } from '@/models/sort-data/SortData.model';
@@ -19,7 +20,6 @@ import {
 } from '@/store/subscriptions/table.store';
 
 import SubscriptionsTableParentRow from './SubscriptionsTableParentRow';
-import SubscriptionsTableParentLoading from './SubscriptionsTableParentLoading';
 
 interface Props {
   subscriptions: SubscriptionWithBillDuesAndSortData;
@@ -65,7 +65,7 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
   };
 
   if (!isClient) {
-    return <SubscriptionsTableParentLoading />;
+    return <BillsTableLoading rowCount={ 15 } />;
   }
 
   return (

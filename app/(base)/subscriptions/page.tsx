@@ -2,13 +2,13 @@ import { Suspense } from 'react';
 
 import ColumnStack from '@/shared/components/ColumnStack';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
+import BillsTableLoading from '@/shared/loading/BillsTableLoading';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import ContentStickyByScrollWrapper from '@/components/layout/ContentStickyByScrollWrapper';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
 import LayoutContentActionPaginationWrapper from '@/components/layout/LayoutContentActionPaginationWrapper';
 
 import SubscriptionsTableParent from './_components/SubscriptionsTableParent';
-import SubscriptionsTableSkeleton from './_components/SubscriptionsTableSkeleton';
 import SubscriptionsTableActionBar from './_components/SubscriptionsTableActionBar';
 import SubscriptionsTableActionDialog from './_components/SubscriptionsTableActionDialog';
 import AddNewBillDueDialogStandalone from '../add/_components/AddNewBillDueDialogStandalone';
@@ -32,7 +32,7 @@ export default function SubscriptionsPage({ searchParams }: PageProps<'/subscrip
         </LayoutContentActionPaginationWrapper>
       </ContentStickyByScrollWrapper>
 
-      <Suspense fallback={ <SubscriptionsTableSkeleton /> }>
+      <Suspense fallback={ <BillsTableLoading rowCount={ 15 } /> }>
         <SubscriptionsTableParent searchParamsPromise={ searchParams } paginationPromise={ paginationPromise } />
       </Suspense>
 
