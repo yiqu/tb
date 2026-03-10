@@ -25,6 +25,7 @@ export default async function SearchTableParent() {
               { columnsSorted.map((column: string, index: number, array: string[]) => {
                 return (
                   <FormattedTableHeader
+                    tableId="search"
                     key={ column }
                     columnId={ column }
                     index={ index }

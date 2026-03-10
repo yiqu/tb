@@ -5,7 +5,7 @@ import { useOptimistic, useTransition } from 'react';
 import { cn } from '@/lib/utils';
 import useColumnResize from '@/hooks/useColumnResize';
 import Typography from '@/components/typography/Typography';
-import { useTableColumn, useTableColumnsActions } from '@/store/subscriptions/table.store';
+import { TableId, useTableColumn, useTableColumnsActions } from '@/store/subscriptions/table.store';
 import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import {
   SortData,
@@ -21,6 +21,7 @@ import type { DraggableProvidedDraggableProps, DraggableProvidedDragHandleProps 
 import RowStack from '../components/RowStack';
 import WithTooltip from '../components/WithTooltip';
 import FormattedTableHead from './FormattedTableHead';
+import FormattedTableHeadMenu from './FormattedTableHeadMenu';
 import FormattedTableHeadSortIcon from './FormattedTableHeadSortIcon';
 import FormattedTableHeadDragHandle from './FormattedTableHeadDragHandle';
 import FormattedTableHeadResizeHandle from './FormattedTableHeadResizeHandle';
@@ -32,6 +33,7 @@ interface FormattedTableHeaderProps {
   sortData: SortDataModel | null;
   pageId: SortDataPageId;
   sortable?: boolean;
+  tableId: TableId;
   ref?: React.Ref<HTMLTableCellElement>;
   draggableProps?: DraggableProvidedDraggableProps;
   dragHandleProps?: DraggableProvidedDragHandleProps | null;
@@ -46,6 +48,7 @@ export default function FormattedTableHeader({
   sortData,
   pageId,
   sortable,
+  tableId,
   ref,
   draggableProps,
   dragHandleProps,
@@ -111,7 +114,10 @@ export default function FormattedTableHeader({
       isLastColumn={ isLastColumn }
       isResizing={ isResizing }
     >
-      <RowStack className={ cn('flex flex-row items-center justify-start truncate select-none') } id={ `table-header-content-${columnId}` }>
+      <RowStack
+        className={ cn('group/header flex flex-row items-center justify-start truncate select-none') }
+        id={ `table-header-content-${columnId}` }
+      >
         <FormattedTableHeadDragHandle dragHandleProps={ dragHandleProps } />
         <RowStack
           id={ `table-header-content-display-${columnId}` }
@@ -139,6 +145,7 @@ export default function FormattedTableHeader({
             isPending={ isPending }
           />
         </RowStack>
+        <FormattedTableHeadMenu columnId={ columnId } tableId={ tableId } />
       </RowStack>
       <FormattedTableHeadResizeHandle
         handleResizePointerDown={ handleResizePointerDown }

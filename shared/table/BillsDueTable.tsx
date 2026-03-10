@@ -29,6 +29,7 @@ export default function BillsDueTable({ billDues, columns, sortData, pageId, tab
           { columns.map((column: string, index: number, array: string[]) => {
             return (
               <FormattedTableHeader
+                tableId="bills"
                 key={ column }
                 columnId={ column }
                 index={ index }

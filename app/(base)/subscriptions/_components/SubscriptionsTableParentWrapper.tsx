@@ -79,6 +79,7 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
                   <Draggable key={ column } draggableId={ column } index={ index }>
                     { (draggableProvided, snapshot) => (
                       <FormattedTableHeader
+                        tableId="subscriptions"
                         ref={ draggableProvided.innerRef }
                         draggableProps={ draggableProvided.draggableProps }
                         dragHandleProps={ draggableProvided.dragHandleProps }

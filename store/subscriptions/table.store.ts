@@ -1,60 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-// export const SEARCH_TABLE_COLUMN_WIDTH = {
-//   id: '4rem',
-//   cost: '6rem',
-//   frequency: '7rem',
-//   dueDate: '16rem',
-//   subscription: '20rem',
-//   updatedAt: '8rem',
-//   actions: '7rem',
-//   dateAdded: '8rem',
-//   paid: '5rem',
-//   reimbursed: '7rem',
-//   name: '12rem',
-//   description: '11rem',
-//   url: '7rem',
-//   billCycleDuration: '7rem',
-//   approved: '5rem',
-//   signed: '5rem',
-//   billDuesCurrentYearCount: '7rem',
-//   billDuesCurrentYearTotalCost: '6rem',
-//   totalBillsAllTimeCount: '4rem',
-//   totalBillsAllTimeTotalCost: '6rem',
-// };
-
-// export const SUBSCRIPTIONS_TABLE_COLUMN_IDS: SearchTableColumn[] = [
-//   { headerId: 'name', ordinal: 0, sortable: true },
-//   { headerId: 'billCycleDuration', ordinal: 1, sortable: true },
-//   { headerId: 'description', ordinal: 2, sortable: true },
-//   { headerId: 'url', ordinal: 3, sortable: true },
-//   { headerId: 'cost', ordinal: 4, sortable: true },
-//   { headerId: 'billDuesCurrentYearCount', ordinal: 5, sortable: true },
-//   { headerId: 'billDuesCurrentYearTotalCost', ordinal: 6, sortable: true },
-//   { headerId: 'totalBillsAllTimeCount', ordinal: 7, sortable: true },
-//   { headerId: 'totalBillsAllTimeTotalCost', ordinal: 8, sortable: true },
-//   { headerId: 'approved', ordinal: 9, sortable: true },
-//   { headerId: 'signed', ordinal: 10, sortable: true },
-//   { headerId: 'dateAdded', ordinal: 11, sortable: true },
-//   { headerId: 'updatedAt', ordinal: 12, sortable: true },
-//   { headerId: 'actions', ordinal: 13, sortable: false },
-// ];
-
-// export const SEARCH_TABLE_COLUMN_IDS: SearchTableColumn[] = [
-//   { headerId: 'cost', ordinal: 0, sortable: true },
-//   { headerId: 'frequency', ordinal: 0.5, sortable: true },
-//   // { headerId: 'id', ordinal: 7 },
-//   { headerId: 'dateAdded', ordinal: 5, sortable: true },
-//   { headerId: 'dueDate', ordinal: 2, sortable: true },
-//   { headerId: 'paid', ordinal: 3, sortable: true },
-//   { headerId: 'reimbursed', ordinal: 4, sortable: true },
-//   { headerId: 'subscription', ordinal: 1, sortable: true },
-//   { headerId: 'updatedAt', ordinal: 6, sortable: true },
-//   { headerId: 'actions', ordinal: 8, sortable: false },
-// ];
-
-export type TableId = 'subscriptions' | 'bills';
+export type TableId = 'subscriptions' | 'bills' | 'search';
 
 export const SUBSCRIPTIONS_TABLE_COLUMNS = [
   'name',
@@ -146,12 +93,15 @@ type TableColumnsState = {
     setColumnWidth: (_column: string, _width: number) => void;
     reorderSubscriptionsColumns: (_ordinals: Partial<TableColumnsState['subscriptionsTableColumnOrdinal']>) => void;
     reorderBillsColumns: (_ordinals: Partial<TableColumnsState['billsTableColumnOrdinal']>) => void;
+    pinSubscriptionsColumn: (_columnId: string) => void;
+    pinBillsColumn: (_columnId: string) => void;
+    pinColumn: (_columnId: string, _tableId: TableId) => void;
   };
 };
 
 const useTableColumnsStore = create<TableColumnsState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       frequency: 130, // 7rem
       dueDate: 180, // 7rem
       paid: 110, // 7rem
@@ -225,6 +175,42 @@ const useTableColumnsStore = create<TableColumnsState>()(
             },
           }));
         },
+        pinSubscriptionsColumn: (columnId: string) => {
+          set((state) => {
+            const ordinals = { ...state.subscriptionsTableColumnOrdinal };
+            const key = columnId as keyof typeof ordinals;
+            const pinnedOrdinal = ordinals[key];
+            for (const k of Object.keys(ordinals) as (keyof typeof ordinals)[]) {
+              if (ordinals[k] < pinnedOrdinal) {
+                ordinals[k] = ordinals[k] + 1;
+              }
+            }
+            ordinals[key] = 0;
+            return { subscriptionsTableColumnOrdinal: ordinals };
+          });
+        },
+        pinBillsColumn: (columnId: string) => {
+          set((state) => {
+            const ordinals = { ...state.billsTableColumnOrdinal };
+            const key = columnId as keyof typeof ordinals;
+            const pinnedOrdinal = ordinals[key];
+            for (const k of Object.keys(ordinals) as (keyof typeof ordinals)[]) {
+              if (ordinals[k] < pinnedOrdinal) {
+                ordinals[k] = ordinals[k] + 1;
+              }
+            }
+            ordinals[key] = 0;
+            return { billsTableColumnOrdinal: ordinals };
+          });
+        },
+        pinColumn: (columnId: string, tableId: TableId) => {
+          const { pinSubscriptionsColumn, pinBillsColumn } = get().actions;
+          if (tableId === 'subscriptions') {
+            pinSubscriptionsColumn(columnId);
+          } else if (tableId === 'bills') {
+            pinBillsColumn(columnId);
+          }
+        },
       },
     }),
     {
@@ -286,4 +272,3 @@ export const useColumnOrdinalObject = (tableId: TableId) =>
   });
 
 export const useTableColumnsActions = () => useTableColumnsStore((state) => state.actions);
-
