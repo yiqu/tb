@@ -16,7 +16,7 @@ interface SubscriptionDetailsBillsTableProps {
 }
 
 export default function SubscriptionDetailsBillsTable({ billDues }: SubscriptionDetailsBillsTableProps) {
-  const columnsSorted: string[] = BILLS_TABLE_COLUMNS;
+  const columnsSorted: string[] = [...BILLS_TABLE_COLUMNS] as string[];
 
   const handleOnSortUpdate = (sortDataToUpdate: SortDataUpsertable) => {
     upsertSortData2(sortDataToUpdate);
