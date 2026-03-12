@@ -18,7 +18,7 @@ export const SUBSCRIPTIONS_TABLE_COLUMNS = [
   'dateAdded',
   'updatedAt',
   'tableActions',
-];
+] as const;
 export const BILLS_TABLE_COLUMNS = [
   'cost',
   'frequency',
@@ -29,7 +29,9 @@ export const BILLS_TABLE_COLUMNS = [
   'subscription',
   'updatedAt',
   'tableActions',
-];
+] as const;
+
+export type AppColumnId = typeof SUBSCRIPTIONS_TABLE_COLUMNS[number] | typeof BILLS_TABLE_COLUMNS[number];
 
 export const unsortableSubscriptionsColumns: Record<string, boolean> = {
   tableActions: false,
@@ -138,7 +140,6 @@ const useTableColumnsStore = create<TableColumnsState>()(
         totalBillsAllTimeTotalCost: 8,
         updatedAt: 12,
         url: 3,
-        actions: 13,
       },
 
       billsTableColumnOrdinal: {

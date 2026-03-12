@@ -5,14 +5,15 @@ import { useOptimistic, useTransition } from 'react';
 import { cn } from '@/lib/utils';
 import useColumnResize from '@/hooks/useColumnResize';
 import Typography from '@/components/typography/Typography';
-import { TableId, useTableColumn, useTableColumnsActions } from '@/store/subscriptions/table.store';
 import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
+import { TableId, AppColumnId, useTableColumn, useTableColumnsActions } from '@/store/subscriptions/table.store';
 import {
   SortData,
   SortField,
   SortDirection,
   getSortInfoText,
   getNextSortDirection,
+  getIsColumnFilterable,
   SEARCH_TABLE_COLUMN_TEXT,
 } from '@/shared/table/table.utils';
 
@@ -56,11 +57,10 @@ export default function FormattedTableHeader({
   onSortUpdate,
 }: FormattedTableHeaderProps) {
   const [isPending, startTransition] = useTransition();
-  const storeColumnId = columnId === 'actions' ? 'tableActions' : columnId;
-  const columnWidth = useTableColumn(storeColumnId);
+  const columnWidth = useTableColumn(columnId);
   const { setColumnWidth } = useTableColumnsActions();
   const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
-    columnId: storeColumnId,
+    columnId,
     initialWidth: columnWidth,
     minWidth: 80,
     maxWidth: 1200,
@@ -84,6 +84,7 @@ export default function FormattedTableHeader({
   const sortDirection: string | undefined = optimisticSortData.direction;
   const isLastColumn = index === length - 1;
   const columnSortTooltip: string = getSortInfoText(columnId, !!sortable, isColumnSorted, sortDirection as SortDirection, nextSortData);
+  const showFilterOptions = getIsColumnFilterable(columnId as AppColumnId);
 
   const handleOnHeaderClick = (columnId: string) => {
     if (!sortable) {
@@ -114,10 +115,7 @@ export default function FormattedTableHeader({
       isLastColumn={ isLastColumn }
       isResizing={ isResizing }
     >
-      <RowStack
-        className={ cn('group/header flex flex-row items-center justify-start truncate select-none') }
-        id={ `table-header-content-${columnId}` }
-      >
+      <RowStack className={ cn('group/header flex flex-row items-center justify-start select-none') } id={ `table-header-content-${columnId}` }>
         <FormattedTableHeadDragHandle dragHandleProps={ dragHandleProps } />
         <RowStack
           id={ `table-header-content-display-${columnId}` }
@@ -145,7 +143,7 @@ export default function FormattedTableHeader({
             isPending={ isPending }
           />
         </RowStack>
-        <FormattedTableHeadMenu columnId={ columnId } tableId={ tableId } />
+        <FormattedTableHeadMenu columnId={ columnId } tableId={ tableId } showFilterOptions={ showFilterOptions } />
       </RowStack>
       <FormattedTableHeadResizeHandle
         handleResizePointerDown={ handleResizePointerDown }

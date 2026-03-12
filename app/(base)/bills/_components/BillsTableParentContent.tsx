@@ -52,11 +52,7 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
 
       const newOrdinals: Record<string, number> = {};
       for (const [i, col] of reordered.entries()) {
-        const storeKey = col === 'actions' ? 'tableActions' : col;
-        newOrdinals[storeKey] = i;
-        if (col === 'actions') {
-          newOrdinals['actions'] = i;
-        }
+        newOrdinals[col] = i;
       }
 
       reorderBillsColumns(newOrdinals);
