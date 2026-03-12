@@ -8,8 +8,8 @@ import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
 import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
 import { SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
+import BillsTableParentRow from '@/shared/table/BillsDueTableParentRow';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
-import BillsTableParentRow from '@/app/(base)/bills/_components/BillsTableParentRow';
 
 interface SubscriptionDetailsBillsTableProps {
   billDues: BillDueWithSubscription[];
@@ -46,7 +46,7 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
           </TableHeader>
           <TableBody>
             { billDues.map((billDue: BillDueWithSubscription) => (
-              <BillsTableParentRow key={ billDue.id } billDue={ billDue } />
+              <BillsTableParentRow key={ billDue.id } billDue={ billDue } columns={ columnsSorted } />
             )) }
           </TableBody>
         </Table>

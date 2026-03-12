@@ -57,8 +57,7 @@ function FormattedTableHeadMenuFilterOptionContent({ columnId, tableId }: Props)
   const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (e.key === 'Enter') {
-      // Send immediate update
-      setFilterValueWithOptions((e.target as HTMLInputElement).value);
+      setFilterValueWithOptions((e.target as HTMLInputElement).value, { immediate: true });
     }
   };
 

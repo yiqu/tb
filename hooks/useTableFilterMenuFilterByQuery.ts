@@ -11,11 +11,10 @@ export default function useTableFilterMenuFilterByQuery(tableId: TableId, column
     }),
   );
 
-  const setFilterValueWithOptions = (value: string) => {
+  const setFilterValueWithOptions = (value: string, options?: { immediate?: boolean }) => {
     const trimmed = value.trim();
     setFilterValue(trimmed || null, {
-      // Send immediate update if resetting, otherwise debounce at 500ms
-      limitUrlUpdates: trimmed === '' ? undefined : debounce(500),
+      limitUrlUpdates: trimmed === '' || options?.immediate ? undefined : debounce(500),
     });
   };
 

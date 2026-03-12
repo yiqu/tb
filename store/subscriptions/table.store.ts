@@ -140,7 +140,6 @@ const useTableColumnsStore = create<TableColumnsState>()(
         totalBillsAllTimeTotalCost: 8,
         updatedAt: 12,
         url: 3,
-        actions: 13,
       },
 
       billsTableColumnOrdinal: {

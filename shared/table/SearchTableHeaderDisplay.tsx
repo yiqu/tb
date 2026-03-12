@@ -50,11 +50,10 @@ export default function SearchTableHeaderDisplay({
   isDragging,
 }: SearchTableHeaderDisplayProps) {
   const [isPending, startTransition] = useTransition();
-  const storeColumnId = columnId === 'actions' ? 'tableActions' : columnId;
-  const columnWidth = useTableColumn(storeColumnId);
+  const columnWidth = useTableColumn(columnId);
   const { setColumnWidth } = useTableColumnsActions();
   const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
-    columnId: storeColumnId,
+    columnId,
     initialWidth: columnWidth,
     minWidth: 80,
     maxWidth: 1200,
