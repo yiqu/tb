@@ -323,6 +323,7 @@ export async function getAllBills(
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
+
   const whereClause: any = {
     AND: [],
   };
@@ -351,6 +352,51 @@ export async function getAllBills(
         billCycleDuration: {
           in: frequencies,
         },
+      },
+    });
+  }
+
+  if (searchParams?.['bills__cost'] && searchParams['bills__cost'].trim() !== '') {
+    const costRaw: string = searchParams['bills__cost'].trim();
+    let operator: 'equals' | 'gte' | 'lte' | 'gt' | 'lt' = 'equals';
+    let numericPart: string = costRaw;
+
+    if (costRaw.startsWith('>=')) {
+      operator = 'gte';
+      numericPart = costRaw.slice(2);
+    } else if (costRaw.startsWith('<=')) {
+      operator = 'lte';
+      numericPart = costRaw.slice(2);
+    } else if (costRaw.startsWith('>')) {
+      operator = 'gt';
+      numericPart = costRaw.slice(1);
+    } else if (costRaw.startsWith('<')) {
+      operator = 'lt';
+      numericPart = costRaw.slice(1);
+    }
+
+    const costValue = Number.parseFloat(numericPart.trim());
+    if (!Number.isNaN(costValue)) {
+      whereClause.AND.push({
+        cost: { [operator]: costValue },
+      });
+    }
+  }
+
+  if (searchParams?.['bills__subscription'] && searchParams['bills__subscription'].trim() !== '') {
+    const subscriptionName: string = searchParams['bills__subscription'].trim();
+    whereClause.AND.push({
+      subscription: {
+        name: { contains: subscriptionName, mode: 'insensitive' },
+      },
+    });
+  }
+
+  if (searchParams?.['bills__frequency'] && searchParams['bills__frequency'].trim() !== '') {
+    const frequencyRaw: string = searchParams['bills__frequency'].trim();
+    whereClause.AND.push({
+      subscription: {
+        billCycleDuration: { contains: frequencyRaw, mode: 'insensitive' },
       },
     });
   }
@@ -713,7 +759,7 @@ async function getAllBillsByMonthAndYearParams(
 async function getAllBillsByYearFromParams(params: string | undefined, yearOffset?: number): Promise<BillDueWithSubscriptionByYear> {
   'use cache';
   cacheLife('weeks');
-  
+
   let currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE).startOf('year');
   let currentYear: number = currentDateLuxon.year;
 
@@ -737,7 +783,6 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
     }
     currentYear = currentDateLuxon.year;
   }
-
 
   // TODO test this tag invalidation
   cacheTag(CACHE_TAG_BILL_DUES_BY_YEAR, `${CACHE_TAG_BILL_DUES_BY_YEAR}-${currentYear}`);
