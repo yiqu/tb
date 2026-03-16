@@ -16,9 +16,10 @@ type FormattedTableHeadMenuProps = {
   columnId: string;
   tableId: TableId;
   showFilterOptions?: boolean;
+  columnIndex: number;
 };
 
-export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOptions }: FormattedTableHeadMenuProps) {
+export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOptions, columnIndex }: FormattedTableHeadMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { activeCount } = useTableFilterMenuActive(tableId, columnId as AppColumnId);
 
@@ -54,7 +55,12 @@ export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOp
         : null }
       </div>
       <DropdownMenuContent align="start">
-        <FormattedTableHeadMenuPinOption onAction={ handlePinColumn } tableId={ tableId } columnId={ columnId as AppColumnId } />
+        <FormattedTableHeadMenuPinOption
+          onAction={ handlePinColumn }
+          tableId={ tableId }
+          columnId={ columnId as AppColumnId }
+          columnIndex={ columnIndex }
+        />
         { showFilterOptions ?
           <FormattedTableHeadMenuFilterOption tableId={ tableId } columnId={ columnId as AppColumnId } />
         : null }

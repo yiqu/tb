@@ -143,7 +143,7 @@ export default function FormattedTableHeader({
             isPending={ isPending }
           />
         </RowStack>
-        <FormattedTableHeadMenu columnId={ columnId } tableId={ tableId } showFilterOptions={ showFilterOptions } />
+        <FormattedTableHeadMenu columnId={ columnId } tableId={ tableId } showFilterOptions={ showFilterOptions } columnIndex={ index } />
       </RowStack>
       <FormattedTableHeadResizeHandle
         handleResizePointerDown={ handleResizePointerDown }

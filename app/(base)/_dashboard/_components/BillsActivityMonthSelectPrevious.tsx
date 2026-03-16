@@ -1,11 +1,11 @@
 'use client';
 
-import { useQueryState } from 'nuqs';
 import { ArrowLeftIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import MonthImage from '@/components/month/MonthImage';
 import { NavigationMonthData } from '@/models/bills/bills.model';
+import useDashboardRangeSelect from '@/hooks/useDashboardRangeSelect';
 
 type Props = {
   navigationMonthData: NavigationMonthData;
@@ -15,15 +15,11 @@ export default function BillsActivityMonthSelectPreviousButton({ navigationMonth
   const { previousMonth, previousYear, previousMonthName, isPreviousMonthTheCurrentMonth } = navigationMonthData;
   const previousMonthYear: string = `${previousMonth}/${previousYear}`;
 
-  const [_monthDueBillsNavigation, setMonthDueBillsNavigation] = useQueryState('selectedMonthYear', {
-    history: 'push',
-    scroll: true,
-    shallow: false,
-  });
+  const { setMonthDueBillsNavigation, clearParams } = useDashboardRangeSelect();
 
   const handleOnClickPrevious = () => {
     if (isPreviousMonthTheCurrentMonth) {
-      setMonthDueBillsNavigation(null);
+      clearParams();
     } else {
       setMonthDueBillsNavigation(previousMonthYear);
     }

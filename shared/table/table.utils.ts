@@ -351,6 +351,18 @@ export function getIsColumnFilterable(columnId: AppColumnId) {
     case 'subscription': {
       return true;
     }
+    case 'name': {
+      return true;
+    }
+    case 'billCycleDuration': {
+      return true;
+    }
+    case 'description': {
+      return true;
+    }
+    case 'url': {
+      return true;
+    }
     default: {
       return false;
     }

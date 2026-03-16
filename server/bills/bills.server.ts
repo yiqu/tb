@@ -375,8 +375,9 @@ export async function getAllBills(
       numericPart = costRaw.slice(1);
     }
 
-    const costValue = Number.parseFloat(numericPart.trim());
-    if (!Number.isNaN(costValue)) {
+    const trimmed = numericPart.trim();
+    const costValue = Number(trimmed);
+    if (trimmed !== '' && Number.isFinite(costValue)) {
       whereClause.AND.push({
         cost: { [operator]: costValue },
       });

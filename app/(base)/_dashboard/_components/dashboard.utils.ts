@@ -5,31 +5,18 @@ import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
 import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 
-//const paramsToIgnore = ['editBillId', 'month', 'year', 'page'];
-
 /**
- * Check if there are search params. If it's only 'page', it's not considered as search params.
+ * Check if there are search params.  month and year will always be there.
  */
 export function isSearchParamsExist(searchParams: z.infer<typeof billSearchParamsSchema>) {
   const searchParamsKeys: string[] = Object.keys(searchParams);
-  const hasSearchParams: boolean = searchParamsKeys.length > 0;
+  const paramsWithOutInitialParams = searchParamsKeys.filter((key) => key !== 'month' && key !== 'year');
 
-  if (searchParamsKeys.length === 2 && searchParamsKeys.includes('month') && searchParamsKeys.includes('year')) {
-    return false;
+  if (paramsWithOutInitialParams.length > 0) {
+    return true;
   }
 
-  if (
-    (searchParamsKeys.length === 3 &&
-      searchParamsKeys.includes('month') &&
-      searchParamsKeys.includes('year') &&
-      searchParamsKeys.includes('page')) ||
-    searchParamsKeys.includes('selectedMonthYear') ||
-    searchParamsKeys.includes('editBillId')
-  ) {
-    return false;
-  }
-
-  return hasSearchParams;
+  return false;
 }
 
 export function isMonthSelectionSearchParamsExist(searchParams: z.infer<typeof billSearchParamsSchema>) {

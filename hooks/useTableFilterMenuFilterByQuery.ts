@@ -8,6 +8,7 @@ export default function useTableFilterMenuFilterByQuery(tableId: TableId, column
     `${tableId}__${columnId}`,
     parseAsTrimmedString.withDefault('').withOptions({
       shallow: false,
+      history: 'push'
     }),
   );
 

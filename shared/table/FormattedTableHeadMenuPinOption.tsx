@@ -7,10 +7,12 @@ type Props = {
   onAction: () => void;
   tableId: TableId;
   columnId: AppColumnId;
+  columnIndex: number;
 };
 
-export default function FormattedTableHeadMenuPinOption({ onAction, tableId, columnId }: Props) {
+export default function FormattedTableHeadMenuPinOption({ onAction, tableId, columnId, columnIndex }: Props) {
   const { pinColumn } = useTableColumnsActions();
+  const isPinDisabled = columnIndex === 0;
 
   const handlePinColumn = () => {
     pinColumn(columnId, tableId);
@@ -20,7 +22,7 @@ export default function FormattedTableHeadMenuPinOption({ onAction, tableId, col
   return (
     <DropdownMenuGroup>
       <DropdownMenuLabel className="text-foreground/50">Position</DropdownMenuLabel>
-      <DropdownMenuItem onClick={ handlePinColumn } className="cursor-pointer">
+      <DropdownMenuItem onClick={ handlePinColumn } className="cursor-pointer" disabled={ isPinDisabled }>
         <Pin className="size-4" />
         Pin this column
       </DropdownMenuItem>

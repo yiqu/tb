@@ -12,18 +12,17 @@ interface Props {
 }
 
 export default function BillsTableHasParamsSection({ searchParams }: Props) {
-  const hasSearchParams: boolean = isSearchParamsExist(searchParams);
-
-  if (hasSearchParams) {
-    return (
-      <>
-        <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-          <BillsActionBarClearAllFilters />
-        </Suspense>
-        <Separator orientation="vertical" className="h-[1.2rem]!" />
-      </>
-    );
-  }
+  // const hasSearchParams: boolean = isSearchParamsExist(searchParams);
+  // if (hasSearchParams) {
+  //   return (
+  //     <>
+  //       <Suspense fallback={ <ActionBarButtonSkeleton /> }>
+  //         <BillsActionBarClearAllFilters />
+  //       </Suspense>
+  //       <Separator orientation="vertical" className="h-[1.2rem]!" />
+  //     </>
+  //   );
+  // }
 
   return null;
 }
