@@ -2,7 +2,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { type Control, useController } from 'react-hook-form';
+import { type Control, useController, type FieldPath, type FieldValues } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -11,20 +11,20 @@ import { FormItem, FormField, FormLabel, FormControl, FormMessage } from '@/comp
 
 import type React from 'react';
 
-interface FormInputProps {
-  name: string;
+interface FormInputProps<T extends FieldValues> {
+  name: FieldPath<T>;
   label: string;
-  control: Control<any>;
+  control: Control<T>;
   placeholder?: string;
   type?: string;
-  clearField?: (name: string) => void;
+  clearField?: (name: FieldPath<T>) => void;
   description?: React.ReactNode;
   disabled?: boolean;
   formItemClassName?: string;
   clearButtonClassName?: string;
 }
 
-export function FormInput({
+export function FormInput<T extends FieldValues>({
   name,
   label,
   control,
@@ -35,7 +35,7 @@ export function FormInput({
   disabled = false,
   formItemClassName,
   clearButtonClassName,
-}: FormInputProps) {
+}: FormInputProps<T>) {
   const { field } = useController({
     name,
     control,

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Control } from 'react-hook-form';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 import { CalendarIcon } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
 import { format, addYears, subYears } from 'date-fns';
@@ -12,10 +12,10 @@ import { FormItem, FormField, FormLabel, FormControl, FormMessage, FormDescripti
 
 import { Input } from '../ui/input';
 
-interface HFDatepickerDialogProps {
-  name: string;
+interface HFDatepickerDialogProps<T extends FieldValues> {
+  name: FieldPath<T>;
   label: string;
-  control: Control<any>;
+  control: Control<T>;
   disabled?: boolean;
   buttonClassName?: string;
   onValueChange?: (date: any) => void;
@@ -32,7 +32,7 @@ interface HFDatepickerDialogProps {
 const endMonthIsNExtFiveYears = addYears(new Date(), 5);
 const startMonthIsFiveYearsAgo = subYears(new Date(), 5);
 
-export default function HFDatepickerDialog({
+export default function HFDatepickerDialog<T extends FieldValues>({
   name,
   label,
   control,
@@ -45,7 +45,7 @@ export default function HFDatepickerDialog({
   isEpochTimeStampInString = false,
   buttonDisplayFormat = 'PPP',
   showTime = false,
-}: HFDatepickerDialogProps & React.ComponentProps<typeof DayPicker>) {
+}: HFDatepickerDialogProps<T> & React.ComponentProps<typeof DayPicker>) {
   return (
     <FormField
       control={ control }
