@@ -6,11 +6,11 @@ import { cn } from '@/lib/utils';
 import { Button, ButtonProps } from '@/components/ui/button';
 import useDashboardRangeSelect from '@/hooks/useDashboardRangeSelect';
 
-export default function BillsActionBarClearAllFilters({ className, ...props }: { className?: string } & ButtonProps) {
-  const { clearParams } = useDashboardRangeSelect();
+export default function BillsTableActionBarClearAllFilters({ className, ...props }: { className?: string } & ButtonProps) {
+  const { clearBillsTableFilterParams } = useDashboardRangeSelect();
 
   const handleClearAllFilters = () => {
-    clearParams();
+    clearBillsTableFilterParams();
   };
 
   return (

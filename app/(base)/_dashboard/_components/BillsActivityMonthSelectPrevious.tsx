@@ -15,11 +15,11 @@ export default function BillsActivityMonthSelectPreviousButton({ navigationMonth
   const { previousMonth, previousYear, previousMonthName, isPreviousMonthTheCurrentMonth } = navigationMonthData;
   const previousMonthYear: string = `${previousMonth}/${previousYear}`;
 
-  const { setMonthDueBillsNavigation, clearParams } = useDashboardRangeSelect();
+  const { setMonthDueBillsNavigation, clearBillsTableFilterParams } = useDashboardRangeSelect();
 
   const handleOnClickPrevious = () => {
     if (isPreviousMonthTheCurrentMonth) {
-      clearParams();
+      clearBillsTableFilterParams();
     } else {
       setMonthDueBillsNavigation(previousMonthYear);
     }

@@ -379,7 +379,7 @@ export async function getAllBills(
     const costValue = Number(trimmed);
     if (trimmed !== '' && Number.isFinite(costValue)) {
       whereClause.AND.push({
-        cost: { [operator]: costValue },
+        OR: [{ cost: { [operator]: costValue } }, { cost: null, subscription: { cost: { [operator]: costValue } } }],
       });
     }
   }
@@ -855,7 +855,7 @@ export async function getCurrentMonthBillsCount(month: string, year: string): Pr
   cacheTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT);
 
   try {
-    const allBillsDue = await prisma.billDue.findMany({});
+    const allBillsDue = await prisma.billDue.findMany();
 
     const startDateLuxon = DateTime.fromObject(
       { month: Number.parseInt(month), year: Number.parseInt(year) },

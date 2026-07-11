@@ -31,7 +31,7 @@ export const BILLS_TABLE_COLUMNS = [
   'tableActions',
 ] as const;
 
-export type AppColumnId = typeof SUBSCRIPTIONS_TABLE_COLUMNS[number] | typeof BILLS_TABLE_COLUMNS[number];
+export type AppColumnId = (typeof SUBSCRIPTIONS_TABLE_COLUMNS)[number] | (typeof BILLS_TABLE_COLUMNS)[number];
 
 export const unsortableSubscriptionsColumns: Record<string, boolean> = {
   tableActions: false,
@@ -39,6 +39,8 @@ export const unsortableSubscriptionsColumns: Record<string, boolean> = {
 export const unsortableBillsColumns: Record<string, boolean> = {
   tableActions: false,
 };
+
+export const BILLS_TABLE_FILTER_PARAMS_OPTIONS = ['bills__cost', 'bills__subscription', 'bills__frequency'];
 
 type TableColumnsState = {
   frequency: number;

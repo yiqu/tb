@@ -5,18 +5,15 @@ import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { BillDueWithSubscriptionByMonthAndYear } from '@/models/bills/bills.model';
 import { BillSearchParams, billSearchParamsSchema } from '@/validators/bills/bill.schema';
 
+
 /**
  * Check if there are search params.  month and year will always be there.
  */
 export function isSearchParamsExist(searchParams: z.infer<typeof billSearchParamsSchema>) {
   const searchParamsKeys: string[] = Object.keys(searchParams);
-  const paramsWithOutInitialParams = searchParamsKeys.filter((key) => key !== 'month' && key !== 'year');
+  const paramsWithoutInitialParams = searchParamsKeys.filter((key) => key !== 'month' && key !== 'year' && key !== 'selectedMonthYear');
 
-  if (paramsWithOutInitialParams.length > 0) {
-    return true;
-  }
-
-  return false;
+  return paramsWithoutInitialParams.length > 0;
 }
 
 export function isMonthSelectionSearchParamsExist(searchParams: z.infer<typeof billSearchParamsSchema>) {
