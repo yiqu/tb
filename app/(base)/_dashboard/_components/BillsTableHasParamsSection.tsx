@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { BillDueSearchParams } from '@/models/bills/bills.model';
 
 import { isSearchParamsExist } from './dashboard.utils';
-import BillsActionBarClearMonthSelectionButton from './BillsActionBarClearMonthSelectionButton';
+import BillsTableActionBarClearAllFilters from './BillsTableActionBarClearAllFilters';
 
 interface Props {
   searchParams: BillDueSearchParams;
@@ -17,7 +17,7 @@ export default function BillsTableHasParamsSection({ searchParams }: Props) {
     return (
       <>
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-          <BillsActionBarClearMonthSelectionButton />
+          <BillsTableActionBarClearAllFilters />
         </Suspense>
         <Separator orientation="vertical" className="h-[1.2rem]!" />
       </>

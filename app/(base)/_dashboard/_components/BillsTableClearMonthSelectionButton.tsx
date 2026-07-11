@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { billSearchParamsSchema } from '@/validators/bills/bill.schema';
 
 import { isMonthSelectionSearchParamsExist } from './dashboard.utils';
-import BillsTableActionBarClearAllFilters from './BillsTableActionBarClearAllFilters';
+import BillsActionBarClearMonthSelectionButton from './BillsActionBarClearMonthSelectionButton';
 
 interface Props {
   searchParamsPromise: Promise<z.infer<typeof billSearchParamsSchema>>;
@@ -20,7 +20,7 @@ export default async function BillsTableClearMonthSelectionButton({ searchParams
     return (
       <>
         <Suspense fallback={ <ActionBarButtonSkeleton /> }>
-          <BillsTableActionBarClearAllFilters size="default" />
+          <BillsActionBarClearMonthSelectionButton size="default" />
         </Suspense>
         <Separator orientation="vertical" className="h-[1.6rem]!" />
       </>
