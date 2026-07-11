@@ -9,7 +9,7 @@ import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
 import { SortDataModel, getSortDataWithPageId } from '@/models/sort-data/SortData.model';
 import { CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
-const columnsSorted: string[] = BILLS_TABLE_COLUMNS.filter((column: string) => column !== 'tableActions');
+const columnsSorted: string[] = [...BILLS_TABLE_COLUMNS];
 
 const sortData: SortDataModel = getSortDataWithPageId(SORT_DATA_PAGE_IDS.addNewBillDueRecentlyAdded);
 

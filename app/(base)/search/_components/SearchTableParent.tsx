@@ -14,7 +14,7 @@ import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/m
 export default async function SearchTableParent() {
   const sortData: SortDataModel | null = await getSortDataForPageIdCached(SORT_DATA_PAGE_IDS.search);
   const billDues: BillDueWithSubscriptionAndSortData = await getAllBillsCached(sortData, null);
-  const columnsSorted: string[] = BILLS_TABLE_COLUMNS;
+  const columnsSorted: string[] = [...BILLS_TABLE_COLUMNS] as string[];
 
   return (
     <DisplayCard className="w-full">

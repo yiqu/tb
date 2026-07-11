@@ -5,15 +5,15 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormItem, FormField, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
 
-import type { Control } from 'react-hook-form';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { Label } from '../ui/label';
 import Typography from '../typography/Typography';
 
-interface FormCheckboxProps {
-  name: string;
+interface FormCheckboxProps<T extends FieldValues> {
+  name: FieldPath<T>;
   label: string;
-  control: Control<any>;
+  control: Control<T>;
   helperText?: string;
   disabled?: boolean;
   formItemClassName?: string;
@@ -22,7 +22,7 @@ interface FormCheckboxProps {
   onCheckChange?: (checked: boolean) => void;
 }
 
-export function HFCheckbox({
+export function HFCheckbox<T extends FieldValues>({
   name,
   label,
   control,
@@ -32,7 +32,7 @@ export function HFCheckbox({
   checkboxClassName,
   labelClassName,
   onCheckChange,
-}: FormCheckboxProps) {
+}: FormCheckboxProps<T>) {
   return (
     <FormField
       control={ control }
@@ -48,10 +48,11 @@ export function HFCheckbox({
             <Label
               className={ cn(
                 `
-                  has-[[aria-checked=true]]:border-primary-600 has-[[aria-checked=true]]:bg-accent/10
+                  has-[[aria-checked=true]]:border-primary-600
                   dark:has-[[aria-checked=true]]:border-primary-900 dark:has-[[aria-checked=true]]:bg-primary-950
                   flex cursor-pointer items-start gap-3 rounded-lg border p-2
                   hover:bg-accent/10
+                  has-[[aria-checked=true]]:bg-accent/10
                 `,
                 labelClassName,
               ) }

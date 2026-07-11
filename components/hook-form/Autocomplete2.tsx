@@ -6,7 +6,7 @@
 
 import * as React from 'react';
 import { X, Check, ChevronsUpDown } from 'lucide-react';
-import { type Control, useController } from 'react-hook-form';
+import { type Control, useController, type FieldPath, type FieldValues } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -37,9 +37,9 @@ interface BaseAutocompleteProps {
   reopenKey?: string | number;
 }
 
-interface ControlledAutocompleteProps extends BaseAutocompleteProps {
-  name: string;
-  control: Control<any>;
+interface ControlledAutocompleteProps<T extends FieldValues = FieldValues> extends BaseAutocompleteProps {
+  name: FieldPath<T>;
+  control: Control<T>;
   rules?: Record<string, any>;
   onChange?: never;
   onSelectChange?: (values: string[] | string) => void;
@@ -54,7 +54,7 @@ interface UncontrolledAutocompleteProps extends BaseAutocompleteProps {
   rules?: never;
 }
 
-type AutocompleteInputProps = ControlledAutocompleteProps | UncontrolledAutocompleteProps;
+type AutocompleteInputProps<T extends FieldValues = FieldValues> = ControlledAutocompleteProps<T> | UncontrolledAutocompleteProps;
 
 function AutocompleteInputBase({
   options,
@@ -444,10 +444,10 @@ function UncontrolledAutocompleteInput({
 }
 
 // Main component that determines which version to render
-export function AutocompleteInput(props: AutocompleteInputProps) {
+export function AutocompleteInput<T extends FieldValues = FieldValues>(props: AutocompleteInputProps<T>) {
   // Type guard to check if it's controlled
   if ('control' in props && props.control && props.name) {
-    return <ControlledAutocompleteInput { ...props } />;
+    return <ControlledAutocompleteInput { ...(props as ControlledAutocompleteProps) } />;
   }
 
   // Must be uncontrolled

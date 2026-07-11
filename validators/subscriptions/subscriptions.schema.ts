@@ -50,4 +50,9 @@ export const subscriptionSearchParamsSchema = z.object({
   page: z.number().optional(),
   addBillDueSubscriptionId: z.string().optional(),
   year: z.string().optional(),
+  ['subscriptions__cost']: z.string().optional(),
+  ['subscriptions__name']: z.string().optional(),
+  ['subscriptions__billCycleDuration']: z.string().optional(),
+  ['subscriptions__description']: z.string().optional(),
+  ['subscriptions__url']: z.string().optional(),
 });

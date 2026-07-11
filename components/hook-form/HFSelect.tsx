@@ -1,7 +1,7 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { X } from 'lucide-react';
-import { Control } from 'react-hook-form';
 import * as SelectPrimitive from '@radix-ui/react-select';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 import { FONT_CSS_CLASSNAME } from '@/lib/vibes-css-map';
@@ -16,10 +16,10 @@ export type HFSelectOption = {
   value: string;
 };
 
-interface HFSelectProps {
-  name: string;
+interface HFSelectProps<T extends FieldValues> {
+  name: FieldPath<T>;
   label?: string;
-  control: Control<any>;
+  control: Control<T>;
   options: HFSelectOption[];
   placeholder?: string;
   helperText?: string;
@@ -33,7 +33,7 @@ interface HFSelectProps {
   renderOption?: (_option: HFSelectOption) => React.ReactNode;
 }
 
-export default function HFSelect({
+export default function HFSelect<T extends FieldValues>({
   name,
   control,
   options,
@@ -48,7 +48,7 @@ export default function HFSelect({
   selectProps,
   onChanged,
   renderOption,
-}: HFSelectProps) {
+}: HFSelectProps<T>) {
   const hasOptions = options.length > 0;
   return (
     <FormField

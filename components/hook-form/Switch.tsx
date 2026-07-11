@@ -4,17 +4,17 @@
 import { Switch } from '@/components/ui/switch';
 import { FormItem, FormField, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
 
-import type { Control } from 'react-hook-form';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-interface FormSwitchProps {
-  name: string;
+interface FormSwitchProps<T extends FieldValues> {
+  name: FieldPath<T>;
   label: string;
-  control: Control<any>;
+  control: Control<T>;
   helperText?: string;
   disabled?: boolean;
 }
 
-export function FormSwitch({ name, label, control, helperText, disabled = false }: FormSwitchProps) {
+export function FormSwitch<T extends FieldValues>({ name, label, control, helperText, disabled = false }: FormSwitchProps<T>) {
   return (
     <FormField
       control={ control }

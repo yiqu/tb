@@ -6,8 +6,7 @@ const nextConfig: NextConfig = {
     //viewTransition: true,
     useCache: true,
     //turbopackFileSystemCacheForBuild: true,
-    turbopackFileSystemCacheForDev: true,
-    browserDebugInfoInTerminal: false,
+    //turbopackFileSystemCacheForDev: true,
     // Cache dynamic pages in the Router Cache to prevent Suspense re-triggering on back navigation
     // staleTimes: {
     //   dynamic: 30, // Cache dynamic pages for 30 seconds

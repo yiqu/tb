@@ -159,6 +159,62 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     });
   }
 
+  if (searchParams?.['subscriptions__cost'] && searchParams['subscriptions__cost'].trim() !== '') {
+    const costRaw: string = searchParams['subscriptions__cost'].trim();
+    let operator: 'equals' | 'gte' | 'lte' | 'gt' | 'lt' = 'equals';
+    let numericPart: string = costRaw;
+
+    if (costRaw.startsWith('>=')) {
+      operator = 'gte';
+      numericPart = costRaw.slice(2);
+    } else if (costRaw.startsWith('<=')) {
+      operator = 'lte';
+      numericPart = costRaw.slice(2);
+    } else if (costRaw.startsWith('>')) {
+      operator = 'gt';
+      numericPart = costRaw.slice(1);
+    } else if (costRaw.startsWith('<')) {
+      operator = 'lt';
+      numericPart = costRaw.slice(1);
+    }
+
+    const trimmed = numericPart.trim();
+    const costValue = Number(trimmed);
+    if (trimmed !== '' && Number.isFinite(costValue)) {
+      whereClause.AND.push({
+        cost: { [operator]: costValue },
+      });
+    }
+  }
+
+  if (searchParams?.['subscriptions__name'] && searchParams['subscriptions__name'].trim() !== '') {
+    const name: string = searchParams['subscriptions__name'].trim();
+    whereClause.AND.push({
+      name: { contains: name, mode: 'insensitive' },
+    });
+  }
+
+  if (searchParams?.['subscriptions__billCycleDuration'] && searchParams['subscriptions__billCycleDuration'].trim() !== '') {
+    const frequency: string = searchParams['subscriptions__billCycleDuration'].trim();
+    whereClause.AND.push({
+      billCycleDuration: { contains: frequency, mode: 'insensitive' },
+    });
+  }
+
+  if (searchParams?.['subscriptions__description'] && searchParams['subscriptions__description'].trim() !== '') {
+    const description: string = searchParams['subscriptions__description'].trim();
+    whereClause.AND.push({
+      description: { contains: description, mode: 'insensitive' },
+    });
+  }
+
+  if (searchParams?.['subscriptions__url'] && searchParams['subscriptions__url'].trim() !== '') {
+    const url: string = searchParams['subscriptions__url'].trim();
+    whereClause.AND.push({
+      url: { contains: url, mode: 'insensitive' },
+    });
+  }
+
   try {
     let subscriptions: SubscriptionWithBillDues[] = await prisma.subscription.findMany({
       include: {

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { useState } from 'react';
-import { Control } from 'react-hook-form';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 
@@ -14,20 +14,20 @@ interface ButtonGroupOption {
   value: string;
 }
 
-interface HFButtonGroupProps {
+interface HFButtonGroupProps<T extends FieldValues> {
   options: ButtonGroupOption[];
   defaultValue?: string;
 
   onChange?: (value: string) => void;
   className?: string;
   value?: string;
-  control?: Control<any>;
-  name?: string;
+  control?: Control<T>;
+  name?: FieldPath<T>;
   label?: string;
   tooltipMap?: Record<string, string>;
 }
 
-export default function HFButtonGroup({
+export default function HFButtonGroup<T extends FieldValues>({
   options,
   defaultValue,
   onChange,
@@ -37,7 +37,7 @@ export default function HFButtonGroup({
   name,
   label,
   tooltipMap,
-}: HFButtonGroupProps) {
+}: HFButtonGroupProps<T>) {
   const [internalValue, setInternalValue] = useState<string | undefined>(defaultValue);
 
   // if its controlled

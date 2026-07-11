@@ -178,7 +178,8 @@
     "better-tailwindcss/no-unnecessary-whitespace": ["warn"],
     "better-tailwindcss/no-duplicate-classes": ["warn"],
     "better-tailwindcss/enforce-consistent-class-order": ["warn", { "order": "official" }],
-    "better-tailwindcss/enforce-consistent-important-position": ["warn", { "position": "recommended" }]
+    "better-tailwindcss/enforce-consistent-important-position": ["warn", { "position": "recommended" }],
+    "better-tailwindcss/enforce-consistent-variant-order": ["warn"]
   },
   "settings": {
     "better-tailwindcss": {

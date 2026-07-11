@@ -1,3 +1,5 @@
+import { AppColumnId } from '@/store/subscriptions/table.store';
+
 export type SearchTableColumn = {
   headerId: string;
   ordinal: number;
@@ -334,6 +336,35 @@ export function getSubscriptionDetailsTiltCardLogoSize(subscriptionName: string)
     }
     default: {
       return 250;
+    }
+  }
+}
+
+export function getIsColumnFilterable(columnId: AppColumnId) {
+  switch (columnId) {
+    case 'cost': {
+      return true;
+    }
+    case 'frequency': {
+      return true;
+    }
+    case 'subscription': {
+      return true;
+    }
+    case 'name': {
+      return true;
+    }
+    case 'billCycleDuration': {
+      return true;
+    }
+    case 'description': {
+      return true;
+    }
+    case 'url': {
+      return true;
+    }
+    default: {
+      return false;
     }
   }
 }

@@ -1,16 +1,16 @@
 'use client';
 
 import { RotateCcw } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 import { cn } from '@/lib/utils';
 import { Button, ButtonProps } from '@/components/ui/button';
+import useDashboardRangeSelect from '@/hooks/useDashboardRangeSelect';
 
-export default function BillsActionBarClearAllFilters({ className, ...props }: { className?: string } & ButtonProps) {
-  const router = useRouter();
+export default function BillsTableActionBarClearAllFilters({ className, ...props }: { className?: string } & ButtonProps) {
+  const { clearBillsTableFilterParams } = useDashboardRangeSelect();
 
   const handleClearAllFilters = () => {
-    router.push('/');
+    clearBillsTableFilterParams();
   };
 
   return (
@@ -25,7 +25,7 @@ export default function BillsActionBarClearAllFilters({ className, ...props }: {
       { ...props }
     >
       <RotateCcw className="size-4" />
-      Go back to current month
+      Clear filters
     </Button>
   );
 }
