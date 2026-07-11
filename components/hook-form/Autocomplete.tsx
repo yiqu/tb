@@ -5,7 +5,7 @@
 'use client';
 
 import { X, Check, ChevronsUpDown } from 'lucide-react';
-import { type Control, useController } from 'react-hook-form';
+import { type Control, useController, type FieldPath, type FieldValues } from 'react-hook-form';
 import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -21,7 +21,7 @@ export type HFAutocompleteSelectionOption = {
   value: string;
 };
 
-interface AutocompleteInputProps {
+interface AutocompleteInputProps<T extends FieldValues = FieldValues> {
   options: HFAutocompleteSelectionOption[];
   placeholder?: string;
   label?: React.ReactNode;
@@ -30,15 +30,15 @@ interface AutocompleteInputProps {
   defaultValues?: string[] | string;
   // eslint-disable-next-line no-unused-vars
   onChange?: (values: string[] | string) => void;
-  name: string;
-  control?: Control<any>;
+  name: FieldPath<T>;
+  control?: Control<T>;
   rules?: Record<string, any>;
   multi?: boolean;
   isLoading?: boolean;
   formItemClassName?: string;
 }
 
-export function AutocompleteInput({
+export function AutocompleteInput<T extends FieldValues = FieldValues>({
   options,
   placeholder = 'Select an option...',
   label,
@@ -52,7 +52,7 @@ export function AutocompleteInput({
   isLoading = false,
   multi = true,
   formItemClassName,
-}: AutocompleteInputProps) {
+}: AutocompleteInputProps<T>) {
   const [open, setOpen] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
   const listRef = useRef<HTMLDivElement>(null);
@@ -74,7 +74,7 @@ export function AutocompleteInput({
     name: name, // Provide a default name
     control,
     rules,
-    defaultValue: defaultValues,
+    defaultValue: defaultValues as any,
     disabled: !isControlled, // Disable the controller if not controlled
   });
   
