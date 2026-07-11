@@ -1,7 +1,7 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 import { X } from 'lucide-react';
-import { Control, FieldPath, FieldValues } from 'react-hook-form';
 import * as SelectPrimitive from '@radix-ui/react-select';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 import { FONT_CSS_CLASSNAME } from '@/lib/vibes-css-map';
