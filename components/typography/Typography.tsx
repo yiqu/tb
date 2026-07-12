@@ -43,6 +43,10 @@ export const typographyVariants = cva('scroll-m-20', {
 
       p: `text-[0.875rem] leading-5 tracking-normal [&:not(:first-child)]:mt-6`,
 
+      p0: `text-[0.75rem] leading-4 tracking-normal`,
+      p1: `text-[0.875rem] leading-5 tracking-normal`,
+      p2: `text-[1rem] leading-6 tracking-normal`,
+
       caption0: `text-[0.65rem] leading-[0.9rem] tracking-wide text-gray-500 dark:text-gray-300`,
       caption1: `text-[0.75rem] leading-4 tracking-wide text-gray-500 dark:text-gray-300`,
       caption2: `text-[0.85rem] leading-5 tracking-normal text-gray-500 dark:text-gray-300`,
@@ -86,7 +90,7 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement>, Vari
 }
 
 export default function Typography({ children, variant = 'body1', as, className, ...props }: TypographyProps) {
-  const Tag: React.ElementType = as ?? (isIntrinsicVariant(variant) ? variant : 'span');
+  const Tag: React.ElementType = as ?? getDefaultTag(variant);
 
   return (
     <Tag className={ cn(typographyVariants({ variant: variant, className: className })) } { ...props }>
@@ -101,4 +105,14 @@ type IntrinsicVariant = (typeof intrinsicVariants)[number];
 
 function isIntrinsicVariant(variant: TypographyProps['variant']): variant is IntrinsicVariant {
   return intrinsicVariants.includes(variant as IntrinsicVariant);
+}
+
+function getDefaultTag(variant: TypographyProps['variant']): React.ElementType {
+  if (isIntrinsicVariant(variant)) {
+    return variant;
+  }
+  if (variant === 'p0' || variant === 'p1' || variant === 'p2') {
+    return 'p';
+  }
+  return 'span';
 }
