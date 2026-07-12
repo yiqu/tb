@@ -47,6 +47,10 @@ export const typographyVariants = cva('scroll-m-20', {
       p1: `text-[0.875rem] leading-5 tracking-normal`,
       p2: `text-[1rem] leading-6 tracking-normal`,
 
+      span0: `text-[0.75rem] leading-4 tracking-normal`,
+      span1: `text-[0.875rem] leading-5 tracking-normal`,
+      span2: `text-[1rem] leading-6 tracking-normal`,
+
       caption0: `text-[0.65rem] leading-[0.9rem] tracking-wide text-gray-500 dark:text-gray-300`,
       caption1: `text-[0.75rem] leading-4 tracking-wide text-gray-500 dark:text-gray-300`,
       caption2: `text-[0.85rem] leading-5 tracking-normal text-gray-500 dark:text-gray-300`,
@@ -111,8 +115,9 @@ function getDefaultTag(variant: TypographyProps['variant']): React.ElementType {
   if (isIntrinsicVariant(variant)) {
     return variant;
   }
-  if (variant === 'p0' || variant === 'p1' || variant === 'p2') {
-    return 'p';
+  if (variant === 'h6' || variant === 'span0' || variant === 'span1' || variant === 'span2') {
+    return 'span';
   }
-  return 'span';
+  // the app historically renders every other variant as a <p>
+  return 'p';
 }
