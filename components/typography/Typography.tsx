@@ -82,24 +82,23 @@ export const typographyVariants = cva('scroll-m-20', {
 export interface TypographyProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof typographyVariants> {
   as?: React.ElementType;
   children?: ReactNode;
+  ref?: React.Ref<HTMLElement>;
 }
 
 export default function Typography({ children, variant = 'body1', as, className, ...props }: TypographyProps) {
-  if (intrinsicElements.includes(variant ?? '')) {
-    const Tag = as || (variant as intrinsicElementType) || 'p';
+  const Tag: React.ElementType = as ?? (isIntrinsicVariant(variant) ? variant : 'span');
 
-    return (
-      <Tag className={ cn(typographyVariants({ variant: variant, className: className })) } { ...props }>
-        { children }
-      </Tag>
-    );
-  }
   return (
-    <p className={ cn(typographyVariants({ variant: variant, className: className })) } { ...props }>
+    <Tag className={ cn(typographyVariants({ variant: variant, className: className })) } { ...props }>
       { children }
-    </p>
+    </Tag>
   );
 }
 
-const intrinsicElements = ['h1', 'h2', 'h3', 'h4', 'h5', 'p'];
-type intrinsicElementType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p';
+// h6 intentionally left out: it renders as a span for now
+const intrinsicVariants = ['h1', 'h2', 'h3', 'h4', 'h5', 'p'] as const;
+type IntrinsicVariant = (typeof intrinsicVariants)[number];
+
+function isIntrinsicVariant(variant: TypographyProps['variant']): variant is IntrinsicVariant {
+  return intrinsicVariants.includes(variant as IntrinsicVariant);
+}
