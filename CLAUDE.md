@@ -74,3 +74,8 @@ Reference the relevant doc on their website: `https://nextjs.org/docs`. Your tra
 - All form validation must go through Zod schemas — no inline validation logic
 - Prefer server-side validation then pass it client-side
 - When creating new routes, follow Next.js app router convention.
+
+## Post plan
+
+- Run a review and fix any issues or problems that does not required the developer or user's input. 
+- If there is a unsure question, then do not fix it until you receive further clarification. 
