@@ -43,6 +43,14 @@ export const typographyVariants = cva('scroll-m-20', {
 
       p: `text-[0.875rem] leading-5 tracking-normal [&:not(:first-child)]:mt-6`,
 
+      p0: `text-[0.75rem] leading-4 tracking-normal`,
+      p1: `text-[0.875rem] leading-5 tracking-normal`,
+      p2: `text-[1rem] leading-6 tracking-normal`,
+
+      span0: `text-[0.75rem] leading-4 tracking-normal`,
+      span1: `text-[0.875rem] leading-5 tracking-normal`,
+      span2: `text-[1rem] leading-6 tracking-normal`,
+
       caption0: `text-[0.65rem] leading-[0.9rem] tracking-wide text-gray-500 dark:text-gray-300`,
       caption1: `text-[0.75rem] leading-4 tracking-wide text-gray-500 dark:text-gray-300`,
       caption2: `text-[0.85rem] leading-5 tracking-normal text-gray-500 dark:text-gray-300`,
@@ -82,24 +90,34 @@ export const typographyVariants = cva('scroll-m-20', {
 export interface TypographyProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof typographyVariants> {
   as?: React.ElementType;
   children?: ReactNode;
+  ref?: React.Ref<HTMLElement>;
 }
 
 export default function Typography({ children, variant = 'body1', as, className, ...props }: TypographyProps) {
-  if (intrinsicElements.includes(variant ?? '')) {
-    const Tag = as || (variant as intrinsicElementType) || 'p';
+  const Tag: React.ElementType = as ?? getDefaultTag(variant);
 
-    return (
-      <Tag className={ cn(typographyVariants({ variant: variant, className: className })) } { ...props }>
-        { children }
-      </Tag>
-    );
-  }
   return (
-    <p className={ cn(typographyVariants({ variant: variant, className: className })) } { ...props }>
+    <Tag className={ cn(typographyVariants({ variant: variant, className: className })) } { ...props }>
       { children }
-    </p>
+    </Tag>
   );
 }
 
-const intrinsicElements = ['h1', 'h2', 'h3', 'h4', 'h5', 'p'];
-type intrinsicElementType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'p';
+// h6 intentionally left out: it renders as a span for now
+const intrinsicVariants = ['h1', 'h2', 'h3', 'h4', 'h5', 'p'] as const;
+type IntrinsicVariant = (typeof intrinsicVariants)[number];
+
+function isIntrinsicVariant(variant: TypographyProps['variant']): variant is IntrinsicVariant {
+  return intrinsicVariants.includes(variant as IntrinsicVariant);
+}
+
+function getDefaultTag(variant: TypographyProps['variant']): React.ElementType {
+  if (isIntrinsicVariant(variant)) {
+    return variant;
+  }
+  if (variant === 'h6' || variant === 'span0' || variant === 'span1' || variant === 'span2') {
+    return 'span';
+  }
+  // the app historically renders every other variant as a <p>
+  return 'p';
+}
