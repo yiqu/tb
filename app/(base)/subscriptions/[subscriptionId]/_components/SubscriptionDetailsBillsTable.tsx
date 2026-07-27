@@ -6,6 +6,7 @@ import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
 import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
+import FormattedTableHeadFiller from '@/shared/table/FormattedTableHeadFiller';
 import { SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
 import BillsTableParentRow from '@/shared/table/BillsDueTableParentRow';
@@ -28,20 +29,20 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
         <Table className="table-fixed">
           <TableHeader className={ `bg-muted` }>
             <TableRow className="hover:bg-transparent">
-              { columnsSorted.map((column: string, index: number, array: string[]) => {
+              { columnsSorted.map((column: string, index: number) => {
                 return (
                   <FormattedTableHeader
                     tableId="bills"
                     key={ column }
                     columnId={ column }
                     index={ index }
-                    length={ array.length }
                     sortData={ null }
                     pageId={ SORT_DATA_PAGE_IDS.subscriptionDetailsBillsBillsTable }
                     onSortUpdate={ handleOnSortUpdate }
                   />
                 );
               }) }
+              <FormattedTableHeadFiller />
             </TableRow>
           </TableHeader>
           <TableBody>

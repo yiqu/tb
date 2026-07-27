@@ -7,6 +7,7 @@ import useIsClient from '@/hooks/useIsClient';
 import BillsTableLoading from '@/shared/loading/BillsTableLoading';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
 import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
+import FormattedTableHeadFiller from '@/shared/table/FormattedTableHeadFiller';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
@@ -76,7 +77,7 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
             { (droppableProvided) => {
               return (
                 <TableRow ref={ droppableProvided.innerRef } { ...droppableProvided.droppableProps } className="hover:bg-transparent">
-                  { columnsSorted.map((column: string, index: number, array: string[]) => {
+                  { columnsSorted.map((column: string, index: number) => {
                     return (
                       <Draggable key={ column } draggableId={ column } index={ index }>
                         { (draggableProvided, snapshot) => {
@@ -89,7 +90,6 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
                               isDragging={ snapshot.isDragging }
                               columnId={ column }
                               index={ index }
-                              length={ array.length }
                               sortData={ sortData }
                               pageId={ pageId }
                               sortable={ unsortableBillsColumns[column] ?? true }
@@ -102,6 +102,7 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
                   }) }
 
                   { droppableProvided.placeholder }
+                  <FormattedTableHeadFiller />
                 </TableRow>
               );
             } }

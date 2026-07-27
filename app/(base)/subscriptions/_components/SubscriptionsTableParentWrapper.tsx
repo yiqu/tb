@@ -8,6 +8,7 @@ import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import BillsTableLoading from '@/shared/loading/BillsTableLoading';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
 import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
+import FormattedTableHeadFiller from '@/shared/table/FormattedTableHeadFiller';
 import { SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { SubscriptionWithBillDues, SubscriptionWithBillDuesAndSortData } from '@/models/subscriptions/subscriptions.model';
@@ -71,7 +72,7 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
           <Droppable droppableId="table-columns" direction="horizontal">
             { (droppableProvided) => (
               <TableRow ref={ droppableProvided.innerRef } { ...droppableProvided.droppableProps } className="hover:bg-transparent">
-                { columnsSorted.map((column: string, index: number, array: string[]) => (
+                { columnsSorted.map((column: string, index: number) => (
                   <Draggable key={ column } draggableId={ column } index={ index }>
                     { (draggableProvided, snapshot) => (
                       <FormattedTableHeader
@@ -82,7 +83,6 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
                         isDragging={ snapshot.isDragging }
                         columnId={ column }
                         index={ index }
-                        length={ array.length }
                         sortData={ subscriptions.sortData }
                         pageId={ SORT_DATA_PAGE_IDS.subscriptions }
                         sortable={ unsortableSubscriptionsColumns[column] ?? true }
@@ -92,6 +92,7 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
                   </Draggable>
                 )) }
                 { droppableProvided.placeholder }
+                <FormattedTableHeadFiller />
               </TableRow>
             ) }
           </Droppable>
