@@ -59,7 +59,7 @@ export default function FormattedTableHeader({
   const [isPending, startTransition] = useTransition();
   const columnWidth = useTableColumn(columnId);
   const { setColumnWidth } = useTableColumnsActions();
-  const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
+  const { currentWidth, isResizing, handleResizePointerDown, handleResizeDoubleClick } = useColumnResize({
     columnId,
     initialWidth: columnWidth,
     minWidth: 80,
@@ -147,6 +147,7 @@ export default function FormattedTableHeader({
       </RowStack>
       <FormattedTableHeadResizeHandle
         handleResizePointerDown={ handleResizePointerDown }
+        handleResizeDoubleClick={ handleResizeDoubleClick }
         isResizing={ isResizing }
         isLastColumn={ isLastColumn }
       />

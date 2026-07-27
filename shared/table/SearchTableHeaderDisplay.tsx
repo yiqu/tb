@@ -52,7 +52,7 @@ export default function SearchTableHeaderDisplay({
   const [isPending, startTransition] = useTransition();
   const columnWidth = useTableColumn(columnId);
   const { setColumnWidth } = useTableColumnsActions();
-  const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
+  const { currentWidth, isResizing, handleResizePointerDown, handleResizeDoubleClick } = useColumnResize({
     columnId,
     initialWidth: columnWidth,
     minWidth: 80,
@@ -176,9 +176,10 @@ export default function SearchTableHeaderDisplay({
         </RowStack>
       </RowStack>
       { !isLastColumn && (
-        <WithTooltip tooltip="Resize column">
+        <WithTooltip tooltip="Drag to resize. Double click to auto fit.">
           <div
             onPointerDown={ handleResizePointerDown }
+            onDoubleClick={ handleResizeDoubleClick }
             className={ cn(`
               absolute top-0 right-0 z-10 h-full w-1 cursor-col-resize
               hover:bg-accent
