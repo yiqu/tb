@@ -12,7 +12,7 @@ import { getSubscriptionsQueryOptions } from '@/server/subscriptions/query/subsc
 const usdFormatter = getUSDFormatter();
 
 export default function FavoriteItemName({ favoriteEntity }: { favoriteEntity: FavoriteEntity }) {
-  // if search query is subscriptions list, extract the subscription ids
+  // Extract query section from name (format: "name?query=params")
   const nameArray = favoriteEntity.name.split('?');
   const querySection = nameArray[1] ?? favoriteEntity.name;
   const urlSearchParamsObject = getParamsAsObject(new URLSearchParams(querySection));
@@ -20,10 +20,9 @@ export default function FavoriteItemName({ favoriteEntity }: { favoriteEntity: F
     Object.keys(urlSearchParamsObject).length === 1 && urlSearchParamsObject.subscriptions
   );
   
+  // Extract subscription IDs if this is a search query with only subscriptions parameter
   let subscriptionIds: string[] = [];
   if (favoriteEntity.entityType === 'SEARCH_QUERY' && favoriteEntity.name.includes('subscriptions=') && isSearchParamsOnlySubscriptions) {
-    const nameArray = favoriteEntity.name.split('?');
-    const querySection = nameArray[1] ?? favoriteEntity.name; // subscriptions=68aa1b11d85e7ccfba6d5615,xxxxxxx,xxxxx
     const subIdsSection = decodeURIComponent(querySection.split('=')[1] ?? '');
     subscriptionIds = subIdsSection.split(',');
   }
@@ -47,14 +46,11 @@ export default function FavoriteItemName({ favoriteEntity }: { favoriteEntity: F
   });
 
   if (favoriteEntity.entityType === 'SEARCH_QUERY') {
-    const nameArray = favoriteEntity.name.split('?');
-    const querySection = nameArray[1] ?? favoriteEntity.name; // subscriptions=68aa1b11d85e7ccfba6d5615,xxxxxxx,xxxxx
-
     if (isSubscriptionsDataLoading) {
       return <Skeleton className="h-5 w-full truncate" />;
     }
     if (isSubscriptionsDataError) {
-      return <Typography className="truncate text-red-500">Error loading bill due</Typography>;
+      return <Typography className="truncate text-red-500">Error loading subscriptions</Typography>;
     }
 
     if (isSearchParamsOnlySubscriptions) {
@@ -86,11 +82,11 @@ export default function FavoriteItemName({ favoriteEntity }: { favoriteEntity: F
         <Typography className="">{ usdFormatter.format(cost ?? 0) } |</Typography>
         <Typography className="truncate">{ subscriptionName } |</Typography>
         <DateRelativeDisplay
-          time={ dueDate as any }
+          time={ dueDate ?? null }
           largest={ 1 }
           updateInterval={ 120_000 }
           useShortText={ true }
-          className={ `truncate` }
+          className="truncate"
           overrideHideSeconds
         />
       </div>

@@ -26,9 +26,9 @@ export function isFalse(value: string | undefined | null) {
 
 export function safeParseJson<T>(jsonString: string, defaultValue: T = {} as T): T {
   try {
-    const parsedObject = JSON.parse(jsonString);
-    return parsedObject; // Return the parsed object if successful
-  } catch (error) {
+    const parsedObject = JSON.parse(jsonString) as T;
+    return parsedObject;
+  } catch (error: unknown) {
     console.error('Error parsing JSON:', error);
     return defaultValue;
   }

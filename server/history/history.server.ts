@@ -84,9 +84,10 @@ export async function getAllHistoryEntries(): Promise<HistoryEntryResponse> {
       groups,
       totalCount: historyEntries.length,
     };
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getAllHistoryEntriesCached(): ', JSON.stringify(error));
-    throw new Error(`Error retrieving history entries. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error retrieving history entries. Code: ${errorCode}`);
   }
 }
 
@@ -99,8 +100,9 @@ export async function addHistoryEntry(name: string | null, url: string): Promise
     revalidateTag(CACHE_TAG_HISTORY_ENTRIES_ALL, 'max');
 
     return historyEntry;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at addHistoryEntryCached(): ', JSON.stringify(error));
-    throw new Error(`Error adding history entry. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Error adding history entry. Code: ${errorCode}`);
   }
 }
