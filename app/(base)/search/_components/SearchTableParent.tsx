@@ -33,7 +33,6 @@ export default async function SearchTableParent() {
                     index={ index }
                     sortData={ billDues.sortData }
                     pageId={ SORT_DATA_PAGE_IDS.search }
-                    hideRightBorder={ index === columnsSorted.length - 1 }
                   />
                 );
               }) }

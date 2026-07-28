@@ -38,7 +38,10 @@ interface FormattedTableHeaderProps {
   draggableProps?: DraggableProvidedDraggableProps;
   dragHandleProps?: DraggableProvidedDragHandleProps | null;
   isDragging?: boolean;
-  /** Hides the column's right border — pass for the last data column so no stray line shows against the filler column. */
+  /**
+   * Force-hides the column's right border. Not needed when a `<FormattedTableHeadFiller />`
+   * directly follows this column — the border hides automatically in that case.
+   */
   hideRightBorder?: boolean;
   onSortUpdate?: (_sortData: SortDataUpsertable) => void;
 }

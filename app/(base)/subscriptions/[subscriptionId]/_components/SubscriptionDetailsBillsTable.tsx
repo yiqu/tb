@@ -38,7 +38,6 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
                     index={ index }
                     sortData={ null }
                     pageId={ SORT_DATA_PAGE_IDS.subscriptionDetailsBillsBillsTable }
-                    hideRightBorder={ index === columnsSorted.length - 1 }
                     onSortUpdate={ handleOnSortUpdate }
                   />
                 );

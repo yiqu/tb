@@ -19,5 +19,5 @@ type FormattedTableHeadFillerProps = {
  * column structure matches between header and body.
  */
 export default function FormattedTableHeadFiller({ className }: FormattedTableHeadFillerProps) {
-  return <TableHead aria-hidden="true" className={ cn('rounded-tr-md', className) } />;
+  return <TableHead aria-hidden="true" data-table-filler="true" className={ cn('rounded-tr-md', className) } />;
 }

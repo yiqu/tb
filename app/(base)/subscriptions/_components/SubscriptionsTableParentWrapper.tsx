@@ -86,7 +86,6 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
                         sortData={ subscriptions.sortData }
                         pageId={ SORT_DATA_PAGE_IDS.subscriptions }
                         sortable={ unsortableSubscriptionsColumns[column] ?? true }
-                        hideRightBorder={ index === columnsSorted.length - 1 }
                         onSortUpdate={ handleOnSortUpdate }
                       />
                     ) }
