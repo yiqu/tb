@@ -2,6 +2,8 @@
 
 import { useRef, useState, useCallback } from 'react';
 
+import useAutoColumnWidth from '@/shared/table-auto-width/useAutoColumnWidth';
+
 interface UseColumnResizeOptions {
   /** Identifier for the column being resized, forwarded to onWidthChange. */
   columnId: string;
@@ -29,10 +31,15 @@ interface UseColumnResizeOptions {
  *    listeners are removed, and a one-shot capture-phase click handler swallows the
  *    subsequent click event to prevent it from triggering column sort.
  *
+ * Double clicking the handle auto-fits the column to its currently rendered
+ * content (via the composable `useAutoColumnWidth` hook in `/shared/table-auto-width`)
+ * and commits the measured width through the same `onWidthChange` callback.
+ *
  * @returns
  * - `currentWidth`  – the width to apply to the column (live during drag, `initialWidth` otherwise).
  * - `isResizing`    – `true` while a drag is in progress; useful for styling.
  * - `handleResizePointerDown` – attach to the resize handle's `onPointerDown`.
+ * - `handleResizeDoubleClick` – attach to the resize handle's `onDoubleClick` to auto-fit the column.
  */
 export default function useColumnResize({ columnId, initialWidth, minWidth = 100, maxWidth = 400, onWidthChange }: UseColumnResizeOptions) {
   // Tracks the live width during a drag; null when idle so we fall back to initialWidth.
@@ -40,6 +47,9 @@ export default function useColumnResize({ columnId, initialWidth, minWidth = 100
   const [isResizing, setIsResizing] = useState(false);
   // Ref instead of state so move/up handlers always read the latest values without re-renders.
   const dragState = useRef({ startX: 0, startWidth: 0 });
+
+  // Double clicking the resize handle auto-fits the column to its rendered content.
+  const { handleAutoFitDoubleClick } = useAutoColumnWidth({ columnId, minWidth, maxWidth, onWidthChange });
 
   /** Document-level pointermove: updates the live column width as the user drags. */
   const handlePointerMove = useCallback(
@@ -104,5 +114,7 @@ export default function useColumnResize({ columnId, initialWidth, minWidth = 100
     isResizing,
     /** Pointer-down handler to attach to the resize handle element. */
     handleResizePointerDown,
+    /** Double-click handler to attach to the resize handle element — auto-fits the column to its content. */
+    handleResizeDoubleClick: handleAutoFitDoubleClick,
   };
 }

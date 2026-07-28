@@ -8,6 +8,7 @@ import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort
 
 import FormattedTableHeader from './FormattedTableHeader';
 import BillsTableParentRow from './BillsDueTableParentRow';
+import FormattedTableHeadFiller from './FormattedTableHeadFiller';
 
 interface BillsDueTableProps {
   billDues: BillDueWithSubscription[];
@@ -26,14 +27,13 @@ export default function BillsDueTable({ billDues, columns, sortData, pageId, tab
     <Table className="table-fixed" id={ tableId ?? 'bills-table' }>
       <TableHeader className={ `bg-muted` }>
         <TableRow className="hover:bg-transparent">
-          { columns.map((column: string, index: number, array: string[]) => {
+          { columns.map((column: string, index: number) => {
             return (
               <FormattedTableHeader
                 tableId="bills"
                 key={ column }
                 columnId={ column }
                 index={ index }
-                length={ array.length }
                 sortData={ sortData }
                 pageId={ pageId }
                 sortable={ unsortableBillsColumns[column] ?? true }
@@ -41,6 +41,7 @@ export default function BillsDueTable({ billDues, columns, sortData, pageId, tab
               />
             );
           }) }
+          <FormattedTableHeadFiller />
         </TableRow>
       </TableHeader>
       <TableBody>

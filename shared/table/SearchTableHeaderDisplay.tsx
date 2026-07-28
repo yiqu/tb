@@ -52,7 +52,7 @@ export default function SearchTableHeaderDisplay({
   const [isPending, startTransition] = useTransition();
   const columnWidth = useTableColumn(columnId);
   const { setColumnWidth } = useTableColumnsActions();
-  const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
+  const { currentWidth, isResizing, handleResizePointerDown, handleResizeDoubleClick } = useColumnResize({
     columnId,
     initialWidth: columnWidth,
     minWidth: 80,
@@ -75,7 +75,6 @@ export default function SearchTableHeaderDisplay({
   const nextSortData: SortData = getNextSortDirection(optimisticSortData, columnId as SortField);
   const isColumnSorted: boolean = optimisticSortData.sort === columnId && optimisticSortData.direction !== '';
   const sortDirection: string | undefined = optimisticSortData.direction;
-  const isLastColumn = index === length - 1;
   const columnSortTooltip: string = getSortInfoText(columnId, !!sortable, isColumnSorted, sortDirection as SortDirection, nextSortData);
 
   const handleOnHeaderClick = (columnId: string) => {
@@ -103,13 +102,12 @@ export default function SearchTableHeaderDisplay({
       { ...draggableProps }
       className={ cn('relative truncate', {
         'sticky left-0 z-20 rounded-tl-md bg-muted': index === 0,
-        'rounded-tr-md': isLastColumn,
         'border-l border-border': index !== 0,
         'bg-accent': isResizing,
         'bg-accent shadow-md': isDragging,
       }) }
       style={ {
-        width: isLastColumn ? '100%' : `${currentWidth}px`,
+        width: `${currentWidth}px`,
         ...draggableProps?.style,
       } }
     >
@@ -175,17 +173,16 @@ export default function SearchTableHeaderDisplay({
           : null }
         </RowStack>
       </RowStack>
-      { !isLastColumn && (
-        <WithTooltip tooltip="Resize column">
-          <div
-            onPointerDown={ handleResizePointerDown }
-            className={ cn(`
-              absolute top-0 right-0 z-10 h-full w-1 cursor-col-resize
-              hover:bg-accent
-            `, { 'bg-accent': isResizing }) }
-          />
-        </WithTooltip>
-      ) }
+      <WithTooltip tooltip="Drag to resize. Double click to auto fit.">
+        <div
+          onPointerDown={ handleResizePointerDown }
+          onDoubleClick={ handleResizeDoubleClick }
+          className={ cn(`
+            absolute top-0 right-0 z-10 h-full w-1 cursor-col-resize
+            hover:bg-accent
+          `, { 'bg-accent': isResizing }) }
+        />
+      </WithTooltip>
     </TableHead>
   );
 }

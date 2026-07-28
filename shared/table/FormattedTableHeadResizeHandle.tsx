@@ -4,23 +4,20 @@ import WithTooltip from '../components/WithTooltip';
 
 type FormattedTableHeadResizeHandleProps = {
   handleResizePointerDown: (_e: React.PointerEvent) => void;
+  handleResizeDoubleClick?: (_e: React.MouseEvent<HTMLElement>) => void;
   isResizing: boolean;
-  isLastColumn?: boolean;
 };
 
 export default function FormattedTableHeadResizeHandle({
   handleResizePointerDown,
+  handleResizeDoubleClick,
   isResizing,
-  isLastColumn,
 }: FormattedTableHeadResizeHandleProps) {
-  if (isLastColumn) {
-    return null;
-  }
-
   return (
-    <WithTooltip tooltip="Resize column">
+    <WithTooltip tooltip={ handleResizeDoubleClick ? 'Drag to resize. Double click to auto fit.' : 'Resize column' }>
       <div
         onPointerDown={ handleResizePointerDown }
+        onDoubleClick={ handleResizeDoubleClick }
         className={ cn(`
           absolute top-0 right-0 z-10 h-full w-1 cursor-col-resize
           hover:bg-accent

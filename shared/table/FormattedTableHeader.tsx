@@ -30,7 +30,6 @@ import FormattedTableHeadResizeHandle from './FormattedTableHeadResizeHandle';
 interface FormattedTableHeaderProps {
   columnId: string;
   index: number;
-  length: number;
   sortData: SortDataModel | null;
   pageId: SortDataPageId;
   sortable?: boolean;
@@ -45,7 +44,6 @@ interface FormattedTableHeaderProps {
 export default function FormattedTableHeader({
   columnId,
   index,
-  length,
   sortData,
   pageId,
   sortable,
@@ -59,7 +57,7 @@ export default function FormattedTableHeader({
   const [isPending, startTransition] = useTransition();
   const columnWidth = useTableColumn(columnId);
   const { setColumnWidth } = useTableColumnsActions();
-  const { currentWidth, isResizing, handleResizePointerDown } = useColumnResize({
+  const { currentWidth, isResizing, handleResizePointerDown, handleResizeDoubleClick } = useColumnResize({
     columnId,
     initialWidth: columnWidth,
     minWidth: 80,
@@ -82,7 +80,6 @@ export default function FormattedTableHeader({
   const nextSortData: SortData = getNextSortDirection(optimisticSortData, columnId as SortField);
   const isColumnSorted: boolean = optimisticSortData.sort === columnId && optimisticSortData.direction !== '';
   const sortDirection: string | undefined = optimisticSortData.direction;
-  const isLastColumn = index === length - 1;
   const columnSortTooltip: string = getSortInfoText(columnId, !!sortable, isColumnSorted, sortDirection as SortDirection, nextSortData);
   const showFilterOptions = getIsColumnFilterable(columnId as AppColumnId);
 
@@ -112,7 +109,6 @@ export default function FormattedTableHeader({
       currentWidth={ currentWidth }
       isDragging={ isDragging }
       index={ index }
-      isLastColumn={ isLastColumn }
       isResizing={ isResizing }
     >
       <RowStack className={ cn('group/header flex flex-row items-center justify-start select-none') } id={ `table-header-content-${columnId}` }>
@@ -147,8 +143,8 @@ export default function FormattedTableHeader({
       </RowStack>
       <FormattedTableHeadResizeHandle
         handleResizePointerDown={ handleResizePointerDown }
+        handleResizeDoubleClick={ handleResizeDoubleClick }
         isResizing={ isResizing }
-        isLastColumn={ isLastColumn }
       />
     </FormattedTableHead>
   );

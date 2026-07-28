@@ -7,6 +7,8 @@ import { SortDataModel } from '@/models/sort-data/SortData.model';
 import SearchTableCell from '@/shared/table/SearchTableCellDisplay';
 import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
 import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
+import FormattedTableHeadFiller from '@/shared/table/FormattedTableHeadFiller';
+import FormattedTableCellFiller from '@/shared/table/FormattedTableCellFiller';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { getSortDataForPageIdCached } from '@/server/sort-data/sort-data.server';
 import { BillDueWithSubscription, BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
@@ -22,19 +24,19 @@ export default async function SearchTableParent() {
         <Table className={ `table-fixed` }>
           <TableHeader className="bg-muted">
             <TableRow className="hover:bg-transparent">
-              { columnsSorted.map((column: string, index: number, array: string[]) => {
+              { columnsSorted.map((column: string, index: number) => {
                 return (
                   <FormattedTableHeader
                     tableId="search"
                     key={ column }
                     columnId={ column }
                     index={ index }
-                    length={ array.length }
                     sortData={ billDues.sortData }
                     pageId={ SORT_DATA_PAGE_IDS.search }
                   />
                 );
               }) }
+              <FormattedTableHeadFiller />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -43,6 +45,7 @@ export default async function SearchTableParent() {
                 { BILLS_TABLE_COLUMNS.map((column: string) => (
                   <SearchTableCell key={ column } colId={ column } billDue={ billDue } />
                 )) }
+                <FormattedTableCellFiller />
               </TableRow>
             )) }
           </TableBody>

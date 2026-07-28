@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { TableRow } from '@/components/ui/table';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
+import FormattedTableCellFiller from '@/shared/table/FormattedTableCellFiller';
 import { BillDueIdBeingEdited, useGetBillDueIdBeingEdited } from '@/store/bills/bills.store';
 
 export default function BillsTableParentRowWrapper({ billDue, children }: { billDue: BillDueWithSubscription; children: React.ReactNode }) {
@@ -15,6 +16,7 @@ export default function BillsTableParentRowWrapper({ billDue, children }: { bill
       }) }
     >
       { children }
+      <FormattedTableCellFiller />
     </TableRow>
   );
 }
