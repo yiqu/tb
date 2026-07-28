@@ -38,11 +38,6 @@ interface FormattedTableHeaderProps {
   draggableProps?: DraggableProvidedDraggableProps;
   dragHandleProps?: DraggableProvidedDragHandleProps | null;
   isDragging?: boolean;
-  /**
-   * Force-hides the column's right border. Not needed when a `<FormattedTableHeadFiller />`
-   * directly follows this column — the border hides automatically in that case.
-   */
-  hideRightBorder?: boolean;
   onSortUpdate?: (_sortData: SortDataUpsertable) => void;
 }
 
@@ -57,7 +52,6 @@ export default function FormattedTableHeader({
   draggableProps,
   dragHandleProps,
   isDragging,
-  hideRightBorder,
   onSortUpdate,
 }: FormattedTableHeaderProps) {
   const [isPending, startTransition] = useTransition();
@@ -116,7 +110,6 @@ export default function FormattedTableHeader({
       isDragging={ isDragging }
       index={ index }
       isResizing={ isResizing }
-      hideRightBorder={ hideRightBorder }
     >
       <RowStack className={ cn('group/header flex flex-row items-center justify-start select-none') } id={ `table-header-content-${columnId}` }>
         <FormattedTableHeadDragHandle dragHandleProps={ dragHandleProps } />

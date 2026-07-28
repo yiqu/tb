@@ -12,5 +12,5 @@ type FormattedTableCellFillerProps = {
  * last data column.
  */
 export default function FormattedTableCellFiller({ className }: FormattedTableCellFillerProps) {
-  return <TableCell aria-hidden="true" data-table-filler="true" className={ cn(className) } />;
+  return <TableCell aria-hidden="true" className={ cn(className) } />;
 }

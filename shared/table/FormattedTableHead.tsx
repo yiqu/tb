@@ -12,12 +12,6 @@ type FormattedTableHeadProps = {
   index: number;
   isResizing: boolean;
   currentWidth: number;
-  /**
-   * Force-hides the column's right border. The border already hides automatically when a
-   * `<FormattedTableHeadFiller />` directly follows this column — this prop is only needed
-   * for tables without a filler column.
-   */
-  hideRightBorder?: boolean;
   children: React.ReactNode;
 };
 
@@ -28,17 +22,16 @@ export default function FormattedTableHead({
   index,
   isResizing,
   currentWidth,
-  hideRightBorder,
   children,
 }: FormattedTableHeadProps) {
   return (
     <TableHead
       ref={ ref }
       { ...draggableProps }
-      className={ cn('relative truncate [&:has(+[data-table-filler])]:border-r-0', {
+      className={ cn('relative truncate', {
         'sticky left-0 z-20 rounded-tl-md bg-muted after:pointer-events-none after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-foreground/20':
           index === 0,
-        'border-r border-foreground/30': index !== 0 && !hideRightBorder,
+        'border-r border-foreground/30': index !== 0,
         'bg-accent': isResizing,
         'bg-accent shadow-md': isDragging,
       }) }
