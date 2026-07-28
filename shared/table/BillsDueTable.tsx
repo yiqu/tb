@@ -37,6 +37,7 @@ export default function BillsDueTable({ billDues, columns, sortData, pageId, tab
                 sortData={ sortData }
                 pageId={ pageId }
                 sortable={ unsortableBillsColumns[column] ?? true }
+                hideRightBorder={ index === columns.length - 1 }
                 onSortUpdate={ handleOnSortUpdate }
               />
             );

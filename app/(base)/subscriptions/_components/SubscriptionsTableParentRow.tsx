@@ -20,7 +20,7 @@ export default function SubscriptionsTableParentRow({ subscription }: { subscrip
           key={ column }
           colId={ column }
           subscription={ subscription }
-          showVerticalBorder
+          showVerticalBorder={ index !== columnsSorted.length - 1 }
           isSticky={ index === 0 }
         />
       )) }

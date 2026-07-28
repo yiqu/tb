@@ -93,6 +93,7 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
                               sortData={ sortData }
                               pageId={ pageId }
                               sortable={ unsortableBillsColumns[column] ?? true }
+                              hideRightBorder={ index === columnsSorted.length - 1 }
                               onSortUpdate={ handleOnSortUpdate }
                             />
                           );

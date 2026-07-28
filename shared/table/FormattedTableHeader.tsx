@@ -38,6 +38,8 @@ interface FormattedTableHeaderProps {
   draggableProps?: DraggableProvidedDraggableProps;
   dragHandleProps?: DraggableProvidedDragHandleProps | null;
   isDragging?: boolean;
+  /** Hides the column's right border — pass for the last data column so no stray line shows against the filler column. */
+  hideRightBorder?: boolean;
   onSortUpdate?: (_sortData: SortDataUpsertable) => void;
 }
 
@@ -52,6 +54,7 @@ export default function FormattedTableHeader({
   draggableProps,
   dragHandleProps,
   isDragging,
+  hideRightBorder,
   onSortUpdate,
 }: FormattedTableHeaderProps) {
   const [isPending, startTransition] = useTransition();
@@ -110,6 +113,7 @@ export default function FormattedTableHeader({
       isDragging={ isDragging }
       index={ index }
       isResizing={ isResizing }
+      hideRightBorder={ hideRightBorder }
     >
       <RowStack className={ cn('group/header flex flex-row items-center justify-start select-none') } id={ `table-header-content-${columnId}` }>
         <FormattedTableHeadDragHandle dragHandleProps={ dragHandleProps } />
