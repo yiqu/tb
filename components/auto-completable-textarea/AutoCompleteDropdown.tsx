@@ -84,14 +84,16 @@ export default function AutoCompleteDropdown<T>({
         { /* shouldFilter is off: filtering goes through the composable filterFunction prop instead of cmdk's built-in scoring. */ }
         <Command shouldFilter={ false }>
           <CommandInput ref={ searchInputRef } autoFocus placeholder={ searchPlaceholder } value={ filter } onValueChange={ setFilter } />
-          <CommandList className="max-h-56">
+          { /* p-2 gives the rows breathing room from the popover edges (their hover/selected
+               background is rounded, so it needs a gutter on both sides). */ }
+          <CommandList className="max-h-56 p-2">
             <CommandEmpty>{ emptyText }</CommandEmpty>
             { filteredItems.map((item: T, index: number) => {
               return (
                 <CommandItem
                   key={ index }
                   value={ String(index) }
-                  className={ cn('cursor-pointer', selectItemClassName) }
+                  className={ cn('cursor-pointer px-3 py-2', selectItemClassName) }
                   onSelect={ () => onSelect(item) }
                 >
                   { renderItemOption(item) }
