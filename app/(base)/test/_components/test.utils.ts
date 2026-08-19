@@ -91,3 +91,46 @@ export const textAreaItemDisplay = (item: Gist) => {
 export const textAreaItemTransformForServerFunction = (item: Gist) => {
   return item.id;
 };
+
+// ---------------------------------------------------------------------------
+// Bonus: a completely different object shape to demonstrate that
+// AutoCompletableTextArea is composable with any type of item — only the three
+// callback functions below change, the component stays the same.
+// ---------------------------------------------------------------------------
+
+export interface Teammate {
+  email: string;
+  name: string;
+  team: string;
+}
+
+export const TEST_TEAMMATES: Teammate[] = [
+  { email: 'ada.lovelace@example.com', name: 'Ada Lovelace', team: 'Platform' },
+  { email: 'grace.hopper@example.com', name: 'Grace Hopper', team: 'Compilers' },
+  { email: 'alan.turing@example.com', name: 'Alan Turing', team: 'Research' },
+  { email: 'katherine.johnson@example.com', name: 'Katherine Johnson', team: 'Trajectory' },
+  { email: 'linus.torvalds@example.com', name: 'Linus Torvalds', team: 'Kernel' },
+  { email: 'margaret.hamilton@example.com', name: 'Margaret Hamilton', team: 'Guidance' },
+];
+
+/**
+ * Filter function for teammates: matches on name, email or team.
+ */
+export const teammateFilterFunction = (item: Teammate, filter: string) => {
+  const query = filter.toLowerCase();
+  return item.name.toLowerCase().includes(query) || item.email.toLowerCase().includes(query) || item.team.toLowerCase().includes(query);
+};
+
+/**
+ * Chip display for teammates: show the friendly name inside the text area.
+ */
+export const teammateTextAreaItemDisplay = (item: Teammate) => {
+  return item.name;
+};
+
+/**
+ * Server transform for teammates: submit the email instead of the displayed name.
+ */
+export const teammateTransformForServerFunction = (item: Teammate) => {
+  return item.email;
+};
