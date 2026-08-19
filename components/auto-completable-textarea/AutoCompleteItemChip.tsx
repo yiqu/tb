@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDownIcon } from 'lucide-react';
+import { ChevronDownIcon, TriangleAlertIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import Typography from '@/components/typography/Typography';
@@ -16,6 +16,13 @@ interface AutoCompleteItemChipProps<T> {
   label: string;
   /** The item's "real" text — result of the `itemTransformFunction` prop (e.g. the id). */
   serverText: string;
+  /**
+   * True when the text area's `isItemDisabled` callback rejects this chip's item — the item is no
+   * longer selectable, but a chip for it can still exist (hydrated from text, or disabled after
+   * it was picked). The chip then warns instead of hiding the problem: a triangle icon and an
+   * amber border. The chip stays clickable so the menu can still Edit or Remove it.
+   */
+  isItemDisabled?: boolean;
   /** Tailwind classes to restyle the chip. */
   className?: string;
   disabled?: boolean;
@@ -39,6 +46,7 @@ export default function AutoCompleteItemChip<T>({
   item,
   label,
   serverText,
+  isItemDisabled,
   className,
   disabled,
   menuItems,
@@ -74,9 +82,20 @@ export default function AutoCompleteItemChip<T>({
                 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none
                 data-[state=open]:bg-primary/20
               `,
+              // Warning look for a disabled item. Listed before `className` on purpose: tailwind-merge
+              // keeps the LAST conflicting utility, so a border/bg passed via chipClassName wins.
+              isItemDisabled && `
+                border-amber-600 bg-amber-500/10 text-amber-800
+                hover:bg-amber-500/20
+                data-[state=open]:bg-amber-500/20
+                dark:border-amber-500 dark:text-amber-300
+              `,
               className,
             ) }
           >
+            { isItemDisabled ?
+              <TriangleAlertIcon aria-hidden className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+            : null }
             <Typography variant="span1">{ label }</Typography>
             <ChevronDownIcon className="size-3 shrink-0 opacity-70" />
           </button>
