@@ -104,6 +104,16 @@ export const getAutocompleteItemIdPrefix = (item: Gist): string => {
 };
 
 /**
+ *  for example GIST-3333333 is length of 12 total
+ * @param item 
+ * @returns 
+ */
+export const getAutocompleteItemIdLength = (item: Gist): number => {
+  return 12;
+};
+
+
+/**
  * Optional callback to disable an item in the dropdown list. Return true and that option cannot be
  * selected (it is also skipped by the keyboard arrow navigation). Here a gist that is not aliasable
  * cannot be picked.
@@ -158,4 +168,4 @@ export const teammateTransformForServerFunction = (item: Teammate) => {
 };
 
 export const SOME_INIT_TEXT: string =
-  'This initial text mentions GIST-3333333 which becomes a chip. = GIST-1111111 != GIST-3333333 ~= GIST-2222222 and there..';
+  'This initial text mentions GIST-3333333 which becomes a chip. = GIST-1111111 != GIST-3333333 ~= GIST-2222222 and there.. GIST-2222221';
