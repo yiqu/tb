@@ -18,6 +18,8 @@ interface AutoCompleteDropdownProps<T> {
   filterFunction: (item: T, filter: string) => boolean;
   /** Renders one row of the list. */
   renderItemOption: (item: T) => ReactNode;
+  /** Returns true for items that cannot be selected — their row renders disabled. */
+  isItemDisabled?: (item: T) => boolean;
   /** Tailwind classes applied to each select item row. */
   selectItemClassName?: string;
   searchPlaceholder?: string;
@@ -38,6 +40,7 @@ export default function AutoCompleteDropdown<T>({
   items,
   filterFunction,
   renderItemOption,
+  isItemDisabled,
   selectItemClassName,
   searchPlaceholder = 'Search...',
   emptyText = 'No results found.',
@@ -90,12 +93,21 @@ export default function AutoCompleteDropdown<T>({
           <CommandList className="max-h-120 p-2">
             <CommandEmpty>{ emptyText }</CommandEmpty>
             { filteredItems.map((item: T, index: number) => {
+              // cmdk both blocks the click/Enter and skips the row during arrow navigation when
+              // `disabled` is set; the onSelect guard keeps that true for any future custom row.
+              const disabled = isItemDisabled?.(item) ?? false;
+
               return (
                 <CommandItem
                   key={ index }
                   value={ String(index) }
-                  className={ cn('cursor-pointer px-3 py-2', selectItemClassName) }
-                  onSelect={ () => onSelect(item) }
+                  disabled={ disabled }
+                  className={ cn('px-3 py-2', disabled ? 'cursor-not-allowed' : 'cursor-pointer', selectItemClassName) }
+                  onSelect={ () => {
+                    if (!disabled) {
+                      onSelect(item);
+                    }
+                  } }
                 >
                   { renderItemOption(item) }
                 </CommandItem>

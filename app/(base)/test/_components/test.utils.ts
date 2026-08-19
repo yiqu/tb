@@ -99,6 +99,17 @@ export const getAutocompleteItemIdPrefix = <T>(item: T): string => {
   return 'GIST-';
 };
 
+/**
+ * Optional callback to disable an item in the dropdown list. Return true and that option cannot be
+ * selected (it is also skipped by the keyboard arrow navigation). Here a gist that is not aliasable
+ * cannot be picked.
+ * @param item
+ * @returns
+ */
+export const isItemDisabled = (item: Gist): boolean => {
+  return !item.aliasable;
+};
+
 // ---------------------------------------------------------------------------
 // Bonus: a completely different object shape to demonstrate that
 // AutoCompletableTextArea is composable with any type of item — only the three

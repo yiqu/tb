@@ -113,6 +113,12 @@ export interface AutoCompletableTextAreaProps<T> {
   getItemIdPrefix?: (item: T) => string;
   /** Renders one row of the dropdown list. Falls back to `itemDisplayFunction` text when omitted. */
   renderItemOption?: (item: T) => ReactNode;
+  /**
+   * Marks an item as not selectable. Return true and its dropdown row is rendered disabled: it
+   * cannot be clicked or chosen with Enter, and the arrow-key navigation skips over it.
+   * Omit to leave every item selectable.
+   */
+  isItemDisabled?: (item: T) => boolean;
   /** Renders the body of the "Show details" dialog. Falls back to a generic key/value dump when omitted. */
   renderItemDetails?: (item: T) => ReactNode;
   /** Title of the "Show details" dialog. */

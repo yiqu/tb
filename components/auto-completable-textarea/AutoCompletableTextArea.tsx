@@ -96,6 +96,7 @@ export default function AutoCompletableTextArea<T>({
   itemTransformFunction,
   getItemIdPrefix,
   renderItemOption,
+  isItemDisabled,
   renderItemDetails,
   detailsDialogTitle,
   triggerKey = ':',
@@ -539,6 +540,7 @@ export default function AutoCompletableTextArea<T>({
           items={ items }
           filterFunction={ filterFunction }
           renderItemOption={ renderItemOption ?? ((item: T) => itemDisplayFunction(item)) }
+          isItemDisabled={ isItemDisabled }
           selectItemClassName={ selectItemClassName }
           searchPlaceholder={ searchPlaceholder }
           emptyText={ emptyText }

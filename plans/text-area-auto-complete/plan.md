@@ -85,8 +85,9 @@ Component suite (shareable, generic over item type `T`) — `components/auto-com
 
 Demos — `app/(base)/test/`:
 - `_components/AutoCompleteTextAreaDemo.tsx` — controlled + react-hook-form (Controller) + Zod, Gist list, trigger `:`. Default form value contains a raw `GIST-3333333` to demo load-time hydration. Submit shows the server string.
+- `_components/AutoCompleteTextAreaDemo2.tsx` — same text area as one field among ordinary ones (Location seeded, Car name empty, Is driveable false), reusing `HFInputField` / `HFCheckbox`; submit echoes every value.
 - `_components/AutoCompleteTextAreaUncontrolledDemo.tsx` — uncontrolled + bonus `Teammate` type, trigger `@`.
-- `_components/test.utils.ts` — `Gist`/`TEST_GISTS` (ids are `GIST-1111111`…`GIST-9999999`), `Teammate`/`TEST_TEAMMATES`, and the callback fns: `itemFilterFunction`, `textAreaItemDisplay`, `textAreaItemTransformForServerFunction` (returns `item.id`), `getAutocompleteItemIdPrefix` (returns `'GIST-'`), teammate equivalents.
+- `_components/test.utils.ts` — `Gist`/`TEST_GISTS` (ids are `GIST-1111111`…`GIST-9999999`), `Teammate`/`TEST_TEAMMATES`, and the callback fns: `itemFilterFunction`, `textAreaItemDisplay`, `textAreaItemTransformForServerFunction` (returns `item.id`), `getAutocompleteItemIdPrefix` (returns `'GIST-'`), `isItemDisabled` (non-aliasable gists are unselectable), teammate equivalents.
 - `_components/Utils.tsx` — dropdown row renderers (`ItemOptionDisplay`, `TeammateOptionDisplay`).
 
 ## Value model
@@ -106,6 +107,9 @@ is `{ kind: 'text', text }` or `{ kind: 'item', chipId, item }`. `chipId` is a u
 - `itemTransformFunction?(item)` — "real" id text; used for clipboard copy/cut and id detection. Falls back to `itemDisplayFunction`.
 - `getItemIdPrefix?(item)` — prefix all ids start with (e.g. `'GIST-'`). Presence ENABLES hydration (load + blur). Ids that don't start with their own prefix are skipped by the scan.
 - `renderItemOption?/renderItemDetails?` — dropdown row / details dialog body renderers.
+- `isItemDisabled?(item)` — return true and that dropdown row is not selectable. Passed straight to
+  cmdk's `CommandItem disabled`, which blocks click/Enter AND skips the row during arrow
+  navigation; `onSelect` also guards. Omit to leave every item selectable.
 - `triggerKey?` (default `':'`), `className`, `selectItemClassName`, `chipClassName`, `placeholder`, `searchPlaceholder`, `emptyText`, `disabled`, `chipMenuItems?`, `onBlur`, `id`.
 - `showClearButton?` (default `true`), `clearButtonClassName?`.
 
@@ -222,7 +226,8 @@ reference when nothing matched (callers rely on that identity check). Runs:
 - `npx tsc --noEmit` must be clean. Dev: `npx next dev` → http://localhost:3100/test (the
   "Error retrieving favorites" console errors are unrelated — no DB in the sandbox).
 - Behavior checklist: type `:` → dropdown at caret with focused search; filter shrinks list;
-  ArrowUp/Down + Enter or click inserts chip; typing continues right after the chip; Escape closes
+  ArrowUp/Down + Enter or click inserts chip; disabled rows (via `isItemDisabled`) are dimmed,
+  unclickable and skipped by the arrows; typing continues right after the chip; Escape closes
   and restores the caret; chip click → Edit / Copy / Copy display / Show details / Remove; copy
   whole content → clipboard has ids; paste → plain text; blur → valid `GIST-…` ids become chips,
   unknown ids stay text; form reset re-hydrates; submit shows the id string; clear button appears

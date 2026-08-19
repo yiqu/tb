@@ -20,6 +20,7 @@ import {
   Gist,
   TEST_GISTS,
   SOME_INIT_TEXT,
+  isItemDisabled,
   itemFilterFunction,
   textAreaItemDisplay,
   getAutocompleteItemIdPrefix,
@@ -98,6 +99,7 @@ export default function AutoCompleteTextAreaDemo2() {
                 itemTransformFunction={ textAreaItemTransformForServerFunction }
                 getItemIdPrefix={ getAutocompleteItemIdPrefix }
                 renderItemOption={ (gist: Gist) => <ItemOptionDisplay item={ gist } /> }
+                isItemDisabled={ isItemDisabled }
                 detailsDialogTitle="Gist details"
                 triggerKey=":"
                 placeholder='Type ":" to autocomplete a gist...'
