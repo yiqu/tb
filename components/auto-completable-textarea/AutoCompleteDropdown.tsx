@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 'use client';
 
 import { useRef, useState, useEffect, ReactNode } from 'react';
@@ -86,7 +87,7 @@ export default function AutoCompleteDropdown<T>({
           <CommandInput ref={ searchInputRef } autoFocus placeholder={ searchPlaceholder } value={ filter } onValueChange={ setFilter } />
           { /* p-2 gives the rows breathing room from the popover edges (their hover/selected
                background is rounded, so it needs a gutter on both sides). */ }
-          <CommandList className="max-h-56 p-2">
+          <CommandList className="max-h-120 p-2">
             <CommandEmpty>{ emptyText }</CommandEmpty>
             { filteredItems.map((item: T, index: number) => {
               return (

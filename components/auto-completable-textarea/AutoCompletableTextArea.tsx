@@ -1,6 +1,17 @@
 'use client';
 
-import { useRef, useMemo, useState, Fragment, useEffect, useCallback, useLayoutEffect, FocusEvent, KeyboardEvent, ClipboardEvent } from 'react';
+import {
+  useRef,
+  useMemo,
+  useState,
+  Fragment,
+  useEffect,
+  FocusEvent,
+  useCallback,
+  KeyboardEvent,
+  ClipboardEvent,
+  useLayoutEffect,
+} from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -9,27 +20,27 @@ import AutoCompleteItemChip from './AutoCompleteItemChip';
 import { getDefaultChipMenuItems } from './AutoCompleteChipMenu';
 import AutoCompleteItemDetailsDialog from './AutoCompleteItemDetailsDialog';
 import {
-  generateChipId,
-  parseEditorDom,
-  collectChipItems,
-  placeCaretAtEnd,
-  placeCaretAfterNode,
-  placeCaretAtTextOffset,
-  autoCompleteValueToText,
-  getCaretPositionInWrapper,
-  hydrateAutoCompleteValue,
-  isAutoCompleteValueEmpty,
-  getElementPositionInWrapper,
-  areAutoCompleteValuesEqual,
-  AUTOCOMPLETE_CHIP_ID_ATTRIBUTE,
-  AUTOCOMPLETE_INSERT_MARKER_ATTRIBUTE,
-} from './autocompletable-textarea.utils';
-import {
   AutoCompleteValue,
   AutoCompleteSegment,
   AutoCompleteAnchorPosition,
   AutoCompletableTextAreaProps,
 } from './autocompletable-textarea.models';
+import {
+  generateChipId,
+  parseEditorDom,
+  placeCaretAtEnd,
+  collectChipItems,
+  placeCaretAfterNode,
+  placeCaretAtTextOffset,
+  autoCompleteValueToText,
+  hydrateAutoCompleteValue,
+  isAutoCompleteValueEmpty,
+  getCaretPositionInWrapper,
+  areAutoCompleteValuesEqual,
+  getElementPositionInWrapper,
+  AUTOCOMPLETE_CHIP_ID_ATTRIBUTE,
+  AUTOCOMPLETE_INSERT_MARKER_ATTRIBUTE,
+} from './autocompletable-textarea.utils';
 
 /**
  * State of the caret-anchored dropdown: closed (null), inserting a brand new chip at the caret,
@@ -125,10 +136,13 @@ export default function AutoCompletableTextArea<T>({
   hydrationRef.current = { items, itemTransformFunction, getItemIdPrefix };
 
   /** Serializes an item for the clipboard / id matching; falls back to the display text. */
-  const resolveItemText = useCallback((item: T) => {
-    const transform = hydrationRef.current.itemTransformFunction;
-    return transform ? transform(item) : itemDisplayFunction(item);
-  }, [itemDisplayFunction]);
+  const resolveItemText = useCallback(
+    (item: T) => {
+      const transform = hydrationRef.current.itemTransformFunction;
+      return transform ? transform(item) : itemDisplayFunction(item);
+    },
+    [itemDisplayFunction],
+  );
 
   const resolvedChipMenuItems = useMemo(() => chipMenuItems ?? getDefaultChipMenuItems<T>(), [chipMenuItems]);
 
@@ -141,12 +155,10 @@ export default function AutoCompletableTextArea<T>({
   useEffect(() => {
     const isMount = !mountedRef.current;
     mountedRef.current = true;
-    if (!isMount) {
-      if (areAutoCompleteValuesEqual(value, lastEmittedRef.current)) {
+    if (!isMount && areAutoCompleteValuesEqual(value, lastEmittedRef.current)) {
         lastEmittedRef.current = value;
         return;
       }
-    }
     const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix } = hydrationRef.current;
     const hydrated = transform && idPrefix ? hydrateAutoCompleteValue(value, currentItems, transform, idPrefix) : value;
     const changedByHydration = hydrated !== value && !areAutoCompleteValuesEqual(hydrated, value);
@@ -345,7 +357,7 @@ export default function AutoCompletableTextArea<T>({
       setDropdownState(null);
 
       if (current.mode.type === 'edit') {
-        const chipId = current.mode.chipId;
+        const {chipId} = current.mode;
         const nextChipItems = new Map(chipItemsRef.current);
         nextChipItems.set(chipId, item);
         chipItemsRef.current = nextChipItems;
@@ -473,8 +485,8 @@ export default function AutoCompletableTextArea<T>({
         data-empty={ String(isAutoCompleteValueEmpty(render.segments)) }
         className={ cn(
           `
-            relative min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base break-words
-            whitespace-pre-wrap shadow-xs transition-[color,box-shadow] outline-none
+            relative min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base break-words whitespace-pre-wrap
+            shadow-xs transition-[color,box-shadow] outline-none
             focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
             aria-disabled:cursor-not-allowed aria-disabled:opacity-50
             data-[empty=true]:before:pointer-events-none data-[empty=true]:before:absolute data-[empty=true]:before:top-2
