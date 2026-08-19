@@ -99,6 +99,18 @@ is `{ kind: 'text', text }` or `{ kind: 'item', chipId, item }`. `chipId` is a u
   for what the user sees, or `itemTransformFunction` (e.g. `item => item.id`) for the server string.
 - This value flows through react-hook-form as the field value; derive the server string at submit.
 
+## Typing model: generic component, concrete callbacks
+
+The component (and every internal piece: dropdown, chip, chip menu, details dialog, the segment
+types) is generic over `T` and knows NOTHING about the item shape. Every callback you hand it is
+written against the CONCRETE type — `(item: Gist) => ...`, never `<T>(item: T) => ...`. Call sites
+pin the generic explicitly (`<AutoCompletableTextArea<Gist> ... />`), so TypeScript checks the
+callbacks against that type.
+
+Do NOT write a "generic" callback that casts internally (`(item as Gist).alias`): it compiles for
+ANY item type and fails at runtime instead of at the call site. Verified: handing Gist callbacks to
+`AutoCompletableTextArea<Teammate>` is a compile error on every mismatched prop.
+
 ## Key props (all item-specific behavior is injected)
 
 - `items: T[]` — full local list. No remote search, no pagination.
