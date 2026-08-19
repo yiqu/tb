@@ -92,6 +92,13 @@ export const textAreaItemTransformForServerFunction = (item: Gist) => {
   return item.id;
 };
 
+/**
+ * Get the prefix for the autocomplete item id. This should guarantee all the IDs will have this prefix.
+ */
+export const getAutocompleteItemIdPrefix = <T>(item: T): string => {
+  return 'GIST-';
+};
+
 // ---------------------------------------------------------------------------
 // Bonus: a completely different object shape to demonstrate that
 // AutoCompletableTextArea is composable with any type of item — only the three
