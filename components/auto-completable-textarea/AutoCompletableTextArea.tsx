@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 
 import AutoCompleteDropdown from './AutoCompleteDropdown';
 import AutoCompleteItemChip from './AutoCompleteItemChip';
+import AutoCompleteClearButton from './AutoCompleteClearButton';
 import { getDefaultChipMenuItems } from './AutoCompleteChipMenu';
 import AutoCompleteItemDetailsDialog from './AutoCompleteItemDetailsDialog';
 import {
@@ -105,6 +106,8 @@ export default function AutoCompletableTextArea<T>({
   searchPlaceholder,
   emptyText,
   disabled,
+  showClearButton = true,
+  clearButtonClassName,
   chipMenuItems,
   onBlur,
   id,
@@ -433,6 +436,18 @@ export default function AutoCompletableTextArea<T>({
     setDetailsItem(chipItemsRef.current.get(chipId) ?? null);
   }, []);
 
+  /**
+   * Clear button: wipe everything (typed text and chips) and emit the empty value. The controlled
+   * parent (react-hook-form) and the uncontrolled wrapper's `onChange` both receive it through the
+   * normal change callback, so neither needs to special-case clearing.
+   */
+  const handleClear = useCallback(() => {
+    setDropdownState(null);
+    setDetailsItem(null);
+    insertRangeRef.current = null;
+    commitStructural([], { type: 'end' });
+  }, [commitStructural]);
+
   /** Chip menu "Remove": drop the chip from the value. */
   const handleRemoveChip = useCallback(
     (chipId: string) => {
@@ -459,6 +474,7 @@ export default function AutoCompletableTextArea<T>({
         chipId={ segment.chipId }
         item={ segment.item }
         label={ itemDisplayFunction(segment.item) }
+        serverText={ resolveItemText(segment.item) }
         className={ chipClassName }
         disabled={ disabled }
         menuItems={ resolvedChipMenuItems }
@@ -485,8 +501,8 @@ export default function AutoCompletableTextArea<T>({
         data-empty={ String(isAutoCompleteValueEmpty(render.segments)) }
         className={ cn(
           `
-            relative min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base break-words whitespace-pre-wrap
-            shadow-xs transition-[color,box-shadow] outline-none
+            peer relative min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base break-words
+            whitespace-pre-wrap shadow-xs transition-[color,box-shadow] outline-none
             focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50
             aria-disabled:cursor-not-allowed aria-disabled:opacity-50
             data-[empty=true]:before:pointer-events-none data-[empty=true]:before:absolute data-[empty=true]:before:top-2
@@ -495,6 +511,8 @@ export default function AutoCompletableTextArea<T>({
             md:text-sm
             dark:bg-input/30
           `,
+          // Keep content clear of the clear button in the top right corner.
+          { 'pr-10': showClearButton && !disabled },
           className,
         ) }
         onInput={ handleInput }
@@ -506,6 +524,14 @@ export default function AutoCompletableTextArea<T>({
       >
         { editorChildren }
       </div>
+
+      { /* Rendered as a sibling right after the editor so the `peer-data-[empty=true]` rule can hide
+           it while there is nothing to clear. Emptiness is driven by the editor's `data-empty`
+           attribute, which `handleInput` keeps live without re-rendering (and therefore without
+           disturbing the caret). */ }
+      { showClearButton && !disabled ?
+        <AutoCompleteClearButton className={ cn('peer-data-[empty=true]:hidden', clearButtonClassName) } onClear={ handleClear } />
+      : null }
 
       { dropdownState ?
         <AutoCompleteDropdown<T>

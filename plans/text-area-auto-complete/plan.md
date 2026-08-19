@@ -63,8 +63,9 @@
 Everything below documents what was actually built, how it works internally, and the traps to
 know about when debugging. All plan items above are DONE, plus follow-ups requested later:
 no squiggly underline on chips (plain pill only), clipboard copy/cut serializes chips via the
-transform function, paste is forced to plain text, and existing item ids in text are converted
-to chips on load and on blur.
+transform function, paste is forced to plain text, existing item ids in text are converted
+to chips on load and on blur, a clear ("X") button in the top right corner, and Copy /
+Copy display entries in the chip menu.
 
 ## File map
 
@@ -76,7 +77,8 @@ Component suite (shareable, generic over item type `T`) — `components/auto-com
 | `AutoCompletableTextAreaUncontrolled.tsx` | Dumb wrapper: `initValue` + `onChange`, holds state internally, renders the controlled one. |
 | `AutoCompleteDropdown.tsx` | Caret-anchored Popover + cmdk Command: search input on top (auto-focused), scrollable filtered list, ArrowUp/Down + Enter, Escape/outside-click closes. |
 | `AutoCompleteItemChip.tsx` | One autocompleted item inside the text area: `contentEditable={false}` pill span + DropdownMenu (the chip popover menu). |
-| `AutoCompleteChipMenu.tsx` | `getDefaultChipMenuItems()`: data-driven default menu (Edit / Show details / Remove). Pass a custom array via `chipMenuItems` prop to add/remove/reorder entries. |
+| `AutoCompleteChipMenu.tsx` | `getDefaultChipMenuItems()`: data-driven default menu (Edit / Copy / Copy display / Show details / Remove). Pass a custom array via `chipMenuItems` prop to add/remove/reorder entries. |
+| `AutoCompleteClearButton.tsx` | The clear ("X") button pinned to the top right corner. |
 | `AutoCompleteItemDetailsDialog.tsx` | "Show details" dialog. Reuses the app-wide `shared/dialogs/StyledDialogContent`. Custom body via `renderItemDetails`, generic key/value dump fallback. |
 | `autocompletable-textarea.models.ts` | All types: segments, value, props, chip menu item config + context. |
 | `autocompletable-textarea.utils.ts` | DOM parsing, hydration scan, caret helpers, serialization helpers. |
@@ -105,6 +107,35 @@ is `{ kind: 'text', text }` or `{ kind: 'item', chipId, item }`. `chipId` is a u
 - `getItemIdPrefix?(item)` — prefix all ids start with (e.g. `'GIST-'`). Presence ENABLES hydration (load + blur). Ids that don't start with their own prefix are skipped by the scan.
 - `renderItemOption?/renderItemDetails?` — dropdown row / details dialog body renderers.
 - `triggerKey?` (default `':'`), `className`, `selectItemClassName`, `chipClassName`, `placeholder`, `searchPlaceholder`, `emptyText`, `disabled`, `chipMenuItems?`, `onBlur`, `id`.
+- `showClearButton?` (default `true`), `clearButtonClassName?`.
+
+## Clear button
+
+`AutoCompleteClearButton` is rendered as a SIBLING of the editable surface (never inside it, or the
+browser would treat it as editable content). Clicking it calls `commitStructural([], { type: 'end' })`,
+which wipes text and chips and emits `[]` through `onValueChange` — so react-hook-form (controlled)
+and the uncontrolled wrapper's `onChange` both see the cleared value with no special-casing.
+
+Two details that matter:
+- `onMouseDown` is `preventDefault()`ed so the editor never blurs. That both skips a pointless blur
+  hydration pass over content about to be wiped, and leaves the caret in the editor ready to type.
+- Visibility is CSS-driven, not state-driven: the editor carries `peer` + the live `data-empty`
+  attribute, and the button carries `peer-data-[empty=true]:hidden`. This is deliberate — emptiness
+  must reflect the DOM the user is typing into, and `render.segments` is intentionally stale during
+  plain typing. Do NOT "fix" this by deriving visibility from `render.segments` (it would be wrong
+  until the next structural change) nor by adding state in `onInput` (a re-render per keystroke).
+  `handleInput` keeps `data-empty` current imperatively; React does not clobber it because the JSX
+  value only changes on remount.
+
+## Chip menu copy entries
+
+`AutoCompleteChipMenuContext<T>` exposes `itemServerText` (the `itemTransformFunction` result, e.g.
+the id), `itemDisplayText` (the chip label), and a `copyText(text)` helper backed by
+`copyTextToClipboard` in the utils (async Clipboard API with a hidden-textarea + `execCommand`
+fallback for non-secure origins). The default "Copy" entry copies `itemServerText`, "Copy display"
+copies `itemDisplayText`. The `react-hot-toast` "Copied." toast lives in `AutoCompleteChipMenu.tsx`
+(the swappable defaults layer), NOT in the shared util — that keeps the component droppable into a
+codebase with a different toast library.
 
 ## Core mechanism: contentEditable + remount-on-structural-change
 
@@ -192,9 +223,10 @@ reference when nothing matched (callers rely on that identity check). Runs:
   "Error retrieving favorites" console errors are unrelated — no DB in the sandbox).
 - Behavior checklist: type `:` → dropdown at caret with focused search; filter shrinks list;
   ArrowUp/Down + Enter or click inserts chip; typing continues right after the chip; Escape closes
-  and restores the caret; chip click → Edit / Show details / Remove; copy whole content → clipboard
-  has ids; paste → plain text; blur → valid `GIST-…` ids become chips, unknown ids stay text;
-  form reset re-hydrates; submit shows the id string.
+  and restores the caret; chip click → Edit / Copy / Copy display / Show details / Remove; copy
+  whole content → clipboard has ids; paste → plain text; blur → valid `GIST-…` ids become chips,
+  unknown ids stay text; form reset re-hydrates; submit shows the id string; clear button appears
+  only when there is content, wipes everything, and leaves focus in the editor.
 - Playwright drove all of the above headlessly during development (chromium at
   `/opt/pw-browsers/chromium`; grant `clipboard-read`/`clipboard-write` permissions to test copy).
   Gotcha: wait for hydration (~5s on first dev-server compile) before typing, and don't include the

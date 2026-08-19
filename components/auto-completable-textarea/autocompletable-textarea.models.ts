@@ -38,6 +38,12 @@ export interface AutoCompleteChipMenuContext<T> {
   item: T;
   /** Unique id of this chip instance inside the text area. */
   chipId: string;
+  /** The item's "real" text — what `itemTransformFunction` returned (e.g. the id). */
+  itemServerText: string;
+  /** The item's displayed text — what `itemDisplayFunction` returned (the chip label). */
+  itemDisplayText: string;
+  /** Writes arbitrary text to the clipboard. Resolves once the write completed. */
+  copyText: (text: string) => Promise<void>;
   /** Re-opens the dropdown list anchored at this chip so the user can pick a different item. */
   startEdit: () => void;
   /** Opens the shared details dialog for this chip's item. */
@@ -127,6 +133,14 @@ export interface AutoCompletableTextAreaProps<T> {
   emptyText?: string;
   /** Disables typing and chip interactions. */
   disabled?: boolean;
+  /**
+   * Shows a clear ("X") button in the top right corner that wipes all content. Defaults to true.
+   * The cleared value is emitted through the normal change callback, so react-hook-form (controlled)
+   * and the uncontrolled variant's `onChange` both see it.
+   */
+  showClearButton?: boolean;
+  /** Tailwind classes for the clear button, e.g. to reposition it. */
+  clearButtonClassName?: string;
   /** Overrides the chip popover menu entries. Defaults to Edit / Show details / Remove. */
   chipMenuItems?: AutoCompleteChipMenuItemConfig<T>[];
   /** Blur callback, e.g. react-hook-form's `field.onBlur`. */

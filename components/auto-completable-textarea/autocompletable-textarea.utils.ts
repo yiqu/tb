@@ -286,6 +286,28 @@ export const placeCaretAfterNode = (node: Node) => {
 };
 
 /**
+ * Writes text to the clipboard. Kept UI-free (no toast) so the component stays droppable into any
+ * codebase — user feedback belongs to the menu items in `AutoCompleteChipMenu.tsx`.
+ * Falls back to a hidden textarea + execCommand where the async Clipboard API is unavailable
+ * (e.g. a non-secure origin).
+ */
+export const copyTextToClipboard = async (text: string): Promise<void> => {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', 'true');
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  textarea.remove();
+};
+
+/**
  * Places the caret `offset` characters into the given text node.
  */
 export const placeCaretAtTextOffset = (textNode: Node, offset: number) => {

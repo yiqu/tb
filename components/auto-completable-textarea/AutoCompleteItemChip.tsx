@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import Typography from '@/components/typography/Typography';
 import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
-import { AUTOCOMPLETE_CHIP_ID_ATTRIBUTE } from './autocompletable-textarea.utils';
+import { copyTextToClipboard, AUTOCOMPLETE_CHIP_ID_ATTRIBUTE } from './autocompletable-textarea.utils';
 import { AutoCompleteChipMenuContext, AutoCompleteChipMenuItemConfig } from './autocompletable-textarea.models';
 
 interface AutoCompleteItemChipProps<T> {
@@ -14,6 +14,8 @@ interface AutoCompleteItemChipProps<T> {
   item: T;
   /** Text shown inside the chip — result of the `itemDisplayFunction` prop. */
   label: string;
+  /** The item's "real" text — result of the `itemTransformFunction` prop (e.g. the id). */
+  serverText: string;
   /** Tailwind classes to restyle the chip. */
   className?: string;
   disabled?: boolean;
@@ -36,6 +38,7 @@ export default function AutoCompleteItemChip<T>({
   chipId,
   item,
   label,
+  serverText,
   className,
   disabled,
   menuItems,
@@ -47,6 +50,9 @@ export default function AutoCompleteItemChip<T>({
   const menuContext: AutoCompleteChipMenuContext<T> = {
     item: item,
     chipId: chipId,
+    itemServerText: serverText,
+    itemDisplayText: label,
+    copyText: copyTextToClipboard,
     startEdit: () => onStartEdit(chipId),
     showDetails: () => onShowDetails(chipId),
     removeChip: () => onRemove(chipId),
