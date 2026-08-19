@@ -83,7 +83,8 @@ export default function AutoCompleteTextAreaDemo() {
                 triggerKey=":"
                 placeholder='Type ":" to autocomplete a gist...'
                 searchPlaceholder="Search gists..."
-                className="min-h-24"
+                className="min-h-74"
+                chipClassName="text-red-700"
               />
               { fieldState.error ?
                 <Typography variant="caption1" className="text-destructive">
