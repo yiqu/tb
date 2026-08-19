@@ -17,6 +17,7 @@ import { ItemOptionDisplay } from './Utils';
 import {
   Gist,
   TEST_GISTS,
+  SOME_INIT_TEXT,
   itemFilterFunction,
   textAreaItemDisplay,
   getAutocompleteItemIdPrefix,
@@ -45,7 +46,7 @@ export default function AutoCompleteTextAreaDemo() {
     resolver: zodResolver(autoCompleteDemoSchema),
     // The initial blob of text contains a raw gist id — the component hydrates it into a chip
     // on mount because the id starts with the prefix from getAutocompleteItemIdPrefix().
-    defaultValues: { note: [{ kind: 'text', text: 'This initial text mentions GIST-3333333 which becomes a chip. ' }] },
+    defaultValues: { note: [{ kind: 'text', text: SOME_INIT_TEXT }] },
   });
 
   const onSubmit = (data: AutoCompleteDemoSchema) => {

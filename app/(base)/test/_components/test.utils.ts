@@ -64,9 +64,9 @@ export const TEST_GISTS: Gist[] = [
 
 /**
  * Filter function passed to be used when filtering the list of items to display in the dropdown.
- * @param item 
- * @param filter 
- * @returns 
+ * @param item
+ * @param filter
+ * @returns
  */
 export const itemFilterFunction = (item: Gist, filter: string) => {
   return item.alias.toLowerCase().includes(filter.toLowerCase());
@@ -74,8 +74,8 @@ export const itemFilterFunction = (item: Gist, filter: string) => {
 
 /**
  * Item display function passed to be used when displaying the item inside the text area.
- * @param item 
- * @returns 
+ * @param item
+ * @returns
  */
 export const textAreaItemDisplay = (item: Gist) => {
   return item.alias;
@@ -85,8 +85,8 @@ export const textAreaItemDisplay = (item: Gist) => {
  * The item's actual text to be used when user get the value from this text area. For example, if i hit submit and the value from this text area is going to the normal text, and any autocompleted item's text will be whatever this function returns.
  * Because I might not want what is shown in the text area to be the same as what is actually submitted to the server. For example, if I want to submit the ID of the item, then I would pass in textAreaItemTransformForServerFunction(item => item.id), but the
  * display could be something else in the text area.
- * @param item 
- * @returns 
+ * @param item
+ * @returns
  */
 export const textAreaItemTransformForServerFunction = (item: Gist) => {
   return item.id;
@@ -141,3 +141,6 @@ export const teammateTextAreaItemDisplay = (item: Teammate) => {
 export const teammateTransformForServerFunction = (item: Teammate) => {
   return item.email;
 };
+
+export const SOME_INIT_TEXT: string =
+  'This initial text mentions GIST-3333333 which becomes a chip. = GIST-1111111 != GIST-3333333 ~= GIST-2222222 and there..';
