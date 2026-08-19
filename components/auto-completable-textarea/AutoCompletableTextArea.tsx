@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo, useState, Fragment, useEffect, useCallback, useLayoutEffect, KeyboardEvent, ClipboardEvent } from 'react';
+import { useRef, useMemo, useState, Fragment, useEffect, useCallback, useLayoutEffect, FocusEvent, KeyboardEvent, ClipboardEvent } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -40,9 +40,13 @@ interface DropdownState {
   anchorPosition: AutoCompleteAnchorPosition;
 }
 
-/** Where to put the caret after the editable surface is re-mounted by a structural change. */
+/**
+ * Where to put the caret after the editable surface is re-mounted by a structural change.
+ * 'none' skips focus/caret entirely — used when the change happens while the editor is
+ * unfocused (e.g. blur-time id detection) so focus is not stolen back.
+ */
 interface PendingCaret {
-  type: 'after-chip' | 'end';
+  type: 'after-chip' | 'end' | 'none';
   chipId?: string;
   /** When set, the caret goes this many characters into the text node following the chip. */
   offsetIntoNext?: number;
@@ -97,6 +101,10 @@ export default function AutoCompletableTextArea<T>({
   const [render, setRender] = useState<EditorRenderState<T>>(() => ({ key: 0, segments: value }));
   const [dropdownState, setDropdownState] = useState<DropdownState | null>(null);
   const [detailsItem, setDetailsItem] = useState<T | null>(null);
+
+  // Mirror of dropdownState readable from stable callbacks (e.g. the blur handler).
+  const dropdownStateRef = useRef<DropdownState | null>(dropdownState);
+  dropdownStateRef.current = dropdownState;
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<HTMLDivElement | null>(null);
@@ -159,7 +167,7 @@ export default function AutoCompletableTextArea<T>({
     const caret = pendingCaretRef.current;
     pendingCaretRef.current = null;
     const editor = editorRef.current;
-    if (!caret || !editor) {
+    if (!caret || !editor || caret.type === 'none') {
       return;
     }
     editor.focus();
@@ -201,6 +209,31 @@ export default function AutoCompletableTextArea<T>({
     editor.setAttribute('data-empty', String(isAutoCompleteValueEmpty(segments)));
     onValueChangeRef.current(segments);
   }, []);
+
+  /**
+   * Blur: run id detection over the current content — any existing item id typed or pasted as
+   * plain text (recognized via getItemIdPrefix + itemTransformFunction) is converted into an
+   * autocompleted item chip. Committed without touching focus, so nothing is stolen back.
+   */
+  const handleBlur = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      const editor = editorRef.current;
+      const wrapper = wrapperRef.current;
+      // Focus moving within the component (a chip button, the dropdown opening) is not a real
+      // "leave" — re-mounting mid-interaction would break the menu/dropdown that is opening.
+      const stillInside = event.relatedTarget !== null && wrapper !== null && wrapper.contains(event.relatedTarget);
+      const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix } = hydrationRef.current;
+      if (editor && transform && idPrefix && !stillInside && !dropdownStateRef.current) {
+        const segments = parseEditorDom(editor, chipItemsRef.current);
+        const hydrated = hydrateAutoCompleteValue(segments, currentItems, transform, idPrefix);
+        if (hydrated !== segments) {
+          commitStructural(hydrated, { type: 'none' });
+        }
+      }
+      onBlur?.();
+    },
+    [commitStructural, onBlur],
+  );
 
   /**
    * Copy: the selection is serialized to plain text ourselves so that every chip in it becomes
@@ -457,7 +490,7 @@ export default function AutoCompletableTextArea<T>({
         onCopy={ handleCopy }
         onCut={ handleCut }
         onPaste={ handlePaste }
-        onBlur={ onBlur }
+        onBlur={ handleBlur }
       >
         { editorChildren }
       </div>

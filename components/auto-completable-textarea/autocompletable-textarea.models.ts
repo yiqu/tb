@@ -98,8 +98,9 @@ export interface AutoCompletableTextAreaProps<T> {
   itemTransformFunction?: (item: T) => string;
   /**
    * Returns the prefix every item id (the `itemTransformFunction` output) starts with, e.g. 'GIST-'.
-   * When provided, incoming values (initial value, form resets) are scanned for the prefix and any
-   * matching item id found in plain text is swapped into an autocompleted item chip. The prefix keeps
+   * When provided, incoming values (initial value, form resets) and the content on every blur of
+   * the text area are scanned for the prefix, and any matching item id found in plain text
+   * (typed or pasted) is swapped into an autocompleted item chip. The prefix keeps
    * the scan cheap: only prefix occurrences are candidate positions, instead of matching every id at
    * every character of the text. Omit to disable hydration.
    */
