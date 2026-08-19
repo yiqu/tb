@@ -14,7 +14,14 @@ import { AutoCompleteValue } from '@/components/auto-completable-textarea/autoco
 import { autoCompleteValueToText } from '@/components/auto-completable-textarea/autocompletable-textarea.utils';
 
 import { ItemOptionDisplay } from './Utils';
-import { Gist, TEST_GISTS, itemFilterFunction, textAreaItemDisplay, textAreaItemTransformForServerFunction } from './test.utils';
+import {
+  Gist,
+  TEST_GISTS,
+  itemFilterFunction,
+  textAreaItemDisplay,
+  getAutocompleteItemIdPrefix,
+  textAreaItemTransformForServerFunction,
+} from './test.utils';
 
 // Zod schema first, type derived from it. The field value is the structured
 // AutoCompleteValue (text + autocompleted items) — the plain string for the
@@ -36,7 +43,9 @@ export default function AutoCompleteTextAreaDemo() {
 
   const { control, handleSubmit, reset } = useForm<AutoCompleteDemoSchema>({
     resolver: zodResolver(autoCompleteDemoSchema),
-    defaultValues: { note: [] },
+    // The initial blob of text contains a raw gist id — the component hydrates it into a chip
+    // on mount because the id starts with the prefix from getAutocompleteItemIdPrefix().
+    defaultValues: { note: [{ kind: 'text', text: 'This initial text mentions GIST-3333333 which becomes a chip. ' }] },
   });
 
   const onSubmit = (data: AutoCompleteDemoSchema) => {
@@ -49,7 +58,9 @@ export default function AutoCompleteTextAreaDemo() {
       <Typography variant="h5">AutoCompletableTextArea — controlled (react-hook-form) with Gists</Typography>
       <Typography variant="caption1">
         Type freely, hit <Typography variant="code1" as="span">:</Typography> to open the dropdown, filter, then pick with mouse or
-        ArrowUp/ArrowDown + Enter. Click a chip for Edit / Show details / Remove. Escape closes the dropdown.
+        ArrowUp/ArrowDown + Enter. Click a chip for Edit / Show details / Remove. Escape closes the dropdown. Copying selected content
+        turns chips into their gist id; pasted or initial text containing a <Typography variant="code1" as="span">GIST-</Typography>
+        prefixed id is swapped back into a chip on load.
       </Typography>
       <form onSubmit={ handleSubmit(onSubmit) } className="flex w-full flex-col gap-y-2">
         <Controller
@@ -64,6 +75,8 @@ export default function AutoCompleteTextAreaDemo() {
                 onBlur={ field.onBlur }
                 filterFunction={ itemFilterFunction }
                 itemDisplayFunction={ textAreaItemDisplay }
+                itemTransformFunction={ textAreaItemTransformForServerFunction }
+                getItemIdPrefix={ getAutocompleteItemIdPrefix }
                 renderItemOption={ (gist: Gist) => <ItemOptionDisplay item={ gist } /> }
                 detailsDialogTitle="Gist details"
                 triggerKey=":"

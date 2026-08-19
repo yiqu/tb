@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo, useState, Fragment, useEffect, useCallback, useLayoutEffect, KeyboardEvent } from 'react';
+import { useRef, useMemo, useState, Fragment, useEffect, useCallback, useLayoutEffect, KeyboardEvent, ClipboardEvent } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -15,7 +15,9 @@ import {
   placeCaretAtEnd,
   placeCaretAfterNode,
   placeCaretAtTextOffset,
+  autoCompleteValueToText,
   getCaretPositionInWrapper,
+  hydrateAutoCompleteValue,
   isAutoCompleteValueEmpty,
   getElementPositionInWrapper,
   areAutoCompleteValuesEqual,
@@ -75,6 +77,8 @@ export default function AutoCompletableTextArea<T>({
   onValueChange,
   filterFunction,
   itemDisplayFunction,
+  itemTransformFunction,
+  getItemIdPrefix,
   renderItemOption,
   renderItemDetails,
   detailsDialogTitle,
@@ -108,18 +112,46 @@ export default function AutoCompletableTextArea<T>({
   const onValueChangeRef = useRef(onValueChange);
   onValueChangeRef.current = onValueChange;
 
+  // Latest item-related props, reachable from stable callbacks and the value-sync effect.
+  const hydrationRef = useRef({ items, itemTransformFunction, getItemIdPrefix });
+  hydrationRef.current = { items, itemTransformFunction, getItemIdPrefix };
+
+  /** Serializes an item for the clipboard / id matching; falls back to the display text. */
+  const resolveItemText = useCallback((item: T) => {
+    const transform = hydrationRef.current.itemTransformFunction;
+    return transform ? transform(item) : itemDisplayFunction(item);
+  }, [itemDisplayFunction]);
+
   const resolvedChipMenuItems = useMemo(() => chipMenuItems ?? getDefaultChipMenuItems<T>(), [chipMenuItems]);
 
-  // External value change (form reset, setValue, ...): re-mount the surface from the new value.
+  const mountedRef = useRef(false);
+
+  // Incoming value sync. On mount and on every true external change (form reset, setValue, ...)
+  // the value is hydrated — plain-text item ids (recognized via getItemIdPrefix +
+  // itemTransformFunction) are swapped into chips — and the surface is re-mounted from it.
   // Our own emissions round-trip back here with equal content and are ignored, preserving the caret.
   useEffect(() => {
-    if (areAutoCompleteValuesEqual(value, lastEmittedRef.current)) {
+    const isMount = !mountedRef.current;
+    mountedRef.current = true;
+    if (!isMount) {
+      if (areAutoCompleteValuesEqual(value, lastEmittedRef.current)) {
+        lastEmittedRef.current = value;
+        return;
+      }
+    }
+    const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix } = hydrationRef.current;
+    const hydrated = transform && idPrefix ? hydrateAutoCompleteValue(value, currentItems, transform, idPrefix) : value;
+    const changedByHydration = hydrated !== value && !areAutoCompleteValuesEqual(hydrated, value);
+    if (isMount && !changedByHydration) {
       lastEmittedRef.current = value;
       return;
     }
-    lastEmittedRef.current = value;
-    chipItemsRef.current = collectChipItems(value);
-    setRender((prev: EditorRenderState<T>) => ({ key: prev.key + 1, segments: value }));
+    lastEmittedRef.current = hydrated;
+    chipItemsRef.current = collectChipItems(hydrated);
+    setRender((prev: EditorRenderState<T>) => ({ key: prev.key + 1, segments: hydrated }));
+    if (changedByHydration) {
+      onValueChangeRef.current(hydrated);
+    }
   }, [value]);
 
   // After a structural re-mount, put the caret back where the user expects it.
@@ -169,6 +201,80 @@ export default function AutoCompletableTextArea<T>({
     editor.setAttribute('data-empty', String(isAutoCompleteValueEmpty(segments)));
     onValueChangeRef.current(segments);
   }, []);
+
+  /**
+   * Copy: the selection is serialized to plain text ourselves so that every chip in it becomes
+   * its transformed text (e.g. the item id via `itemTransformFunction`) instead of the chip markup.
+   */
+  const handleCopy = useCallback(
+    (event: ClipboardEvent<HTMLDivElement>) => {
+      const editor = editorRef.current;
+      const selection = window.getSelection();
+      if (!editor || !selection || selection.rangeCount === 0 || selection.isCollapsed) {
+        return;
+      }
+      const range = selection.getRangeAt(0);
+      if (!editor.contains(range.commonAncestorContainer)) {
+        return;
+      }
+      event.preventDefault();
+      const selectedSegments = parseEditorDom(range.cloneContents(), chipItemsRef.current);
+      event.clipboardData.setData('text/plain', autoCompleteValueToText(selectedSegments, resolveItemText));
+    },
+    [resolveItemText],
+  );
+
+  /** Cut: same serialization as copy, then the selection is deleted and the value re-emitted. */
+  const handleCut = useCallback(
+    (event: ClipboardEvent<HTMLDivElement>) => {
+      const editor = editorRef.current;
+      const selection = window.getSelection();
+      if (!editor || !selection || selection.rangeCount === 0 || selection.isCollapsed) {
+        return;
+      }
+      const range = selection.getRangeAt(0);
+      if (!editor.contains(range.commonAncestorContainer)) {
+        return;
+      }
+      event.preventDefault();
+      const selectedSegments = parseEditorDom(range.cloneContents(), chipItemsRef.current);
+      event.clipboardData.setData('text/plain', autoCompleteValueToText(selectedSegments, resolveItemText));
+      range.deleteContents();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      handleInput();
+    },
+    [resolveItemText, handleInput],
+  );
+
+  /**
+   * Paste: forced to plain text. This keeps a paste of previously copied content as the
+   * transformed text (e.g. ids), and prevents chip HTML from being pasted back as dead markup.
+   */
+  const handlePaste = useCallback(
+    (event: ClipboardEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const text = event.clipboardData.getData('text/plain');
+      const editor = editorRef.current;
+      const selection = window.getSelection();
+      if (text === '' || !editor || !selection || selection.rangeCount === 0) {
+        return;
+      }
+      const range = selection.getRangeAt(0);
+      if (!editor.contains(range.commonAncestorContainer)) {
+        return;
+      }
+      range.deleteContents();
+      const textNode = document.createTextNode(text);
+      range.insertNode(textNode);
+      range.setStartAfter(textNode);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      handleInput();
+    },
+    [handleInput],
+  );
 
   /** Opens the dropdown at the current caret when the trigger key is pressed. */
   const handleKeyDown = useCallback(
@@ -348,6 +454,9 @@ export default function AutoCompletableTextArea<T>({
         ) }
         onInput={ handleInput }
         onKeyDown={ handleKeyDown }
+        onCopy={ handleCopy }
+        onCut={ handleCut }
+        onPaste={ handlePaste }
         onBlur={ onBlur }
       >
         { editorChildren }

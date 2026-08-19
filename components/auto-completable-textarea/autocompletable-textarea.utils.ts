@@ -91,7 +91,7 @@ interface PendingChipInsert<T> {
  * - <br> and block elements become newlines
  */
 export const parseEditorDom = <T>(
-  root: HTMLElement,
+  root: HTMLElement | DocumentFragment,
   chipItems: ReadonlyMap<string, T>,
   pendingInsert?: PendingChipInsert<T>,
 ): AutoCompleteValue<T> => {
@@ -146,6 +146,98 @@ export const parseEditorDom = <T>(
   root.childNodes.forEach((child: Node) => walk(child));
 
   return segments;
+};
+
+/**
+ * Scans the value's plain-text segments for item ids and swaps every match into an autocompleted
+ * item segment (chip). Used to hydrate an incoming value (e.g. an initial blob of text that
+ * contains ids saved earlier by `autoCompleteValueToText` + the transform function).
+ *
+ * Performance: instead of testing every item id at every character, the text is only searched for
+ * the id prefixes (via indexOf) — each prefix occurrence is the only candidate position where ids
+ * are compared. Ids that don't start with their own prefix are skipped (they would defeat the scan).
+ * When nothing matches, the original value reference is returned unchanged.
+ */
+export const hydrateAutoCompleteValue = <T>(
+  value: AutoCompleteValue<T>,
+  items: T[],
+  itemTransformFunction: (item: T) => string,
+  getItemIdPrefix: (item: T) => string,
+): AutoCompleteValue<T> => {
+  interface TokenEntry {
+    token: string;
+    item: T;
+  }
+
+  const tokenEntries: TokenEntry[] = [];
+  const prefixes = new Set<string>();
+  for (const item of items) {
+    const token = itemTransformFunction(item);
+    const prefix = getItemIdPrefix(item);
+    if (token.length > 0 && prefix.length > 0 && token.startsWith(prefix)) {
+      tokenEntries.push({ token: token, item: item });
+      prefixes.add(prefix);
+    }
+  }
+  if (tokenEntries.length === 0) {
+    return value;
+  }
+
+  const hydrated: AutoCompleteValue<T> = [];
+  let didHydrate = false;
+
+  const pushText = (text: string) => {
+    if (text === '') {
+      return;
+    }
+    const last = hydrated[hydrated.length - 1];
+    if (last && last.kind === 'text') {
+      last.text = last.text + text;
+      return;
+    }
+    hydrated.push({ kind: 'text', text: text });
+  };
+
+  for (const segment of value) {
+    if (segment.kind === 'item') {
+      hydrated.push(segment);
+      continue;
+    }
+    const text = segment.text;
+    let position = 0;
+    while (position < text.length) {
+      // Earliest prefix occurrence from the current position is the next candidate spot.
+      let candidateIndex = -1;
+      for (const prefix of prefixes) {
+        const index = text.indexOf(prefix, position);
+        if (index !== -1 && (candidateIndex === -1 || index < candidateIndex)) {
+          candidateIndex = index;
+        }
+      }
+      if (candidateIndex === -1) {
+        pushText(text.slice(position));
+        break;
+      }
+      // Longest id wins so an id that is a prefix of another id can't shadow it.
+      let matched: TokenEntry | null = null;
+      for (const entry of tokenEntries) {
+        if (text.startsWith(entry.token, candidateIndex) && (!matched || entry.token.length > matched.token.length)) {
+          matched = entry;
+        }
+      }
+      if (!matched) {
+        pushText(text.slice(position, candidateIndex + 1));
+        position = candidateIndex + 1;
+        continue;
+      }
+      pushText(text.slice(position, candidateIndex));
+      hydrated.push({ kind: 'item', chipId: generateChipId(), item: matched.item });
+      didHydrate = true;
+      position = candidateIndex + matched.token.length;
+    }
+  }
+
+  return didHydrate ? hydrated : value;
 };
 
 /**

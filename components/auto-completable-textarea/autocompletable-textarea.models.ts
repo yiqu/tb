@@ -89,6 +89,21 @@ export interface AutoCompletableTextAreaProps<T> {
   filterFunction: (item: T, filter: string) => boolean;
   /** Returns the text shown inside the chip once an item is autocompleted into the text area. */
   itemDisplayFunction: (item: T) => string;
+  /**
+   * Serializes an autocompleted item to its "real" text (e.g. `item => item.id`).
+   * Used when copying/cutting text-area content to the clipboard — chips are copied as this text —
+   * and to recognize item ids inside an incoming value (see `getItemIdPrefix`).
+   * Falls back to `itemDisplayFunction` when omitted.
+   */
+  itemTransformFunction?: (item: T) => string;
+  /**
+   * Returns the prefix every item id (the `itemTransformFunction` output) starts with, e.g. 'GIST-'.
+   * When provided, incoming values (initial value, form resets) are scanned for the prefix and any
+   * matching item id found in plain text is swapped into an autocompleted item chip. The prefix keeps
+   * the scan cheap: only prefix occurrences are candidate positions, instead of matching every id at
+   * every character of the text. Omit to disable hydration.
+   */
+  getItemIdPrefix?: (item: T) => string;
   /** Renders one row of the dropdown list. Falls back to `itemDisplayFunction` text when omitted. */
   renderItemOption?: (item: T) => ReactNode;
   /** Renders the body of the "Show details" dialog. Falls back to a generic key/value dump when omitted. */

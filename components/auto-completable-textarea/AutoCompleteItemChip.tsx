@@ -26,7 +26,7 @@ interface AutoCompleteItemChipProps<T> {
 
 /**
  * An autocompleted item rendered inside the text area, Gmail-recipient style: visually distinct
- * from typed text (bordered pill + wavy underline) so users can tell it was auto-filled.
+ * from typed text (bordered pill) so users can tell it was auto-filled.
  * Clicking it opens a popover menu (Edit / Show details / Remove by default).
  *
  * The wrapper span is contentEditable={false} so the browser treats the whole chip as one
@@ -71,9 +71,7 @@ export default function AutoCompleteItemChip<T>({
               className,
             ) }
           >
-            <Typography variant="span1" className="underline decoration-primary/70 decoration-wavy underline-offset-3">
-              { label }
-            </Typography>
+            <Typography variant="span1">{ label }</Typography>
             <ChevronDownIcon className="size-3 shrink-0 opacity-70" />
           </button>
         </DropdownMenuTrigger>

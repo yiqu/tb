@@ -36,6 +36,7 @@ export default function AutoCompleteTextAreaUncontrolledDemo() {
         onChange={ handleChange }
         filterFunction={ teammateFilterFunction }
         itemDisplayFunction={ teammateTextAreaItemDisplay }
+        itemTransformFunction={ teammateTransformForServerFunction }
         renderItemOption={ (teammate: Teammate) => <TeammateOptionDisplay item={ teammate } /> }
         detailsDialogTitle="Teammate details"
         triggerKey="@"
