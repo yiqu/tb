@@ -122,6 +122,12 @@ ANY item type and fails at runtime instead of at the call site. Verified: handin
 - `isItemDisabled?(item)` — return true and that dropdown row is not selectable. Passed straight to
   cmdk's `CommandItem disabled`, which blocks click/Enter AND skips the row during arrow
   navigation; `onSelect` also guards. Omit to leave every item selectable.
+  It ALSO marks existing chips: a chip whose item is disabled (hydrated from text, or disabled
+  after it was picked) renders a triangle warning icon before its label plus an amber border,
+  instead of silently looking fine. Such a chip stays clickable so the menu can Edit or Remove it.
+  The warning classes are placed before `chipClassName` in the `cn(...)` call, so tailwind-merge
+  lets a caller-supplied border/background win (verified: `chipClassName="border-red-500"` beats
+  the amber border while the icon still shows).
 - `triggerKey?` (default `':'`), `className`, `selectItemClassName`, `chipClassName`, `placeholder`, `searchPlaceholder`, `emptyText`, `disabled`, `chipMenuItems?`, `onBlur`, `id`.
 - `showClearButton?` (default `true`), `clearButtonClassName?`.
 

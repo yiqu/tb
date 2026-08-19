@@ -476,6 +476,7 @@ export default function AutoCompletableTextArea<T>({
         item={ segment.item }
         label={ itemDisplayFunction(segment.item) }
         serverText={ resolveItemText(segment.item) }
+        isItemDisabled={ isItemDisabled?.(segment.item) ?? false }
         className={ chipClassName }
         disabled={ disabled }
         menuItems={ resolvedChipMenuItems }
