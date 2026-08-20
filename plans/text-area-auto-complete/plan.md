@@ -99,6 +99,35 @@ is `{ kind: 'text', text }` or `{ kind: 'item', chipId, item }`. `chipId` is a u
   for what the user sees, or `itemTransformFunction` (e.g. `item => item.id`) for the server string.
 - This value flows through react-hook-form as the field value; derive the server string at submit.
 
+## Read-only display: `components/auto-completable-textarea-read-only/`
+
+A separate, view-only component — deliberately NOT a `readOnly` flag on the editable text area,
+which is already busy with contentEditable mechanics; folding both in would have traded readability
+for reuse. Nothing is imported from the editable folder, so this one can be dropped in on its own.
+
+| File | Responsibility |
+| --- | --- |
+| `AutoCompletableTextAreaReadOnly.tsx` | Main: takes a `text` string, scans it with `getItemRegex()`, renders matches as chips and the rest as plain text. |
+| `AutoCompleteReadOnlyChip.tsx` | The clickable chip + its menu. |
+| `AutoCompleteReadOnlyChipMenu.tsx` | `getDefaultReadOnlyChipMenuItems()`: View details / Copy / Copy content. Data-driven, override via `chipMenuItems`. |
+| `AutoCompleteReadOnlyDetailsDialog.tsx` | "View details" dialog, reusing the shared `StyledDialogContent`. |
+| `*.models.ts` / `*.utils.ts` | Types; `splitTextByItemRegex` + a local `copyTextToClipboard`. |
+
+Key points:
+- `getItemRegex: () => RegExp` takes NO argument — the regex describes the id FORMAT, which must be
+  known before any item exists to match against. It must be unanchored (`^…$` can never match inside
+  a sentence); `splitTextByItemRegex` builds a fresh `g`-flagged copy per scan so a caller-held
+  regex never has its `lastIndex` mutated, and steps over zero-length matches.
+- `resolveItem(matchedText)` maps an id to its item. An id that resolves to nothing STILL becomes a
+  chip — dashed amber border + warning triangle — so a stale reference is visible rather than
+  silently blending into the text. Its View details / Copy content entries disable themselves;
+  Copy still works (it copies the raw matched text).
+- Copy copies `matchedText` (the id); Copy content copies `itemCopyContentFunction(item)`.
+- Styling hooks: `className` (whole surface), `textClassName` (plain runs), `chipClassName`,
+  `unresolvedChipClassName`.
+- Demo: `_components/AutoCompleteReadOnlyDemo.tsx` with three examples (two known ids; multi-line
+  with an unknown id; no ids at all plus a restyled surface).
+
 ## Typing model: generic component, concrete callbacks
 
 The component (and every internal piece: dropdown, chip, chip menu, details dialog, the segment

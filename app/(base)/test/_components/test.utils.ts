@@ -114,13 +114,44 @@ export const getAutocompleteItemIdLength = (item: Gist): number => {
 
 /**
  * How you can tell if a string is a autocomplete-able, extract.
- * @param item 
- * @returns 
+ *
+ * Takes no argument on purpose: this describes the id FORMAT, which has to be known before any item
+ * exists to match against. Unanchored so ids are found inside a sentence (`^...$` would only match a
+ * string that is nothing but the id), and the digits match the real ids — GIST- plus 7 digits, i.e.
+ * the 12 characters getAutocompleteItemIdLength() reports.
+ * @returns
  */
-export const getAutocompleteItemRegex = (item: Gist): RegExp => {
-  const re = /^GIST-\d{4}-\d{4}-\d{4}$/;
+export const getAutocompleteItemRegex = (): RegExp => {
+  const re = /GIST-\d{7}/g;
   return re;
 };
+
+/**
+ * Resolve a matched id back to its gist. Returns undefined for an id that is not in the list —
+ * the read-only display then flags it instead of pretending it resolved.
+ * @param matchedText
+ * @returns
+ */
+export const resolveGistById = (matchedText: string): Gist | undefined => {
+  return TEST_GISTS.find((gist: Gist) => gist.id === matchedText);
+};
+
+/**
+ * What the read-only chip's "Copy content" menu option copies.
+ * @param item
+ * @returns
+ */
+export const gistCopyContent = (item: Gist): string => {
+  return item.content;
+};
+
+// Sample strings for the read-only display examples.
+export const READ_ONLY_TEXT_SIMPLE: string = 'Rolled up GIST-1111111 into the release notes. See GIST-4444444 for the follow-up.';
+
+export const READ_ONLY_TEXT_MIXED: string =
+  'Deploy blocked: GIST-3333333 is not aliasable and GIST-9999999 needs review.\nUnknown reference GIST-1234567 came from an older export.';
+
+export const READ_ONLY_TEXT_NONE: string = 'This paragraph mentions no gist ids at all, so it renders as ordinary text end to end.';
 
 /**
  * Optional callback to disable an item in the dropdown list. Return true and that option cannot be
