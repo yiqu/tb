@@ -105,13 +105,22 @@ export const getAutocompleteItemIdPrefix = (item: Gist): string => {
 
 /**
  *  for example GIST-3333333 is length of 12 total
- * @param item 
- * @returns 
+ * @param item
+ * @returns
  */
 export const getAutocompleteItemIdLength = (item: Gist): number => {
   return 12;
 };
 
+/**
+ * How you can tell if a string is a autocomplete-able, extract.
+ * @param item 
+ * @returns 
+ */
+export const getAutocompleteItemRegex = (item: Gist): RegExp => {
+  const re = /^GIST-\d{4}-\d{4}-\d{4}$/;
+  return re;
+};
 
 /**
  * Optional callback to disable an item in the dropdown list. Return true and that option cannot be
