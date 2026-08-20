@@ -32,7 +32,7 @@ export interface AutoCompleteReadOnlyChipMenuContext<T> {
   displayText: string;
   /**
    * The item's content, per the `itemCopyContentFunction` prop. Undefined when the item could not
-   * be resolved or no content function was supplied — the "Copy content" entry disables itself then.
+   * be resolved or no content function was supplied — the "Copy" entry disables itself then.
    */
   contentText: string | undefined;
   /** Writes arbitrary text to the clipboard. Resolves once the write completed. */
@@ -85,13 +85,13 @@ export interface AutoCompletableTextAreaReadOnlyProps<T> {
   resolveItem?: (matchedText: string) => T | undefined;
   /** Text shown on a chip for a resolved item. Falls back to the matched text. */
   itemDisplayFunction?: (item: T) => string;
-  /** Text copied by the "Copy content" entry. Without it that entry stays disabled. */
+  /** Text copied by the "Copy" entry. Without it that entry stays disabled. */
   itemCopyContentFunction?: (item: T) => string;
   /** Body of the details dialog. Falls back to a generic key/value dump. */
   renderItemDetails?: (item: T) => ReactNode;
   /** Title of the details dialog. */
   detailsDialogTitle?: ReactNode;
-  /** Overrides the chip menu entries. Defaults to View details / Copy / Copy content. */
+  /** Overrides the chip menu entries. Defaults to View details / Copy / Copy display. */
   chipMenuItems?: AutoCompleteReadOnlyChipMenuItemConfig<T>[];
   /** Tailwind classes for the wrapper around the whole rendered text. */
   className?: string;

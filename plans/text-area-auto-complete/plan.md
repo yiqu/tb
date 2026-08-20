@@ -109,7 +109,7 @@ for reuse. Nothing is imported from the editable folder, so this one can be drop
 | --- | --- |
 | `AutoCompletableTextAreaReadOnly.tsx` | Main: takes a `text` string, scans it with `getItemRegex()`, renders matches as chips and the rest as plain text. |
 | `AutoCompleteReadOnlyChip.tsx` | The clickable chip + its menu. |
-| `AutoCompleteReadOnlyChipMenu.tsx` | `getDefaultReadOnlyChipMenuItems()`: View details / Copy / Copy content. Data-driven, override via `chipMenuItems`. |
+| `AutoCompleteReadOnlyChipMenu.tsx` | `getDefaultReadOnlyChipMenuItems()`: View details / Copy / Copy display. Data-driven, override via `chipMenuItems`. |
 | `AutoCompleteReadOnlyDetailsDialog.tsx` | "View details" dialog, reusing the shared `StyledDialogContent`. |
 | `*.models.ts` / `*.utils.ts` | Types; `splitTextByItemRegex` + a local `copyTextToClipboard`. |
 
@@ -120,9 +120,11 @@ Key points:
   regex never has its `lastIndex` mutated, and steps over zero-length matches.
 - `resolveItem(matchedText)` maps an id to its item. An id that resolves to nothing STILL becomes a
   chip — dashed amber border + warning triangle — so a stale reference is visible rather than
-  silently blending into the text. Its View details / Copy content entries disable themselves;
-  Copy still works (it copies the raw matched text).
-- Copy copies `matchedText` (the id); Copy content copies `itemCopyContentFunction(item)`.
+  silently blending into the text. Its View details / Copy entries disable themselves; Copy display
+  still works (an unresolved chip displays its raw matched text, which is valid to copy).
+- Copy copies `itemCopyContentFunction(item)`; Copy display copies exactly what the chip shows
+  (the `itemDisplayFunction` result). `matchedText` (the raw id) stays on the menu context for
+  custom entries.
 - Styling hooks: `className` (whole surface), `textClassName` (plain runs), `chipClassName`,
   `unresolvedChipClassName`.
 - Demo: `_components/AutoCompleteReadOnlyDemo.tsx` with three examples (two known ids; multi-line

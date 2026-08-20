@@ -38,7 +38,7 @@ export default function AutoCompleteReadOnlyDemo() {
         <Typography variant="code1" as="span">
           getAutocompleteItemRegex()
         </Typography>{ ' ' }
-        and turns every match into a clickable chip (View details / Copy / Copy content). Chips show the gist alias; unknown ids stay
+        and turns every match into a clickable chip (View details / Copy / Copy display). Chips show the gist alias; unknown ids stay
         visible with a warning so a stale reference is not silently swallowed.
       </Typography>
 

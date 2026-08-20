@@ -137,7 +137,7 @@ export const resolveGistById = (matchedText: string): Gist | undefined => {
 };
 
 /**
- * What the read-only chip's "Copy content" menu option copies.
+ * What the read-only chip's "Copy" menu option copies.
  * @param item
  * @returns
  */

@@ -14,7 +14,7 @@ import { ReadOnlySegment, AutoCompletableTextAreaReadOnlyProps } from './autocom
  * AutoCompletableTextAreaReadOnly — the view-only counterpart of AutoCompletableTextArea.
  *
  * It takes a plain string, scans it with `getItemRegex()`, and renders every match as a clickable
- * chip (menu: View details / Copy / Copy content) while the rest stays plain text. There is no
+ * chip (menu: View details / Copy / Copy display) while the rest stays plain text. There is no
  * editing, no caret handling and no dropdown: this is a display component, so it is a separate
  * component in its own folder rather than a "readOnly" flag on the editable one — that would have
  * piled view-only props onto a component already busy with contentEditable mechanics.

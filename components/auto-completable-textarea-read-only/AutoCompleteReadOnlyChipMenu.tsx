@@ -41,17 +41,18 @@ export function getDefaultReadOnlyChipMenuItems<T>(): AutoCompleteReadOnlyChipMe
       key: 'copy',
       label: 'Copy',
       icon: <CopyIcon />,
-      // Copies the matched text itself — the id as it appears in the string.
-      onSelect: (context) => copyWithToast(context, context.matchedText),
-    },
-    {
-      key: 'copy-content',
-      label: 'Copy content',
-      icon: <FileTextIcon />,
-      // Copies the item's content, per the itemCopyContentFunction prop. Disabled when there is no
-      // content to copy (unresolved id, or no content function supplied).
+      // Copies the item's content — whatever itemCopyContentFunction returned. Disabled when there
+      // is nothing to copy (unresolved id, or no content function supplied).
       isDisabled: (context) => context.contentText === undefined,
       onSelect: (context) => copyWithToast(context, context.contentText ?? ''),
+    },
+    {
+      key: 'copy-display',
+      label: 'Copy display',
+      icon: <FileTextIcon />,
+      // Copies exactly what the chip shows — the itemDisplayFunction result. Never disabled: an
+      // unresolved id still displays its raw matched text, which is a valid thing to copy.
+      onSelect: (context) => copyWithToast(context, context.displayText),
     },
   ];
 }
