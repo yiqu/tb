@@ -119,7 +119,6 @@ export default function AutoCompletableTextArea<T>({
 
   // Mirror of dropdownState readable from stable callbacks (e.g. the blur handler).
   const dropdownStateRef = useRef<DropdownState | null>(dropdownState);
-  dropdownStateRef.current = dropdownState;
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<HTMLDivElement | null>(null);
@@ -133,19 +132,30 @@ export default function AutoCompletableTextArea<T>({
 
   // Keep the latest onValueChange reachable from stable callbacks.
   const onValueChangeRef = useRef(onValueChange);
-  onValueChangeRef.current = onValueChange;
 
   // Latest item-related props, reachable from stable callbacks and the value-sync effect.
   const hydrationRef = useRef({ items, itemTransformFunction, getItemIdPrefix });
-  hydrationRef.current = { items, itemTransformFunction, getItemIdPrefix };
 
-  /** Serializes an item for the clipboard / id matching; falls back to the display text. */
+  // Refs are synced in the commit phase, never during render: a render that is double-invoked
+  // (StrictMode) or interrupted and thrown away must not leave handlers reading values from a
+  // render that never committed. Declared BEFORE the value-sync effect below because passive
+  // effects run in declaration order, so that effect always observes this render's props.
+  useEffect(() => {
+    dropdownStateRef.current = dropdownState;
+    onValueChangeRef.current = onValueChange;
+    hydrationRef.current = { items, itemTransformFunction, getItemIdPrefix };
+  });
+
+  /**
+   * Serializes an item for the clipboard / id matching; falls back to the display text.
+   * Reads the props directly rather than `hydrationRef`, because this also runs DURING render
+   * (each chip's `serverText`), where the ref still holds the previous commit's props.
+   */
   const resolveItemText = useCallback(
     (item: T) => {
-      const transform = hydrationRef.current.itemTransformFunction;
-      return transform ? transform(item) : itemDisplayFunction(item);
+      return itemTransformFunction ? itemTransformFunction(item) : itemDisplayFunction(item);
     },
-    [itemDisplayFunction],
+    [itemDisplayFunction, itemTransformFunction],
   );
 
   const resolvedChipMenuItems = useMemo(() => chipMenuItems ?? getDefaultChipMenuItems<T>(), [chipMenuItems]);

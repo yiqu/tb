@@ -55,8 +55,14 @@ export const splitTextByItemRegex = <T>(
  */
 export const copyTextToClipboard = async (text: string): Promise<void> => {
   if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text);
-    return;
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // The API exists but refused — denied permission, an unfocused document, a blocked context.
+      // Fall through to the legacy path instead of failing the copy outright. Anything the
+      // fallback itself throws is left to propagate so the caller still sees a real failure.
+    }
   }
   const textarea = document.createElement('textarea');
   textarea.value = text;
