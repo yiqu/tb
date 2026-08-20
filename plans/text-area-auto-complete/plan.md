@@ -55,3 +55,233 @@
 
 ## Bonus
 - Create a different type of Object, create the type for it. Then a list to pass in, and Demonstrate that this component is also usable with other types of objects.
+
+---
+
+# Tech Spec (implemented)
+
+Everything below documents what was actually built, how it works internally, and the traps to
+know about when debugging. All plan items above are DONE, plus follow-ups requested later:
+no squiggly underline on chips (plain pill only), clipboard copy/cut serializes chips via the
+transform function, paste is forced to plain text, existing item ids in text are converted
+to chips on load and on blur, a clear ("X") button in the top right corner, and Copy /
+Copy display entries in the chip menu.
+
+## File map
+
+Component suite (shareable, generic over item type `T`) — `components/auto-completable-textarea/`:
+
+| File | Responsibility |
+| --- | --- |
+| `AutoCompletableTextArea.tsx` | Main controlled component. Owns the contentEditable surface, trigger-key handling, clipboard handlers, blur id-detection, and orchestrates dropdown / chips / details dialog. |
+| `AutoCompletableTextAreaUncontrolled.tsx` | Dumb wrapper: `initValue` + `onChange`, holds state internally, renders the controlled one. |
+| `AutoCompleteDropdown.tsx` | Caret-anchored Popover + cmdk Command: search input on top (auto-focused), scrollable filtered list, ArrowUp/Down + Enter, Escape/outside-click closes. |
+| `AutoCompleteItemChip.tsx` | One autocompleted item inside the text area: `contentEditable={false}` pill span + DropdownMenu (the chip popover menu). |
+| `AutoCompleteChipMenu.tsx` | `getDefaultChipMenuItems()`: data-driven default menu (Edit / Copy / Copy display / Show details / Remove). Pass a custom array via `chipMenuItems` prop to add/remove/reorder entries. |
+| `AutoCompleteClearButton.tsx` | The clear ("X") button pinned to the top right corner. |
+| `AutoCompleteItemDetailsDialog.tsx` | "Show details" dialog. Reuses the app-wide `shared/dialogs/StyledDialogContent`. Custom body via `renderItemDetails`, generic key/value dump fallback. |
+| `autocompletable-textarea.models.ts` | All types: segments, value, props, chip menu item config + context. |
+| `autocompletable-textarea.utils.ts` | DOM parsing, hydration scan, caret helpers, serialization helpers. |
+
+Demos — `app/(base)/test/`:
+- `_components/AutoCompleteTextAreaDemo.tsx` — controlled + react-hook-form (Controller) + Zod, Gist list, trigger `:`. Default form value contains a raw `GIST-3333333` to demo load-time hydration. Submit shows the server string.
+- `_components/AutoCompleteTextAreaDemo2.tsx` — same text area as one field among ordinary ones (Location seeded, Car name empty, Is driveable false), reusing `HFInputField` / `HFCheckbox`; submit echoes every value.
+- `_components/AutoCompleteTextAreaUncontrolledDemo.tsx` — uncontrolled + bonus `Teammate` type, trigger `@`.
+- `_components/test.utils.ts` — `Gist`/`TEST_GISTS` (ids are `GIST-1111111`…`GIST-9999999`), `Teammate`/`TEST_TEAMMATES`, and the callback fns: `itemFilterFunction`, `textAreaItemDisplay`, `textAreaItemTransformForServerFunction` (returns `item.id`), `getAutocompleteItemIdPrefix` (returns `'GIST-'`), `isItemDisabled` (non-aliasable gists are unselectable), teammate equivalents.
+- `_components/Utils.tsx` — dropdown row renderers (`ItemOptionDisplay`, `TeammateOptionDisplay`).
+
+## Value model
+
+The value is NOT a string. It is `AutoCompleteValue<T> = AutoCompleteSegment<T>[]` where a segment
+is `{ kind: 'text', text }` or `{ kind: 'item', chipId, item }`. `chipId` is a unique per-insert id
+(`generateChipId()`) so the same item can appear twice. Helpers:
+- `autoCompleteValueToText(value, itemToText)` — flatten to a string. Pass `itemDisplayFunction`
+  for what the user sees, or `itemTransformFunction` (e.g. `item => item.id`) for the server string.
+- This value flows through react-hook-form as the field value; derive the server string at submit.
+
+## Read-only display: `components/auto-completable-textarea-read-only/`
+
+A separate, view-only component — deliberately NOT a `readOnly` flag on the editable text area,
+which is already busy with contentEditable mechanics; folding both in would have traded readability
+for reuse. Nothing is imported from the editable folder, so this one can be dropped in on its own.
+
+| File | Responsibility |
+| --- | --- |
+| `AutoCompletableTextAreaReadOnly.tsx` | Main: takes a `text` string, scans it with `getItemRegex()`, renders matches as chips and the rest as plain text. |
+| `AutoCompleteReadOnlyChip.tsx` | The clickable chip + its menu. |
+| `AutoCompleteReadOnlyChipMenu.tsx` | `getDefaultReadOnlyChipMenuItems()`: View details / Copy / Copy display. Data-driven, override via `chipMenuItems`. |
+| `AutoCompleteReadOnlyDetailsDialog.tsx` | "View details" dialog, reusing the shared `StyledDialogContent`. |
+| `*.models.ts` / `*.utils.ts` | Types; `splitTextByItemRegex` + a local `copyTextToClipboard`. |
+
+Key points:
+- `getItemRegex: () => RegExp` takes NO argument — the regex describes the id FORMAT, which must be
+  known before any item exists to match against. It must be unanchored (`^…$` can never match inside
+  a sentence); `splitTextByItemRegex` builds a fresh `g`-flagged copy per scan so a caller-held
+  regex never has its `lastIndex` mutated, and steps over zero-length matches.
+- `resolveItem(matchedText)` maps an id to its item. An id that resolves to nothing STILL becomes a
+  chip — dashed amber border + warning triangle — so a stale reference is visible rather than
+  silently blending into the text. Its View details / Copy entries disable themselves; Copy display
+  still works (an unresolved chip displays its raw matched text, which is valid to copy).
+- Copy copies `itemCopyContentFunction(item)`; Copy display copies exactly what the chip shows
+  (the `itemDisplayFunction` result). `matchedText` (the raw id) stays on the menu context for
+  custom entries.
+- Styling hooks: `className` (whole surface), `textClassName` (plain runs), `chipClassName`,
+  `unresolvedChipClassName`.
+- Demo: `_components/AutoCompleteReadOnlyDemo.tsx` with three examples (two known ids; multi-line
+  with an unknown id; no ids at all plus a restyled surface).
+
+## Typing model: generic component, concrete callbacks
+
+The component (and every internal piece: dropdown, chip, chip menu, details dialog, the segment
+types) is generic over `T` and knows NOTHING about the item shape. Every callback you hand it is
+written against the CONCRETE type — `(item: Gist) => ...`, never `<T>(item: T) => ...`. Call sites
+pin the generic explicitly (`<AutoCompletableTextArea<Gist> ... />`), so TypeScript checks the
+callbacks against that type.
+
+Do NOT write a "generic" callback that casts internally (`(item as Gist).alias`): it compiles for
+ANY item type and fails at runtime instead of at the call site. Verified: handing Gist callbacks to
+`AutoCompletableTextArea<Teammate>` is a compile error on every mismatched prop.
+
+## Key props (all item-specific behavior is injected)
+
+- `items: T[]` — full local list. No remote search, no pagination.
+- `filterFunction(item, filter)` — dropdown search filtering.
+- `itemDisplayFunction(item)` — chip label text.
+- `itemTransformFunction?(item)` — "real" id text; used for clipboard copy/cut and id detection. Falls back to `itemDisplayFunction`.
+- `getItemIdPrefix?(item)` — prefix all ids start with (e.g. `'GIST-'`). Presence ENABLES hydration (load + blur). Ids that don't start with their own prefix are skipped by the scan.
+- `renderItemOption?/renderItemDetails?` — dropdown row / details dialog body renderers.
+- `isItemDisabled?(item)` — return true and that dropdown row is not selectable. Passed straight to
+  cmdk's `CommandItem disabled`, which blocks click/Enter AND skips the row during arrow
+  navigation; `onSelect` also guards. Omit to leave every item selectable.
+  It ALSO marks existing chips: a chip whose item is disabled (hydrated from text, or disabled
+  after it was picked) renders a triangle warning icon before its label plus an amber border,
+  instead of silently looking fine. Such a chip stays clickable so the menu can Edit or Remove it.
+  The warning classes are placed before `chipClassName` in the `cn(...)` call, so tailwind-merge
+  lets a caller-supplied border/background win (verified: `chipClassName="border-red-500"` beats
+  the amber border while the icon still shows).
+- `triggerKey?` (default `':'`), `className`, `selectItemClassName`, `chipClassName`, `placeholder`, `searchPlaceholder`, `emptyText`, `disabled`, `chipMenuItems?`, `onBlur`, `id`.
+- `showClearButton?` (default `true`), `clearButtonClassName?`.
+
+## Clear button
+
+`AutoCompleteClearButton` is rendered as a SIBLING of the editable surface (never inside it, or the
+browser would treat it as editable content). Clicking it calls `commitStructural([], { type: 'end' })`,
+which wipes text and chips and emits `[]` through `onValueChange` — so react-hook-form (controlled)
+and the uncontrolled wrapper's `onChange` both see the cleared value with no special-casing.
+
+Two details that matter:
+- `onMouseDown` is `preventDefault()`ed so the editor never blurs. That both skips a pointless blur
+  hydration pass over content about to be wiped, and leaves the caret in the editor ready to type.
+- Visibility is CSS-driven, not state-driven: the editor carries `peer` + the live `data-empty`
+  attribute, and the button carries `peer-data-[empty=true]:hidden`. This is deliberate — emptiness
+  must reflect the DOM the user is typing into, and `render.segments` is intentionally stale during
+  plain typing. Do NOT "fix" this by deriving visibility from `render.segments` (it would be wrong
+  until the next structural change) nor by adding state in `onInput` (a re-render per keystroke).
+  `handleInput` keeps `data-empty` current imperatively; React does not clobber it because the JSX
+  value only changes on remount.
+
+## Chip menu copy entries
+
+`AutoCompleteChipMenuContext<T>` exposes `itemServerText` (the `itemTransformFunction` result, e.g.
+the id), `itemDisplayText` (the chip label), and a `copyText(text)` helper backed by
+`copyTextToClipboard` in the utils (async Clipboard API with a hidden-textarea + `execCommand`
+fallback for non-secure origins). The default "Copy" entry copies `itemServerText`, "Copy display"
+copies `itemDisplayText`. The `react-hot-toast` "Copied." toast lives in `AutoCompleteChipMenu.tsx`
+(the swappable defaults layer), NOT in the shared util — that keeps the component droppable into a
+codebase with a different toast library.
+
+## Core mechanism: contentEditable + remount-on-structural-change
+
+A plain `<textarea>` cannot render chips, so the surface is a `contentEditable` div styled like the
+shadcn Textarea. The hard part is React vs. browser ownership of the DOM. The rule:
+
+- **Plain typing never re-renders.** The browser owns the DOM. `onInput` parses the DOM back into
+  segments (`parseEditorDom`) and emits via `onValueChange`, but does NOT setState. The caret is
+  never disturbed. React's vdom for the children goes stale on purpose and is never re-applied.
+- **Structural changes fully remount the surface.** Chip insert/replace/remove, incoming external
+  value, and blur hydration go through `commitStructural(segments, caret)` which bumps
+  `render.key`. The editor div has `key={render.key}`, so React rebuilds the whole children tree
+  from segments (guaranteeing DOM == state), then a `useLayoutEffect` on `render.key` restores the
+  caret (`PendingCaret`: `after-chip` [+ optional `offsetIntoNext`], `end`, or `none` — `none`
+  skips focus entirely, used by blur hydration so focus is not stolen back).
+- **Echo suppression.** `lastEmittedRef` holds the last value this component emitted. The `[value]`
+  effect ignores incoming values that are content-equal to it (`areAutoCompleteValuesEqual`),
+  otherwise every keystroke would remount and drop the caret. CRITICAL: react-hook-form
+  deep-clones values, so item equality uses lodash `isEqual`, not reference equality. If you ever
+  see the caret jumping to the start on every keystroke, this equality check regressed.
+- **Chip identity in the DOM.** Chip wrapper spans carry `data-autocomplete-chip-id`. `chipItemsRef`
+  (Map chipId→item) is the source of truth when re-parsing; a chip whose id is missing from the
+  map simply disappears from the parsed value (that's how menu "Remove" works: delete from map,
+  re-parse, commit). Backspace deletes a chip atomically because the span is `contentEditable={false}`.
+
+## Dropdown open/insert flow
+
+1. `onKeyDown` sees `triggerKey` (no ctrl/meta/alt) → `preventDefault()` (the trigger char is never
+   typed), saves the caret `Range` into `insertRangeRef`, computes the caret rect relative to the
+   wrapper (`getCaretPositionInWrapper`) and opens the dropdown anchored there (absolute-positioned
+   `PopoverAnchor` span inside the `relative` wrapper).
+2. Selection (click or Enter): a temporary marker element (`data-autocomplete-insert-marker`) is
+   inserted at the saved range, the DOM is parsed with the marker standing in for the new chip,
+   then committed. If no text segment follows the chip, a `' '` text segment is appended and the
+   caret goes 1 char into it (`offsetIntoNext: 1`) so typing continues naturally.
+3. Escape / outside click: close, refocus the editor, restore the saved range.
+4. Edit flow (chip menu → Edit): dropdown opens anchored at the chip element; selection swaps the
+   item under the same chipId in `chipItemsRef` and re-parses.
+
+## Clipboard
+
+- `onCopy`/`onCut`: `preventDefault()`, serialize `selection.getRangeAt(0).cloneContents()` through
+  `parseEditorDom` (it accepts a `DocumentFragment`) and write `text/plain` where chips become
+  `itemTransformFunction(item)`. Cut then `deleteContents()` + re-emit.
+- `onPaste`: `preventDefault()`, insert clipboard `text/plain` as a text node manually. This both
+  keeps pasted ids as plain text (until blur/reload hydrates them) and blocks the browser's HTML
+  paste from re-inserting dead chip markup (which would also duplicate `data-autocomplete-chip-id`s
+  and corrupt parsing).
+
+## Id detection / hydration (`hydrateAutoCompleteValue`)
+
+Scans only text segments. Performance: builds `token = itemTransformFunction(item)` per item and a
+set of prefixes; the text is searched with `indexOf(prefix)` — each prefix occurrence is the only
+candidate position where full tokens are compared (longest match wins). Returns the ORIGINAL array
+reference when nothing matched (callers rely on that identity check). Runs:
+1. **On mount / true external value change** (the `[value]` effect). If hydration changed anything
+   the hydrated value is emitted back so the form state gets the chips.
+2. **On blur** (`handleBlur`): re-parse DOM → hydrate → `commitStructural(..., { type: 'none' })`.
+   Skipped when `event.relatedTarget` is still inside the wrapper or the dropdown is open —
+   otherwise the remount would kill the chip menu / dropdown that is opening mid-interaction.
+
+## Focus/Radix gotchas (hard-won — do not "simplify" these away)
+
+- `AutoCompleteDropdown` PopoverContent sets `onOpenAutoFocus`, `onCloseAutoFocus` AND
+  `onFocusOutside` to `preventDefault()`. Without `onFocusOutside`, the focus-return of the closing
+  chip menu instantly dismisses the Edit dropdown as an "outside focus".
+- The chip's `DropdownMenu` is `modal={ false }` and its content prevents `onCloseAutoFocus`.
+  Otherwise the closing menu yanks focus back to the chip button and the Edit dropdown's search
+  input never keeps focus.
+- The dropdown focuses its search input via ref in a `setTimeout(0)` effect (in addition to
+  `autoFocus`) to win any focus race with whatever closed just before it.
+
+## Styling notes
+
+- Chip: rounded-full pill, `border-primary/40 bg-primary/10`, ChevronDown, no underline
+  (squiggly underline was removed on request). Override via `chipClassName`.
+- Dropdown list: `CommandList` has `p-2` gutter and items `px-3 py-2` (items are NOT inside a
+  `CommandGroup`, which is what normally provides the gutter in shadcn).
+- Placeholder: CSS `before:content-[attr(data-placeholder)]` shown when `data-empty="true"`;
+  the attribute is updated imperatively in `onInput` (no re-render) and computed in JSX on remount.
+
+## How to verify / debug
+
+- `npx tsc --noEmit` must be clean. Dev: `npx next dev` → http://localhost:3100/test (the
+  "Error retrieving favorites" console errors are unrelated — no DB in the sandbox).
+- Behavior checklist: type `:` → dropdown at caret with focused search; filter shrinks list;
+  ArrowUp/Down + Enter or click inserts chip; disabled rows (via `isItemDisabled`) are dimmed,
+  unclickable and skipped by the arrows; typing continues right after the chip; Escape closes
+  and restores the caret; chip click → Edit / Copy / Copy display / Show details / Remove; copy
+  whole content → clipboard has ids; paste → plain text; blur → valid `GIST-…` ids become chips,
+  unknown ids stay text; form reset re-hydrates; submit shows the id string; clear button appears
+  only when there is content, wipes everything, and leaves focus in the editor.
+- Playwright drove all of the above headlessly during development (chromium at
+  `/opt/pw-browsers/chromium`; grant `clipboard-read`/`clipboard-write` permissions to test copy).
+  Gotcha: wait for hydration (~5s on first dev-server compile) before typing, and don't include the
+  trigger char in typed test strings.
