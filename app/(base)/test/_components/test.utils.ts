@@ -151,7 +151,7 @@ export const READ_ONLY_TEXT_SIMPLE: string = 'Rolled up GIST-1111111 into the re
 export const READ_ONLY_TEXT_MIXED: string =
   'Deploy blocked: GIST-3333333 is not aliasable and GIST-9999999 needs review.\nUnknown reference GIST-1234567 came from an older export.';
 
-export const READ_ONLY_TEXT_NONE: string = 'This paragraph mentions no gist ids at all, so it renders as ordinary text end to end.';
+export const READ_ONLY_TEXT_NONE: string = 'This paragraph mentions no gist ids at all, so it renders as ordinary text end to end. GIST-12345671 GIST-123456';
 
 /**
  * Optional callback to disable an item in the dropdown list. Return true and that option cannot be

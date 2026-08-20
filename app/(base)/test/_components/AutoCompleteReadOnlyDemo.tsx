@@ -34,9 +34,12 @@ export default function AutoCompleteReadOnlyDemo() {
     <ColumnStack className="w-full gap-y-3 rounded-md border p-4">
       <Typography variant="h5">AutoCompletableTextAreaReadOnly — view-only display</Typography>
       <Typography variant="caption1">
-        Takes a plain string, scans it with <Typography variant="code1" as="span">getAutocompleteItemRegex()</Typography> and turns every
-        match into a clickable chip (View details / Copy / Copy content). Chips show the gist alias; unknown ids stay visible with a
-        warning so a stale reference is not silently swallowed.
+        Takes a plain string, scans it with{ ' ' }
+        <Typography variant="code1" as="span">
+          getAutocompleteItemRegex()
+        </Typography>{ ' ' }
+        and turns every match into a clickable chip (View details / Copy / Copy content). Chips show the gist alias; unknown ids stay
+        visible with a warning so a stale reference is not silently swallowed.
       </Typography>
 
       <Example label="1. Two known ids in a sentence">
