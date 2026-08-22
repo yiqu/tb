@@ -51,24 +51,6 @@ export default function HFDatepickerDialog<T extends FieldValues>({
       control={ control }
       name={ name }
       render={ ({ field }) => {
-        const handleOnValueChange = (date: Date | undefined) => {
-          if (useEpochTimestamp) {
-            // Convert Date to epoch timestamp (milliseconds)
-            const epochValue = date ? date.getTime() : undefined;
-            field.onChange(
-              isEpochTimeStampInString ?
-                epochValue === undefined ?
-                  ''
-                : epochValue.toString()
-              : epochValue,
-            );
-            onValueChange?.(epochValue);
-          } else {
-            field.onChange(date);
-            onValueChange?.(date);
-          }
-        };
-
         // Convert field value to Date object for DayPicker
         let dateValue = new Date();
         if (useEpochTimestamp && field.value !== undefined && field.value !== null) {
@@ -81,6 +63,33 @@ export default function HFDatepickerDialog<T extends FieldValues>({
         if (showTime && dateValue !== undefined && dateValue !== null) {
           timeValue = format(dateValue, 'HH:mm:ss');
         }
+
+        // DayPicker always hands back the picked day at midnight, which would wipe the
+        // time the user already set. Carry over the time currently shown in the time input.
+        const withCurrentTimeOfDay = (date: Date): Date => {
+          const dateWithTime = new Date(date);
+          dateWithTime.setHours(dateValue.getHours(), dateValue.getMinutes(), dateValue.getSeconds(), dateValue.getMilliseconds());
+          return dateWithTime;
+        };
+
+        const handleOnValueChange = (date: Date | undefined) => {
+          const selectedDate = date ? withCurrentTimeOfDay(date) : undefined;
+          if (useEpochTimestamp) {
+            // Convert Date to epoch timestamp (milliseconds)
+            const epochValue = selectedDate ? selectedDate.getTime() : undefined;
+            field.onChange(
+              isEpochTimeStampInString ?
+                epochValue === undefined ?
+                  ''
+                : epochValue.toString()
+              : epochValue,
+            );
+            onValueChange?.(epochValue);
+          } else {
+            field.onChange(selectedDate);
+            onValueChange?.(selectedDate);
+          }
+        };
 
         const handleOnTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const time = e.target.value; //HH:mm:ss
