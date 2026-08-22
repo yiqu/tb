@@ -26,7 +26,8 @@ function DropdownMenuContent({ className, sideOffset = 4, ...props }: React.Comp
         sideOffset={ sideOffset }
         className={ cn(
           `
-            z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin)
+            z-[200] max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem]
+            origin-(--radix-dropdown-menu-content-transform-origin)
             overflow-x-hidden overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2
@@ -229,7 +230,7 @@ function DropdownMenuSubContent({ className, ...props }: React.ComponentProps<ty
       data-slot="dropdown-menu-sub-content"
       className={ cn(
         `
-          z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
+          z-[200] min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
           text-popover-foreground shadow-lg
           data-[side=bottom]:slide-in-from-top-2
           data-[side=left]:slide-in-from-right-2

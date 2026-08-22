@@ -68,7 +68,7 @@ function ContextMenuSubContent({ className, ...props }: React.ComponentProps<typ
       data-slot="context-menu-sub-content"
       className={ cn(
         `
-          z-50 min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
+          z-[200] min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
           text-popover-foreground shadow-lg
           data-[side=bottom]:slide-in-from-top-2
           data-[side=left]:slide-in-from-right-2
@@ -91,7 +91,8 @@ function ContextMenuContent({ className, ...props }: React.ComponentProps<typeof
         data-slot="context-menu-content"
         className={ cn(
           `
-            z-50 max-h-(--radix-context-menu-content-available-height) min-w-[8rem] origin-(--radix-context-menu-content-transform-origin)
+            z-[200] max-h-(--radix-context-menu-content-available-height) min-w-[8rem]
+            origin-(--radix-context-menu-content-transform-origin)
             overflow-x-hidden overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2

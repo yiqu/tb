@@ -65,7 +65,7 @@ function MenubarContent({
         sideOffset={ sideOffset }
         className={ cn(
           `
-            z-50 min-w-[12rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
+            z-[200] min-w-[12rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
             text-popover-foreground shadow-md
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2
@@ -239,7 +239,7 @@ function MenubarSubContent({ className, ...props }: React.ComponentProps<typeof 
       data-slot="menubar-sub-content"
       className={ cn(
         `
-          z-50 min-w-[8rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
+          z-[200] min-w-[8rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
           text-popover-foreground shadow-lg
           data-[side=bottom]:slide-in-from-top-2
           data-[side=left]:slide-in-from-right-2
