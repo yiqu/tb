@@ -13,7 +13,7 @@ import { SidebarCollapsableState } from '@/models/Sidebar.models';
 import { SIDEBAR_COLLAPSABLE_HISTORY } from '@/constants/constants';
 import { HistoryEntryResponse } from '@/models/history/history-entry.model';
 import { revalidateHistoryEntriesAll } from '@/server/history/history.server';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
 import { setSidebarCollapsableStateAction } from '@/server/sidebar/sidebar-actions';
 import { SidebarMenuSub, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';

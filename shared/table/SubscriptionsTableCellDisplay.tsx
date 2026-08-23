@@ -9,7 +9,7 @@ import Link from '@/shared/components/Link';
 import { getUSDFormatter } from '@/lib/number.utils';
 import Typography from '@/components/typography/Typography';
 import SubscriptionLogo from '@/components/logos/SubscriptionLogo';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import SubscriptionsTableAddDueBillButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableAddDueBillButton';
 import SubscriptionsTableEditFavoriteButton from '@/app/(base)/subscriptions/_components/SubscriptionsTableEditFavoriteButton';

@@ -7,8 +7,8 @@ import { Folder, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from '@/shared/components/Link';
 import { LinkItem, LeftNavItem } from '@/models/NavItem.models';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
+import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/custom/dropdown-menu';
 import { useSidebar, SidebarMenu, SidebarMenuItem, SidebarMenuAction, SidebarGroupLabel } from '@/components/ui/sidebar';
 
 import CollapsedMenuButton from '../CollapsedMenuButton';

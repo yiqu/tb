@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/custom/hover-card';
 
 import { TableCellHoverFilterAddButton } from './TableCellHoverFilterAddButton';
 

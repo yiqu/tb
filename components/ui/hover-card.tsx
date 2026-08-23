@@ -4,7 +4,6 @@ import * as React from 'react';
 import { HoverCard as HoverCardPrimitive } from 'radix-ui';
 
 import { cn } from '@/lib/utils';
-import { Z_INDEX_LAYER } from '@/constants/z-index.constants';
 
 function HoverCard({ ...props }: React.ComponentProps<typeof HoverCardPrimitive.Root>) {
   return <HoverCardPrimitive.Root data-slot="hover-card" { ...props } />;
@@ -27,9 +26,8 @@ function HoverCardContent({
         align={ align }
         sideOffset={ sideOffset }
         className={ cn(
-          Z_INDEX_LAYER.floating,
           `
-            w-64 origin-(--radix-hover-card-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground
+            z-50 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground
             shadow-md outline-hidden
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2

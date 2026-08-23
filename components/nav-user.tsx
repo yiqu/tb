@@ -12,7 +12,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/custom/dropdown-menu';
 
 export function NavUser({
   user,

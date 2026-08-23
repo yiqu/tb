@@ -4,7 +4,6 @@ import * as React from 'react';
 import { Tooltip as TooltipPrimitive } from 'radix-ui';
 
 import { cn } from '@/lib/utils';
-import { Z_INDEX_LAYER } from '@/constants/z-index.constants';
 
 function TooltipProvider({ delayDuration = 0, ...props }: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
   return <TooltipPrimitive.Provider data-slot="tooltip-provider" delayDuration={ delayDuration } { ...props } />;
@@ -25,9 +24,8 @@ function TooltipContent({ className, sideOffset = 0, children, ...props }: React
         data-slot="tooltip-content"
         sideOffset={ sideOffset }
         className={ cn(
-          Z_INDEX_LAYER.floating,
           `
-            w-fit origin-(--radix-tooltip-content-transform-origin) animate-in rounded-md bg-foreground px-3 py-1.5 text-xs
+            z-50 w-fit origin-(--radix-tooltip-content-transform-origin) animate-in rounded-md bg-foreground px-3 py-1.5 text-xs
             text-balance text-background fade-in-0 zoom-in-95
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2

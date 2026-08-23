@@ -6,7 +6,7 @@ import { Path, Control, Controller, FieldValues } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
 import { Field, FieldError, FieldLabel, FieldDescription } from '@/components/ui/field';
 
 import { Input } from '../ui/input';

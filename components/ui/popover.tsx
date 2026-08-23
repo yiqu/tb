@@ -4,7 +4,6 @@ import * as React from 'react';
 import { Popover as PopoverPrimitive } from 'radix-ui';
 
 import { cn } from '@/lib/utils';
-import { Z_INDEX_LAYER } from '@/constants/z-index.constants';
 
 function Popover({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
   return <PopoverPrimitive.Root data-slot="popover" { ...props } />;
@@ -23,9 +22,8 @@ function PopoverContent({ className, align = 'center', sideOffset = 4, ...props 
         align={ align }
         sideOffset={ sideOffset }
         className={ cn(
-          Z_INDEX_LAYER.floating,
           `
-            w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md
+            z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md
             outline-hidden
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2

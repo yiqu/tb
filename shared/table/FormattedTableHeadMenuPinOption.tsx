@@ -1,7 +1,7 @@
 import { Pin } from 'lucide-react';
 
 import { TableId, AppColumnId, useTableColumnsActions } from '@/store/subscriptions/table.store';
-import { DropdownMenuItem, DropdownMenuGroup, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem, DropdownMenuGroup, DropdownMenuLabel } from '@/components/ui/custom/dropdown-menu';
 
 type Props = {
   onAction: () => void;

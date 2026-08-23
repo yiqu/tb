@@ -5,7 +5,6 @@ import { Combobox as ComboboxPrimitive } from '@base-ui/react';
 import { XIcon, CheckIcon, ChevronDownIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { Z_INDEX_LAYER } from '@/constants/z-index.constants';
 
 import { Button } from './button';
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton } from './input-group';
@@ -94,7 +93,7 @@ function ComboboxContent({
         align={ align }
         alignOffset={ alignOffset }
         anchor={ anchor }
-        className={ cn('isolate', Z_INDEX_LAYER.floating) }
+        className="isolate z-50"
       >
         <ComboboxPrimitive.Popup
           data-slot="combobox-content"

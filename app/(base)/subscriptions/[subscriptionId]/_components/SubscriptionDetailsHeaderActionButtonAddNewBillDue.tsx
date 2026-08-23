@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
-import { DropdownMenuItem, DropdownMenuShortcut } from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem, DropdownMenuShortcut } from '@/components/ui/custom/dropdown-menu';
 
 export default function SubscriptionDetailsHeaderActionButtonAddNewBillDue({
   subscriptionId,

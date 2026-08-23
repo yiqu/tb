@@ -4,7 +4,7 @@
 import { useRef, useState, useEffect, ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
-import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/custom/popover';
 import { Command, CommandList, CommandItem, CommandInput, CommandEmpty } from '@/components/ui/command';
 
 import { AutoCompleteAnchorPosition } from './autocompletable-textarea.models';

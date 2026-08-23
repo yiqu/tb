@@ -5,7 +5,7 @@ import { ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
-import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenuTrigger } from '@/components/ui/custom/dropdown-menu';
 
 import FooterAvatarLogo from './FooterAvatarLogo';
 import FooterAvatarText from './FooterAvatarText';

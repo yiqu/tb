@@ -4,7 +4,7 @@ import { ChevronDownIcon, TriangleAlertIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import Typography from '@/components/typography/Typography';
-import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/custom/dropdown-menu';
 
 import { copyTextToClipboard, AUTOCOMPLETE_CHIP_ID_ATTRIBUTE } from './autocompletable-textarea.utils';
 import { AutoCompleteChipMenuContext, AutoCompleteChipMenuItemConfig } from './autocompletable-textarea.models';

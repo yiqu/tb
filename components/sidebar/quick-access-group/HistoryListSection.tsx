@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import Typography from '@/components/typography/Typography';
 import { SidebarMenuSubItem } from '@/components/ui/sidebar';
 import DateRelativeDisplay from '@/shared/table/DateRelativeDisplay';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/custom/hover-card';
 import { HistoryEntry, HistoryEntryGroup, HistoryEntryResponse } from '@/models/history/history-entry.model';
 
 import SidebarMenuSubButtonFavoritesParentWithActive from '../SidebarMenuSubButtonFavoritesParentWithActive';

@@ -6,7 +6,7 @@ import { useOptimistic, useTransition } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/components/ui/custom/dropdown-menu';
 import { setSettingsApplicationVibe } from '@/server/settings/vibe-select';
 import VibeSelectionItemDisplay from '@/shared/components/VibeSelectionItemDisplay';
 import { Select, SelectValue, SelectContent, SelectTrigger } from '@/components/ui/select';
