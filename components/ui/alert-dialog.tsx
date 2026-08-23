@@ -4,6 +4,7 @@ import * as React from 'react';
 import { AlertDialog as AlertDialogPrimitive } from 'radix-ui';
 
 import { cn } from '@/lib/utils';
+import { Z_INDEX_LAYER } from '@/constants/z-index.constants';
 
 import { Button } from './button';
 
@@ -24,8 +25,9 @@ function AlertDialogOverlay({ className, ...props }: React.ComponentProps<typeof
     <AlertDialogPrimitive.Overlay
       data-slot="alert-dialog-overlay"
       className={ cn(
+        Z_INDEX_LAYER.modal,
         `
-          fixed inset-0 z-50 bg-black/50
+          fixed inset-0 bg-black/50
           data-[state=closed]:animate-out data-[state=closed]:fade-out-0
           data-[state=open]:animate-in data-[state=open]:fade-in-0
         `,
@@ -50,8 +52,9 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         data-size={ size }
         className={ cn(
+          Z_INDEX_LAYER.modal,
           `
-            group/alert-dialog-content fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%]
+            group/alert-dialog-content fixed top-[50%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%]
             translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200
             data-[size=sm]:max-w-xs
             data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95

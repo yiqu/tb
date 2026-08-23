@@ -5,6 +5,7 @@ import { Menubar as MenubarPrimitive } from 'radix-ui';
 import { CheckIcon, CircleIcon, ChevronRightIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { Z_INDEX_LAYER } from '@/constants/z-index.constants';
 
 function Menubar({ className, ...props }: React.ComponentProps<typeof MenubarPrimitive.Root>) {
   return (
@@ -64,8 +65,9 @@ function MenubarContent({
         alignOffset={ alignOffset }
         sideOffset={ sideOffset }
         className={ cn(
+          Z_INDEX_LAYER.floating,
           `
-            z-[200] min-w-[12rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
+            min-w-[12rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
             text-popover-foreground shadow-md
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2
@@ -238,8 +240,9 @@ function MenubarSubContent({ className, ...props }: React.ComponentProps<typeof 
     <MenubarPrimitive.SubContent
       data-slot="menubar-sub-content"
       className={ cn(
+        Z_INDEX_LAYER.floating,
         `
-          z-[200] min-w-[8rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
+          min-w-[8rem] origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
           text-popover-foreground shadow-lg
           data-[side=bottom]:slide-in-from-top-2
           data-[side=left]:slide-in-from-right-2

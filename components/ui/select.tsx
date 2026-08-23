@@ -5,6 +5,7 @@ import { Select as SelectPrimitive } from 'radix-ui';
 import { CheckIcon, ChevronUpIcon, ChevronDownIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { Z_INDEX_LAYER } from '@/constants/z-index.constants';
 
 function Select({ ...props }: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" { ...props } />;
@@ -73,8 +74,9 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={ cn(
+          Z_INDEX_LAYER.floating,
           `
-            relative z-[200] max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin)
+            relative max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin)
             overflow-x-hidden overflow-y-auto rounded-md border bg-popover text-popover-foreground shadow-md
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2

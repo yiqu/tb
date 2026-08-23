@@ -5,6 +5,7 @@ import { ContextMenu as ContextMenuPrimitive } from 'radix-ui';
 import { CheckIcon, CircleIcon, ChevronRightIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { Z_INDEX_LAYER } from '@/constants/z-index.constants';
 
 function ContextMenu({ ...props }: React.ComponentProps<typeof ContextMenuPrimitive.Root>) {
   return <ContextMenuPrimitive.Root data-slot="context-menu" { ...props } />;
@@ -67,8 +68,9 @@ function ContextMenuSubContent({ className, ...props }: React.ComponentProps<typ
     <ContextMenuPrimitive.SubContent
       data-slot="context-menu-sub-content"
       className={ cn(
+        Z_INDEX_LAYER.floating,
         `
-          z-[200] min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
+          min-w-[8rem] origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1
           text-popover-foreground shadow-lg
           data-[side=bottom]:slide-in-from-top-2
           data-[side=left]:slide-in-from-right-2
@@ -90,9 +92,9 @@ function ContextMenuContent({ className, ...props }: React.ComponentProps<typeof
       <ContextMenuPrimitive.Content
         data-slot="context-menu-content"
         className={ cn(
+          Z_INDEX_LAYER.floating,
           `
-            z-[200] max-h-(--radix-context-menu-content-available-height) min-w-[8rem]
-            origin-(--radix-context-menu-content-transform-origin)
+            max-h-(--radix-context-menu-content-available-height) min-w-[8rem] origin-(--radix-context-menu-content-transform-origin)
             overflow-x-hidden overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md
             data-[side=bottom]:slide-in-from-top-2
             data-[side=left]:slide-in-from-right-2
