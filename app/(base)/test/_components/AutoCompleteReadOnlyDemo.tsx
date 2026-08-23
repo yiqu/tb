@@ -21,6 +21,28 @@ function Example({ label, children }: { label: string; children: React.ReactNode
     <ColumnStack className="gap-y-1">
       <Typography variant="label1">{ label }</Typography>
       <div className="rounded-md border p-3">{ children }</div>
+
+      <Example label="4. showOriginal — same string, scan turned off (raw ids, no chips)">
+        <ColumnStack className="gap-y-3">
+          <AutoCompletableTextAreaReadOnly<Gist>
+            text={ READ_ONLY_TEXT_SIMPLE }
+            getItemRegex={ getAutocompleteItemRegex }
+            resolveItem={ resolveGistById }
+            itemDisplayFunction={ textAreaItemDisplay }
+            itemCopyContentFunction={ gistCopyContent }
+            detailsDialogTitle="Gist details"
+          />
+          <AutoCompletableTextAreaReadOnly<Gist>
+            text={ READ_ONLY_TEXT_SIMPLE }
+            getItemRegex={ getAutocompleteItemRegex }
+            resolveItem={ resolveGistById }
+            itemDisplayFunction={ textAreaItemDisplay }
+            itemCopyContentFunction={ gistCopyContent }
+            detailsDialogTitle="Gist details"
+            showOriginal
+          />
+        </ColumnStack>
+      </Example>
     </ColumnStack>
   );
 }
@@ -83,6 +105,28 @@ export default function AutoCompleteReadOnlyDemo() {
             className="rounded-md bg-muted p-3 italic"
             textClassName="text-muted-foreground"
             chipClassName="border-emerald-500/50 bg-emerald-500/10 not-italic hover:bg-emerald-500/20"
+          />
+        </ColumnStack>
+      </Example>
+
+      <Example label="4. showOriginal — same string, scan turned off (raw ids, no chips)">
+        <ColumnStack className="gap-y-3">
+          <AutoCompletableTextAreaReadOnly<Gist>
+            text={ READ_ONLY_TEXT_SIMPLE }
+            getItemRegex={ getAutocompleteItemRegex }
+            resolveItem={ resolveGistById }
+            itemDisplayFunction={ textAreaItemDisplay }
+            itemCopyContentFunction={ gistCopyContent }
+            detailsDialogTitle="Gist details"
+          />
+          <AutoCompletableTextAreaReadOnly<Gist>
+            text={ READ_ONLY_TEXT_SIMPLE }
+            getItemRegex={ getAutocompleteItemRegex }
+            resolveItem={ resolveGistById }
+            itemDisplayFunction={ textAreaItemDisplay }
+            itemCopyContentFunction={ gistCopyContent }
+            detailsDialogTitle="Gist details"
+            showOriginal
           />
         </ColumnStack>
       </Example>

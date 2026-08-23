@@ -83,6 +83,11 @@ export interface AutoCompletableTextAreaReadOnlyProps<T> {
   getItemRegex: () => RegExp;
   /** Resolves matched text (the id) to its item. Return undefined for unknown ids. */
   resolveItem?: (matchedText: string) => T | undefined;
+  /**
+   * Shows the string exactly as passed in: the regex scan is skipped entirely, so nothing becomes
+   * a chip and the raw ids stay visible as ordinary text.
+   */
+  showOriginal?: boolean;
   /** Text shown on a chip for a resolved item. Falls back to the matched text. */
   itemDisplayFunction?: (item: T) => string;
   /** Text copied by the "Copy" entry. Without it that entry stays disabled. */

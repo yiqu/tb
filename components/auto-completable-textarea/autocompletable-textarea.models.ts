@@ -140,6 +140,15 @@ export interface AutoCompletableTextAreaProps<T> {
   /** Disables typing and chip interactions. */
   disabled?: boolean;
   /**
+   * Shows the content as-is: the automatic id scan is turned off, so raw text stays raw text
+   * instead of being converted into chips. Affects BOTH scan passes — the incoming value
+   * (initial value, form resets) and the one on blur. Items already in the value as item segments
+   * (i.e. picked from the dropdown) still render as chips; only the automatic conversion stops.
+   * Flipping this back to false does not retro-scan the current content, but the next incoming
+   * value change or blur scans again as usual.
+   */
+  showOriginal?: boolean;
+  /**
    * Shows a clear ("X") button in the top right corner that wipes all content. Defaults to true.
    * The cleared value is emitted through the normal change callback, so react-hook-form (controlled)
    * and the uncontrolled variant's `onChange` both see it.

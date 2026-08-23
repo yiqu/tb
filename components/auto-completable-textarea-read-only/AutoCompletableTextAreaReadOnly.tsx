@@ -27,6 +27,7 @@ export default function AutoCompletableTextAreaReadOnly<T>({
   text,
   getItemRegex,
   resolveItem,
+  showOriginal,
   itemDisplayFunction,
   itemCopyContentFunction,
   renderItemDetails,
@@ -41,9 +42,10 @@ export default function AutoCompletableTextAreaReadOnly<T>({
   const [detailsItem, setDetailsItem] = useState<T | null>(null);
 
   // Re-scan only when the text, the pattern or the resolver actually change.
-  const segments = useMemo(
-    () => splitTextByItemRegex<T>(text, getItemRegex(), resolveItem),
-    [text, getItemRegex, resolveItem],
+  // showOriginal skips the scan altogether: the whole string stays one plain-text run.
+  const segments: ReadOnlySegment<T>[] = useMemo(
+    () => (showOriginal ? [{ kind: 'text', text: text }] : splitTextByItemRegex<T>(text, getItemRegex(), resolveItem)),
+    [text, getItemRegex, resolveItem, showOriginal],
   );
 
   const resolvedChipMenuItems = useMemo(

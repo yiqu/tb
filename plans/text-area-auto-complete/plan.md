@@ -127,6 +127,8 @@ Key points:
   custom entries.
 - Styling hooks: `className` (whole surface), `textClassName` (plain runs), `chipClassName`,
   `unresolvedChipClassName`.
+- `showOriginal` skips the scan entirely: the whole string stays one plain-text run, so raw ids
+  show as ordinary text and nothing becomes a chip.
 - Demo: `_components/AutoCompleteReadOnlyDemo.tsx` with three examples (two known ids; multi-line
   with an unknown id; no ids at all plus a restyled surface).
 
@@ -161,6 +163,11 @@ ANY item type and fails at runtime instead of at the call site. Verified: handin
   the amber border while the icon still shows).
 - `triggerKey?` (default `':'`), `className`, `selectItemClassName`, `chipClassName`, `placeholder`, `searchPlaceholder`, `emptyText`, `disabled`, `chipMenuItems?`, `onBlur`, `id`.
 - `showClearButton?` (default `true`), `clearButtonClassName?`.
+- `showOriginal?` turns OFF the automatic id scan, on BOTH passes — the incoming value and the
+  blur-time one — so raw text stays raw. It does not touch item segments already in the value
+  (a dropdown pick still inserts a chip); only the automatic conversion stops. Flipping it back to
+  false does not retro-scan the current content, but the next incoming value change or blur scans
+  again. The flag rides on `hydrationRef` so the stable blur handler reads the current value.
 
 ## Clear button
 

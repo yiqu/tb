@@ -107,6 +107,7 @@ export default function AutoCompletableTextArea<T>({
   searchPlaceholder,
   emptyText,
   disabled,
+  showOriginal,
   showClearButton = true,
   clearButtonClassName,
   chipMenuItems,
@@ -134,7 +135,7 @@ export default function AutoCompletableTextArea<T>({
   const onValueChangeRef = useRef(onValueChange);
 
   // Latest item-related props, reachable from stable callbacks and the value-sync effect.
-  const hydrationRef = useRef({ items, itemTransformFunction, getItemIdPrefix });
+  const hydrationRef = useRef({ items, itemTransformFunction, getItemIdPrefix, showOriginal });
 
   // Refs are synced in the commit phase, never during render: a render that is double-invoked
   // (StrictMode) or interrupted and thrown away must not leave handlers reading values from a
@@ -143,7 +144,7 @@ export default function AutoCompletableTextArea<T>({
   useEffect(() => {
     dropdownStateRef.current = dropdownState;
     onValueChangeRef.current = onValueChange;
-    hydrationRef.current = { items, itemTransformFunction, getItemIdPrefix };
+    hydrationRef.current = { items, itemTransformFunction, getItemIdPrefix, showOriginal };
   });
 
   /**
@@ -173,8 +174,9 @@ export default function AutoCompletableTextArea<T>({
         lastEmittedRef.current = value;
         return;
       }
-    const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix } = hydrationRef.current;
-    const hydrated = transform && idPrefix ? hydrateAutoCompleteValue(value, currentItems, transform, idPrefix) : value;
+    const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix, showOriginal: raw } = hydrationRef.current;
+    // showOriginal keeps the incoming value exactly as handed in — no ids converted to chips.
+    const hydrated = !raw && transform && idPrefix ? hydrateAutoCompleteValue(value, currentItems, transform, idPrefix) : value;
     const changedByHydration = hydrated !== value && !areAutoCompleteValuesEqual(hydrated, value);
     if (isMount && !changedByHydration) {
       lastEmittedRef.current = value;
@@ -248,8 +250,9 @@ export default function AutoCompletableTextArea<T>({
       // Focus moving within the component (a chip button, the dropdown opening) is not a real
       // "leave" — re-mounting mid-interaction would break the menu/dropdown that is opening.
       const stillInside = event.relatedTarget !== null && wrapper !== null && wrapper.contains(event.relatedTarget);
-      const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix } = hydrationRef.current;
-      if (editor && transform && idPrefix && !stillInside && !dropdownStateRef.current) {
+      const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix, showOriginal: raw } = hydrationRef.current;
+      // showOriginal also switches off the blur-time scan, so typed ids stay as typed.
+      if (editor && !raw && transform && idPrefix && !stillInside && !dropdownStateRef.current) {
         const segments = parseEditorDom(editor, chipItemsRef.current);
         const hydrated = hydrateAutoCompleteValue(segments, currentItems, transform, idPrefix);
         if (hydrated !== segments) {
