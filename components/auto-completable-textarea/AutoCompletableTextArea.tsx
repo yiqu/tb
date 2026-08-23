@@ -487,7 +487,9 @@ export default function AutoCompletableTextArea<T>({
         key={ segment.chipId }
         chipId={ segment.chipId }
         item={ segment.item }
-        label={ itemDisplayFunction(segment.item) }
+        // showOriginal means "show me the underlying value": the chip is labelled with the text that
+        // would be sent to the server (itemTransformFunction) instead of the friendly display text.
+        label={ showOriginal ? resolveItemText(segment.item) : itemDisplayFunction(segment.item) }
         serverText={ resolveItemText(segment.item) }
         isItemDisabled={ isItemDisabled?.(segment.item) ?? false }
         className={ chipClassName }
