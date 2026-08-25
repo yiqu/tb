@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 
+import { ChipMenuItemConfig, ItemDisplayFunction, RenderItemDetails } from '@/components/auto-completable-shared/autocompletable-shared.models';
+
 /** A plain run of text between matches — rendered as-is. */
 export interface ReadOnlyTextSegment {
   kind: 'text';
@@ -45,27 +47,11 @@ export interface AutoCompleteReadOnlyChipMenuContext<T> {
  * One entry of the menu shown when a chip is clicked. Data-driven so the menu stays composable:
  * pass your own array via `chipMenuItems` to add, remove or reorder entries.
  * Defaults live in `AutoCompleteReadOnlyChipMenu.tsx`.
+ *
+ * The shape comes from the shared `ChipMenuItemConfig`; the context stays this component's own,
+ * so these entries only ever see read-only actions (view details / copy).
  */
-export interface AutoCompleteReadOnlyChipMenuItemConfig<T> {
-  /** Unique key for React rendering. */
-  key: string;
-  /** Label shown in the menu. */
-  label: ReactNode;
-  /** Optional leading icon. */
-  icon?: ReactNode;
-  /** Renders the entry in the destructive (red) style. */
-  destructive?: boolean;
-  /** Greys out the entry, e.g. an action that needs a resolved item. */
-  isDisabled?: (context: AutoCompleteReadOnlyChipMenuItemContextForState<T>) => boolean;
-  /** Runs when the entry is picked. */
-  onSelect: (context: AutoCompleteReadOnlyChipMenuContext<T>) => void;
-}
-
-/** The subset of the context available while deciding whether an entry is disabled. */
-export type AutoCompleteReadOnlyChipMenuItemContextForState<T> = Pick<
-  AutoCompleteReadOnlyChipMenuContext<T>,
-  'item' | 'matchedText' | 'displayText' | 'contentText'
->;
+export type AutoCompleteReadOnlyChipMenuItemConfig<T> = ChipMenuItemConfig<AutoCompleteReadOnlyChipMenuContext<T>>;
 
 /**
  * Props for AutoCompletableTextAreaReadOnly. `T` is the item shape — the component knows nothing
@@ -89,11 +75,11 @@ export interface AutoCompletableTextAreaReadOnlyProps<T> {
    */
   showOriginal?: boolean;
   /** Text shown on a chip for a resolved item. Falls back to the matched text. */
-  itemDisplayFunction?: (item: T) => string;
+  itemDisplayFunction?: ItemDisplayFunction<T>;
   /** Text copied by the "Copy" entry. Without it that entry stays disabled. */
   itemCopyContentFunction?: (item: T) => string;
   /** Body of the details dialog. Falls back to a generic key/value dump. */
-  renderItemDetails?: (item: T) => ReactNode;
+  renderItemDetails?: RenderItemDetails<T>;
   /** Title of the details dialog. */
   detailsDialogTitle?: ReactNode;
   /** Overrides the chip menu entries. Defaults to View details / Copy / Copy display. */

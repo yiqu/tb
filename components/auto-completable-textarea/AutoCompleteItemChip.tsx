@@ -6,7 +6,9 @@ import { cn } from '@/lib/utils';
 import Typography from '@/components/typography/Typography';
 import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
-import { copyTextToClipboard, AUTOCOMPLETE_CHIP_ID_ATTRIBUTE } from './autocompletable-textarea.utils';
+import { copyTextToClipboard } from '@/components/auto-completable-shared/autocompletable-shared.utils';
+
+import { AUTOCOMPLETE_CHIP_ID_ATTRIBUTE } from './autocompletable-textarea.utils';
 import { AutoCompleteChipMenuContext, AutoCompleteChipMenuItemConfig } from './autocompletable-textarea.models';
 
 interface AutoCompleteItemChipProps<T> {

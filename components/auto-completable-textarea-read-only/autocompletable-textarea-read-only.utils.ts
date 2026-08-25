@@ -45,32 +45,3 @@ export const splitTextByItemRegex = <T>(
 
   return segments;
 };
-
-/**
- * Writes text to the clipboard, with a hidden-textarea fallback for non-secure origins.
- *
- * Intentionally duplicated from the editable text area's utils rather than imported: this folder is
- * meant to stand on its own (drop it in without dragging the editor along), and it is a handful of
- * dependency-free lines. Kept UI-free — the "Copied." toast belongs to the menu defaults.
- */
-export const copyTextToClipboard = async (text: string): Promise<void> => {
-  if (navigator.clipboard?.writeText) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return;
-    } catch {
-      // The API exists but refused — denied permission, an unfocused document, a blocked context.
-      // Fall through to the legacy path instead of failing the copy outright. Anything the
-      // fallback itself throws is left to propagate so the caller still sees a real failure.
-    }
-  }
-  const textarea = document.createElement('textarea');
-  textarea.value = text;
-  textarea.setAttribute('readonly', 'true');
-  textarea.style.position = 'fixed';
-  textarea.style.opacity = '0';
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand('copy');
-  textarea.remove();
-};

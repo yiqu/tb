@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 
+import { ChipMenuItemConfig, ItemDisplayFunction, RenderItemDetails } from '@/components/auto-completable-shared/autocompletable-shared.models';
+
 /**
  * A plain text chunk the user typed themselves inside the text area.
  */
@@ -56,19 +58,11 @@ export interface AutoCompleteChipMenuContext<T> {
  * One entry of the popover menu shown when an autocompleted item (chip) is clicked.
  * The menu is fully composable: pass your own array via the `chipMenuItems` prop to add,
  * remove or reorder options. Defaults live in `AutoCompleteChipMenu.tsx`.
+ *
+ * The shape comes from the shared `ChipMenuItemConfig`; the context stays this component's own,
+ * so these entries only ever see editable-text-area actions (edit / show details / remove).
  */
-export interface AutoCompleteChipMenuItemConfig<T> {
-  /** Unique key for React rendering. */
-  key: string;
-  /** Label shown in the menu, can be any node. */
-  label: ReactNode;
-  /** Optional leading icon node. */
-  icon?: ReactNode;
-  /** Renders the menu item in the destructive style (red) when true. */
-  destructive?: boolean;
-  /** Called when the menu item is picked. Use the context to run built-in actions or your own. */
-  onSelect: (context: AutoCompleteChipMenuContext<T>) => void;
-}
+export type AutoCompleteChipMenuItemConfig<T> = ChipMenuItemConfig<AutoCompleteChipMenuContext<T>>;
 
 /**
  * Where the caret-anchored dropdown should be positioned, relative to the component wrapper.
@@ -94,7 +88,7 @@ export interface AutoCompletableTextAreaProps<T> {
   /** Filter callback used by the dropdown's search inbox. Return true to keep the item. */
   filterFunction: (item: T, filter: string) => boolean;
   /** Returns the text shown inside the chip once an item is autocompleted into the text area. */
-  itemDisplayFunction: (item: T) => string;
+  itemDisplayFunction: ItemDisplayFunction<T>;
   /**
    * Serializes an autocompleted item to its "real" text (e.g. `item => item.id`).
    * Used when copying/cutting text-area content to the clipboard — chips are copied as this text —
@@ -120,7 +114,7 @@ export interface AutoCompletableTextAreaProps<T> {
    */
   isItemDisabled?: (item: T) => boolean;
   /** Renders the body of the "Show details" dialog. Falls back to a generic key/value dump when omitted. */
-  renderItemDetails?: (item: T) => ReactNode;
+  renderItemDetails?: RenderItemDetails<T>;
   /** Title of the "Show details" dialog. */
   detailsDialogTitle?: ReactNode;
   /** Keyboard key that opens the dropdown at the caret (e.g. ':', '?', '+', '@'). Defaults to ':'. */

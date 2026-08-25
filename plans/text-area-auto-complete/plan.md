@@ -99,6 +99,29 @@ is `{ kind: 'text', text }` or `{ kind: 'item', chipId, item }`. `chipId` is a u
   for what the user sees, or `itemTransformFunction` (e.g. `item => item.id`) for the server string.
 - This value flows through react-hook-form as the field value; derive the server string at submit.
 
+## Shared substrate: `components/auto-completable-shared/`
+
+Pieces the editable and read-only components both need. The rule for this folder: only things with
+NO props (pure functions, types) or a small FIXED prop set that does not grow when either component
+changes. The two feature components, their chips, their menus and their prop interfaces stay
+separate on purpose — sharing those would produce one component with many props, which is what this
+design is trying to avoid.
+
+| File | Contents |
+| --- | --- |
+| `autocompletable-shared.utils.ts` | `copyTextToClipboard` — was byte-identical in both folders. |
+| `autocompletable-shared.models.ts` | `ItemDisplayFunction<T>`, `RenderItemDetails<T>`, and `ChipMenuItemConfig<TContext>`. |
+| `AutoCompleteItemDetailsDialog.tsx` | The details dialog + its generic key/value fallback. Five fixed props. |
+
+`ChipMenuItemConfig` is generic over the menu CONTEXT, not over the item type — that is what lets
+one config shape serve two unrelated menus. Each folder re-exports its own named alias
+(`AutoCompleteChipMenuItemConfig<T>` / `AutoCompleteReadOnlyChipMenuItemConfig<T>`) so call sites
+read unchanged and each menu still only sees its own actions.
+
+Trade-off, recorded deliberately: dropping either component into another codebase now means taking
+this folder too — three folders instead of two self-contained ones. Kept small and dependency-light
+(one `StyledDialogContent` import) so that stays cheap.
+
 ## Read-only display: `components/auto-completable-textarea-read-only/`
 
 A separate, view-only component — deliberately NOT a `readOnly` flag on the editable text area,

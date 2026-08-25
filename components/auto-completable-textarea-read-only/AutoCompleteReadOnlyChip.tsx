@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import Typography from '@/components/typography/Typography';
 import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
-import { copyTextToClipboard } from './autocompletable-textarea-read-only.utils';
+import { copyTextToClipboard } from '@/components/auto-completable-shared/autocompletable-shared.utils';
 import {
   AutoCompleteReadOnlyChipMenuContext,
   AutoCompleteReadOnlyChipMenuItemConfig,
@@ -103,7 +103,7 @@ export default function AutoCompleteReadOnlyChip<T>({
             <DropdownMenuItem
               key={ menuItem.key }
               variant={ menuItem.destructive ? 'destructive' : 'default' }
-              disabled={ menuItem.isDisabled?.({ item, matchedText, displayText, contentText }) ?? false }
+              disabled={ menuItem.isDisabled?.(menuContext) ?? false }
               onSelect={ () => menuItem.onSelect(menuContext) }
             >
               { menuItem.icon }

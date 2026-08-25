@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import AutoCompleteReadOnlyChip from './AutoCompleteReadOnlyChip';
 import { getDefaultReadOnlyChipMenuItems } from './AutoCompleteReadOnlyChipMenu';
 import { splitTextByItemRegex } from './autocompletable-textarea-read-only.utils';
-import AutoCompleteReadOnlyDetailsDialog from './AutoCompleteReadOnlyDetailsDialog';
+import AutoCompleteItemDetailsDialog from '@/components/auto-completable-shared/AutoCompleteItemDetailsDialog';
 import { ReadOnlySegment, AutoCompletableTextAreaReadOnlyProps } from './autocompletable-textarea-read-only.models';
 
 /**
@@ -80,7 +80,7 @@ export default function AutoCompletableTextAreaReadOnly<T>({
         );
       }) }
 
-      <AutoCompleteReadOnlyDetailsDialog<T>
+      <AutoCompleteItemDetailsDialog<T>
         item={ detailsItem }
         onClose={ () => setDetailsItem(null) }
         renderItemDetails={ renderItemDetails }

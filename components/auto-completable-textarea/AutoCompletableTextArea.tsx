@@ -18,8 +18,9 @@ import { cn } from '@/lib/utils';
 import AutoCompleteDropdown from './AutoCompleteDropdown';
 import AutoCompleteItemChip from './AutoCompleteItemChip';
 import AutoCompleteClearButton from './AutoCompleteClearButton';
+import AutoCompleteItemDetailsDialog from '@/components/auto-completable-shared/AutoCompleteItemDetailsDialog';
 import { getDefaultChipMenuItems } from './AutoCompleteChipMenu';
-import AutoCompleteItemDetailsDialog from './AutoCompleteItemDetailsDialog';
+
 import {
   AutoCompleteValue,
   AutoCompleteSegment,
@@ -570,6 +571,7 @@ export default function AutoCompletableTextArea<T>({
         onClose={ () => setDetailsItem(null) }
         renderItemDetails={ renderItemDetails }
         title={ detailsDialogTitle }
+        description="Everything about this autocompleted item."
       />
     </div>
   );
