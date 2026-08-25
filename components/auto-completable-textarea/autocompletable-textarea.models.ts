@@ -139,8 +139,12 @@ export interface AutoCompletableTextAreaProps<T> {
    * (initial value, form resets) and the one on blur. Items picked from the dropdown still become
    * chips, but they are labelled with their `itemTransformFunction` text (what goes to the server)
    * rather than the friendly `itemDisplayFunction` text, so the underlying value stays visible.
-   * Flipping this back to false does not retro-scan the current content, but the next incoming
-   * value change or blur scans again as usual.
+   * The flag is REACTIVE: toggling it converts the current content in place, both ways. Switching
+   * it ON flattens existing chips back into the raw text they represent; switching it OFF scans raw
+   * ids back into chips. The conversion is lossless for the submitted string (a chip's raw text is
+   * its `itemTransformFunction` output), but it does emit a new value, which dirties a
+   * react-hook-form field. Un-chipping needs `itemTransformFunction`; re-chipping additionally
+   * needs `getItemIdPrefix`.
    */
   showOriginal?: boolean;
   /**

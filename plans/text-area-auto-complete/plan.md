@@ -192,10 +192,16 @@ ANY item type and fails at runtime instead of at the call site. Verified: handin
 - `triggerKey?` (default `':'`), `className`, `selectItemClassName`, `chipClassName`, `placeholder`, `searchPlaceholder`, `emptyText`, `disabled`, `chipMenuItems?`, `onBlur`, `id`.
 - `showClearButton?` (default `true`), `clearButtonClassName?`.
 - `showOriginal?` turns OFF the automatic id scan, on BOTH passes — the incoming value and the
-  blur-time one — so raw text stays raw. It does not touch item segments already in the value
-  (a dropdown pick still inserts a chip); only the automatic conversion stops. Flipping it back to
-  false does not retro-scan the current content, but the next incoming value change or blur scans
-  again. The flag rides on `hydrationRef` so the stable blur handler reads the current value.
+  blur-time one — so raw text stays raw. A dropdown pick still inserts a chip, but it is labelled
+  with the `itemTransformFunction` text. The flag rides on `hydrationRef` so the stable blur handler
+  reads the current value.
+  It is also REACTIVE: a dedicated effect watches the flag and converts the CURRENT content in
+  place, both ways — ON flattens chips via `flattenAutoCompleteValue`, OFF re-scans via
+  `hydrateAutoCompleteValue`. It reads the content from the DOM (not `render.segments`, which is
+  intentionally stale between structural changes), skips work when either helper returns its input
+  reference unchanged, and only touches the caret when the editor actually has focus, so a toggle
+  elsewhere on the page cannot steal it. The conversion is lossless for the submitted string but
+  emits a new value, which dirties a react-hook-form field.
 
 ## Clear button
 

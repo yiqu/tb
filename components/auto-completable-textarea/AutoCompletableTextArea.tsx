@@ -36,6 +36,7 @@ import {
   placeCaretAtTextOffset,
   autoCompleteValueToText,
   hydrateAutoCompleteValue,
+  flattenAutoCompleteValue,
   isAutoCompleteValueEmpty,
   getCaretPositionInWrapper,
   areAutoCompleteValuesEqual,
@@ -226,6 +227,39 @@ export default function AutoCompletableTextArea<T>({
     setRender((prev: EditorRenderState<T>) => ({ key: prev.key + 1, segments: segments }));
     onValueChangeRef.current(segments);
   }, []);
+
+  /** Previous showOriginal, so the effect below only fires on an actual flip, not on mount. */
+  const previousShowOriginalRef = useRef(showOriginal);
+
+  // Toggling showOriginal converts the CURRENT content in place, both ways:
+  //   ON  -> existing chips flatten back into the raw text they represent
+  //   OFF -> raw ids in the text are scanned back into chips
+  // The content is read from the DOM rather than `render.segments`, because plain typing is
+  // browser-owned and those segments are intentionally stale between structural changes.
+  useEffect(() => {
+    const previous = previousShowOriginalRef.current;
+    previousShowOriginalRef.current = showOriginal;
+    if (previous === showOriginal) {
+      return;
+    }
+    const editor = editorRef.current;
+    if (!editor) {
+      return;
+    }
+    const current = parseEditorDom(editor, chipItemsRef.current);
+    const converted =
+      showOriginal ? flattenAutoCompleteValue(current, resolveItemText)
+      : itemTransformFunction && getItemIdPrefix ? hydrateAutoCompleteValue(current, items, itemTransformFunction, getItemIdPrefix)
+      : current;
+    // Both helpers return the original reference when they had nothing to do.
+    if (converted === current) {
+      return;
+    }
+    // Only reach for the caret if the user is actually in the editor; a toggle elsewhere on the
+    // page must not steal focus.
+    const hasFocus = editor.contains(document.activeElement);
+    commitStructural(converted, { type: hasFocus ? 'end' : 'none' });
+  }, [showOriginal, items, itemTransformFunction, getItemIdPrefix, resolveItemText, commitStructural]);
 
   /** Plain typing: parse the DOM into segments and emit, without touching the rendered tree. */
   const handleInput = useCallback(() => {

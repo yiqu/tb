@@ -28,10 +28,12 @@ import {
 } from './test.utils';
 
 /**
- * showOriginal demo for the editable text area. The same initial string is mounted twice, once
- * scanned and once raw, so the difference is visible side by side. Each instance is keyed on the
- * flag because showOriginal is read when the incoming value is scanned — remounting is what makes
- * the toggle re-evaluate the same initial text.
+ * showOriginal demo: one checkbox drives BOTH components over the same string.
+ *
+ * Neither instance is keyed on the flag — both react to it in place. The editable one converts its
+ * current content on the spot (chips flatten to raw text when ON, raw ids scan back into chips when
+ * OFF), and the read-only one simply re-derives its segments. So this also demonstrates that edits
+ * made before toggling survive the conversion.
  */
 export default function AutoCompleteShowOriginalDemo() {
   const [showOriginal, setShowOriginal] = useState<boolean>(true);
@@ -62,7 +64,6 @@ export default function AutoCompleteShowOriginalDemo() {
       </RowStack>
 
       <AutoCompletableTextAreaUncontrolled<Gist>
-        key={ String(showOriginal) }
         items={ TEST_GISTS }
         initValue={ [{ kind: 'text', text: SOME_INIT_TEXT }] }
         onChange={ handleChange }

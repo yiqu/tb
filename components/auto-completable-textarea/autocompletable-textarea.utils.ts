@@ -149,6 +149,41 @@ export const parseEditorDom = <T>(
 };
 
 /**
+ * The inverse of `hydrateAutoCompleteValue`: replaces every autocompleted item segment with its
+ * plain text, merging it into the surrounding runs. Used when `showOriginal` is switched ON, so
+ * existing chips collapse back into the raw text they represent.
+ *
+ * Lossless for the submitted string: pass the same `itemToText` used to serialize the value
+ * (normally `itemTransformFunction`) and `autoCompleteValueToText` yields an identical result
+ * before and after. Returns the original reference when there is nothing to flatten.
+ */
+export const flattenAutoCompleteValue = <T>(value: AutoCompleteValue<T>, itemToText: (item: T) => string): AutoCompleteValue<T> => {
+  if (!value.some((segment: AutoCompleteSegment<T>) => segment.kind === 'item')) {
+    return value;
+  }
+
+  const flattened: AutoCompleteValue<T> = [];
+
+  const pushText = (text: string) => {
+    if (text === '') {
+      return;
+    }
+    const last = flattened[flattened.length - 1];
+    if (last && last.kind === 'text') {
+      last.text = last.text + text;
+      return;
+    }
+    flattened.push({ kind: 'text', text: text });
+  };
+
+  for (const segment of value) {
+    pushText(segment.kind === 'text' ? segment.text : itemToText(segment.item));
+  }
+
+  return flattened;
+};
+
+/**
  * Scans the value's plain-text segments for item ids and swaps every match into an autocompleted
  * item segment (chip). Used to hydrate an incoming value (e.g. an initial blob of text that
  * contains ids saved earlier by `autoCompleteValueToText` + the transform function).
