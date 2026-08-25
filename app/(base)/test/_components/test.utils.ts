@@ -207,5 +207,36 @@ export const teammateTransformForServerFunction = (item: Teammate) => {
   return item.email;
 };
 
+/**
+ * How the read-only display recognises a teammate inside a plain string: an @example.com address.
+ * Takes no argument — it describes the FORMAT, needed before any item exists to match against.
+ * @returns
+ */
+export const getTeammateEmailRegex = (): RegExp => {
+  return /[a-zA-Z0-9._%+-]+@example\.com/g;
+};
+
+/**
+ * Resolve a matched email back to its teammate. Undefined for an address that is not on the team.
+ * @param matchedText
+ * @returns
+ */
+export const resolveTeammateByEmail = (matchedText: string): Teammate | undefined => {
+  return TEST_TEAMMATES.find((teammate: Teammate) => teammate.email.toLowerCase() === matchedText.toLowerCase());
+};
+
+/**
+ * What the read-only teammate chip's "Copy" menu option copies.
+ * @param item
+ * @returns
+ */
+export const teammateCopyContent = (item: Teammate): string => {
+  return `${item.name} (${item.team})`;
+};
+
+// Sample string for the read-only teammate example — one address is not on the team.
+export const READ_ONLY_TEXT_TEAMMATES: string =
+  'Reviewers: ada.lovelace@example.com and grace.hopper@example.com signed off. Chase nobody@example.com for the last approval.';
+
 export const SOME_INIT_TEXT: string =
   'This initial text mentions GIST-3333333 which becomes a chip. = GIST-1111111 != GIST-3333333 ~= GIST-2222222 and there.. GIST-2222221';

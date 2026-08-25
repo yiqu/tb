@@ -152,8 +152,13 @@ Key points:
   `unresolvedChipClassName`.
 - `showOriginal` skips the scan entirely: the whole string stays one plain-text run, so raw ids
   show as ordinary text and nothing becomes a chip.
-- Demo: `_components/AutoCompleteReadOnlyDemo.tsx` with three examples (two known ids; multi-line
-  with an unknown id; no ids at all plus a restyled surface).
+- Demos: `_components/AutoCompleteReadOnlyDemo.tsx` (four examples: two known ids; multi-line with an
+  unknown id; no ids at all plus a restyled surface; scanned vs `showOriginal` side by side) and
+  `_components/AutoCompleteMoreExamplesDemo.tsx` (read-only with the Teammate type matched by email
+  regex; a custom menu entry; a custom details body; the editable component with a custom menu entry
+  and the same custom body; the editable component with the Teammate type on trigger `@`).
+- `_components/AutoCompleteShowOriginalDemo.tsx` drives BOTH components from one `showOriginal`
+  checkbox: ON means ids are left as raw text instead of being auto-converted to chips.
 
 ## Typing model: generic component, concrete callbacks
 

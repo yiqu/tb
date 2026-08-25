@@ -10,6 +10,7 @@ import Typography from '@/components/typography/Typography';
 import { AutoCompleteValue } from '@/components/auto-completable-textarea/autocompletable-textarea.models';
 import { autoCompleteValueToText } from '@/components/auto-completable-textarea/autocompletable-textarea.utils';
 import AutoCompletableTextAreaUncontrolled from '@/components/auto-completable-textarea/AutoCompletableTextAreaUncontrolled';
+import AutoCompletableTextAreaReadOnly from '@/components/auto-completable-textarea-read-only/AutoCompletableTextAreaReadOnly';
 
 import { ItemOptionDisplay } from './Utils';
 import {
@@ -17,8 +18,11 @@ import {
   TEST_GISTS,
   SOME_INIT_TEXT,
   isItemDisabled,
+  gistCopyContent,
+  resolveGistById,
   itemFilterFunction,
   textAreaItemDisplay,
+  getAutocompleteItemRegex,
   getAutocompleteItemIdPrefix,
   textAreaItemTransformForServerFunction,
 } from './test.utils';
@@ -39,7 +43,7 @@ export default function AutoCompleteShowOriginalDemo() {
 
   return (
     <ColumnStack className="w-full gap-y-2 rounded-md border p-4">
-      <Typography variant="h5">AutoCompletableTextArea — showOriginal</Typography>
+      <Typography variant="h5">showOriginal — editable and read-only, one toggle</Typography>
       <Typography variant="caption1">
         With <Typography variant="code1" as="span">showOriginal</Typography> the automatic id scan is off: the initial string keeps its
         raw <Typography variant="code1" as="span">GIST-</Typography> ids as plain text, and blurring no longer converts typed ids into
@@ -53,7 +57,7 @@ export default function AutoCompleteShowOriginalDemo() {
           onCheckedChange={ (checked: boolean | 'indeterminate') => setShowOriginal(checked === true) }
         />
         <Label htmlFor="show-original-toggle" className="cursor-pointer font-normal">
-          showOriginal
+          showOriginal — when ON, ids are NOT auto-converted to chips
         </Label>
       </RowStack>
 
@@ -80,6 +84,23 @@ export default function AutoCompleteShowOriginalDemo() {
         <Typography variant="code1" className="rounded-md bg-muted p-2 whitespace-pre-wrap">
           { serverText === '' ? '—' : serverText }
         </Typography>
+      </ColumnStack>
+
+      { /* The same flag on the read-only component, driven by the same toggle: there the scan is
+           skipped entirely, so the string renders exactly as passed in. */ }
+      <ColumnStack className="gap-y-1">
+        <Typography variant="label1">Read-only display, same toggle:</Typography>
+        <div className="rounded-md border p-3">
+          <AutoCompletableTextAreaReadOnly<Gist>
+            text={ SOME_INIT_TEXT }
+            getItemRegex={ getAutocompleteItemRegex }
+            resolveItem={ resolveGistById }
+            itemDisplayFunction={ textAreaItemDisplay }
+            itemCopyContentFunction={ gistCopyContent }
+            detailsDialogTitle="Gist details"
+            showOriginal={ showOriginal }
+          />
+        </div>
       </ColumnStack>
     </ColumnStack>
   );
