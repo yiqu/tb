@@ -89,8 +89,10 @@ Demos — `app/(base)/test/`:
 - `_components/AutoCompleteTextAreaUncontrolledDemo.tsx` — uncontrolled + bonus `Teammate` type, trigger `@`.
 - `_components/test.utils.ts` — also carries `CriticalIssue`/`TEST_CRITICAL_ISSUES`, the
   production-shaped example: ids look like `CRIT-0000-0000-0000` and `getCriticalIssueRegex()`
-  returns ``/\bCRIT-\d{4}-\d{4}-\d{4}\b/g``. The `\b` guards matter — without them the pattern
-  also matches inside `CRIT-1042-8871-33901` (leaving a stray `1`) and inside `XCRIT-…`.
+  returns ``/CRIT-\d{4}-\d{4}-\d{4}/g``. Intentionally unguarded (no `\b`), because ids are often
+  typed flush against neighbouring characters and must still match. Consequence: a longer run
+  matches greedily from the left — `CRIT-1042-8871-33901` chips the first twelve digits and leaves
+  the trailing `1` as text.
 - `_components/test.utils.ts` — `Gist`/`TEST_GISTS` (ids are `GIST-1111111`…`GIST-9999999`), `Teammate`/`TEST_TEAMMATES`, and the callback fns: `itemFilterFunction`, `textAreaItemDisplay`, `textAreaItemTransformForServerFunction` (returns `item.id`), `getAutocompleteItemIdPrefix` (returns `'GIST-'`), `isItemDisabled` (non-aliasable gists are unselectable), teammate equivalents.
 - `_components/Utils.tsx` — dropdown row renderers (`ItemOptionDisplay`, `TeammateOptionDisplay`).
 

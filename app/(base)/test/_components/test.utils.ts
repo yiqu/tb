@@ -253,16 +253,17 @@ export const TEST_CRITICAL_ISSUES: CriticalIssue[] = [
 /**
  * How a critical-issue id is recognised inside plain text: CRIT-0000-0000-0000.
  *
- * The \b guards on each end are deliberate. Without them the pattern also matches inside a longer
- * run — 'CRIT-1042-8871-33901' would match the first twelve digits and leave a stray '1' behind,
- * and 'XCRIT-1042-8871-3390' would match from the C. With them, both are correctly ignored.
- * Drop the guards (/CRIT-\d{4}-\d{4}-\d{4}/g) if you would rather match those loosely.
+ * Deliberately UNGUARDED — no \b word boundaries — because ids are often typed flush against
+ * neighbouring characters and those still need to match. The trade-off: a longer run is matched
+ * greedily from the left, so 'CRIT-1042-8871-33901' chips the first twelve digits and leaves the
+ * trailing '1' as text, and 'XCRIT-1042-8871-3390' matches from the C. Add \b at both ends
+ * (/\bCRIT-\d{4}-\d{4}-\d{4}\b/g) to reject those instead.
  *
  * Takes no argument: it describes the id FORMAT, needed before any item exists to match against.
  * @returns
  */
 export const getCriticalIssueRegex = (): RegExp => {
-  return /\bCRIT-\d{4}-\d{4}-\d{4}\b/g;
+  return /CRIT-\d{4}-\d{4}-\d{4}/g;
 };
 
 /** Filter for the dropdown: matches on title, owner or id. */
