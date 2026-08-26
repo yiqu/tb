@@ -24,6 +24,16 @@ import { ItemOptionDisplay, TeammateOptionDisplay } from './Utils';
 import {
   Gist,
   Teammate,
+  CriticalIssue,
+  CRITICAL_INIT_TEXT,
+  criticalIssueDisplay,
+  getCriticalIssueRegex,
+  TEST_CRITICAL_ISSUES,
+  criticalIssueCopyContent,
+  resolveCriticalIssueById,
+  READ_ONLY_TEXT_CRITICAL,
+  criticalIssueFilterFunction,
+  criticalIssueTransformForServer,
   TEST_GISTS,
   TEST_TEAMMATES,
   isItemDisabled,
@@ -54,6 +64,9 @@ type GistNoteSchema = z.infer<typeof gistNoteSchema>;
 
 /** Initial value for the uncontrolled example 5, shared with its readout seed. */
 const TEAMMATE_INITIAL_VALUE: AutoCompleteValue<Teammate> = [{ kind: 'text', text: 'Ping ' }];
+
+/** Initial value for the production-shaped example 6, shared with its readout seed. */
+const CRITICAL_INITIAL_VALUE: AutoCompleteValue<CriticalIssue> = [{ kind: 'text', text: CRITICAL_INIT_TEXT }];
 
 /** One labelled example block. */
 function Example({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
@@ -138,6 +151,10 @@ export default function AutoCompleteMoreExamplesDemo() {
     autoCompleteValueToText(TEAMMATE_INITIAL_VALUE, teammateTransformForServerFunction),
   );
   const [teammateSubmitted, setTeammateSubmitted] = useState<string | null>(null);
+  const [criticalNote, setCriticalNote] = useState<string>(() =>
+    autoCompleteValueToText(CRITICAL_INITIAL_VALUE, criticalIssueTransformForServer),
+  );
+  const [criticalSubmitted, setCriticalSubmitted] = useState<string | null>(null);
   const [gistSubmitted, setGistSubmitted] = useState<string | null>(null);
 
   const { control, handleSubmit, reset } = useForm<GistNoteSchema>({
@@ -307,6 +324,62 @@ export default function AutoCompleteMoreExamplesDemo() {
             </ColumnStack>
           : null }
         </ColumnStack>
+      </Example>
+
+      <Example
+        label="6. Editable, production-shaped ids (CRIT-0000-0000-0000)"
+        hint='The id format planned for production. Hit ":" to autocomplete — chips show the issue title, while the value below is the CRIT- id that would be submitted. The initial text already contains one, hydrated on load.'
+      >
+        <ColumnStack className="gap-y-2">
+          <AutoCompletableTextAreaUncontrolled<CriticalIssue>
+            items={ TEST_CRITICAL_ISSUES }
+            initValue={ CRITICAL_INITIAL_VALUE }
+            onChange={ (value) => setCriticalNote(autoCompleteValueToText(value, criticalIssueTransformForServer)) }
+            filterFunction={ criticalIssueFilterFunction }
+            itemDisplayFunction={ criticalIssueDisplay }
+            itemTransformFunction={ criticalIssueTransformForServer }
+            getItemRegex={ getCriticalIssueRegex }
+            detailsDialogTitle="Critical issue"
+            placeholder='Type ":" to autocomplete a critical issue...'
+            searchPlaceholder="Search issues by title, owner or id..."
+            className="min-h-20"
+            chipClassName="border-rose-500/50 bg-rose-500/10 hover:bg-rose-500/20"
+          />
+          <Typography variant="code1" className="rounded-md bg-muted p-2 whitespace-pre-wrap">
+            { criticalNote === '' ? '—' : criticalNote }
+          </Typography>
+          <RowStack className="gap-x-2">
+            <Button type="button" size="sm" onClick={ () => setCriticalSubmitted(criticalNote) }>
+              Submit
+            </Button>
+            <Button type="button" size="sm" variant="outline" onClick={ () => setCriticalSubmitted(null) }>
+              Clear result
+            </Button>
+          </RowStack>
+          { criticalSubmitted !== null ?
+            <ColumnStack className="gap-y-1">
+              <Typography variant="label1">Submitted value (uncontrolled — latest onChange value):</Typography>
+              <Typography variant="code1" className="rounded-md bg-muted p-2 whitespace-pre-wrap">
+                { criticalSubmitted === '' ? '—' : criticalSubmitted }
+              </Typography>
+            </ColumnStack>
+          : null }
+        </ColumnStack>
+      </Example>
+
+      <Example
+        label="7. Read-only, the same CRIT- ids"
+        hint="The same regex drives the view-only display. CRIT-0000-0000-0000 matches the format but is not in the list, so it stays flagged rather than silently rendering as a normal chip."
+      >
+        <AutoCompletableTextAreaReadOnly<CriticalIssue>
+          text={ READ_ONLY_TEXT_CRITICAL }
+          getItemRegex={ getCriticalIssueRegex }
+          resolveItem={ resolveCriticalIssueById }
+          itemDisplayFunction={ criticalIssueDisplay }
+          itemCopyContentFunction={ criticalIssueCopyContent }
+          detailsDialogTitle="Critical issue"
+          chipClassName="border-rose-500/50 bg-rose-500/10 hover:bg-rose-500/20"
+        />
       </Example>
     </ColumnStack>
   );

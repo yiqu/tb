@@ -229,3 +229,70 @@ export const READ_ONLY_TEXT_TEAMMATES: string =
 
 export const SOME_INIT_TEXT: string =
   'This initial text mentions GIST-3333333 which becomes a chip. = GIST-1111111 != GIST-3333333 ~= GIST-2222222 and there.. GIST-2222221';
+
+// ---------------------------------------------------------------------------
+// Production-shaped example: ids look like CRIT-0000-0000-0000 — the literal
+// "CRIT", then three dash-separated groups of four digits.
+// ---------------------------------------------------------------------------
+
+export interface CriticalIssue {
+  id: string;
+  title: string;
+  severity: 'low' | 'medium' | 'high';
+  owner: string;
+}
+
+export const TEST_CRITICAL_ISSUES: CriticalIssue[] = [
+  { id: 'CRIT-1042-8871-3390', title: 'Checkout times out under load', severity: 'high', owner: 'Platform' },
+  { id: 'CRIT-9930-1177-4028', title: 'Duplicate invoices on retry', severity: 'high', owner: 'Billing' },
+  { id: 'CRIT-2261-5540-9913', title: 'Session dropped on token refresh', severity: 'medium', owner: 'Identity' },
+  { id: 'CRIT-7788-0031-6620', title: 'Stale totals in the nightly report', severity: 'low', owner: 'Data' },
+  { id: 'CRIT-3345-9902-1187', title: 'Webhook retries fire twice', severity: 'medium', owner: 'Integrations' },
+];
+
+/**
+ * How a critical-issue id is recognised inside plain text: CRIT-0000-0000-0000.
+ *
+ * The \b guards on each end are deliberate. Without them the pattern also matches inside a longer
+ * run — 'CRIT-1042-8871-33901' would match the first twelve digits and leave a stray '1' behind,
+ * and 'XCRIT-1042-8871-3390' would match from the C. With them, both are correctly ignored.
+ * Drop the guards (/CRIT-\d{4}-\d{4}-\d{4}/g) if you would rather match those loosely.
+ *
+ * Takes no argument: it describes the id FORMAT, needed before any item exists to match against.
+ * @returns
+ */
+export const getCriticalIssueRegex = (): RegExp => {
+  return /\bCRIT-\d{4}-\d{4}-\d{4}\b/g;
+};
+
+/** Filter for the dropdown: matches on title, owner or id. */
+export const criticalIssueFilterFunction = (item: CriticalIssue, filter: string) => {
+  const query = filter.toLowerCase();
+  return item.title.toLowerCase().includes(query) || item.owner.toLowerCase().includes(query) || item.id.toLowerCase().includes(query);
+};
+
+/** What a chip shows: the human-readable title, not the id. */
+export const criticalIssueDisplay = (item: CriticalIssue) => {
+  return item.title;
+};
+
+/** What goes to the server, and what a chip serializes to: the CRIT- id. */
+export const criticalIssueTransformForServer = (item: CriticalIssue) => {
+  return item.id;
+};
+
+/** Resolves a matched id back to its issue; undefined for an id that is not ours. */
+export const resolveCriticalIssueById = (matchedText: string): CriticalIssue | undefined => {
+  return TEST_CRITICAL_ISSUES.find((issue: CriticalIssue) => issue.id === matchedText);
+};
+
+/** What the read-only chip's "Copy" option copies. */
+export const criticalIssueCopyContent = (item: CriticalIssue) => {
+  return `${item.id} — ${item.title} (${item.severity}, ${item.owner})`;
+};
+
+// Sample text: two real ids, one that matches the format but is not in the list.
+export const READ_ONLY_TEXT_CRITICAL: string =
+  'Escalated CRIT-1042-8871-3390 after the outage; it blocks CRIT-9930-1177-4028.\nCRIT-0000-0000-0000 came from an older export and no longer resolves.';
+
+export const CRITICAL_INIT_TEXT: string = 'Rollback plan tracked under CRIT-2261-5540-9913. ';

@@ -87,6 +87,10 @@ Demos — `app/(base)/test/`:
 - `_components/AutoCompleteTextAreaDemo.tsx` — controlled + react-hook-form (Controller) + Zod, Gist list, trigger `:`. Default form value contains a raw `GIST-3333333` to demo load-time hydration. Submit shows the server string.
 - `_components/AutoCompleteTextAreaDemo2.tsx` — same text area as one field among ordinary ones (Location seeded, Car name empty, Is driveable false), reusing `HFInputField` / `HFCheckbox`; submit echoes every value.
 - `_components/AutoCompleteTextAreaUncontrolledDemo.tsx` — uncontrolled + bonus `Teammate` type, trigger `@`.
+- `_components/test.utils.ts` — also carries `CriticalIssue`/`TEST_CRITICAL_ISSUES`, the
+  production-shaped example: ids look like `CRIT-0000-0000-0000` and `getCriticalIssueRegex()`
+  returns ``/\bCRIT-\d{4}-\d{4}-\d{4}\b/g``. The `\b` guards matter — without them the pattern
+  also matches inside `CRIT-1042-8871-33901` (leaving a stray `1`) and inside `XCRIT-…`.
 - `_components/test.utils.ts` — `Gist`/`TEST_GISTS` (ids are `GIST-1111111`…`GIST-9999999`), `Teammate`/`TEST_TEAMMATES`, and the callback fns: `itemFilterFunction`, `textAreaItemDisplay`, `textAreaItemTransformForServerFunction` (returns `item.id`), `getAutocompleteItemIdPrefix` (returns `'GIST-'`), `isItemDisabled` (non-aliasable gists are unselectable), teammate equivalents.
 - `_components/Utils.tsx` — dropdown row renderers (`ItemOptionDisplay`, `TeammateOptionDisplay`).
 
