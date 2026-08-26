@@ -7,6 +7,7 @@ import {
   Fragment,
   useEffect,
   FocusEvent,
+  FormEvent,
   useCallback,
   KeyboardEvent,
   ClipboardEvent,
@@ -30,6 +31,7 @@ import {
 import {
   generateChipId,
   parseEditorDom,
+  readEditorDom,
   placeCaretAtEnd,
   collectChipItems,
   placeCaretAfterNode,
@@ -38,8 +40,11 @@ import {
   hydrateAutoCompleteValue,
   flattenAutoCompleteValue,
   isAutoCompleteValueEmpty,
+  getEditorDomCaret,
+  getAbsoluteTextOffset,
   getCaretPositionInWrapper,
   areAutoCompleteValuesEqual,
+  placeCaretAtAbsoluteTextOffset,
   getElementPositionInWrapper,
   AUTOCOMPLETE_CHIP_ID_ATTRIBUTE,
   AUTOCOMPLETE_INSERT_MARKER_ATTRIBUTE,
@@ -66,10 +71,12 @@ interface DropdownState {
  * unfocused (e.g. blur-time id detection) so focus is not stolen back.
  */
 interface PendingCaret {
-  type: 'after-chip' | 'end' | 'none';
+  type: 'after-chip' | 'text-offset' | 'end' | 'none';
   chipId?: string;
   /** When set, the caret goes this many characters into the text node following the chip. */
   offsetIntoNext?: number;
+  /** For 'text-offset': absolute character offset into the committed content (chips count as their text). */
+  offset?: number;
 }
 
 /**
@@ -277,6 +284,12 @@ export default function AutoCompletableTextArea<T>({
       return;
     }
     editor.focus();
+    if (caret.type === 'text-offset' && caret.offset !== undefined) {
+      const placed = placeCaretAtAbsoluteTextOffset(editor, chipItemsRef.current, hydrationRef.current.resolveItemText, caret.offset);
+      if (placed) {
+        return;
+      }
+    }
     if (caret.type === 'after-chip' && caret.chipId) {
       const chipElement = editor.querySelector(`[${AUTOCOMPLETE_CHIP_ID_ATTRIBUTE}="${caret.chipId}"]`);
       if (chipElement) {
@@ -400,18 +413,49 @@ export default function AutoCompletableTextArea<T>({
     commitStructural(converted, { type: hasFocus ? 'end' : 'none' });
   }, [showOriginal, getItemRegex, resolveItemFromText, resolveItemText, commitStructural]);
 
-  /** Plain typing: parse the DOM into segments and emit, without touching the rendered tree. */
-  const handleInput = useCallback(() => {
-    const editor = editorRef.current;
-    if (!editor) {
-      return;
-    }
-    const segments = parseEditorDom(editor, chipItemsRef.current);
-    lastEmittedRef.current = segments;
-    editor.setAttribute('data-empty', String(isAutoCompleteValueEmpty(segments)));
-    onValueChangeRef.current(segments);
-    recordHistoryRef.current(segments, true);
-  }, []);
+  /**
+   * Plain typing: parse the DOM into segments and emit, without touching the rendered tree.
+   *
+   * This also runs the id scan, so an id that was typed or pasted turns into a chip as soon as the
+   * caret moves off it — no blur needed. The match the caret is sitting in is deliberately left
+   * alone (see `hydrateAutoCompleteValue`): converting an id mid-keystroke would pull the text out
+   * from under the cursor while it may still be unfinished.
+   *
+   * Cost per keystroke is one regex pass over the text, next to the DOM parse that already happens
+   * here; the expensive part — re-mounting the surface — only runs when a match is actually
+   * converted, which is rare. When nothing converts, this is the same work as before.
+   */
+  const handleInput = useCallback(
+    (event?: FormEvent<HTMLDivElement>) => {
+      const editor = editorRef.current;
+      if (!editor) {
+        return;
+      }
+      const domCaret = getEditorDomCaret(editor);
+      const { segments, caret: caretInSegments } = readEditorDom(editor, chipItemsRef.current, { caret: domCaret });
+
+      const { getItemRegex: regex, resolveItemFromText: resolve, resolveItemText: toText, showOriginal: raw } = hydrationRef.current;
+      // Mid-composition (IME) the text is not final yet, and the dropdown owns the caret while it
+      // is open — neither is a moment to restructure the content.
+      const isComposing = event !== undefined && event.nativeEvent instanceof InputEvent && event.nativeEvent.isComposing;
+      const canScan = !raw && regex !== undefined && !isComposing && caretInSegments !== null && dropdownStateRef.current === null;
+      const hydrated = canScan && regex ? hydrateAutoCompleteValue(segments, regex(), resolve, caretInSegments) : segments;
+
+      editor.setAttribute('data-empty', String(isAutoCompleteValueEmpty(segments)));
+
+      if (hydrated !== segments && caretInSegments !== null) {
+        // Hydration preserves the serialized text exactly, so the caret's absolute offset still
+        // points at the same character once the chips are in place.
+        commitStructural(hydrated, { type: 'text-offset', offset: getAbsoluteTextOffset(segments, caretInSegments, toText) });
+        return;
+      }
+
+      lastEmittedRef.current = segments;
+      onValueChangeRef.current(segments);
+      recordHistoryRef.current(segments, true);
+    },
+    [commitStructural],
+  );
 
   /**
    * Blur: run id detection over the current content — any existing item id typed or pasted as

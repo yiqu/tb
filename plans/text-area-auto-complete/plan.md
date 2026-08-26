@@ -295,15 +295,34 @@ shadcn Textarea. The hard part is React vs. browser ownership of the DOM. The ru
 
 ## Id detection / hydration (`hydrateAutoCompleteValue`)
 
-Scans only text segments. Performance: builds `token = itemTransformFunction(item)` per item and a
-set of prefixes; the text is searched with `indexOf(prefix)` — each prefix occurrence is the only
-candidate position where full tokens are compared (longest match wins). Returns the ORIGINAL array
-reference when nothing matched (callers rely on that identity check). Runs:
+Scans only text segments. Candidates come from `getItemRegex()` (a fresh `g`-flagged copy per scan,
+so a caller-held regex never has its `lastIndex` mutated); each match is resolved back to an item
+through the text -> item map built from `items`, keyed by `resolveItemText`. A match that resolves
+to nothing is LEFT AS TEXT, and text that two or more items serialize to is treated as ambiguous
+and also left as text. Returns the ORIGINAL array reference when nothing matched (callers rely on
+that identity check). Runs:
 1. **On mount / true external value change** (the `[value]` effect). If hydration changed anything
    the hydrated value is emitted back so the form state gets the chips.
-2. **On blur** (`handleBlur`): re-parse DOM → hydrate → `commitStructural(..., { type: 'none' })`.
-   Skipped when `event.relatedTarget` is still inside the wrapper or the dropdown is open —
-   otherwise the remount would kill the chip menu / dropdown that is opening mid-interaction.
+2. **On every input** (`handleInput`) — typing, pasting, cutting. The match the caret is sitting in
+   (or immediately against) is passed as `protectedCaret` and skipped: converting an id under the
+   cursor would pull the text out from under it, and the id may not be finished yet. So an id chips
+   as soon as the caret moves off it, and a paste chips every id except one ending exactly at the
+   caret. Cost is one regex pass next to the DOM parse that already ran — measured at ~0.4 ms
+   median (1.4 ms max) per keystroke over a 7k-character document holding 181 chips. The expensive
+   part, re-mounting the surface, only runs when something actually converts.
+3. **On blur** (`handleBlur`): re-parse DOM → hydrate → `commitStructural(..., { type: 'none' })`.
+   This is what catches the id left protected at the caret. Skipped when `event.relatedTarget` is
+   still inside the wrapper or the dropdown is open — otherwise the remount would kill the chip
+   menu / dropdown that is opening mid-interaction.
+
+The typing-time scan is what needs `readEditorDom` (the caret-aware form of `parseEditorDom`) and
+the `'text-offset'` `PendingCaret`: the caret is translated DOM -> segment space on the way in, and
+back to an absolute character offset on the way out. Hydration is length-preserving in that space
+(a chip is only ever created from text equal to its own serialization), so the offset still points
+at the same character after the conversion, and `placeCaretAtAbsoluteTextOffset` walks the
+re-mounted DOM to put the caret back — the user keeps typing mid-sentence without noticing.
+The scan is skipped while `showOriginal` is on, while an IME composition is in flight, while the
+dropdown is open, and whenever the caret cannot be resolved to a text node.
 
 ## Undo / redo
 
