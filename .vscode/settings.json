@@ -22,7 +22,7 @@
     "activityBar.activeBorder": "#d5e9de"
   },
   "prisma.pinToPrisma6": true,
-  "eslint.useFlatConfig": false,
+  "eslint.useFlatConfig": true,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "eslint.run": "onType",
   "search.exclude": {

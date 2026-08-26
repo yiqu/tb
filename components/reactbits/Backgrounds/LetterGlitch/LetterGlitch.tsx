@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/no-array-for-each */
+/* eslint-disable unicorn/no-for-each */
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
 /* eslint-disable no-param-reassign */
 'use client';
