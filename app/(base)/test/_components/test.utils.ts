@@ -231,8 +231,10 @@ export const SOME_INIT_TEXT: string =
   'This initial text mentions GIST-3333333 which becomes a chip. = GIST-1111111 != GIST-3333333 ~= GIST-2222222 and there.. GIST-2222221';
 
 // ---------------------------------------------------------------------------
-// Production-shaped example: ids look like CRIT-0000-0000-0000 — the literal
-// "CRIT", then three dash-separated groups of four digits.
+// Production-shaped example: ids look like
+// CRIT-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX — the literal "CRIT", then five
+// dash-separated groups of 8/4/4/4/12 alphanumeric characters (letters in
+// either case, or digits).
 // ---------------------------------------------------------------------------
 
 export interface CriticalIssue {
@@ -243,27 +245,29 @@ export interface CriticalIssue {
 }
 
 export const TEST_CRITICAL_ISSUES: CriticalIssue[] = [
-  { id: 'CRIT-1042-8871-3390', title: 'Checkout times out under load', severity: 'high', owner: 'Platform' },
-  { id: 'CRIT-9930-1177-4028', title: 'Duplicate invoices on retry', severity: 'high', owner: 'Billing' },
-  { id: 'CRIT-2261-5540-9913', title: 'Session dropped on token refresh', severity: 'medium', owner: 'Identity' },
-  { id: 'CRIT-7788-0031-6620', title: 'Stale totals in the nightly report', severity: 'low', owner: 'Data' },
-  { id: 'CRIT-3345-9902-1187', title: 'Webhook retries fire twice', severity: 'medium', owner: 'Integrations' },
+  { id: 'CRIT-9f3a2b71-4c8d-4e2a-9b17-2d5c8e10ab44', title: 'Checkout times out under load', severity: 'high', owner: 'Platform' },
+  { id: 'CRIT-7B1cD904-2f6A-4d31-8e05-91ac37fe2210', title: 'Duplicate invoices on retry', severity: 'high', owner: 'Billing' },
+  { id: 'CRIT-a04e18c2-77bd-4a6f-b3d9-6c05e94db731', title: 'Session dropped on token refresh', severity: 'medium', owner: 'Identity' },
+  { id: 'CRIT-3D9f56Ea-0b41-4c77-95ae-cd8027f3b6e0', title: 'Stale totals in the nightly report', severity: 'low', owner: 'Data' },
+  { id: 'CRIT-c25b70df-9e13-482a-a6f4-71d0b58c3e92', title: 'Webhook retries fire twice', severity: 'medium', owner: 'Integrations' },
 ];
 
 /**
- * How a critical-issue id is recognised inside plain text: CRIT-0000-0000-0000.
+ * How a critical-issue id is recognised inside plain text:
+ * CRIT-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX, each X a letter (either case) or a digit.
  *
  * Deliberately UNGUARDED — no \b word boundaries — because ids are often typed flush against
- * neighbouring characters and those still need to match. The trade-off: a longer run is matched
- * greedily from the left, so 'CRIT-1042-8871-33901' chips the first twelve digits and leaves the
- * trailing '1' as text, and 'XCRIT-1042-8871-3390' matches from the C. Add \b at both ends
- * (/\bCRIT-\d{4}-\d{4}-\d{4}\b/g) to reject those instead.
+ * neighbouring characters and those still need to match. Two consequences to know about:
+ * 'XCRIT-9f3a2b71-...' matches from the C, and an over-long FINAL group is matched greedily from
+ * the left, so an id with 13 trailing characters chips the first twelve and leaves the last one as
+ * text. An over-long group anywhere else simply fails to match, since the group is followed by a
+ * literal dash. Add \b at both ends to reject the first two cases instead.
  *
  * Takes no argument: it describes the id FORMAT, needed before any item exists to match against.
  * @returns
  */
 export const getCriticalIssueRegex = (): RegExp => {
-  return /CRIT-\d{4}-\d{4}-\d{4}/g;
+  return /CRIT-[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}/g;
 };
 
 /** Filter for the dropdown: matches on title, owner or id. */
@@ -294,6 +298,6 @@ export const criticalIssueCopyContent = (item: CriticalIssue) => {
 
 // Sample text: two real ids, one that matches the format but is not in the list.
 export const READ_ONLY_TEXT_CRITICAL: string =
-  'Escalated CRIT-1042-8871-3390 after the outage; it blocks CRIT-9930-1177-4028.\nCRIT-0000-0000-0000 came from an older export and no longer resolves.';
+  'Escalated CRIT-9f3a2b71-4c8d-4e2a-9b17-2d5c8e10ab44 after the outage; it blocks CRIT-7B1cD904-2f6A-4d31-8e05-91ac37fe2210.\nCRIT-00000000-0000-0000-0000-000000000000 came from an older export and no longer resolves.';
 
-export const CRITICAL_INIT_TEXT: string = 'Rollback plan tracked under CRIT-2261-5540-9913. ';
+export const CRITICAL_INIT_TEXT: string = 'Rollback plan tracked under CRIT-a04e18c2-77bd-4a6f-b3d9-6c05e94db731. ';

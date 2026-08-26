@@ -88,11 +88,14 @@ Demos — `app/(base)/test/`:
 - `_components/AutoCompleteTextAreaDemo2.tsx` — same text area as one field among ordinary ones (Location seeded, Car name empty, Is driveable false), reusing `HFInputField` / `HFCheckbox`; submit echoes every value.
 - `_components/AutoCompleteTextAreaUncontrolledDemo.tsx` — uncontrolled + bonus `Teammate` type, trigger `@`.
 - `_components/test.utils.ts` — also carries `CriticalIssue`/`TEST_CRITICAL_ISSUES`, the
-  production-shaped example: ids look like `CRIT-0000-0000-0000` and `getCriticalIssueRegex()`
-  returns ``/CRIT-\d{4}-\d{4}-\d{4}/g``. Intentionally unguarded (no `\b`), because ids are often
-  typed flush against neighbouring characters and must still match. Consequence: a longer run
-  matches greedily from the left — `CRIT-1042-8871-33901` chips the first twelve digits and leaves
-  the trailing `1` as text.
+  production-shaped example: ids look like `CRIT-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (each `X` a
+  letter in either case or a digit) and `getCriticalIssueRegex()` returns
+  ``/CRIT-[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}/g``.
+  Intentionally unguarded (no `\b`), because ids are often typed flush against neighbouring
+  characters and must still match. Consequences: `XCRIT-9f3a…` matches from the `C`, and an
+  over-long FINAL group matches greedily from the left, chipping the first twelve characters and
+  leaving the rest as text. An over-long group anywhere else fails to match outright, since each is
+  followed by a literal dash.
 - `_components/test.utils.ts` — `Gist`/`TEST_GISTS` (ids are `GIST-1111111`…`GIST-9999999`), `Teammate`/`TEST_TEAMMATES`, and the callback fns: `itemFilterFunction`, `textAreaItemDisplay`, `textAreaItemTransformForServerFunction` (returns `item.id`), `getAutocompleteItemIdPrefix` (returns `'GIST-'`), `isItemDisabled` (non-aliasable gists are unselectable), teammate equivalents.
 - `_components/Utils.tsx` — dropdown row renderers (`ItemOptionDisplay`, `TeammateOptionDisplay`).
 

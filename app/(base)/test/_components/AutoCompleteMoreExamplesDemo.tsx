@@ -327,7 +327,7 @@ export default function AutoCompleteMoreExamplesDemo() {
       </Example>
 
       <Example
-        label="6. Editable, production-shaped ids (CRIT-0000-0000-0000)"
+        label="6. Editable, production-shaped ids (CRIT-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)"
         hint='The id format planned for production. Hit ":" to autocomplete — chips show the issue title, while the value below is the CRIT- id that would be submitted. The initial text already contains one, hydrated on load.'
       >
         <ColumnStack className="gap-y-2">
@@ -369,7 +369,7 @@ export default function AutoCompleteMoreExamplesDemo() {
 
       <Example
         label="7. Read-only, the same CRIT- ids"
-        hint="The same regex drives the view-only display. CRIT-0000-0000-0000 matches the format but is not in the list, so it stays flagged rather than silently rendering as a normal chip."
+        hint="The same regex drives the view-only display. The all-zero id matches the format but is not in the list, so it stays flagged rather than silently rendering as a normal chip."
       >
         <AutoCompletableTextAreaReadOnly<CriticalIssue>
           text={ READ_ONLY_TEXT_CRITICAL }
