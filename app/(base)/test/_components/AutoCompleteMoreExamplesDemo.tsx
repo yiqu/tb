@@ -1,15 +1,20 @@
 'use client';
 
+import { z } from 'zod';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, Controller } from 'react-hook-form';
 import { LinkIcon, MailIcon, BadgeCheckIcon } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
 import RowStack from '@/shared/components/RowStack';
 import ColumnStack from '@/shared/components/ColumnStack';
 import Typography from '@/components/typography/Typography';
 import { getDefaultChipMenuItems } from '@/components/auto-completable-textarea/AutoCompleteChipMenu';
 import { autoCompleteValueToText } from '@/components/auto-completable-textarea/autocompletable-textarea.utils';
-import { AutoCompleteChipMenuItemConfig } from '@/components/auto-completable-textarea/autocompletable-textarea.models';
+import { AutoCompleteValue, AutoCompleteChipMenuItemConfig } from '@/components/auto-completable-textarea/autocompletable-textarea.models';
+import AutoCompletableTextArea from '@/components/auto-completable-textarea/AutoCompletableTextArea';
 import AutoCompletableTextAreaUncontrolled from '@/components/auto-completable-textarea/AutoCompletableTextAreaUncontrolled';
 import AutoCompletableTextAreaReadOnly from '@/components/auto-completable-textarea-read-only/AutoCompletableTextAreaReadOnly';
 import { getDefaultReadOnlyChipMenuItems } from '@/components/auto-completable-textarea-read-only/AutoCompleteReadOnlyChipMenu';
@@ -38,6 +43,18 @@ import {
   teammateTransformForServerFunction,
   textAreaItemTransformForServerFunction,
 } from './test.utils';
+
+// Example 4 is CONTROLLED: schema first, type derived from it, wired through <Controller>.
+const gistNoteSchema = z.object({
+  note: z
+    .custom<AutoCompleteValue<Gist>>((candidate) => Array.isArray(candidate))
+    .refine((segments) => autoCompleteValueToText(segments, () => 'x').trim().length > 0, { message: 'Please type something first.' }),
+});
+
+type GistNoteSchema = z.infer<typeof gistNoteSchema>;
+
+/** Initial value for the uncontrolled example 5, shared with its readout seed. */
+const TEAMMATE_INITIAL_VALUE: AutoCompleteValue<Teammate> = [{ kind: 'text', text: 'Ping ' }];
 
 /** One labelled example block. */
 function Example({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
@@ -90,6 +107,10 @@ function getGistMenuItems(): AutoCompleteChipMenuItemConfig<Gist>[] {
   ];
 }
 
+// Built once at module scope: a fresh array every render would needlessly re-memo the menu.
+const teammateMenuItems = getTeammateMenuItems();
+const gistMenuItems = getGistMenuItems();
+
 /** A custom details body, proving the shared details dialog accepts any renderer. */
 function GistDetails({ item }: { item: Gist }) {
   return (
@@ -112,7 +133,23 @@ function GistDetails({ item }: { item: Gist }) {
  * shape — while each component keeps its own chip, its own menu and its own props.
  */
 export default function AutoCompleteMoreExamplesDemo() {
-  const [teammateNote, setTeammateNote] = useState<string>('');
+  // Example 5 is uncontrolled, so its value is tracked from onChange. Seeded from the same initial
+  // value the editor mounts with, since onChange only fires once the value actually changes.
+  const [teammateNote, setTeammateNote] = useState<string>(() =>
+    autoCompleteValueToText(TEAMMATE_INITIAL_VALUE, teammateTransformForServerFunction),
+  );
+  const [teammateSubmitted, setTeammateSubmitted] = useState<string | null>(null);
+  const [gistSubmitted, setGistSubmitted] = useState<string | null>(null);
+
+  const { control, handleSubmit, reset } = useForm<GistNoteSchema>({
+    resolver: zodResolver(gistNoteSchema),
+    defaultValues: { note: [{ kind: 'text', text: 'Blocked on GIST-1111111 until review. ' }] },
+  });
+
+  // What a real submit would send: the form's own value, with chips transformed to their id.
+  const onSubmitGist = (data: GistNoteSchema) => {
+    setGistSubmitted(autoCompleteValueToText(data.note, textAreaItemTransformForServerFunction));
+  };
 
   return (
     <ColumnStack className="w-full gap-y-4 rounded-md border p-4">
@@ -148,7 +185,7 @@ export default function AutoCompleteMoreExamplesDemo() {
           resolveItem={ resolveTeammateByEmail }
           itemDisplayFunction={ teammateTextAreaItemDisplay }
           itemCopyContentFunction={ teammateCopyContent }
-          chipMenuItems={ getTeammateMenuItems() }
+          chipMenuItems={ teammateMenuItems }
           detailsDialogTitle="Teammate details"
         />
       </Example>
@@ -172,22 +209,63 @@ export default function AutoCompleteMoreExamplesDemo() {
         label="4. Editable with a custom menu entry and the same custom details body"
         hint='Type ":" to autocomplete. The chip menu gains a Copy link entry, and Show details renders the same body as example 3.'
       >
-        <AutoCompletableTextAreaUncontrolled<Gist>
-          items={ TEST_GISTS }
-          initValue={ [{ kind: 'text', text: 'Blocked on GIST-1111111 until review. ' }] }
-          filterFunction={ itemFilterFunction }
-          itemDisplayFunction={ textAreaItemDisplay }
-          itemTransformFunction={ textAreaItemTransformForServerFunction }
-          getItemIdPrefix={ getAutocompleteItemIdPrefix }
-          renderItemOption={ (gist: Gist) => <ItemOptionDisplay item={ gist } /> }
-          renderItemDetails={ (gist: Gist) => <GistDetails item={ gist } /> }
-          isItemDisabled={ isItemDisabled }
-          chipMenuItems={ getGistMenuItems() }
-          detailsDialogTitle="Gist details"
-          placeholder='Type ":" to autocomplete a gist...'
-          searchPlaceholder="Search gists..."
-          className="min-h-24"
-        />
+        <form onSubmit={ handleSubmit(onSubmitGist) } className="flex w-full flex-col gap-y-2">
+          <Controller
+            control={ control }
+            name="note"
+            render={ ({ field, fieldState }) => (
+              <ColumnStack className="gap-y-1">
+                <AutoCompletableTextArea<Gist>
+                  items={ TEST_GISTS }
+                  value={ field.value }
+                  onValueChange={ field.onChange }
+                  onBlur={ field.onBlur }
+                  filterFunction={ itemFilterFunction }
+                  itemDisplayFunction={ textAreaItemDisplay }
+                  itemTransformFunction={ textAreaItemTransformForServerFunction }
+                  getItemIdPrefix={ getAutocompleteItemIdPrefix }
+                  renderItemOption={ (gist: Gist) => <ItemOptionDisplay item={ gist } /> }
+                  renderItemDetails={ (gist: Gist) => <GistDetails item={ gist } /> }
+                  isItemDisabled={ isItemDisabled }
+                  chipMenuItems={ gistMenuItems }
+                  detailsDialogTitle="Gist details"
+                  placeholder='Type ":" to autocomplete a gist...'
+                  searchPlaceholder="Search gists..."
+                  className="min-h-24"
+                />
+                { fieldState.error ?
+                  <Typography variant="caption1" className="text-destructive">
+                    { fieldState.error.message }
+                  </Typography>
+                : null }
+              </ColumnStack>
+            ) }
+          />
+          <RowStack className="gap-x-2">
+            <Button type="submit" size="sm">
+              Submit
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={ () => {
+                reset();
+                setGistSubmitted(null);
+              } }
+            >
+              Reset
+            </Button>
+          </RowStack>
+          { gistSubmitted !== null ?
+            <ColumnStack className="gap-y-1">
+              <Typography variant="label1">Submitted value from react-hook-form (chips as their id):</Typography>
+              <Typography variant="code1" className="rounded-md bg-muted p-2 whitespace-pre-wrap">
+                { gistSubmitted }
+              </Typography>
+            </ColumnStack>
+          : null }
+        </form>
       </Example>
 
       <Example
@@ -197,7 +275,7 @@ export default function AutoCompleteMoreExamplesDemo() {
         <ColumnStack className="gap-y-2">
           <AutoCompletableTextAreaUncontrolled<Teammate>
             items={ TEST_TEAMMATES }
-            initValue={ [{ kind: 'text', text: 'Ping ' }] }
+            initValue={ TEAMMATE_INITIAL_VALUE }
             onChange={ (value) => setTeammateNote(autoCompleteValueToText(value, teammateTransformForServerFunction)) }
             filterFunction={ teammateFilterFunction }
             itemDisplayFunction={ teammateTextAreaItemDisplay }
@@ -213,6 +291,22 @@ export default function AutoCompleteMoreExamplesDemo() {
           <Typography variant="code1" className="rounded-md bg-muted p-2 whitespace-pre-wrap">
             { teammateNote === '' ? '—' : teammateNote }
           </Typography>
+          <RowStack className="gap-x-2">
+            <Button type="button" size="sm" onClick={ () => setTeammateSubmitted(teammateNote) }>
+              Submit
+            </Button>
+            <Button type="button" size="sm" variant="outline" onClick={ () => setTeammateSubmitted(null) }>
+              Clear result
+            </Button>
+          </RowStack>
+          { teammateSubmitted !== null ?
+            <ColumnStack className="gap-y-1">
+              <Typography variant="label1">Submitted value (uncontrolled — latest onChange value):</Typography>
+              <Typography variant="code1" className="rounded-md bg-muted p-2 whitespace-pre-wrap">
+                { teammateSubmitted === '' ? '—' : teammateSubmitted }
+              </Typography>
+            </ColumnStack>
+          : null }
         </ColumnStack>
       </Example>
     </ColumnStack>

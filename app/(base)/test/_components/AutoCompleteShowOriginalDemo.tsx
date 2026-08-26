@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import RowStack from '@/shared/components/RowStack';
 import { Label } from '@/components/ui/label';
@@ -35,9 +36,20 @@ import {
  * OFF), and the read-only one simply re-derives its segments. So this also demonstrates that edits
  * made before toggling survive the conversion.
  */
+/**
+ * The initial value, shared by the text area and the live readout below it. Declared once so the
+ * readout can be seeded from the SAME value the editor mounts with: the uncontrolled component only
+ * calls `onChange` when the value actually changes, so without this seed the readout would show an
+ * empty value until the first edit, even though the editor clearly has content.
+ */
+const INITIAL_VALUE: AutoCompleteValue<Gist> = [{ kind: 'text', text: SOME_INIT_TEXT }];
+
 export default function AutoCompleteShowOriginalDemo() {
   const [showOriginal, setShowOriginal] = useState<boolean>(true);
-  const [serverText, setServerText] = useState<string>('');
+  const [serverText, setServerText] = useState<string>(() =>
+    autoCompleteValueToText(INITIAL_VALUE, textAreaItemTransformForServerFunction),
+  );
+  const [submittedText, setSubmittedText] = useState<string | null>(null);
 
   const handleChange = (value: AutoCompleteValue<Gist>) => {
     setServerText(autoCompleteValueToText(value, textAreaItemTransformForServerFunction));
@@ -65,7 +77,7 @@ export default function AutoCompleteShowOriginalDemo() {
 
       <AutoCompletableTextAreaUncontrolled<Gist>
         items={ TEST_GISTS }
-        initValue={ [{ kind: 'text', text: SOME_INIT_TEXT }] }
+        initValue={ INITIAL_VALUE }
         onChange={ handleChange }
         showOriginal={ showOriginal }
         filterFunction={ itemFilterFunction }
@@ -79,6 +91,24 @@ export default function AutoCompleteShowOriginalDemo() {
         searchPlaceholder="Search gists..."
         className="min-h-24"
       />
+
+      <RowStack className="gap-x-2">
+        <Button type="button" size="sm" onClick={ () => setSubmittedText(serverText) }>
+          Submit
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={ () => setSubmittedText(null) }>
+          Clear result
+        </Button>
+      </RowStack>
+
+      { submittedText !== null ?
+        <ColumnStack className="gap-y-1">
+          <Typography variant="label1">Submitted value (uncontrolled — the latest onChange value):</Typography>
+          <Typography variant="code1" className="rounded-md bg-muted p-2 whitespace-pre-wrap">
+            { submittedText === '' ? '—' : submittedText }
+          </Typography>
+        </ColumnStack>
+      : null }
 
       <ColumnStack className="gap-y-1">
         <Typography variant="label1">Live value (chips transformed to their id):</Typography>
