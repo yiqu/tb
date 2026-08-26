@@ -303,7 +303,8 @@ and also left as text. Returns the ORIGINAL array reference when nothing matched
 that identity check). Runs:
 1. **On mount / true external value change** (the `[value]` effect). If hydration changed anything
    the hydrated value is emitted back so the form state gets the chips.
-2. **On every input** (`handleInput`) — typing, pasting, cutting. The match the caret is sitting in
+2. **On every input** (`handleInput`) — typing, pasting, cutting; switched off by the
+   `updateOnBlur` prop, which reverts to blur-only detection. The match the caret is sitting in
    (or immediately against) is passed as `protectedCaret` and skipped: converting an id under the
    cursor would pull the text out from under it, and the id may not be finished yet. So an id chips
    as soon as the caret moves off it, and a paste chips every id except one ending exactly at the

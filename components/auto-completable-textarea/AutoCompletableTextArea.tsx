@@ -123,6 +123,7 @@ export default function AutoCompletableTextArea<T>({
   emptyText,
   disabled,
   showOriginal,
+  updateOnBlur = false,
   showClearButton = true,
   clearButtonClassName,
   chipMenuItems,
@@ -177,6 +178,7 @@ export default function AutoCompletableTextArea<T>({
     resolveItemFromText: (_matchedText: string): T | undefined => undefined,
     resolveItemText: (_item: T): string => '',
     showOriginal,
+    updateOnBlur,
   });
 
   // Refs are synced in the commit phase, never during render: a render that is double-invoked
@@ -186,7 +188,7 @@ export default function AutoCompletableTextArea<T>({
   useEffect(() => {
     dropdownStateRef.current = dropdownState;
     onValueChangeRef.current = onValueChange;
-    hydrationRef.current = { getItemRegex, resolveItemFromText, resolveItemText, showOriginal };
+    hydrationRef.current = { getItemRegex, resolveItemFromText, resolveItemText, showOriginal, updateOnBlur };
     recordHistoryRef.current = recordHistory;
     undoRef.current = undo;
     redoRef.current = redo;
@@ -434,11 +436,12 @@ export default function AutoCompletableTextArea<T>({
       const domCaret = getEditorDomCaret(editor);
       const { segments, caret: caretInSegments } = readEditorDom(editor, chipItemsRef.current, { caret: domCaret });
 
-      const { getItemRegex: regex, resolveItemFromText: resolve, resolveItemText: toText, showOriginal: raw } = hydrationRef.current;
+      const { getItemRegex: regex, resolveItemFromText: resolve, resolveItemText: toText, showOriginal: raw, updateOnBlur: blurOnly } = hydrationRef.current;
       // Mid-composition (IME) the text is not final yet, and the dropdown owns the caret while it
       // is open — neither is a moment to restructure the content.
       const isComposing = event !== undefined && event.nativeEvent instanceof InputEvent && event.nativeEvent.isComposing;
-      const canScan = !raw && regex !== undefined && !isComposing && caretInSegments !== null && dropdownStateRef.current === null;
+      const canScan =
+        !raw && !blurOnly && regex !== undefined && !isComposing && caretInSegments !== null && dropdownStateRef.current === null;
       const hydrated = canScan && regex ? hydrateAutoCompleteValue(segments, regex(), resolve, caretInSegments) : segments;
 
       editor.setAttribute('data-empty', String(isAutoCompleteValueEmpty(segments)));

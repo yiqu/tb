@@ -155,6 +155,16 @@ export interface AutoCompletableTextAreaProps<T> {
    */
   showOriginal?: boolean;
   /**
+   * Defers id detection to blur. By default the scan runs on every input, so an id that is typed
+   * or pasted becomes a chip as soon as the caret moves off it (the match the caret is sitting in
+   * is always left alone, so an id is never converted mid-keystroke). Set this to true to get the
+   * older behaviour instead: typed and pasted ids stay raw text until focus leaves the text area.
+   *
+   * The blur scan runs either way — this only controls the one on input. Ignored while
+   * `showOriginal` is on, which turns every scan off. Defaults to false.
+   */
+  updateOnBlur?: boolean;
+  /**
    * Shows a clear ("X") button in the top right corner that wipes all content. Defaults to true.
    * The cleared value is emitted through the normal change callback, so react-hook-form (controlled)
    * and the uncontrolled variant's `onChange` both see it.
