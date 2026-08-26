@@ -45,6 +45,12 @@ import {
   AUTOCOMPLETE_INSERT_MARKER_ATTRIBUTE,
 } from './autocompletable-textarea.utils';
 
+/** Consecutive typing within this many ms collapses into a single undo entry. */
+const HISTORY_COALESCE_MS = 600;
+
+/** Cap on retained undo snapshots, so a long editing session cannot grow without bound. */
+const HISTORY_LIMIT = 200;
+
 /**
  * State of the caret-anchored dropdown: closed (null), inserting a brand new chip at the caret,
  * or editing (replacing) an existing chip.
@@ -133,6 +139,26 @@ export default function AutoCompletableTextArea<T>({
   /** Last value this component emitted, used to tell external resets apart from our own echoes. */
   const lastEmittedRef = useRef<AutoCompleteValue<T>>(value);
 
+  /**
+   * Undo/redo history over the VALUE, not the DOM.
+   *
+   * The browser's native undo stack is unusable here: every structural change remounts the editable
+   * surface (see `render.key`), which throws that stack away, and chips are inserted by direct DOM
+   * manipulation, which the browser never records. So Ctrl/Cmd+Z is handled here instead, over
+   * snapshots of the segment value.
+   */
+  const historyRef = useRef<AutoCompleteValue<T>[]>([value]);
+  const historyIndexRef = useRef<number>(0);
+  const lastRecordAtRef = useRef<number>(0);
+  const lastRecordWasTypingRef = useRef<boolean>(false);
+  /** True while a snapshot is being restored, so the restore does not record itself. */
+  const isRestoringRef = useRef<boolean>(false);
+  /** Indirection so commitStructural (declared first, deps []) can reach recordHistory. */
+  const recordHistoryRef = useRef<(next: AutoCompleteValue<T>, isTyping: boolean) => void>(() => {});
+  /** Same indirection for the key handler, which is declared before undo/redo exist. */
+  const undoRef = useRef<() => void>(() => {});
+  const redoRef = useRef<() => void>(() => {});
+
   // Keep the latest onValueChange reachable from stable callbacks.
   const onValueChangeRef = useRef(onValueChange);
 
@@ -147,6 +173,9 @@ export default function AutoCompletableTextArea<T>({
     dropdownStateRef.current = dropdownState;
     onValueChangeRef.current = onValueChange;
     hydrationRef.current = { items, itemTransformFunction, getItemIdPrefix, showOriginal };
+    recordHistoryRef.current = recordHistory;
+    undoRef.current = undo;
+    redoRef.current = redo;
   });
 
   /**
@@ -185,6 +214,11 @@ export default function AutoCompletableTextArea<T>({
       return;
     }
     lastEmittedRef.current = hydrated;
+    // An external value (form reset, setValue) starts a fresh history — the previous document's
+    // undo entries are no longer meaningful.
+    historyRef.current = [hydrated];
+    historyIndexRef.current = 0;
+    lastRecordWasTypingRef.current = false;
     chipItemsRef.current = collectChipItems(hydrated);
     setRender((prev: EditorRenderState<T>) => ({ key: prev.key + 1, segments: hydrated }));
     if (changedByHydration) {
@@ -226,7 +260,70 @@ export default function AutoCompletableTextArea<T>({
     lastEmittedRef.current = segments;
     setRender((prev: EditorRenderState<T>) => ({ key: prev.key + 1, segments: segments }));
     onValueChangeRef.current(segments);
+    recordHistoryRef.current(segments, false);
   }, []);
+
+  /**
+   * Appends a snapshot to the history.
+   *
+   * Consecutive typing inside a short window is coalesced into one entry, so a single Ctrl+Z undoes
+   * a word or burst rather than one character — closer to what a native textarea does. Structural
+   * changes (chip inserted / removed / edited, clear, showOriginal conversion) always get their own
+   * entry. Redo entries ahead of the cursor are dropped once a new edit branches off them.
+   */
+  const recordHistory = useCallback((next: AutoCompleteValue<T>, isTyping: boolean) => {
+    if (isRestoringRef.current) {
+      return;
+    }
+    const now = Date.now();
+    const entries = historyRef.current;
+    // Drop any redo branch: a fresh edit invalidates whatever came after the cursor.
+    if (historyIndexRef.current < entries.length - 1) {
+      entries.length = historyIndexRef.current + 1;
+    }
+    const coalesce = isTyping && lastRecordWasTypingRef.current && now - lastRecordAtRef.current < HISTORY_COALESCE_MS;
+    if (coalesce && entries.length > 0) {
+      entries[entries.length - 1] = next;
+    } else {
+      entries.push(next);
+      if (entries.length > HISTORY_LIMIT) {
+        entries.shift();
+      }
+    }
+    historyIndexRef.current = entries.length - 1;
+    lastRecordAtRef.current = now;
+    lastRecordWasTypingRef.current = isTyping;
+  }, []);
+
+  /** Restores a snapshot without recording it, and re-seeds the coalescing window. */
+  const restoreHistoryEntry = useCallback(
+    (entry: AutoCompleteValue<T>) => {
+      isRestoringRef.current = true;
+      try {
+        commitStructural(entry, { type: 'end' });
+      } finally {
+        isRestoringRef.current = false;
+      }
+      lastRecordWasTypingRef.current = false;
+    },
+    [commitStructural],
+  );
+
+  const undo = useCallback(() => {
+    if (historyIndexRef.current <= 0) {
+      return;
+    }
+    historyIndexRef.current = historyIndexRef.current - 1;
+    restoreHistoryEntry(historyRef.current[historyIndexRef.current]);
+  }, [restoreHistoryEntry]);
+
+  const redo = useCallback(() => {
+    if (historyIndexRef.current >= historyRef.current.length - 1) {
+      return;
+    }
+    historyIndexRef.current = historyIndexRef.current + 1;
+    restoreHistoryEntry(historyRef.current[historyIndexRef.current]);
+  }, [restoreHistoryEntry]);
 
   /** Previous showOriginal, so the effect below only fires on an actual flip, not on mount. */
   const previousShowOriginalRef = useRef(showOriginal);
@@ -271,6 +368,7 @@ export default function AutoCompletableTextArea<T>({
     lastEmittedRef.current = segments;
     editor.setAttribute('data-empty', String(isAutoCompleteValueEmpty(segments)));
     onValueChangeRef.current(segments);
+    recordHistoryRef.current(segments, true);
   }, []);
 
   /**
@@ -377,6 +475,24 @@ export default function AutoCompletableTextArea<T>({
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       if (disabled || event.nativeEvent.isComposing) {
+        return;
+      }
+      // Undo/redo is handled here, over the value history. The native stack cannot serve this
+      // component (structural changes remount the surface and chips are inserted via direct DOM
+      // manipulation), so the browser default is suppressed rather than left to fight ours.
+      const isUndoModifier = event.metaKey || event.ctrlKey;
+      if (isUndoModifier && (event.key === 'z' || event.key === 'Z')) {
+        event.preventDefault();
+        if (event.shiftKey) {
+          redoRef.current();
+        } else {
+          undoRef.current();
+        }
+        return;
+      }
+      if (isUndoModifier && !event.shiftKey && (event.key === 'y' || event.key === 'Y')) {
+        event.preventDefault();
+        redoRef.current();
         return;
       }
       if (event.key === triggerKey && !event.ctrlKey && !event.metaKey && !event.altKey) {

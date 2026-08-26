@@ -291,6 +291,26 @@ reference when nothing matched (callers rely on that identity check). Runs:
    Skipped when `event.relatedTarget` is still inside the wrapper or the dropdown is open —
    otherwise the remount would kill the chip menu / dropdown that is opening mid-interaction.
 
+## Undo / redo
+
+Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z (plus Ctrl+Y) are handled by the component, over a history of
+VALUE snapshots — the browser's native stack cannot serve this component, because every structural
+change remounts the editable surface (`render.key`) and throws that stack away, and chips are
+inserted by direct DOM manipulation the browser never records. Left alone, typing was partly
+undoable but a chip insertion was not undoable at all.
+
+- `historyRef` / `historyIndexRef` hold the snapshots and the cursor; `recordHistory` is called from
+  `handleInput` (typing) and `commitStructural` (every structural change).
+- Consecutive typing within `HISTORY_COALESCE_MS` (600ms) collapses into ONE entry, so a single
+  undo removes a word/burst rather than one character. Structural changes always get their own entry.
+- A new edit after undoing drops the redo branch. `HISTORY_LIMIT` (200) caps retained snapshots.
+- `isRestoringRef` stops a restore from recording itself; restores go through `commitStructural`
+  with an end-of-content caret.
+- An incoming external value (form reset, setValue) re-seeds the history — the previous document's
+  entries are no longer meaningful.
+- The key handler and `commitStructural` reach `undo`/`redo`/`recordHistory` through refs, since
+  they are declared earlier; those refs are synced in the commit-phase effect, never during render.
+
 ## Focus/Radix gotchas (hard-won — do not "simplify" these away)
 
 - `AutoCompleteDropdown` PopoverContent sets `onOpenAutoFocus`, `onCloseAutoFocus` AND
