@@ -136,9 +136,9 @@ export interface AutoCompletableTextAreaProps<T> {
   /**
    * Shows the content as-is: the automatic id scan is turned off, so raw text stays raw text
    * instead of being converted into chips. Affects BOTH scan passes — the incoming value
-   * (initial value, form resets) and the one on blur. Items picked from the dropdown still become
-   * chips, but they are labelled with their `itemTransformFunction` text (what goes to the server)
-   * rather than the friendly `itemDisplayFunction` text, so the underlying value stays visible.
+   * (initial value, form resets) and the one on blur. Picking from the dropdown also inserts the
+   * item's `itemTransformFunction` text as PLAIN TEXT rather than a chip, so while the flag is on
+   * nothing on screen is a chip and the underlying value is exactly what you see.
    * The flag is REACTIVE: toggling it converts the current content in place, both ways. Switching
    * it ON flattens existing chips back into the raw text they represent; switching it OFF scans raw
    * ids back into chips. The conversion is lossless for the submitted string (a chip's raw text is

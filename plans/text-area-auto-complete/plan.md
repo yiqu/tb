@@ -192,9 +192,11 @@ ANY item type and fails at runtime instead of at the call site. Verified: handin
 - `triggerKey?` (default `':'`), `className`, `selectItemClassName`, `chipClassName`, `placeholder`, `searchPlaceholder`, `emptyText`, `disabled`, `chipMenuItems?`, `onBlur`, `id`.
 - `showClearButton?` (default `true`), `clearButtonClassName?`.
 - `showOriginal?` turns OFF the automatic id scan, on BOTH passes — the incoming value and the
-  blur-time one — so raw text stays raw. A dropdown pick still inserts a chip, but it is labelled
-  with the `itemTransformFunction` text. The flag rides on `hydrationRef` so the stable blur handler
-  reads the current value.
+  blur-time one — so raw text stays raw. A dropdown pick inserts the `itemTransformFunction` text as
+  PLAIN TEXT (not a chip), so while the flag is on nothing on screen is a chip. That insertion goes
+  in as a text node followed by a re-parse, which keeps the caret after the inserted text rather
+  than re-mounting, and it is bracketed so it forms its own undo entry. The flag rides on
+  `hydrationRef` so the stable blur handler reads the current value.
   It is also REACTIVE: a dedicated effect watches the flag and converts the CURRENT content in
   place, both ways — ON flattens chips via `flattenAutoCompleteValue`, OFF re-scans via
   `hydrateAutoCompleteValue`. It reads the content from the DOM (not `render.segments`, which is

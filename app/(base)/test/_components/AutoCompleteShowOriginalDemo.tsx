@@ -61,7 +61,7 @@ export default function AutoCompleteShowOriginalDemo() {
       <Typography variant="caption1">
         With <Typography variant="code1" as="span">showOriginal</Typography> the automatic id scan is off: the initial string keeps its
         raw <Typography variant="code1" as="span">GIST-</Typography> ids as plain text, and blurring no longer converts typed ids into
-        chips. Picking from the dropdown still inserts a chip — only the automatic conversion stops.
+        chips. Picking from the dropdown inserts the raw id as text too, so nothing is a chip while the flag is on.
       </Typography>
 
       <RowStack className="items-center gap-x-2">

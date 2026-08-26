@@ -158,6 +158,8 @@ export default function AutoCompletableTextArea<T>({
   /** Same indirection for the key handler, which is declared before undo/redo exist. */
   const undoRef = useRef<() => void>(() => {});
   const redoRef = useRef<() => void>(() => {});
+  /** ...and for the dropdown handler, which is declared before handleInput. */
+  const handleInputRef = useRef<() => void>(() => {});
 
   // Keep the latest onValueChange reachable from stable callbacks.
   const onValueChangeRef = useRef(onValueChange);
@@ -176,6 +178,7 @@ export default function AutoCompletableTextArea<T>({
     recordHistoryRef.current = recordHistory;
     undoRef.current = undo;
     redoRef.current = redo;
+    handleInputRef.current = handleInput;
   });
 
   /**
@@ -524,6 +527,32 @@ export default function AutoCompletableTextArea<T>({
       }
       setDropdownState(null);
 
+      // showOriginal means "show me the underlying text": a pick inserts the item's raw text
+      // (itemTransformFunction) at the caret rather than a chip, so nothing on screen is a chip
+      // while the flag is on. Inserted as a text node and re-parsed, which keeps the caret right
+      // after the inserted text instead of re-mounting the surface.
+      if (showOriginal) {
+        const insertedText = resolveItemText(item);
+        const range = insertRangeRef.current;
+        const textNode = document.createTextNode(insertedText);
+        if (range && editor.contains(range.commonAncestorContainer)) {
+          range.deleteContents();
+          range.insertNode(textNode);
+          placeCaretAfterNode(textNode);
+        } else {
+          editor.appendChild(textNode);
+          placeCaretAtEnd(editor);
+        }
+        editor.focus();
+        // Bracket the emit so this insertion is its own undo entry, never coalesced with the
+        // typing before or after it.
+        lastRecordWasTypingRef.current = false;
+        handleInputRef.current();
+        lastRecordWasTypingRef.current = false;
+        insertRangeRef.current = null;
+        return;
+      }
+
       if (current.mode.type === 'edit') {
         const {chipId} = current.mode;
         const nextChipItems = new Map(chipItemsRef.current);
@@ -560,7 +589,7 @@ export default function AutoCompletableTextArea<T>({
       commitStructural(segments, caret);
       insertRangeRef.current = null;
     },
-    [dropdownState, commitStructural],
+    [dropdownState, commitStructural, showOriginal, resolveItemText],
   );
 
   /** Escape / outside click: close the dropdown and hand focus back to the text area. */
