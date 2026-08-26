@@ -64,9 +64,13 @@ export default function HFDatepickerDialog<T extends FieldValues>({
           timeValue = format(dateValue, 'HH:mm:ss');
         }
 
-        // DayPicker always hands back the picked day at midnight, which would wipe the
-        // time the user already set. Carry over the time currently shown in the time input.
+        // DayPicker always hands back the picked day at midnight. When a time input is shown, carry
+        // over the time it currently displays so picking a date does not wipe it. Date-only pickers
+        // keep DayPicker's midnight, and an unparseable value is left alone rather than merged.
         const withCurrentTimeOfDay = (date: Date): Date => {
+          if (!showTime || Number.isNaN(dateValue.getTime())) {
+            return date;
+          }
           const dateWithTime = new Date(date);
           dateWithTime.setHours(dateValue.getHours(), dateValue.getMinutes(), dateValue.getSeconds(), dateValue.getMilliseconds());
           return dateWithTime;
