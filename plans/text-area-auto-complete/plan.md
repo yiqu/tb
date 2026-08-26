@@ -328,6 +328,23 @@ re-mounted DOM to put the caret back — the user keeps typing mid-sentence with
 The scan is skipped while `showOriginal` is on, while an IME composition is in flight, while the
 dropdown is open, and whenever the caret cannot be resolved to a text node.
 
+## autoFocus
+
+`autoFocus` focuses the surface and drops the caret at the end, once, on first mount — React's own
+`autoFocus` does nothing here because the surface is a contentEditable div, not an `<input>`.
+
+Two things it has to get right, both learned the hard way:
+- **It runs two animation frames out**, not synchronously. A Radix dialog claims focus for its
+  content when it opens, after this effect runs, and lands on the first tabbable thing inside —
+  which, with a hydrated initial value, is a CHIP. Focusing synchronously just loses that race.
+- **The "already focused" flag is set inside the frame callback**, not when the frames are
+  scheduled. StrictMode invokes the effect twice and the first run's cleanup cancels its frames, so
+  flagging up front makes the surviving run skip the focus entirely — the failure looks exactly
+  like the race above.
+
+It deliberately fires only on the FIRST mount. The surface re-mounts on every structural change
+(`render.key`), and refocusing on those would drag focus out of a chip menu or dropdown mid-use.
+
 ## Undo / redo
 
 Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z (plus Ctrl+Y) are handled by the component, over a history of

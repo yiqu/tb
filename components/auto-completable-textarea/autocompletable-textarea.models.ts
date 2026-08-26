@@ -141,6 +141,18 @@ export interface AutoCompletableTextAreaProps<T> {
   /** Disables typing and chip interactions. */
   disabled?: boolean;
   /**
+   * Focuses the text area once, on mount, and puts the caret at the end of the content.
+   *
+   * The editable surface is a contentEditable div, not an `<input>`, so React's own `autoFocus`
+   * does not apply to it — this prop is the equivalent. It fires only on the FIRST mount: the
+   * surface is re-mounted on every structural change (chip inserted, value reset), and refocusing
+   * on those would drag focus back out of a chip menu or dropdown the user is interacting with.
+   *
+   * Inside a Radix dialog, focus is claimed by the dialog when it opens; this focus is deferred by
+   * a tick so it lands after that and wins. Ignored when `disabled`.
+   */
+  autoFocus?: boolean;
+  /**
    * Shows the content as-is: the automatic id scan is turned off, so raw text stays raw text
    * instead of being converted into chips. Affects BOTH scan passes — the incoming value
    * (initial value, form resets) and the one on blur. Picking from the dropdown also inserts the

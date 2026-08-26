@@ -122,6 +122,7 @@ export default function AutoCompletableTextArea<T>({
   searchPlaceholder,
   emptyText,
   disabled,
+  autoFocus = false,
   showOriginal,
   updateOnBlur = false,
   showClearButton = true,
@@ -276,6 +277,41 @@ export default function AutoCompletableTextArea<T>({
       onValueChangeRef.current(hydrated);
     }
   }, [value]);
+
+  /** True once the autoFocus effect has fired, so a re-mount never steals focus again. */
+  const didAutoFocusRef = useRef<boolean>(false);
+
+  /**
+   * autoFocus: focus the surface and drop the caret at the end of the content, once.
+   *
+   * Deferred by a tick because the common case is a dialog: Radix moves focus into the dialog when
+   * it opens, right after this mounts, so focusing synchronously here would immediately be undone.
+   */
+  useEffect(() => {
+    if (!autoFocus || disabled || didAutoFocusRef.current) {
+      return;
+    }
+    let frameId = 0;
+    const focusEditor = () => {
+      const editor = editorRef.current;
+      if (!editor) {
+        return;
+      }
+      // Flagged here rather than when the frames are scheduled: in StrictMode the effect is
+      // invoked twice and the first run's frames are cancelled by its cleanup, so flagging up
+      // front would make the surviving run skip the focus entirely.
+      didAutoFocusRef.current = true;
+      editor.focus();
+      placeCaretAtEnd(editor);
+    };
+    // Two frames out: a Radix dialog claims focus for its own content on open (landing on the
+    // first tabbable thing inside, often a chip), and that happens after this effect runs. One
+    // frame is not always enough, so this settles on the second.
+    frameId = window.requestAnimationFrame(() => {
+      frameId = window.requestAnimationFrame(focusEditor);
+    });
+    return () => window.cancelAnimationFrame(frameId);
+  }, [autoFocus, disabled]);
 
   // After a structural re-mount, put the caret back where the user expects it.
   useLayoutEffect(() => {
