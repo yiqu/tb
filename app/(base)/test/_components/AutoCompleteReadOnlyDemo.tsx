@@ -15,34 +15,12 @@ import {
   getAutocompleteItemRegex,
 } from './test.utils';
 
-/** One labelled example, so the three below stay visually distinct. */
+/** One labelled example, so the ones below stay visually distinct. */
 function Example({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <ColumnStack className="gap-y-1">
       <Typography variant="label1">{ label }</Typography>
       <div className="rounded-md border p-3">{ children }</div>
-
-      <Example label="4. showOriginal — same string, scan turned off (raw ids, no chips)">
-        <ColumnStack className="gap-y-3">
-          <AutoCompletableTextAreaReadOnly<Gist>
-            text={ READ_ONLY_TEXT_SIMPLE }
-            getItemRegex={ getAutocompleteItemRegex }
-            resolveItem={ resolveGistById }
-            itemDisplayFunction={ textAreaItemDisplay }
-            itemCopyContentFunction={ gistCopyContent }
-            detailsDialogTitle="Gist details"
-          />
-          <AutoCompletableTextAreaReadOnly<Gist>
-            text={ READ_ONLY_TEXT_SIMPLE }
-            getItemRegex={ getAutocompleteItemRegex }
-            resolveItem={ resolveGistById }
-            itemDisplayFunction={ textAreaItemDisplay }
-            itemCopyContentFunction={ gistCopyContent }
-            detailsDialogTitle="Gist details"
-            showOriginal
-          />
-        </ColumnStack>
-      </Example>
     </ColumnStack>
   );
 }
