@@ -165,7 +165,12 @@ export default function AutoCompletableTextArea<T>({
   const onValueChangeRef = useRef(onValueChange);
 
   // Latest item-related props, reachable from stable callbacks and the value-sync effect.
-  const hydrationRef = useRef({ getItemRegex, resolveItemFromText: (_matchedText: string): T | undefined => undefined, showOriginal });
+  const hydrationRef = useRef({
+    getItemRegex,
+    resolveItemFromText: (_matchedText: string): T | undefined => undefined,
+    resolveItemText: (_item: T): string => '',
+    showOriginal,
+  });
 
   // Refs are synced in the commit phase, never during render: a render that is double-invoked
   // (StrictMode) or interrupted and thrown away must not leave handlers reading values from a
@@ -174,7 +179,7 @@ export default function AutoCompletableTextArea<T>({
   useEffect(() => {
     dropdownStateRef.current = dropdownState;
     onValueChangeRef.current = onValueChange;
-    hydrationRef.current = { getItemRegex, resolveItemFromText, showOriginal };
+    hydrationRef.current = { getItemRegex, resolveItemFromText, resolveItemText, showOriginal };
     recordHistoryRef.current = recordHistory;
     undoRef.current = undo;
     redoRef.current = redo;
@@ -197,16 +202,30 @@ export default function AutoCompletableTextArea<T>({
    * matched text -> item, so a regex match can be resolved back to a real item in O(1).
    * Built from the same `items` the dropdown uses, keyed by each item's serialized text, so the
    * component never needs a separate resolver prop the way the read-only display does.
+   *
+   * Text that two or more items serialize to is recorded as AMBIGUOUS rather than letting the last
+   * one win: there is no way to tell which item was meant, and silently guessing would attach an
+   * arbitrary item to the chip. Ambiguous text resolves to nothing, so it stays plain text — the
+   * same outcome as text that matches no item at all.
    */
-  const itemsByText = useMemo(() => {
-    const map = new Map<string, T>();
+  const { itemsByText, ambiguousItemTexts } = useMemo(() => {
+    const byText = new Map<string, T>();
+    const ambiguous = new Set<string>();
     for (const item of items) {
-      map.set(resolveItemText(item), item);
+      const text = resolveItemText(item);
+      if (byText.has(text)) {
+        ambiguous.add(text);
+        continue;
+      }
+      byText.set(text, item);
     }
-    return map;
+    return { itemsByText: byText, ambiguousItemTexts: ambiguous };
   }, [items, resolveItemText]);
 
-  const resolveItemFromText = useCallback((matchedText: string) => itemsByText.get(matchedText), [itemsByText]);
+  const resolveItemFromText = useCallback(
+    (matchedText: string) => (ambiguousItemTexts.has(matchedText) ? undefined : itemsByText.get(matchedText)),
+    [itemsByText, ambiguousItemTexts],
+  );
 
   const resolvedChipMenuItems = useMemo(() => chipMenuItems ?? getDefaultChipMenuItems<T>(), [chipMenuItems]);
 
@@ -223,9 +242,14 @@ export default function AutoCompletableTextArea<T>({
         lastEmittedRef.current = value;
         return;
       }
-    const { getItemRegex: regex, resolveItemFromText: resolve, showOriginal: raw } = hydrationRef.current;
-    // showOriginal keeps the incoming value exactly as handed in — no ids converted to chips.
-    const hydrated = !raw && regex ? hydrateAutoCompleteValue(value, regex(), resolve) : value;
+    const { getItemRegex: regex, resolveItemFromText: resolve, resolveItemText: toText, showOriginal: raw } = hydrationRef.current;
+    // showOriginal means nothing on screen is a chip, so an incoming value carrying item segments
+    // (a form reset to chipped defaults, a controlled parent) is flattened back to its raw text
+    // rather than passed through. Without the flag, ids in the text are scanned into chips instead.
+    const hydrated =
+      raw ? flattenAutoCompleteValue(value, toText)
+      : regex ? hydrateAutoCompleteValue(value, regex(), resolve)
+      : value;
     const changedByHydration = hydrated !== value && !areAutoCompleteValuesEqual(hydrated, value);
     if (isMount && !changedByHydration) {
       lastEmittedRef.current = value;
