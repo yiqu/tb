@@ -5,7 +5,7 @@ import { SubscriptionOriginal } from '@/models/bills/bills.model';
 
 import { getSubscriptionLogoUrl } from './SubscriptionLogo';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/custom/tooltip';
 
 interface SubscriptionLogoProps {
   subscription: SubscriptionOriginal;

@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/custom/dropdown-menu';
 
 import ColumnStack from '../components/ColumnStack';
 

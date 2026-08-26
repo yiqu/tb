@@ -11,7 +11,7 @@ import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverPortal, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverPortal, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
 import { Command, CommandItem, CommandList, CommandEmpty, CommandGroup, CommandInput } from '@/components/ui/command';
 
 import { FormItem, FormField, FormLabel, FormControl, FormMessage, FormDescription } from '../ui/form';

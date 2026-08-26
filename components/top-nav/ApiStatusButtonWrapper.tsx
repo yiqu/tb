@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getUserFirebaseQueryOptions } from '@/server/user/query/users';
 
 import { Button } from '../ui/button';
-import { HoverCardTrigger } from '../ui/hover-card';
+import { HoverCardTrigger } from '../ui/custom/hover-card';
 
 export default function ApiStatusButtonWrapper({ children }: { children: ReactNode }) {
   //const queryClient = useQueryClient();

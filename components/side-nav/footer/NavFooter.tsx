@@ -1,4 +1,4 @@
-import { DropdownMenu } from '@/components/ui/dropdown-menu';
+import { DropdownMenu } from '@/components/ui/custom/dropdown-menu';
 import { SidebarMenu, SidebarMenuItem } from '@/components/ui/sidebar';
 
 import FooterMenuContent from './FooterMenuContent';

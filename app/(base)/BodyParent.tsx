@@ -31,7 +31,7 @@ import { cn } from '@/lib/utils';
 import theme from '@/components/ui-mui/mui/theme';
 import Preloads from '@/components/preload/Preloads';
 import AppLayout from '@/components/layout/AppLayout';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/custom/tooltip';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';

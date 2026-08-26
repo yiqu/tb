@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import useTableFilterMenuActive from '@/hooks/useTableFilterMenuActive';
 import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/custom/dropdown-menu';
 
 import FormattedTableHeadMenuPinOption from './FormattedTableHeadMenuPinOption';
 import FormattedTableHeadMenuFilterOption from './FormattedTableHeadMenuFilterOption';

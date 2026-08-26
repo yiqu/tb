@@ -5,7 +5,7 @@ import { RefreshCcw, ListChevronsDownUp, ListChevronsUpDown } from 'lucide-react
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/components/ui/custom/dropdown-menu';
 import { useAppSetting, AppSettingContextType } from '@/providers/AppSettingProvider';
 
 import { Switch } from '../ui/switch';

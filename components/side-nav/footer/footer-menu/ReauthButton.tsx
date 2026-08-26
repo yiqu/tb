@@ -2,7 +2,7 @@
 
 import { RotateCcw } from 'lucide-react';
 
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/components/ui/custom/dropdown-menu';
 import { removeIsAdminPasswordCorrectAndConsentGiven } from '@/server/admin/admin.server';
 
 export default function ReauthButton() {

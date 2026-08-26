@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import Typography from '@/components/typography/Typography';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { getPaginationDataForPageIdCached } from '@/server/pagination-data/pagination-data.server';
 

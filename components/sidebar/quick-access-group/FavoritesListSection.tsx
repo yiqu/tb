@@ -6,7 +6,7 @@ import Typography from '@/components/typography/Typography';
 import { SidebarMenuSubItem } from '@/components/ui/sidebar';
 import { FavoriteEntity } from '@/models/favorites/favorite.model';
 import EntityDisplayMedia from '@/shared/components/EntityDisplayMedia';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/custom/hover-card';
 
 import FavoriteItemName from './FavoriteItemName';
 import FavoriteItemDetails from './FavoriteItemDetails';

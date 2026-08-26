@@ -8,7 +8,7 @@ import { Sun, Moon, SunMoon, Monitor } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/components/ui/custom/dropdown-menu';
 import useSyncMuiThemeWithNextThemes from '@/hooks/useSyncMuiTheme';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 

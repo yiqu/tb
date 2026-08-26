@@ -11,7 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/custom/dropdown-menu';
 
 export default function ResourcesDropdownMenuButton({ ...btnProps }: React.ComponentProps<'button'> & VariantProps<typeof buttonVariants>) {
   return (

@@ -6,7 +6,7 @@ import { Control, FieldPath, FieldValues } from 'react-hook-form';
 import { cn } from '@/lib/utils';
 
 import { Button } from '../ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/custom/tooltip';
 import { FormItem, FormField, FormLabel, FormControl } from '../ui/form';
 
 interface ButtonGroupOption {

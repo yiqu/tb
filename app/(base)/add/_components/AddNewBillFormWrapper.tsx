@@ -50,7 +50,9 @@ export default function AddNewBillFormWrapper({ children }: { children: ReactNod
       {
         loading: 'Adding bill due...',
         success: (resultData: BillDueWithSubscription) => {
-          const dateFormat = DateTime.fromMillis(Number.parseInt(data.dueDate)).toLocaleString(DateTime.DATETIME_SHORT);
+          const dateFormat = DateTime.fromMillis(Number.parseInt(data.dueDate), { zone: EST_TIME_ZONE }).toLocaleString(
+            DateTime.DATETIME_SHORT,
+          );
           confetti({
             particleCount: 80,
           });
@@ -58,7 +60,7 @@ export default function AddNewBillFormWrapper({ children }: { children: ReactNod
           appendRecentlyAddedBillDues(resultData);
           if (data.consecutiveAdd) {
             // get the next month's 1st day in luxon date
-            const dateLuxonFromData = DateTime.fromMillis(Number.parseInt(data.dueDate));
+            const dateLuxonFromData = DateTime.fromMillis(Number.parseInt(data.dueDate), { zone: EST_TIME_ZONE });
             const nextMonthLuxon = dateLuxonFromData.plus({ month: 1 });
             // reset the form with the next month's 1st day
             methods.reset({
