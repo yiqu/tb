@@ -178,7 +178,13 @@ ANY item type and fails at runtime instead of at the call site. Verified: handin
 - `filterFunction(item, filter)` — dropdown search filtering.
 - `itemDisplayFunction(item)` — chip label text.
 - `itemTransformFunction?(item)` — "real" id text; used for clipboard copy/cut and id detection. Falls back to `itemDisplayFunction`.
-- `getItemIdPrefix?(item)` — prefix all ids start with (e.g. `'GIST-'`). Presence ENABLES hydration (load + blur). Ids that don't start with their own prefix are skipped by the scan.
+- `getItemRegex?()` — the regex that identifies an id in plain text, the SAME contract as the
+  read-only display's prop of the same name, so both components are configured alike. Each match is
+  looked up against `items` (keyed by `itemTransformFunction`, falling back to
+  `itemDisplayFunction`); a match that resolves to a real item becomes a chip, one that resolves to
+  nothing is left as plain text — the editable component never shows a chip for an item it does not
+  have. Omit to disable hydration. Replaced the old `getItemIdPrefix`, whose silent
+  `token.startsWith(prefix)` guard skipped items without warning.
 - `renderItemOption?/renderItemDetails?` — dropdown row / details dialog body renderers.
 - `isItemDisabled?(item)` — return true and that dropdown row is not selectable. Passed straight to
   cmdk's `CommandItem disabled`, which blocks click/Enter AND skips the row during arrow

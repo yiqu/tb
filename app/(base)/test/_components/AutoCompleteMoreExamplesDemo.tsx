@@ -38,7 +38,6 @@ import {
   teammateFilterFunction,
   getAutocompleteItemRegex,
   READ_ONLY_TEXT_TEAMMATES,
-  getAutocompleteItemIdPrefix,
   teammateTextAreaItemDisplay,
   teammateTransformForServerFunction,
   textAreaItemTransformForServerFunction,
@@ -223,7 +222,7 @@ export default function AutoCompleteMoreExamplesDemo() {
                   filterFunction={ itemFilterFunction }
                   itemDisplayFunction={ textAreaItemDisplay }
                   itemTransformFunction={ textAreaItemTransformForServerFunction }
-                  getItemIdPrefix={ getAutocompleteItemIdPrefix }
+                  getItemRegex={ getAutocompleteItemRegex }
                   renderItemOption={ (gist: Gist) => <ItemOptionDisplay item={ gist } /> }
                   renderItemDetails={ (gist: Gist) => <GistDetails item={ gist } /> }
                   isItemDisabled={ isItemDisabled }

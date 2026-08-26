@@ -188,36 +188,21 @@ export const flattenAutoCompleteValue = <T>(value: AutoCompleteValue<T>, itemToT
  * item segment (chip). Used to hydrate an incoming value (e.g. an initial blob of text that
  * contains ids saved earlier by `autoCompleteValueToText` + the transform function).
  *
- * Performance: instead of testing every item id at every character, the text is only searched for
- * the id prefixes (via indexOf) — each prefix occurrence is the only candidate position where ids
- * are compared. Ids that don't start with their own prefix are skipped (they would defeat the scan).
- * When nothing matches, the original value reference is returned unchanged.
+ * Matching is pattern-based, the same way the read-only display works: `itemRegex` finds candidate
+ * text and `resolveItem` maps it to an item. A match that resolves to nothing is LEFT AS TEXT —
+ * this component never shows a chip for an item it does not have.
+ *
+ * The caller's regex is never used directly: a fresh `g`-flagged copy is built per scan, so a
+ * caller-held regex never has its `lastIndex` mutated and a non-global one still yields every
+ * match. Zero-length matches are stepped over so a pathological pattern cannot spin forever.
+ *
+ * Returns the original value reference when nothing matched, which callers rely on to skip work.
  */
 export const hydrateAutoCompleteValue = <T>(
   value: AutoCompleteValue<T>,
-  items: T[],
-  itemTransformFunction: (item: T) => string,
-  getItemIdPrefix: (item: T) => string,
+  itemRegex: RegExp,
+  resolveItem: (matchedText: string) => T | undefined,
 ): AutoCompleteValue<T> => {
-  interface TokenEntry {
-    token: string;
-    item: T;
-  }
-
-  const tokenEntries: TokenEntry[] = [];
-  const prefixes = new Set<string>();
-  for (const item of items) {
-    const token = itemTransformFunction(item);
-    const prefix = getItemIdPrefix(item);
-    if (token.length > 0 && prefix.length > 0 && token.startsWith(prefix)) {
-      tokenEntries.push({ token: token, item: item });
-      prefixes.add(prefix);
-    }
-  }
-  if (tokenEntries.length === 0) {
-    return value;
-  }
-
   const hydrated: AutoCompleteValue<T> = [];
   let didHydrate = false;
 
@@ -239,37 +224,30 @@ export const hydrateAutoCompleteValue = <T>(
       continue;
     }
     const text = segment.text;
-    let position = 0;
-    while (position < text.length) {
-      // Earliest prefix occurrence from the current position is the next candidate spot.
-      let candidateIndex = -1;
-      for (const prefix of prefixes) {
-        const index = text.indexOf(prefix, position);
-        if (index !== -1 && (candidateIndex === -1 || index < candidateIndex)) {
-          candidateIndex = index;
-        }
-      }
-      if (candidateIndex === -1) {
-        pushText(text.slice(position));
-        break;
-      }
-      // Longest id wins so an id that is a prefix of another id can't shadow it.
-      let matched: TokenEntry | null = null;
-      for (const entry of tokenEntries) {
-        if (text.startsWith(entry.token, candidateIndex) && (!matched || entry.token.length > matched.token.length)) {
-          matched = entry;
-        }
-      }
-      if (!matched) {
-        pushText(text.slice(position, candidateIndex + 1));
-        position = candidateIndex + 1;
+    const scanner = new RegExp(itemRegex.source, itemRegex.flags.includes('g') ? itemRegex.flags : `${itemRegex.flags}g`);
+    let sliceStart = 0;
+    let match = scanner.exec(text);
+
+    while (match !== null) {
+      if (match[0] === '') {
+        scanner.lastIndex = scanner.lastIndex + 1;
+        match = scanner.exec(text);
         continue;
       }
-      pushText(text.slice(position, candidateIndex));
-      hydrated.push({ kind: 'item', chipId: generateChipId(), item: matched.item });
+      const item = resolveItem(match[0]);
+      if (item === undefined) {
+        // Looks like an id but is not one of ours: leave it exactly as the user typed it.
+        match = scanner.exec(text);
+        continue;
+      }
+      pushText(text.slice(sliceStart, match.index));
+      hydrated.push({ kind: 'item', chipId: generateChipId(), item: item });
       didHydrate = true;
-      position = candidateIndex + matched.token.length;
+      sliceStart = match.index + match[0].length;
+      match = scanner.exec(text);
     }
+
+    pushText(text.slice(sliceStart));
   }
 
   return didHydrate ? hydrated : value;

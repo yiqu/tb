@@ -92,19 +92,26 @@ export interface AutoCompletableTextAreaProps<T> {
   /**
    * Serializes an autocompleted item to its "real" text (e.g. `item => item.id`).
    * Used when copying/cutting text-area content to the clipboard — chips are copied as this text —
-   * and to recognize item ids inside an incoming value (see `getItemIdPrefix`).
+   * and as the key an incoming value's matched text is resolved against (see `getItemRegex`).
    * Falls back to `itemDisplayFunction` when omitted.
    */
   itemTransformFunction?: (item: T) => string;
   /**
-   * Returns the prefix every item id (the `itemTransformFunction` output) starts with, e.g. 'GIST-'.
-   * When provided, incoming values (initial value, form resets) and the content on every blur of
-   * the text area are scanned for the prefix, and any matching item id found in plain text
-   * (typed or pasted) is swapped into an autocompleted item chip. The prefix keeps
-   * the scan cheap: only prefix occurrences are candidate positions, instead of matching every id at
-   * every character of the text. Omit to disable hydration.
+   * Returns the regex that identifies an item id inside plain text, e.g. `() => /GIST-\d{7}/g`.
+   * The same contract as the read-only display's prop of the same name, so both components are
+   * configured the same way.
+   *
+   * When provided, incoming values (initial value, form resets) and the content on every blur are
+   * scanned with it, and each match is looked up against `items` (keyed by `itemTransformFunction`,
+   * falling back to `itemDisplayFunction`). A match that resolves to a real item becomes a chip; a
+   * match that resolves to nothing is left as plain text, so this component never shows a chip for
+   * an item it does not have. Omit to disable hydration entirely.
+   *
+   * Takes no argument: it describes the id FORMAT, which must be known before any item exists to
+   * match against. Do not anchor it (`^`/`$`), or nothing inside a sentence can match; the `g` flag
+   * is applied for you and a fresh regex is used per scan, so `lastIndex` is never carried over.
    */
-  getItemIdPrefix?: (item: T) => string;
+  getItemRegex?: () => RegExp;
   /** Renders one row of the dropdown list. Falls back to `itemDisplayFunction` text when omitted. */
   renderItemOption?: (item: T) => ReactNode;
   /**
@@ -144,7 +151,7 @@ export interface AutoCompletableTextAreaProps<T> {
    * ids back into chips. The conversion is lossless for the submitted string (a chip's raw text is
    * its `itemTransformFunction` output), but it does emit a new value, which dirties a
    * react-hook-form field. Un-chipping needs `itemTransformFunction`; re-chipping additionally
-   * needs `getItemIdPrefix`.
+   * needs `getItemRegex`.
    */
   showOriginal?: boolean;
   /**

@@ -102,7 +102,7 @@ export default function AutoCompletableTextArea<T>({
   filterFunction,
   itemDisplayFunction,
   itemTransformFunction,
-  getItemIdPrefix,
+  getItemRegex,
   renderItemOption,
   isItemDisabled,
   renderItemDetails,
@@ -165,7 +165,7 @@ export default function AutoCompletableTextArea<T>({
   const onValueChangeRef = useRef(onValueChange);
 
   // Latest item-related props, reachable from stable callbacks and the value-sync effect.
-  const hydrationRef = useRef({ items, itemTransformFunction, getItemIdPrefix, showOriginal });
+  const hydrationRef = useRef({ getItemRegex, resolveItemFromText: (_matchedText: string): T | undefined => undefined, showOriginal });
 
   // Refs are synced in the commit phase, never during render: a render that is double-invoked
   // (StrictMode) or interrupted and thrown away must not leave handlers reading values from a
@@ -174,7 +174,7 @@ export default function AutoCompletableTextArea<T>({
   useEffect(() => {
     dropdownStateRef.current = dropdownState;
     onValueChangeRef.current = onValueChange;
-    hydrationRef.current = { items, itemTransformFunction, getItemIdPrefix, showOriginal };
+    hydrationRef.current = { getItemRegex, resolveItemFromText, showOriginal };
     recordHistoryRef.current = recordHistory;
     undoRef.current = undo;
     redoRef.current = redo;
@@ -193,13 +193,28 @@ export default function AutoCompletableTextArea<T>({
     [itemDisplayFunction, itemTransformFunction],
   );
 
+  /**
+   * matched text -> item, so a regex match can be resolved back to a real item in O(1).
+   * Built from the same `items` the dropdown uses, keyed by each item's serialized text, so the
+   * component never needs a separate resolver prop the way the read-only display does.
+   */
+  const itemsByText = useMemo(() => {
+    const map = new Map<string, T>();
+    for (const item of items) {
+      map.set(resolveItemText(item), item);
+    }
+    return map;
+  }, [items, resolveItemText]);
+
+  const resolveItemFromText = useCallback((matchedText: string) => itemsByText.get(matchedText), [itemsByText]);
+
   const resolvedChipMenuItems = useMemo(() => chipMenuItems ?? getDefaultChipMenuItems<T>(), [chipMenuItems]);
 
   const mountedRef = useRef(false);
 
   // Incoming value sync. On mount and on every true external change (form reset, setValue, ...)
-  // the value is hydrated — plain-text item ids (recognized via getItemIdPrefix +
-  // itemTransformFunction) are swapped into chips — and the surface is re-mounted from it.
+  // the value is hydrated — plain-text item ids (found via getItemRegex, then resolved against
+  // items) are swapped into chips — and the surface is re-mounted from it.
   // Our own emissions round-trip back here with equal content and are ignored, preserving the caret.
   useEffect(() => {
     const isMount = !mountedRef.current;
@@ -208,9 +223,9 @@ export default function AutoCompletableTextArea<T>({
         lastEmittedRef.current = value;
         return;
       }
-    const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix, showOriginal: raw } = hydrationRef.current;
+    const { getItemRegex: regex, resolveItemFromText: resolve, showOriginal: raw } = hydrationRef.current;
     // showOriginal keeps the incoming value exactly as handed in — no ids converted to chips.
-    const hydrated = !raw && transform && idPrefix ? hydrateAutoCompleteValue(value, currentItems, transform, idPrefix) : value;
+    const hydrated = !raw && regex ? hydrateAutoCompleteValue(value, regex(), resolve) : value;
     const changedByHydration = hydrated !== value && !areAutoCompleteValuesEqual(hydrated, value);
     if (isMount && !changedByHydration) {
       lastEmittedRef.current = value;
@@ -349,7 +364,7 @@ export default function AutoCompletableTextArea<T>({
     const current = parseEditorDom(editor, chipItemsRef.current);
     const converted =
       showOriginal ? flattenAutoCompleteValue(current, resolveItemText)
-      : itemTransformFunction && getItemIdPrefix ? hydrateAutoCompleteValue(current, items, itemTransformFunction, getItemIdPrefix)
+      : getItemRegex ? hydrateAutoCompleteValue(current, getItemRegex(), resolveItemFromText)
       : current;
     // Both helpers return the original reference when they had nothing to do.
     if (converted === current) {
@@ -359,7 +374,7 @@ export default function AutoCompletableTextArea<T>({
     // page must not steal focus.
     const hasFocus = editor.contains(document.activeElement);
     commitStructural(converted, { type: hasFocus ? 'end' : 'none' });
-  }, [showOriginal, items, itemTransformFunction, getItemIdPrefix, resolveItemText, commitStructural]);
+  }, [showOriginal, getItemRegex, resolveItemFromText, resolveItemText, commitStructural]);
 
   /** Plain typing: parse the DOM into segments and emit, without touching the rendered tree. */
   const handleInput = useCallback(() => {
@@ -376,7 +391,7 @@ export default function AutoCompletableTextArea<T>({
 
   /**
    * Blur: run id detection over the current content — any existing item id typed or pasted as
-   * plain text (recognized via getItemIdPrefix + itemTransformFunction) is converted into an
+   * plain text (found via getItemRegex, then resolved against items) is converted into an
    * autocompleted item chip. Committed without touching focus, so nothing is stolen back.
    */
   const handleBlur = useCallback(
@@ -386,11 +401,11 @@ export default function AutoCompletableTextArea<T>({
       // Focus moving within the component (a chip button, the dropdown opening) is not a real
       // "leave" — re-mounting mid-interaction would break the menu/dropdown that is opening.
       const stillInside = event.relatedTarget !== null && wrapper !== null && wrapper.contains(event.relatedTarget);
-      const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix, showOriginal: raw } = hydrationRef.current;
+      const { getItemRegex: regex, resolveItemFromText: resolve, showOriginal: raw } = hydrationRef.current;
       // showOriginal also switches off the blur-time scan, so typed ids stay as typed.
-      if (editor && !raw && transform && idPrefix && !stillInside && !dropdownStateRef.current) {
+      if (editor && !raw && regex && !stillInside && !dropdownStateRef.current) {
         const segments = parseEditorDom(editor, chipItemsRef.current);
-        const hydrated = hydrateAutoCompleteValue(segments, currentItems, transform, idPrefix);
+        const hydrated = hydrateAutoCompleteValue(segments, regex(), resolve);
         if (hydrated !== segments) {
           commitStructural(hydrated, { type: 'none' });
         }
@@ -578,15 +593,10 @@ export default function AutoCompletableTextArea<T>({
       const segments = parseEditorDom(editor, chipItemsRef.current, { chipId: chipId, item: item });
       marker.remove();
 
-      // Guarantee a text node right after the chip so typing can continue naturally.
-      const chipIndex = segments.findIndex((segment: AutoCompleteSegment<T>) => segment.kind === 'item' && segment.chipId === chipId);
-      const followedByText = chipIndex >= 0 && segments[chipIndex + 1]?.kind === 'text';
-      let caret: PendingCaret = { type: 'after-chip', chipId: chipId };
-      if (chipIndex >= 0 && !followedByText) {
-        segments.splice(chipIndex + 1, 0, { kind: 'text', text: ' ' });
-        caret = { type: 'after-chip', chipId: chipId, offsetIntoNext: 1 };
-      }
-      commitStructural(segments, caret);
+      // No trailing space is added: the inserted content is exactly what was picked, matching what
+      // showOriginal mode does. The caret lands after the chip either way — see the caret-restore
+      // layout effect, which falls back to placeCaretAfterNode when no text node follows.
+      commitStructural(segments, { type: 'after-chip', chipId: chipId });
       insertRangeRef.current = null;
     },
     [dropdownState, commitStructural, showOriginal, resolveItemText],

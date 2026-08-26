@@ -93,17 +93,6 @@ export const textAreaItemTransformForServerFunction = (item: Gist) => {
 };
 
 /**
- * Get the prefix for the autocomplete item id. This should guarantee all the IDs will have this prefix.
- * Typed to Gist like every other callback here: the component is the generic part, the callbacks
- * you hand it are concrete. (Returning a per-item prefix is allowed — hence the item param.)
- * @param item
- * @returns
- */
-export const getAutocompleteItemIdPrefix = (item: Gist): string => {
-  return 'GIST-';
-};
-
-/**
  *  for example GIST-3333333 is length of 12 total
  * @param item
  * @returns

@@ -24,7 +24,6 @@ import {
   itemFilterFunction,
   textAreaItemDisplay,
   getAutocompleteItemRegex,
-  getAutocompleteItemIdPrefix,
   textAreaItemTransformForServerFunction,
 } from './test.utils';
 
@@ -83,7 +82,7 @@ export default function AutoCompleteShowOriginalDemo() {
         filterFunction={ itemFilterFunction }
         itemDisplayFunction={ textAreaItemDisplay }
         itemTransformFunction={ textAreaItemTransformForServerFunction }
-        getItemIdPrefix={ getAutocompleteItemIdPrefix }
+        getItemRegex={ getAutocompleteItemRegex }
         renderItemOption={ (gist: Gist) => <ItemOptionDisplay item={ gist } /> }
         isItemDisabled={ isItemDisabled }
         detailsDialogTitle="Gist details"
