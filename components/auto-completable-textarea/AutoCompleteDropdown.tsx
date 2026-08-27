@@ -80,7 +80,9 @@ export default function AutoCompleteDropdown<T>({
         align="start"
         side="bottom"
         sideOffset={ 4 }
-        className="w-80 p-0"
+        // z-[200] clears the dialog layer (z-150) so the list is visible when the text area is
+        // inside a dialog; see the note on the chip menu.
+        className="w-80 p-0 z-[200]"
         onOpenAutoFocus={ (event) => event.preventDefault() }
         onCloseAutoFocus={ (event) => event.preventDefault() }
         onFocusOutside={ (event) => event.preventDefault() }

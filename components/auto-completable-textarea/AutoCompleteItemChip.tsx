@@ -104,7 +104,11 @@ export default function AutoCompleteItemChip<T>({
         </DropdownMenuTrigger>
         { /* onCloseAutoFocus is prevented so closing the menu doesn't yank focus back to the chip —
              that focus-return would instantly dismiss the Edit dropdown as an "outside focus". */ }
-        <DropdownMenuContent align="start" sideOffset={ 4 } onCloseAutoFocus={ (event) => event.preventDefault() }>
+        { /* z-[200] clears the dialog layer (z-150 in components/ui/dialog.tsx): Radix copies the
+             content's z-index onto the popper wrapper it portals to <body>, and the shadcn default
+             of z-50 leaves the menu painted UNDERNEATH a dialog the text area sits in — present in
+             the DOM, invisible and unclickable. Same value ui/select.tsx already uses for this. */ }
+        <DropdownMenuContent className="z-[200]" align="start" sideOffset={ 4 } onCloseAutoFocus={ (event) => event.preventDefault() }>
           { menuItems.map((menuItem: AutoCompleteChipMenuItemConfig<T>) => {
             return (
               <DropdownMenuItem

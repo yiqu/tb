@@ -351,6 +351,16 @@ Two things it has to get right, both learned the hard way:
 It never fires twice. The surface re-mounts on every structural change (`render.key`), and
 refocusing on those would drag focus out of a chip menu or dropdown mid-use.
 
+## z-index inside a dialog
+
+Every popper this feature portals to `<body>` carries `z-[200]`: the chip menu (editable and
+read-only) and the caret-anchored dropdown. The shadcn defaults are `z-50`, and this project's
+dialog sits at `z-150` (`components/ui/dialog.tsx`), so a text area used INSIDE a dialog rendered
+its menus underneath it — open in the DOM, `isVisible()` true, but painted under the dialog panel
+and unclickable (`elementFromPoint` at the menu's centre returns the dialog). Radix copies the
+content's computed z-index onto the popper wrapper, so setting it on the content is enough.
+`components/ui/select.tsx` already uses `z-[200]` for exactly this reason — same layer, on purpose.
+
 ## Undo / redo
 
 Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z (plus Ctrl+Y) are handled by the component, over a history of

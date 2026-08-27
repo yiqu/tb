@@ -97,7 +97,11 @@ export default function AutoCompleteReadOnlyChip<T>({
           <ChevronDownIcon className="size-3 shrink-0 opacity-70" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" sideOffset={ 4 }>
+      { /* z-[200] clears the dialog layer (z-150 in components/ui/dialog.tsx): Radix copies the
+           content's z-index onto the popper wrapper it portals to <body>, and the shadcn default
+           of z-50 leaves the menu painted UNDERNEATH a dialog the text area sits in — present in
+           the DOM, invisible and unclickable. Same value ui/select.tsx already uses for this. */ }
+      <DropdownMenuContent className="z-[200]" align="start" sideOffset={ 4 }>
         { menuItems.map((menuItem: AutoCompleteReadOnlyChipMenuItemConfig<T>) => {
           return (
             <DropdownMenuItem
