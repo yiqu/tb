@@ -376,6 +376,26 @@ and unclickable (`elementFromPoint` at the menu's centre returns the dialog). Ra
 content's computed z-index onto the popper wrapper, so setting it on the content is enough.
 `components/ui/select.tsx` already uses `z-[200]` for exactly this reason — same layer, on purpose.
 
+## Placeholder <br> after a delete next to a chip
+
+Chromium answers a delete that empties a text node sitting next to a chip by dropping a bare `<br>`
+in its place: deleting the "a" from `a[chip]` leaves `<br>[chip]`. Three symptoms, one cause — the
+chip is bumped onto a second visual line, the caret is stranded on the empty line above it, and
+`parseEditorDom` reads the `<br>` as a leading newline the user never typed, so the VALUE is wrong
+too, not just the rendering.
+
+`handleInput` cleans this up via `removePlaceholderLineBreaks`, gated on two conditions together:
+the input was a DELETE (`inputType` starts with `delete`, or `handleCut` passing `isDeletion`), and
+the parse gained newlines versus `lastEmittedRef.current`. A deletion cannot legitimately add a
+line on any browser, so that combination is proof of a browser placeholder. The gate matters:
+Firefox and Safari represent Enter as a real `<br>`, and blanket-stripping would eat their line
+breaks. Within the gate, breaks adjacent to a chip are removed first, and the caret is placed where
+the first removed one was.
+
+Worth knowing for future debugging — in Chromium this editor never produces a `<br>` from user
+input: Enter yields `<div>` wrappers and Shift+Enter yields a "\n" text node. Every `<br>` seen
+there is a placeholder. That is NOT true cross-browser, hence the gate rather than a blanket rule.
+
 ## Undo / redo
 
 Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z (plus Ctrl+Y) are handled by the component, over a history of

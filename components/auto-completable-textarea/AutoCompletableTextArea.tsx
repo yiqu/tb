@@ -41,10 +41,12 @@ import {
   flattenAutoCompleteValue,
   isAutoCompleteValueEmpty,
   getEditorDomCaret,
+  countTextNewlines,
   getAbsoluteTextOffset,
   getCaretPositionInWrapper,
   areAutoCompleteValuesEqual,
   placeCaretAtAbsoluteTextOffset,
+  removePlaceholderLineBreaks,
   getElementPositionInWrapper,
   AUTOCOMPLETE_CHIP_ID_ATTRIBUTE,
   AUTOCOMPLETE_INSERT_MARKER_ATTRIBUTE,
@@ -467,13 +469,29 @@ export default function AutoCompletableTextArea<T>({
    * converted, which is rare. When nothing converts, this is the same work as before.
    */
   const handleInput = useCallback(
-    (event?: FormEvent<HTMLDivElement>) => {
+    (event?: FormEvent<HTMLDivElement>, options?: { isDeletion?: boolean }) => {
       const editor = editorRef.current;
       if (!editor) {
         return;
       }
-      const domCaret = getEditorDomCaret(editor);
-      const { segments, caret: caretInSegments } = readEditorDom(editor, chipItemsRef.current, { caret: domCaret });
+      const nativeEvent = event !== undefined && event.nativeEvent instanceof InputEvent ? event.nativeEvent : null;
+      let parsed = readEditorDom(editor, chipItemsRef.current, { caret: getEditorDomCaret(editor) });
+
+      // Chromium answers a delete that empties a text node next to a chip by dropping a bare <br>
+      // in its place, which bumps the chip onto a second visual line, leaves the caret stranded on
+      // the empty line above it, and shows up in the value as a newline the user never typed.
+      // A deletion cannot legitimately ADD a line, so newlines appearing on one is proof of a
+      // browser placeholder — and that guard is what keeps a real <br> newline (how Firefox and
+      // Safari represent Enter) safe from this cleanup.
+      const isDeletion = options?.isDeletion === true || nativeEvent?.inputType.startsWith('delete') === true;
+      if (isDeletion) {
+        const gainedNewlines = countTextNewlines(parsed.segments) - countTextNewlines(lastEmittedRef.current);
+        if (removePlaceholderLineBreaks(editor, gainedNewlines)) {
+          parsed = readEditorDom(editor, chipItemsRef.current, { caret: getEditorDomCaret(editor) });
+        }
+      }
+
+      const { segments, caret: caretInSegments } = parsed;
 
       const { getItemRegex: regex, resolveItemFromText: resolve, resolveItemText: toText, showOriginal: raw, updateOnBlur: blurOnly } = hydrationRef.current;
       // Mid-composition (IME) the text is not final yet, and the dropdown owns the caret while it
@@ -565,7 +583,8 @@ export default function AutoCompletableTextArea<T>({
       range.deleteContents();
       selection.removeAllRanges();
       selection.addRange(range);
-      handleInput();
+      // Flagged as a deletion: a cut can strand the same placeholder <br> a Backspace does.
+      handleInput(undefined, { isDeletion: true });
     },
     [resolveItemText, handleInput],
   );

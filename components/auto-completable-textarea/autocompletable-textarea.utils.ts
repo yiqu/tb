@@ -516,6 +516,21 @@ export const placeCaretAtTextOffset = (textNode: Node, offset: number) => {
 };
 
 /**
+ * Places the caret immediately before `node`.
+ */
+export const placeCaretBeforeNode = (node: Node) => {
+  const selection = window.getSelection();
+  if (!selection) {
+    return;
+  }
+  const range = document.createRange();
+  range.setStartBefore(node);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
+
+/**
  * Places the caret at the very end of the editor content.
  */
 export const placeCaretAtEnd = (editor: HTMLElement) => {
@@ -528,4 +543,67 @@ export const placeCaretAtEnd = (editor: HTMLElement) => {
   range.collapse(false);
   selection.removeAllRanges();
   selection.addRange(range);
+};
+
+/** Newlines in the value's TEXT runs. Chip text is ignored — only typed content is counted. */
+export const countTextNewlines = <T>(value: AutoCompleteValue<T>): number => {
+  let count = 0;
+  for (const segment of value) {
+    if (segment.kind === 'text') {
+      for (const character of segment.text) {
+        if (character === '\n') {
+          count = count + 1;
+        }
+      }
+    }
+  }
+  return count;
+};
+
+/**
+ * Deletes up to `count` browser-inserted placeholder <br> elements, and puts the caret where the
+ * first one was.
+ *
+ * Chromium drops a bare <br> in whenever a delete empties a text node that sits next to a chip
+ * (`contentEditable={false}`, inline-block): deleting the "a" from `a[chip]` leaves `<br>[chip]`,
+ * which pushes the chip onto a second visual line, strands the caret on the empty line above it,
+ * and parses as a leading newline the user never typed.
+ *
+ * The caller decides how many are spurious — this is only ever reached after a DELETE-type input
+ * whose parse gained newlines, which no browser does legitimately, since a deletion cannot add a
+ * line. That guard is what keeps a real <br> newline (the shape Firefox and Safari use for Enter)
+ * safe; within it, the ones adjacent to a chip are removed first, as those are the placeholders.
+ */
+export const removePlaceholderLineBreaks = (editor: HTMLElement, count: number): boolean => {
+  if (count <= 0) {
+    return false;
+  }
+  const isChip = (node: Node | null): boolean => {
+    return node instanceof HTMLElement && node.hasAttribute(AUTOCOMPLETE_CHIP_ID_ATTRIBUTE);
+  };
+  const touchesChip = (lineBreak: HTMLBRElement): boolean => {
+    return isChip(lineBreak.previousSibling) || isChip(lineBreak.nextSibling);
+  };
+  const ordered = Array.from(editor.querySelectorAll('br')).sort(
+    (a: HTMLBRElement, b: HTMLBRElement) => Number(touchesChip(b)) - Number(touchesChip(a)),
+  );
+
+  let removed = 0;
+  for (const lineBreak of ordered) {
+    if (removed >= count) {
+      break;
+    }
+    const anchor = lineBreak.nextSibling;
+    lineBreak.remove();
+    removed = removed + 1;
+    // Only the first removal owns the caret: it is the one the user just deleted into.
+    if (removed === 1) {
+      if (anchor) {
+        placeCaretBeforeNode(anchor);
+      } else {
+        placeCaretAtEnd(editor);
+      }
+    }
+  }
+  return removed > 0;
 };
