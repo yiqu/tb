@@ -351,6 +351,21 @@ Two things it has to get right, both learned the hard way:
 It never fires twice. The surface re-mounts on every structural change (`render.key`), and
 refocusing on those would drag focus out of a chip menu or dropdown mid-use.
 
+## Read-only copy button (`showCopyButton`, default true)
+
+A copy button in the display's top right corner copies the WHOLE rendered content as one string:
+`readOnlySegmentsToCopyText` walks the same segments that were rendered, keeping plain runs verbatim
+and replacing each chip with `itemCopyContentFunction(item)`. So a display reading
+"she is [Ada Lovelace]" copies as "she is ada@example.com". Fallback order for a chip is
+content function -> matched text, so an unresolved id (or a display given no content function)
+copies as the raw id rather than vanishing. With `showOriginal` on there are no chips, so the
+string round-trips exactly.
+
+Feedback is a transient icon swap (Copy -> Check, 1.5s) rather than a toast: the button is a fixed
+part of the component, unlike the chip menu entries which are swappable defaults, so it stays free
+of whatever notification library the host app uses. The wrapper gains `relative` plus `pr-8` while
+the button is shown; `copyButtonClassName` repositions it. It is not rendered at all for empty text.
+
 ## z-index inside a dialog
 
 Every popper this feature portals to `<body>` carries `z-[200]`: the chip menu (editable and

@@ -82,6 +82,20 @@ export interface AutoCompletableTextAreaReadOnlyProps<T> {
   renderItemDetails?: RenderItemDetails<T>;
   /** Title of the details dialog. */
   detailsDialogTitle?: ReactNode;
+  /**
+   * Shows a copy button in the top right corner that copies the WHOLE display as one string.
+   * Defaults to true.
+   *
+   * Plain text is copied verbatim and every chip is serialized through `itemCopyContentFunction`,
+   * so a display reading "she is [Ada Lovelace]" copies as "she is ada@example.com" when that
+   * function returns the email. A chip whose id could not be resolved — or any chip at all when no
+   * `itemCopyContentFunction` was supplied — copies as the text that matched the regex (the id),
+   * so nothing is silently dropped. With `showOriginal` on there are no chips, so the string is
+   * copied exactly as passed in.
+   */
+  showCopyButton?: boolean;
+  /** Tailwind classes for the copy button, e.g. to reposition it. */
+  copyButtonClassName?: string;
   /** Overrides the chip menu entries. Defaults to View details / Copy / Copy display. */
   chipMenuItems?: AutoCompleteReadOnlyChipMenuItemConfig<T>[];
   /** Tailwind classes for the wrapper around the whole rendered text. */

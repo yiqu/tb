@@ -45,3 +45,29 @@ export const splitTextByItemRegex = <T>(
 
   return segments;
 };
+
+/**
+ * Serializes rendered segments back into one plain string for the clipboard.
+ *
+ * Plain runs are copied verbatim; each chip is replaced by `itemCopyContentFunction(item)`, so a
+ * display reading "she is [Ada Lovelace]" copies as "she is ada@example.com" when that function
+ * returns the email. A chip whose id could not be resolved — or any chip at all when no content
+ * function was supplied — falls back to the text that matched, so the id is copied rather than
+ * silently dropped.
+ */
+export const readOnlySegmentsToCopyText = <T>(
+  segments: ReadOnlySegment<T>[],
+  itemCopyContentFunction?: (item: T) => string,
+): string => {
+  return segments
+    .map((segment: ReadOnlySegment<T>) => {
+      if (segment.kind === 'text') {
+        return segment.text;
+      }
+      if (segment.item === undefined || !itemCopyContentFunction) {
+        return segment.matchedText;
+      }
+      return itemCopyContentFunction(segment.item);
+    })
+    .join('');
+};
