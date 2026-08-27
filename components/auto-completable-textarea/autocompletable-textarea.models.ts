@@ -141,15 +141,26 @@ export interface AutoCompletableTextAreaProps<T> {
   /** Disables typing and chip interactions. */
   disabled?: boolean;
   /**
-   * Focuses the text area once, on mount, and puts the caret at the end of the content.
+   * Focuses the text area ONCE and puts the caret at the end of the content.
    *
    * The editable surface is a contentEditable div, not an `<input>`, so React's own `autoFocus`
-   * does not apply to it — this prop is the equivalent. It fires only on the FIRST mount: the
-   * surface is re-mounted on every structural change (chip inserted, value reset), and refocusing
-   * on those would drag focus back out of a chip menu or dropdown the user is interacting with.
+   * does not apply to it — this prop is the equivalent.
+   *
+   * "Once" means the first moment the component is both mounted and eligible: `autoFocus` true and
+   * `disabled` false. Usually that is mount. But the flag is read reactively, so a text area that
+   * mounts `disabled` (or with `autoFocus` false) takes focus the moment that changes — which is
+   * the point, since focusing at mount was impossible then and a mount-only effect would leave it
+   * never focused at all. That also makes `autoFocus={isEditing}` work as written. It never fires
+   * a second time: the surface is re-mounted on every structural change (chip inserted, value
+   * reset), and refocusing on those would drag focus back out of a chip menu or dropdown the user
+   * is interacting with.
+   *
+   * Do NOT drive this from state that flips back and forth mid-session expecting each flip to
+   * re-focus — only the first eligible moment is honoured. An imperative focus handle would be the
+   * right tool for that, and does not exist yet.
    *
    * Inside a Radix dialog, focus is claimed by the dialog when it opens; this focus is deferred by
-   * a tick so it lands after that and wins. Ignored when `disabled`.
+   * two animation frames so it lands after that and wins.
    */
   autoFocus?: boolean;
   /**

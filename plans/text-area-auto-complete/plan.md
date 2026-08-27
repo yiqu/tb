@@ -330,8 +330,14 @@ dropdown is open, and whenever the caret cannot be resolved to a text node.
 
 ## autoFocus
 
-`autoFocus` focuses the surface and drops the caret at the end, once, on first mount — React's own
-`autoFocus` does nothing here because the surface is a contentEditable div, not an `<input>`.
+`autoFocus` focuses the surface and drops the caret at the end, once — React's own `autoFocus` does
+nothing here because the surface is a contentEditable div, not an `<input>`.
+
+"Once" is the first moment the component is ELIGIBLE (`autoFocus` on, `disabled` off), not
+literally mount, which is why the effect depends on both flags rather than running mount-only: a
+text area that mounts disabled cannot be focused then, and a mount-only effect would leave it never
+focused at all. `didAutoFocusRef` is what holds it to a single shot, so a prop that flips back and
+forth does not re-focus. Demoed by `_components/AutoCompleteDialogFocusDemo.tsx` on the test page.
 
 Two things it has to get right, both learned the hard way:
 - **It runs two animation frames out**, not synchronously. A Radix dialog claims focus for its
@@ -342,8 +348,8 @@ Two things it has to get right, both learned the hard way:
   flagging up front makes the surviving run skip the focus entirely — the failure looks exactly
   like the race above.
 
-It deliberately fires only on the FIRST mount. The surface re-mounts on every structural change
-(`render.key`), and refocusing on those would drag focus out of a chip menu or dropdown mid-use.
+It never fires twice. The surface re-mounts on every structural change (`render.key`), and
+refocusing on those would drag focus out of a chip menu or dropdown mid-use.
 
 ## Undo / redo
 

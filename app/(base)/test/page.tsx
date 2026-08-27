@@ -2,6 +2,7 @@ import MultiSortDemo from './_components/MultiSortDemo';
 import NestedRequest from './_components/NestedRequest';
 import AutoCompleteReadOnlyDemo from './_components/AutoCompleteReadOnlyDemo';
 import AutoCompleteTextAreaDemo from './_components/AutoCompleteTextAreaDemo';
+import AutoCompleteDialogFocusDemo from './_components/AutoCompleteDialogFocusDemo';
 import AutoCompleteShowOriginalDemo from './_components/AutoCompleteShowOriginalDemo';
 import AutoCompleteMoreExamplesDemo from './_components/AutoCompleteMoreExamplesDemo';
 import AutoCompleteTextAreaDemo2 from './_components/AutoCompleteTextAreaDemo2';
@@ -18,6 +19,7 @@ export default function PlaygroundPage({}: PlaygroundPageProps) {
       <AutoCompleteReadOnlyDemo />
       <AutoCompleteShowOriginalDemo />
       <AutoCompleteMoreExamplesDemo />
+      <AutoCompleteDialogFocusDemo />
       <AutoCompleteTextAreaDemo />
       <AutoCompleteTextAreaDemo2 />
       <AutoCompleteTextAreaUncontrolledDemo />

@@ -278,14 +278,17 @@ export default function AutoCompletableTextArea<T>({
     }
   }, [value]);
 
-  /** True once the autoFocus effect has fired, so a re-mount never steals focus again. */
+  /** True once the autoFocus effect has fired, so it never takes focus a second time. */
   const didAutoFocusRef = useRef<boolean>(false);
 
   /**
    * autoFocus: focus the surface and drop the caret at the end of the content, once.
    *
-   * Deferred by a tick because the common case is a dialog: Radix moves focus into the dialog when
-   * it opens, right after this mounts, so focusing synchronously here would immediately be undone.
+   * "Once" is the first moment the component is eligible — `autoFocus` on and not `disabled` —
+   * which is why both are dependencies rather than this being a mount-only effect. A text area
+   * that mounts disabled could not be focused then, and a mount-only effect would leave it never
+   * focused at all; `didAutoFocusRef` is what keeps it to a single shot. See the prop's doc
+   * comment for the contract this exposes.
    */
   useEffect(() => {
     if (!autoFocus || disabled || didAutoFocusRef.current) {
