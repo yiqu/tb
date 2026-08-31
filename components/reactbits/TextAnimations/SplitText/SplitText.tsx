@@ -13,7 +13,7 @@ export interface SplitTextProps {
   className?: string;
   delay?: number;
   duration?: number;
-  ease?: string | ((t: number) => number);
+  ease?: string | ((_t: number) => number);
   splitType?: 'chars' | 'words' | 'lines' | 'words, chars';
   from?: gsap.TweenVars;
   to?: gsap.TweenVars;
@@ -39,7 +39,7 @@ const SplitText: React.FC<SplitTextProps> = ({
   textAlign = 'center',
   onLetterAnimationComplete,
 }) => {
-  const ref = useRef<HTMLParagraphElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const animationCompletedRef = useRef(false);
   const onCompleteRef = useRef(onLetterAnimationComplete);
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
@@ -71,7 +71,9 @@ const SplitText: React.FC<SplitTextProps> = ({
       if (el._rbsplitInstance) {
         try {
           el._rbsplitInstance.revert();
-        } catch (_) {}
+        } catch {
+          // SplitText can throw if it was already reverted
+        }
         el._rbsplitInstance = undefined;
       }
 
@@ -133,7 +135,9 @@ const SplitText: React.FC<SplitTextProps> = ({
         }
         try {
           splitInstance.revert();
-        } catch (_) {}
+        } catch {
+          // SplitText can throw if it was already reverted
+        }
         el._rbsplitInstance = undefined;
       };
     },
@@ -153,13 +157,7 @@ const SplitText: React.FC<SplitTextProps> = ({
       split-parent inline-block overflow-hidden whitespace-normal
       ${className}
     `;
-    const Tag = (tag || 'p') as React.ElementType;
-
-    return (
-      <Tag ref={ ref } style={ style } className={ classes }>
-        { text }
-      </Tag>
-    );
+    return React.createElement(tag, { ref, style, className: classes }, text);
   };
 
   return renderTag();
