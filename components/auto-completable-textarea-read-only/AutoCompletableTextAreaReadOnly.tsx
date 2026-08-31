@@ -6,8 +6,9 @@ import { cn } from '@/lib/utils';
 
 import AutoCompleteReadOnlyChip from './AutoCompleteReadOnlyChip';
 import { getDefaultReadOnlyChipMenuItems } from './AutoCompleteReadOnlyChipMenu';
-import { splitTextByItemRegex } from './autocompletable-textarea-read-only.utils';
-import AutoCompleteReadOnlyDetailsDialog from './AutoCompleteReadOnlyDetailsDialog';
+import AutoCompleteReadOnlyCopyButton from './AutoCompleteReadOnlyCopyButton';
+import { splitTextByItemRegex, readOnlySegmentsToCopyText } from './autocompletable-textarea-read-only.utils';
+import AutoCompleteItemDetailsDialog from '@/components/auto-completable-shared/AutoCompleteItemDetailsDialog';
 import { ReadOnlySegment, AutoCompletableTextAreaReadOnlyProps } from './autocompletable-textarea-read-only.models';
 
 /**
@@ -27,11 +28,14 @@ export default function AutoCompletableTextAreaReadOnly<T>({
   text,
   getItemRegex,
   resolveItem,
+  showOriginal,
   itemDisplayFunction,
   itemCopyContentFunction,
   renderItemDetails,
   detailsDialogTitle,
   chipMenuItems,
+  showCopyButton = true,
+  copyButtonClassName,
   className,
   textClassName,
   chipClassName,
@@ -41,9 +45,10 @@ export default function AutoCompletableTextAreaReadOnly<T>({
   const [detailsItem, setDetailsItem] = useState<T | null>(null);
 
   // Re-scan only when the text, the pattern or the resolver actually change.
-  const segments = useMemo(
-    () => splitTextByItemRegex<T>(text, getItemRegex(), resolveItem),
-    [text, getItemRegex, resolveItem],
+  // showOriginal skips the scan altogether: the whole string stays one plain-text run.
+  const segments: ReadOnlySegment<T>[] = useMemo(
+    () => (showOriginal ? [{ kind: 'text', text: text }] : splitTextByItemRegex<T>(text, getItemRegex(), resolveItem)),
+    [text, getItemRegex, resolveItem, showOriginal],
   );
 
   const resolvedChipMenuItems = useMemo(
@@ -51,8 +56,25 @@ export default function AutoCompletableTextAreaReadOnly<T>({
     [chipMenuItems],
   );
 
+  // Nothing to copy from an empty display, so the button is not rendered at all then.
+  const hasCopyButton = showCopyButton && segments.length > 0;
+
   return (
-    <div id={ id } className={ cn('w-full text-base break-words whitespace-pre-wrap md:text-sm', className) }>
+    <div
+      id={ id }
+      className={ cn(
+        'relative w-full text-base break-words whitespace-pre-wrap md:text-sm',
+        // Keeps the text clear of the button pinned in the corner.
+        { 'pr-8': hasCopyButton },
+        className,
+      ) }
+    >
+      { hasCopyButton ?
+        <AutoCompleteReadOnlyCopyButton
+          className={ copyButtonClassName }
+          getCopyText={ () => readOnlySegmentsToCopyText(segments, itemCopyContentFunction) }
+        />
+      : null }
       { segments.map((segment: ReadOnlySegment<T>, index: number) => {
         if (segment.kind === 'text') {
           return (
@@ -78,7 +100,7 @@ export default function AutoCompletableTextAreaReadOnly<T>({
         );
       }) }
 
-      <AutoCompleteReadOnlyDetailsDialog<T>
+      <AutoCompleteItemDetailsDialog<T>
         item={ detailsItem }
         onClose={ () => setDetailsItem(null) }
         renderItemDetails={ renderItemDetails }
