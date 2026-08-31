@@ -7,10 +7,10 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/custom/dropdown-menu';
 
 import { Button } from '../ui/button';
-import { DropdownMenuItem } from '../ui/dropdown-menu';
+import { DropdownMenuItem } from '../ui/custom/dropdown-menu';
 
 export default function ResourcesDropdownMenuButton() {
   return (

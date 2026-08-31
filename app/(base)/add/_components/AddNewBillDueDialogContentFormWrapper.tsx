@@ -60,7 +60,7 @@ export default function AddNewBillDueDialogContentFormWrapper({
 
         if (data.consecutiveAdd) {
           // get the next month's 1st day in luxon date
-          const dateLuxonFromData = DateTime.fromMillis(Number.parseInt(data.dueDate));
+          const dateLuxonFromData = DateTime.fromMillis(Number.parseInt(data.dueDate), { zone: EST_TIME_ZONE });
           const nextMonthLuxon = dateLuxonFromData.plus({ month: 1 });
           // reset the form with the next month's 1st day
           methods.reset({

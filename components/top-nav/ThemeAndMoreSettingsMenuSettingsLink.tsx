@@ -4,7 +4,7 @@ import { Settings } from 'lucide-react';
 
 import Link from '@/shared/components/Link';
 
-import { DropdownMenuItem } from '../ui/dropdown-menu';
+import { DropdownMenuItem } from '../ui/custom/dropdown-menu';
 
 export default function ThemeAndMoreSettingsMenuSettingsLink() {
   return (

@@ -11,7 +11,7 @@ import useSideBarState from '@/hooks/useSideBarState';
 import { Separator } from '@/components/ui/separator';
 import { SidebarCollapsableState } from '@/models/Sidebar.models';
 import { SIDEBAR_COLLAPSABLE_ADD_NEW } from '@/constants/constants';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
 import { setSidebarCollapsableStateAction } from '@/server/sidebar/sidebar-actions';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SidebarMenuSub, SidebarMenuItem, SidebarMenuButton, SidebarMenuSubItem } from '@/components/ui/sidebar';

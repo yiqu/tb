@@ -11,7 +11,7 @@ import { SidebarCollapsableState } from '@/models/Sidebar.models';
 import { FavoriteEntity } from '@/models/favorites/favorite.model';
 import { SIDEBAR_COLLAPSABLE_FAVORITES } from '@/constants/constants';
 import { revalidateFavoritesAll } from '@/server/favorites/favorites.server';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
 import { setSidebarCollapsableStateAction } from '@/server/sidebar/sidebar-actions';
 import { SidebarMenuSub, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';

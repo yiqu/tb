@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuShortcut,
   DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/custom/dropdown-menu';
 
 import SubscriptionDetailsHeaderActionButtonAddNewBillDue from './SubscriptionDetailsHeaderActionButtonAddNewBillDue';
 import SubscriptionDetailsHeaderActionButtonEditSubscription from './SubscriptionDetailsHeaderActionButtonEditSubscription';

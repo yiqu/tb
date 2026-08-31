@@ -2,7 +2,7 @@ import Link from '@/shared/components/Link';
 
 import ApiStatusButtonContent from './ApiStatusButtonContent';
 import ApiStatusButtonWrapper from './ApiStatusButtonWrapper';
-import { HoverCard, HoverCardContent } from '../ui/hover-card';
+import { HoverCard, HoverCardContent } from '../ui/custom/hover-card';
 import ApiStatusButtonHoverContent from './ApiStatusButtonHoverContent';
 
 export default function ApiStatusButtonParent() {

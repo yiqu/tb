@@ -12,7 +12,7 @@ import { getFrequencyImageUrl } from '@/shared/table/table.utils';
 import DateDialogContentBase from '@/shared/dialogs/DateDialogBase';
 import DateRelativeDisplay from '@/shared/table/DateRelativeDisplay';
 import KeyValueDisplay from '@/components/key-value/KeyValueDisplay';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 
 const usdFormatter = getUSDFormatter();

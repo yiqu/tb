@@ -8,7 +8,7 @@ import { useOptimistic, useTransition } from 'react';
 import Link from '@/shared/components/Link';
 import useSideBarState from '@/hooks/useSideBarState';
 import { LinkItem, NestNavListItem } from '@/models/NavItem.models';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/custom/popover';
 import { setSidebarCollapsableStateAction } from '@/server/sidebar/sidebar-actions';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SidebarMenuSub, SidebarMenuItem, SidebarMenuButton, SidebarMenuSubItem, SidebarMenuSubButton } from '@/components/ui/sidebar';

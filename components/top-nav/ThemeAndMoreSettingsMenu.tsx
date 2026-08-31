@@ -3,7 +3,7 @@ import { Palette, Settings2, ListChevronsDownUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import RowStack from '@/shared/components/RowStack';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/custom/dropdown-menu';
 
 import { Skeleton } from '../ui/skeleton';
 import Typography from '../typography/Typography';

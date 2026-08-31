@@ -1,7 +1,7 @@
 'use client';
 
 import { useIsMobile } from '@/hooks/use-mobile';
-import { DropdownMenuContent } from '@/components/ui/dropdown-menu';
+import { DropdownMenuContent } from '@/components/ui/custom/dropdown-menu';
 
 export default function FooterMenuContentWrapper({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
