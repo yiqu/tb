@@ -29,17 +29,42 @@ Hooks live in `/hooks/table-columns-adjust`:
   again drops it straight back where it was.
 - `useTableColumnReorder(tableId)` — persists a drag and drop reorder of the visible columns without
   colliding with (or moving) the ordinals held by hidden columns.
+- `useTableColumnOrdering(tableId, ordering?)` — resolves where the column order is read from and
+  written to. Defaults to the app's table store; pass a `TableColumnOrderingSource` and every hook
+  above follows your store instead. This is what lets a new table bring its own zustand store.
 
 UI: `shared/table/FormattedTableHeadMenuDisplayOption.tsx` renders the "Display" section of a column's
-three dot menu (Hide Column + a collision-aware submenu of checkbox items for every column).
+three dot menu (Hide Column + a collision-aware submenu of checkbox items for every column). Drop it
+into any `<DropdownMenuContent>`; it takes `tableId`, `columnId`, and optionally `columnLabels` and
+`ordering` for a table that is not one of the app's own.
 
 ## Adding a table
 
-1. Add the table id to `TableId` and its hard coded column list in `table.store.ts`.
-2. Add both to `TableColumnIdsByTableId` and `TABLE_COLUMNS_BY_TABLE_ID`, and add a default entry in
+Worked example: `app/(base)/test/_components/column-adjust-demo` (rendered on `/test`) is a complete
+new table — five columns, fake rows, its own store — built only from the pieces below. Copy it.
+
+1. **Declare the columns.** A `['a', 'b', …] as const` list in its own file, next to the table
+   (e.g. `store/test-table/test-table.columns.ts`), plus a `columnId -> label` map for the menu.
+2. **Register it.** Add the id to `TableId`, add one line to `TableColumnIdsByTableId` and to
+   `TABLE_COLUMNS_BY_TABLE_ID`, and one entry each in
    `getDefaultTableColumnDisplayConfigurations()` / `normalizeTableColumnDisplayConfigurations()`.
-3. In the table component, swap the inline `columnsSorted` computation for
-   `useOrderedVisibleTableColumns(tableId)` (and `useVisibleTableColumnsWidth(tableId)` if it sizes itself).
+   Show/hide state is then handled for you, persisted and reconciled.
+3. **Bring a store for what the table owns** — its column order, and widths if it is resizable
+   (see `store/test-table/test-table.store.ts`). Expose the order as a `TableColumnOrderingSource`
+   (`{ ordinals, reorderColumns }`, memoized). Skip this if the table has no ordering of its own:
+   the hooks fall back to the app's table store.
+4. **Wire the table.** Three lines:
+
+   ```tsx
+   const ordering = useMyTableColumnOrdering();                            // step 3, or omit
+   const columnsSorted = useOrderedVisibleTableColumns('myTable', ordering);
+   const { reorderVisibleColumns } = useTableColumnReorder('myTable', ordering);
+   ```
+
+   Map headers *and* rows over `columnsSorted`, and render
+   `<FormattedTableHeadMenuDisplayOption tableId="myTable" columnId={ columnId } columnLabels={ … } ordering={ ordering } />`
+   inside each header's dropdown. Gate the table on `useIsClient()` — the column state comes from
+   local storage, so rendering it before mount would not match the server's markup.
 
 ## Notes
 

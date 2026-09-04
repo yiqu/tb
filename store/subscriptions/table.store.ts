@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-export type TableId = 'subscriptions' | 'bills' | 'search';
+export type TableId = 'subscriptions' | 'bills' | 'search' | 'test';
 
 export const SUBSCRIPTIONS_TABLE_COLUMNS = [
   'name',

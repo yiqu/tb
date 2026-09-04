@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 import { TableId } from '@/store/subscriptions/table.store';
-import { TableColumnId } from '@/store/table-columns-adjust/table-column-adjuster.types';
+import { TableColumnId, TableColumnOrderingSource } from '@/store/table-columns-adjust/table-column-adjuster.types';
 import { useTableColumnAdjusterActions } from '@/store/table-columns-adjust/table-column-adjuster.store';
 
 import useTableColumnVisibility from './useTableColumnVisibility';
@@ -20,13 +20,17 @@ import useOrderedVisibleTableColumns from './useOrderedVisibleTableColumns';
  * column — and with it the header menu, which is the only way to bring hidden columns back.
  *
  * @param tableId - Which table's columns are being toggled.
+ * @param ordering - Optional ordering source, for a table that keeps its order in its own store.
  * @returns `showColumn`, `hideColumn`, `toggleColumnDisplay` plus the state the menu needs
  *          (`isColumnShown`, `isColumnHideable`).
  */
-export default function useTableColumnDisplayToggle<TTableId extends TableId>(tableId: TTableId) {
+export default function useTableColumnDisplayToggle<TTableId extends TableId>(
+  tableId: TTableId,
+  ordering?: TableColumnOrderingSource,
+) {
   const { visibleColumns, isColumnShown } = useTableColumnVisibility(tableId);
   const { setColumnDisplay } = useTableColumnAdjusterActions();
-  const orderedVisibleColumns = useOrderedVisibleTableColumns(tableId);
+  const orderedVisibleColumns = useOrderedVisibleTableColumns(tableId, ordering);
 
   const firstVisibleColumnId: string | undefined = orderedVisibleColumns[0];
 

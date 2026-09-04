@@ -2,9 +2,11 @@
 
 import { useMemo } from 'react';
 
-import { TableId, useColumnOrdinalObject } from '@/store/subscriptions/table.store';
+import { TableId } from '@/store/subscriptions/table.store';
+import { TableColumnOrderingSource } from '@/store/table-columns-adjust/table-column-adjuster.types';
 import { getColumnsSortedByOrdinal } from '@/store/table-columns-adjust/table-column-adjuster.utils';
 
+import useTableColumnOrdering from './useTableColumnOrdering';
 import useTableColumnVisibility from './useTableColumnVisibility';
 
 /**
@@ -15,14 +17,12 @@ import useTableColumnVisibility from './useTableColumnVisibility';
  * drift apart.
  *
  * @param tableId - Which table's columns to resolve.
+ * @param ordering - Optional ordering source, for a table that keeps its order in its own store.
  * @returns The visible column ids sorted by their persisted ordinal.
  */
-export default function useOrderedVisibleTableColumns(tableId: TableId): string[] {
+export default function useOrderedVisibleTableColumns(tableId: TableId, ordering?: TableColumnOrderingSource): string[] {
   const { visibleColumns } = useTableColumnVisibility(tableId);
-  const columnsOrderedByOrdinal = useColumnOrdinalObject(tableId);
+  const { ordinals } = useTableColumnOrdering(tableId, ordering);
 
-  return useMemo(
-    () => getColumnsSortedByOrdinal(visibleColumns, columnsOrderedByOrdinal),
-    [visibleColumns, columnsOrderedByOrdinal],
-  );
+  return useMemo(() => getColumnsSortedByOrdinal(visibleColumns, ordinals), [visibleColumns, ordinals]);
 }

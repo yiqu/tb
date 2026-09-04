@@ -1,13 +1,25 @@
+import { TEST_TABLE_COLUMNS } from '@/store/test-table/test-table.columns';
 import { TableId, BILLS_TABLE_COLUMNS, SEARCH_TABLE_COLUMNS, SUBSCRIPTIONS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
 
-import { TableColumnId, TableColumnDisplayConfiguration, TableColumnDisplayConfigurations } from './table-column-adjuster.types';
+import {
+  TableColumnId,
+  TableColumnIdsByTableId,
+  TableColumnDisplayConfiguration,
+  TableColumnDisplayConfigurations,
+} from './table-column-adjuster.types';
 
-/** Every table's hard coded (default = ALL possible) column list, keyed by table id. */
-const TABLE_COLUMNS_BY_TABLE_ID = {
+/**
+ * Every table's hard coded (default = ALL possible) column list, keyed by table id.
+ *
+ * Registering a table here — plus one line in `TableColumnIdsByTableId` — is all the feature needs
+ * to know about it; the table keeps its own store for whatever state it owns.
+ */
+const TABLE_COLUMNS_BY_TABLE_ID: { [TTableId in TableId]: readonly TableColumnIdsByTableId[TTableId][] } = {
   subscriptions: SUBSCRIPTIONS_TABLE_COLUMNS,
   bills: BILLS_TABLE_COLUMNS,
   search: SEARCH_TABLE_COLUMNS,
-} as const;
+  test: TEST_TABLE_COLUMNS,
+};
 
 /**
  * The default (ALL possible) column ids for a table, looked up by its table id.
@@ -16,7 +28,7 @@ const TABLE_COLUMNS_BY_TABLE_ID = {
  * and visibility is decided by walking this list and checking the table's display configuration.
  */
 export function getDefaultTableColumns<TTableId extends TableId>(tableId: TTableId): readonly TableColumnId<TTableId>[] {
-  return TABLE_COLUMNS_BY_TABLE_ID[tableId] as readonly TableColumnId<TTableId>[];
+  return TABLE_COLUMNS_BY_TABLE_ID[tableId];
 }
 
 /** A fresh configuration for one table with every column shown. */
@@ -36,6 +48,7 @@ export function getDefaultTableColumnDisplayConfigurations(): TableColumnDisplay
     subscriptions: getDefaultTableColumnDisplayConfiguration('subscriptions'),
     bills: getDefaultTableColumnDisplayConfiguration('bills'),
     search: getDefaultTableColumnDisplayConfiguration('search'),
+    test: getDefaultTableColumnDisplayConfiguration('test'),
   };
 }
 
@@ -79,6 +92,7 @@ export function normalizeTableColumnDisplayConfigurations(persistedConfiguration
     subscriptions: normalizeTableColumnDisplayConfiguration('subscriptions', persisted.subscriptions),
     bills: normalizeTableColumnDisplayConfiguration('bills', persisted.bills),
     search: normalizeTableColumnDisplayConfiguration('search', persisted.search),
+    test: normalizeTableColumnDisplayConfiguration('test', persisted.test),
   };
 }
 

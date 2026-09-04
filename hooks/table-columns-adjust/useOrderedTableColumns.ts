@@ -2,9 +2,11 @@
 
 import { useMemo } from 'react';
 
-import { TableId, useColumnOrdinalObject } from '@/store/subscriptions/table.store';
-import { TableColumnId } from '@/store/table-columns-adjust/table-column-adjuster.types';
+import { TableId } from '@/store/subscriptions/table.store';
+import { TableColumnId, TableColumnOrderingSource } from '@/store/table-columns-adjust/table-column-adjuster.types';
 import { getDefaultTableColumns, getColumnsSortedByOrdinal } from '@/store/table-columns-adjust/table-column-adjuster.utils';
+
+import useTableColumnOrdering from './useTableColumnOrdering';
 
 /**
  * Every one of a table's columns — shown and hidden alike — in the user's current column order.
@@ -15,13 +17,14 @@ import { getDefaultTableColumns, getColumnsSortedByOrdinal } from '@/store/table
  * table) fall back to that hard coded order.
  *
  * @param tableId - Which table's columns to order.
+ * @param ordering - Optional ordering source, for a table that keeps its order in its own store.
  * @returns All of the table's column ids sorted by their persisted ordinal.
  */
-export default function useOrderedTableColumns<TTableId extends TableId>(tableId: TTableId): TableColumnId<TTableId>[] {
-  const columnsOrderedByOrdinal = useColumnOrdinalObject(tableId);
+export default function useOrderedTableColumns<TTableId extends TableId>(
+  tableId: TTableId,
+  ordering?: TableColumnOrderingSource,
+): TableColumnId<TTableId>[] {
+  const { ordinals } = useTableColumnOrdering(tableId, ordering);
 
-  return useMemo(
-    () => getColumnsSortedByOrdinal(getDefaultTableColumns(tableId), columnsOrderedByOrdinal),
-    [tableId, columnsOrderedByOrdinal],
-  );
+  return useMemo(() => getColumnsSortedByOrdinal(getDefaultTableColumns(tableId), ordinals), [tableId, ordinals]);
 }

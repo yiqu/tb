@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import useTableFilterMenuActive from '@/hooks/useTableFilterMenuActive';
 import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/custom/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/custom/dropdown-menu';
 
 import FormattedTableHeadMenuPinOption from './FormattedTableHeadMenuPinOption';
 import FormattedTableHeadMenuFilterOption from './FormattedTableHeadMenuFilterOption';
@@ -62,6 +62,7 @@ export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOp
           columnId={ columnId as AppColumnId }
           columnIndex={ columnIndex }
         />
+        <DropdownMenuSeparator />
         <FormattedTableHeadMenuDisplayOption onAction={ handleMenuAction } tableId={ tableId } columnId={ columnId as AppColumnId } />
         { showFilterOptions ?
           <FormattedTableHeadMenuFilterOption tableId={ tableId } columnId={ columnId as AppColumnId } />
