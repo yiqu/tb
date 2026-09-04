@@ -3,7 +3,6 @@
 import { CardContent } from '@/components/ui/card';
 import useIsClient from '@/hooks/useIsClient';
 import DisplayCard from '@/shared/components/DisplayCard';
-import BillsTableLoading from '@/shared/loading/BillsTableLoading';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
@@ -14,12 +13,11 @@ import useOrderedVisibleTableColumns from '@/hooks/table-columns-adjust/useOrder
 import BillsTableParentRow from '@/shared/table/BillsDueTableParentRow';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 
+import SubscriptionDetailsBillsTableLoading from './SubscriptionDetailsBillsTableLoading';
+
 interface SubscriptionDetailsBillsTableProps {
   billDues: BillDueWithSubscription[];
 }
-
-/** Fixed like the other tables' masks: the mask's fade needs more than one row to compute. */
-const LOADING_MASK_ROW_COUNT = 10;
 
 export default function SubscriptionDetailsBillsTable({ billDues }: SubscriptionDetailsBillsTableProps) {
   const isClient = useIsClient();
@@ -30,15 +28,10 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
   };
 
   // Column visibility/order come from local storage, so render the table only on the client to keep
-  // the markup from differing between the server render and the hydrated one.
+  // the markup from differing between the server render and the hydrated one. The mask is the same
+  // one the page's Suspense fallback shows, so this reads as one uninterrupted skeleton.
   if (!isClient) {
-    return (
-      <DisplayCard className="w-full py-0">
-        <CardContent className="overflow-x-auto px-0">
-          <BillsTableLoading rowCount={ LOADING_MASK_ROW_COUNT } />
-        </CardContent>
-      </DisplayCard>
-    );
+    return <SubscriptionDetailsBillsTableLoading />;
   }
 
   return (
