@@ -18,6 +18,9 @@ interface SubscriptionDetailsBillsTableProps {
   billDues: BillDueWithSubscription[];
 }
 
+/** Fixed like the other tables' masks: the mask's fade needs more than one row to compute. */
+const LOADING_MASK_ROW_COUNT = 10;
+
 export default function SubscriptionDetailsBillsTable({ billDues }: SubscriptionDetailsBillsTableProps) {
   const isClient = useIsClient();
   const columnsSorted: string[] = useOrderedVisibleTableColumns('bills');
@@ -32,7 +35,7 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
     return (
       <DisplayCard className="w-full py-0">
         <CardContent className="overflow-x-auto px-0">
-          <BillsTableLoading rowCount={ billDues.length } />
+          <BillsTableLoading rowCount={ LOADING_MASK_ROW_COUNT } />
         </CardContent>
       </DisplayCard>
     );
