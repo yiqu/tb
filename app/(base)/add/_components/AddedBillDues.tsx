@@ -5,16 +5,15 @@ import DisplayCard from '@/shared/components/DisplayCard';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { useGetRecentlyAddedBillDues } from '@/store/bills/bills.store';
-import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
 import { SortDataModel, getSortDataWithPageId } from '@/models/sort-data/SortData.model';
 import { CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
-
-const columnsSorted: string[] = [...BILLS_TABLE_COLUMNS];
+import useOrderedVisibleTableColumns from '@/hooks/table-columns-adjust/useOrderedVisibleTableColumns';
 
 const sortData: SortDataModel = getSortDataWithPageId(SORT_DATA_PAGE_IDS.addNewBillDueRecentlyAdded);
 
 export default function AddedBillDues() {
   const recentlyAddedBillDues: BillDueWithSubscription[] = useGetRecentlyAddedBillDues();
+  const columnsSorted: string[] = useOrderedVisibleTableColumns('bills');
 
   if (recentlyAddedBillDues.length === 0) {
     return null;

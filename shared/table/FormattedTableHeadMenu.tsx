@@ -7,7 +7,9 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import useTableFilterMenuActive from '@/hooks/useTableFilterMenuActive';
 import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/custom/dropdown-menu';
+import { SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
+import TableColumnDisplayMenuSection from '@/shared/table-columns-adjust/TableColumnDisplayMenuSection';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/custom/dropdown-menu';
 
 import FormattedTableHeadMenuPinOption from './FormattedTableHeadMenuPinOption';
 import FormattedTableHeadMenuFilterOption from './FormattedTableHeadMenuFilterOption';
@@ -23,7 +25,7 @@ export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOp
   const [isOpen, setIsOpen] = useState(false);
   const { activeCount } = useTableFilterMenuActive(tableId, columnId as AppColumnId);
 
-  const handlePinColumn = () => {
+  const handleMenuAction = () => {
     setIsOpen(false);
   };
 
@@ -56,10 +58,17 @@ export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOp
       </div>
       <DropdownMenuContent align="start">
         <FormattedTableHeadMenuPinOption
-          onAction={ handlePinColumn }
+          onAction={ handleMenuAction }
           tableId={ tableId }
           columnId={ columnId as AppColumnId }
           columnIndex={ columnIndex }
+        />
+        <DropdownMenuSeparator />
+        <TableColumnDisplayMenuSection
+          onAction={ handleMenuAction }
+          tableId={ tableId }
+          columnId={ columnId as AppColumnId }
+          columnLabels={ SEARCH_TABLE_COLUMN_TEXT }
         />
         { showFilterOptions ?
           <FormattedTableHeadMenuFilterOption tableId={ tableId } columnId={ columnId as AppColumnId } />
