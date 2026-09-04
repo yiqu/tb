@@ -84,6 +84,23 @@ export function normalizeTableColumnDisplayConfiguration<TTableId extends TableI
   return shownCount > 0 ? normalized : defaultConfiguration;
 }
 
+/**
+ * A configuration for one table with exactly one column shown and everything else hidden.
+ *
+ * Backs the menu's "Hide All": the surviving column is the table's first one, which is never
+ * hideable, so the table keeps a header (and with it the menu) no matter what.
+ */
+export function getSingleColumnShownConfiguration<TTableId extends TableId>(
+  tableId: TTableId,
+  shownColumnId: TableColumnId<TTableId>,
+): TableColumnDisplayConfiguration<TTableId> {
+  const configuration = {} as TableColumnDisplayConfiguration<TTableId>;
+  for (const columnId of getDefaultTableColumns(tableId)) {
+    configuration[columnId] = columnId === shownColumnId;
+  }
+  return configuration;
+}
+
 /** Reconciles the whole persisted store payload, one table at a time. */
 export function normalizeTableColumnDisplayConfigurations(persistedConfigurations: unknown): TableColumnDisplayConfigurations {
   const persisted = (persistedConfigurations ?? {}) as Record<string, unknown>;

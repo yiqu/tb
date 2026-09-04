@@ -5,6 +5,10 @@ import { useCallback } from 'react';
 import { TableId } from '@/store/subscriptions/table.store';
 import { TableColumnId, TableColumnOrderingSource } from '@/store/table-columns-adjust/table-column-adjuster.types';
 import { useTableColumnAdjusterActions } from '@/store/table-columns-adjust/table-column-adjuster.store';
+import {
+  getSingleColumnShownConfiguration,
+  getDefaultTableColumnDisplayConfiguration,
+} from '@/store/table-columns-adjust/table-column-adjuster.utils';
 
 import useTableColumnVisibility from './useTableColumnVisibility';
 import useOrderedVisibleTableColumns from './useOrderedVisibleTableColumns';
@@ -21,15 +25,16 @@ import useOrderedVisibleTableColumns from './useOrderedVisibleTableColumns';
  *
  * @param tableId - Which table's columns are being toggled.
  * @param ordering - Optional ordering source, for a table that keeps its order in its own store.
- * @returns `showColumn`, `hideColumn`, `toggleColumnDisplay` plus the state the menu needs
- *          (`isColumnShown`, `isColumnHideable`).
+ * @returns `showColumn`, `hideColumn`, `toggleColumnDisplay`, the bulk `showAllColumns` /
+ *          `hideAllColumns`, plus the state the menu needs (`isColumnShown`, `isColumnHideable`,
+ *          `canShowAll`, `canHideAll`).
  */
 export default function useTableColumnDisplayToggle<TTableId extends TableId>(
   tableId: TTableId,
   ordering?: TableColumnOrderingSource,
 ) {
-  const { visibleColumns, isColumnShown } = useTableColumnVisibility(tableId);
-  const { setColumnDisplay } = useTableColumnAdjusterActions();
+  const { visibleColumns, hiddenColumns, isColumnShown } = useTableColumnVisibility(tableId);
+  const { setColumnDisplay, setTableColumnsDisplay } = useTableColumnAdjusterActions();
   const orderedVisibleColumns = useOrderedVisibleTableColumns(tableId, ordering);
 
   const firstVisibleColumnId: string | undefined = orderedVisibleColumns[0];
@@ -59,6 +64,19 @@ export default function useTableColumnDisplayToggle<TTableId extends TableId>(
     [tableId, isColumnHideable, setColumnDisplay],
   );
 
+  /** Shows every column of the table. */
+  const showAllColumns = useCallback(() => {
+    setTableColumnsDisplay(tableId, getDefaultTableColumnDisplayConfiguration(tableId));
+  }, [tableId, setTableColumnsDisplay]);
+
+  /** Hides every column except the first one, which is never hideable. */
+  const hideAllColumns = useCallback(() => {
+    if (!firstVisibleColumnId) {
+      return;
+    }
+    setTableColumnsDisplay(tableId, getSingleColumnShownConfiguration(tableId, firstVisibleColumnId as TableColumnId<TTableId>));
+  }, [tableId, firstVisibleColumnId, setTableColumnsDisplay]);
+
   const toggleColumnDisplay = useCallback(
     (columnId: TableColumnId<TTableId>) => {
       if (isColumnShown(columnId)) {
@@ -74,7 +92,13 @@ export default function useTableColumnDisplayToggle<TTableId extends TableId>(
     showColumn,
     hideColumn,
     toggleColumnDisplay,
+    showAllColumns,
+    hideAllColumns,
     isColumnShown,
     isColumnHideable,
+    /** `false` when every column is already shown. */
+    canShowAll: hiddenColumns.length > 0,
+    /** `false` when only the unhideable first column is left. */
+    canHideAll: visibleColumns.length > 1,
   };
 }

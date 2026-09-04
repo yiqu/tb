@@ -1,6 +1,6 @@
 'use client';
 
-import { EyeOff, Columns3 } from 'lucide-react';
+import { Eye, EyeOff, Columns3 } from 'lucide-react';
 
 import { TableId } from '@/store/subscriptions/table.store';
 import { SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuGroup,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuCheckboxItem,
@@ -43,7 +44,8 @@ export default function FormattedTableHeadMenuDisplayOption({
 }: Props) {
   // Listed in the table's current column order, so the menu matches the table left to right.
   const orderedColumns = useOrderedTableColumns(tableId, ordering);
-  const { hideColumn, toggleColumnDisplay, isColumnShown, isColumnHideable } = useTableColumnDisplayToggle(tableId, ordering);
+  const { hideColumn, toggleColumnDisplay, showAllColumns, hideAllColumns, isColumnShown, isColumnHideable, canShowAll, canHideAll } =
+    useTableColumnDisplayToggle(tableId, ordering);
 
   const handleHideColumn = () => {
     hideColumn(columnId);
@@ -85,6 +87,27 @@ export default function FormattedTableHeadMenuDisplayOption({
               </DropdownMenuCheckboxItem>
             );
           }) }
+
+          <DropdownMenuSeparator />
+          { /* Bulk actions. "Hide All" leaves the first column standing, it is never hideable. */ }
+          <DropdownMenuItem
+            onSelect={ (event: Event) => event.preventDefault() }
+            onClick={ hideAllColumns }
+            disabled={ !canHideAll }
+            className="cursor-pointer"
+          >
+            <EyeOff className="size-4" />
+            Hide All
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={ (event: Event) => event.preventDefault() }
+            onClick={ showAllColumns }
+            disabled={ !canShowAll }
+            className="cursor-pointer"
+          >
+            <Eye className="size-4" />
+            Show All
+          </DropdownMenuItem>
         </DropdownMenuSubContent>
       </DropdownMenuSub>
     </DropdownMenuGroup>

@@ -6,7 +6,6 @@ import { TableId } from '@/store/subscriptions/table.store';
 import { TableColumnId, TableColumnDisplayConfiguration, TableColumnDisplayConfigurations } from './table-column-adjuster.types';
 import {
   getIsColumnShown,
-  getDefaultTableColumnDisplayConfiguration,
   getDefaultTableColumnDisplayConfigurations,
   normalizeTableColumnDisplayConfigurations,
 } from './table-column-adjuster.utils';
@@ -14,7 +13,11 @@ import {
 interface TableColumnAdjusterActions {
   setColumnDisplay: <TTableId extends TableId>(_tableId: TTableId, _columnId: TableColumnId<TTableId>, _isShown: boolean) => void;
   toggleColumnDisplay: <TTableId extends TableId>(_tableId: TTableId, _columnId: TableColumnId<TTableId>) => void;
-  resetTableColumnDisplay: (_tableId: TableId) => void;
+  /** Replaces a table's whole configuration in one write, for bulk actions like show/hide all. */
+  setTableColumnsDisplay: <TTableId extends TableId>(
+    _tableId: TTableId,
+    _configuration: TableColumnDisplayConfiguration<TTableId>,
+  ) => void;
 }
 
 interface TableColumnAdjusterState {
@@ -57,11 +60,11 @@ const useTableColumnAdjusterStore = create<TableColumnAdjusterState>()(
           const configuration = get().columnDisplayConfigurations[tableId];
           setColumnDisplay(tableId, columnId, !getIsColumnShown(configuration, columnId));
         },
-        resetTableColumnDisplay: (tableId) => {
+        setTableColumnsDisplay: (tableId, configuration) => {
           set((state) => ({
             columnDisplayConfigurations: {
               ...state.columnDisplayConfigurations,
-              [tableId]: getDefaultTableColumnDisplayConfiguration(tableId),
+              [tableId]: configuration,
             } as TableColumnDisplayConfigurations,
           }));
         },

@@ -34,7 +34,8 @@ Hooks live in `/hooks/table-columns-adjust`:
   above follows your store instead. This is what lets a new table bring its own zustand store.
 
 UI: `shared/table/FormattedTableHeadMenuDisplayOption.tsx` renders the "Display" section of a column's
-three dot menu (Hide Column + a collision-aware submenu of checkbox items for every column). Drop it
+three dot menu (Hide Column + a collision-aware submenu of checkbox items for every column, closing
+with Hide All / Show All). Drop it
 into any `<DropdownMenuContent>`; it takes `tableId`, `columnId`, and optionally `columnLabels` and
 `ordering` for a table that is not one of the app's own.
 
@@ -72,5 +73,7 @@ new table — five columns, fake rows, its own store — built only from the pie
   disables its checkbox in the submenu. Since the last remaining column is also the first one, that rule
   alone makes hiding every column impossible — and the header menu is the only way to bring them back.
 - Hidden columns keep their ordinal position, including across reorders of the visible columns.
+- "Hide All" hides everything but that first column; "Show All" restores every column. Each is a single
+  store write, and each is disabled once it would do nothing.
 - Persisted state is reconciled against the hard coded lists on rehydrate: new columns default to shown,
   removed columns are dropped, and an all-hidden payload falls back to the defaults.
