@@ -22,10 +22,10 @@ Hooks live in `/hooks/table-columns-adjust`:
 - `useOrderedVisibleTableColumns(tableId)` — visible columns in the user's persisted order. This is what
   a table maps over for both its headers and its rows.
 - `useVisibleTableColumnsWidth(tableId)` — total width of the visible columns only.
-- `useTableColumnDisplayToggle(tableId)` — `showColumn` / `hideColumn` / `toggleColumnDisplay`. Showing a
-  column moves it to the last position of the table's ordering.
+- `useTableColumnDisplayToggle(tableId)` — `showColumn` / `hideColumn` / `toggleColumnDisplay`. Hiding a
+  column leaves its place in the ordering alone, so showing it again drops it straight back where it was.
 - `useTableColumnReorder(tableId)` — persists a drag and drop reorder of the visible columns without
-  colliding with the ordinals held by hidden columns.
+  colliding with (or moving) the ordinals held by hidden columns.
 
 UI: `shared/table/FormattedTableHeadMenuDisplayOption.tsx` renders the "Display" section of a column's
 three dot menu (Hide Column + a collision-aware submenu of checkbox items for every column).
@@ -41,5 +41,6 @@ three dot menu (Hide Column + a collision-aware submenu of checkbox items for ev
 ## Notes
 
 - Hiding the last visible column is blocked — the header menu is the only way to bring columns back.
+- Hidden columns keep their ordinal position, including across reorders of the visible columns.
 - Persisted state is reconciled against the hard coded lists on rehydrate: new columns default to shown,
   removed columns are dropped, and an all-hidden payload falls back to the defaults.

@@ -2,7 +2,6 @@
 
 import { EyeOff, Columns3 } from 'lucide-react';
 
-import { cn } from '@/lib/utils';
 import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
 import { SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
 import useTableColumnVisibility from '@/hooks/table-columns-adjust/useTableColumnVisibility';
@@ -65,9 +64,7 @@ export default function FormattedTableHeadMenuDisplayOption({ onAction, tableId,
                   // Keep the menu open so several columns can be toggled in one go.
                   onSelect={ (event: Event) => event.preventDefault() }
                   onCheckedChange={ () => toggleColumnDisplay(menuColumnId) }
-                  className={ cn('cursor-pointer', {
-                    'text-muted-foreground/50': !isShown,
-                  }) }
+                  className="cursor-pointer"
                 >
                   { SEARCH_TABLE_COLUMN_TEXT[menuColumnId] ?? menuColumnId }
                 </DropdownMenuCheckboxItem>

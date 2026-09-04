@@ -124,16 +124,32 @@ export function getOrdinalsForOrderedColumns(orderedColumnIds: readonly string[]
 }
 
 /**
- * Moves a column to the last position of an existing ordinal object, re-indexing everything else.
+ * Applies a reorder of the visible columns while leaving hidden columns where they are.
  *
- * Used when a hidden column is brought back into view: it re-enters the table at the end instead of
- * popping back into the middle of the ordering the user has since arranged.
+ * Drag and drop only ever sees the visible columns, so their new indexes cannot be written back as
+ * ordinals directly — that would collide with the ordinals still held by hidden columns. Instead the
+ * reordered visible columns are dropped back into the slots they already occupied in the full
+ * ordering, so a hidden column keeps its place and returns to it when it is shown again.
+ *
+ * @param ordinals - The table's current `{ columnId: ordinal }` object (all columns, shown or not).
+ * @param reorderedVisibleColumns - The visible columns in their new left-to-right order.
  */
-export function getOrdinalsWithColumnLast(ordinals: Readonly<Record<string, number>>, columnId: string): Record<string, number> {
-  const orderedColumnIds = getColumnsSortedByOrdinal(Object.keys(ordinals), ordinals);
-  if (!orderedColumnIds.includes(columnId)) {
-    return { ...ordinals };
-  }
+export function getOrdinalsAfterVisibleReorder(
+  ordinals: Readonly<Record<string, number>>,
+  reorderedVisibleColumns: readonly string[],
+): Record<string, number> {
+  const visibleColumnIds = new Set<string>(reorderedVisibleColumns);
+  const orderedColumnIds: string[] = getColumnsSortedByOrdinal(Object.keys(ordinals), ordinals);
 
-  return getOrdinalsForOrderedColumns([...orderedColumnIds.filter((id: string) => id !== columnId), columnId]);
+  let nextVisibleIndex = 0;
+  const nextOrderedColumnIds: string[] = orderedColumnIds.map((columnId: string) => {
+    if (!visibleColumnIds.has(columnId)) {
+      return columnId;
+    }
+    const nextColumnId: string = reorderedVisibleColumns[nextVisibleIndex] ?? columnId;
+    nextVisibleIndex += 1;
+    return nextColumnId;
+  });
+
+  return getOrdinalsForOrderedColumns(nextOrderedColumnIds);
 }

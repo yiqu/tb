@@ -2,20 +2,17 @@
 
 import { useCallback } from 'react';
 
-import { TableId, useColumnOrdinalObject, useTableColumnsActions } from '@/store/subscriptions/table.store';
+import { TableId } from '@/store/subscriptions/table.store';
 import { TableColumnId } from '@/store/table-columns-adjust/table-column-adjuster.types';
-import { getOrdinalsWithColumnLast } from '@/store/table-columns-adjust/table-column-adjuster.utils';
 import { useTableColumnAdjusterActions } from '@/store/table-columns-adjust/table-column-adjuster.store';
 
 import useTableColumnVisibility from './useTableColumnVisibility';
 
 /**
- * Show/hide actions for a table's columns, with the ordering side effect applied.
+ * Show/hide actions for a table's columns.
  *
- * Showing a column also moves it to the last position of the table's ordinal ordering, so a column
- * brought back from the hidden list re-enters the table at the end rather than popping back into
- * the middle of an ordering the user has since rearranged. Tables without a persisted ordering
- * (e.g. the search table) simply keep their hard coded order — the reorder call is a no-op there.
+ * Hiding a column leaves its position in the table's ordering untouched, so showing it again drops
+ * it straight back where it was rather than moving it around.
  *
  * @param tableId - Which table's columns are being toggled.
  * @returns `showColumn`, `hideColumn`, `toggleColumnDisplay` plus the visibility state the menu
@@ -24,15 +21,12 @@ import useTableColumnVisibility from './useTableColumnVisibility';
 export default function useTableColumnDisplayToggle<TTableId extends TableId>(tableId: TTableId) {
   const { isColumnShown, canHideColumn } = useTableColumnVisibility(tableId);
   const { setColumnDisplay } = useTableColumnAdjusterActions();
-  const { reorderColumns } = useTableColumnsActions();
-  const columnsOrderedByOrdinal = useColumnOrdinalObject(tableId);
 
   const showColumn = useCallback(
     (columnId: TableColumnId<TTableId>) => {
       setColumnDisplay(tableId, columnId, true);
-      reorderColumns(getOrdinalsWithColumnLast(columnsOrderedByOrdinal, columnId), tableId);
     },
-    [tableId, columnsOrderedByOrdinal, setColumnDisplay, reorderColumns],
+    [tableId, setColumnDisplay],
   );
 
   const hideColumn = useCallback(
