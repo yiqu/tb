@@ -12,13 +12,10 @@ import FormattedTableHeadFiller from '@/shared/table/FormattedTableHeadFiller';
 import { SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 import { SubscriptionWithBillDues, SubscriptionWithBillDuesAndSortData } from '@/models/subscriptions/subscriptions.model';
-import {
-  useTotalColumnsWidth,
-  useColumnOrdinalObject,
-  useTableColumnsActions,
-  SUBSCRIPTIONS_TABLE_COLUMNS,
-  unsortableSubscriptionsColumns,
-} from '@/store/subscriptions/table.store';
+import { unsortableSubscriptionsColumns } from '@/store/subscriptions/table.store';
+import useTableColumnReorder from '@/hooks/table-columns-adjust/useTableColumnReorder';
+import useVisibleTableColumnsWidth from '@/hooks/table-columns-adjust/useVisibleTableColumnsWidth';
+import useOrderedVisibleTableColumns from '@/hooks/table-columns-adjust/useOrderedVisibleTableColumns';
 
 import SubscriptionsTableParentRow from './SubscriptionsTableParentRow';
 
@@ -28,14 +25,9 @@ interface Props {
 
 export default function SubscriptionsTableParentWrapper({ subscriptions }: Props) {
   const isClient = useIsClient();
-  const totalColumnsWidth = useTotalColumnsWidth('subscriptions');
-  const columnsOrderedByOrdinal = useColumnOrdinalObject('subscriptions');
-  const { reorderSubscriptionsColumns } = useTableColumnsActions();
-  const columnsSorted: string[] = [...SUBSCRIPTIONS_TABLE_COLUMNS].toSorted(
-    (a: string, b: string) =>
-      (columnsOrderedByOrdinal[a as keyof typeof columnsOrderedByOrdinal] ?? 0) -
-      (columnsOrderedByOrdinal[b as keyof typeof columnsOrderedByOrdinal] ?? 0),
-  );
+  const totalColumnsWidth = useVisibleTableColumnsWidth('subscriptions');
+  const columnsSorted: string[] = useOrderedVisibleTableColumns('subscriptions');
+  const { reorderVisibleColumns } = useTableColumnReorder('subscriptions');
 
   const handleDragEnd = useCallback(
     (result: DropResult) => {
@@ -47,14 +39,9 @@ export default function SubscriptionsTableParentWrapper({ subscriptions }: Props
       const [moved] = reordered.splice(result.source.index, 1);
       reordered.splice(result.destination.index, 0, moved);
 
-      const newOrdinals: Record<string, number> = {};
-      for (const [i, col] of reordered.entries()) {
-        newOrdinals[col] = i;
-      }
-
-      reorderSubscriptionsColumns(newOrdinals);
+      reorderVisibleColumns(reordered);
     },
-    [columnsSorted, reorderSubscriptionsColumns],
+    [columnsSorted, reorderVisibleColumns],
   );
 
   const handleOnSortUpdate = (sortDataToUpdate: SortDataUpsertable) => {

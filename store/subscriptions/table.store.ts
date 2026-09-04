@@ -31,6 +31,13 @@ export const BILLS_TABLE_COLUMNS = [
   'tableActions',
 ] as const;
 
+/**
+ * The search table renders bill dues, so it shares the bills table's hard coded column list.
+ * Kept as its own export so `getDefaultTableColumns('search')` stays a simple table id lookup
+ * and the search table can diverge later without touching any consumer.
+ */
+export const SEARCH_TABLE_COLUMNS = BILLS_TABLE_COLUMNS;
+
 export type AppColumnId = (typeof SUBSCRIPTIONS_TABLE_COLUMNS)[number] | (typeof BILLS_TABLE_COLUMNS)[number];
 
 export const unsortableSubscriptionsColumns: Record<string, boolean> = {
@@ -97,6 +104,7 @@ type TableColumnsState = {
     setColumnWidth: (_column: string, _width: number) => void;
     reorderSubscriptionsColumns: (_ordinals: Partial<TableColumnsState['subscriptionsTableColumnOrdinal']>) => void;
     reorderBillsColumns: (_ordinals: Partial<TableColumnsState['billsTableColumnOrdinal']>) => void;
+    reorderColumns: (_ordinals: Record<string, number>, _tableId: TableId) => void;
     pinSubscriptionsColumn: (_columnId: string) => void;
     pinBillsColumn: (_columnId: string) => void;
     pinColumn: (_columnId: string, _tableId: TableId) => void;
@@ -178,6 +186,14 @@ const useTableColumnsStore = create<TableColumnsState>()(
             },
           }));
         },
+        reorderColumns: (ordinals: Record<string, number>, tableId: TableId) => {
+          const { reorderSubscriptionsColumns, reorderBillsColumns } = get().actions;
+          if (tableId === 'subscriptions') {
+            reorderSubscriptionsColumns(ordinals);
+          } else if (tableId === 'bills') {
+            reorderBillsColumns(ordinals);
+          }
+        },
         pinSubscriptionsColumn: (columnId: string) => {
           set((state) => {
             const ordinals = { ...state.subscriptionsTableColumnOrdinal };
@@ -253,25 +269,39 @@ export const useTableColumn = (column: string) =>
   });
 export const useTableActionColumnWidth = () => useTableColumnsStore((state) => state.tableActions);
 
-export const useTotalColumnsWidth = (tableId: TableId) =>
+/**
+ * Total pixel width of a table's columns.
+ *
+ * Columns can now be hidden (see `/store/table-columns-adjust`), so an explicit `columnIds` list
+ * can be passed to only sum the columns that are actually rendered. When omitted it falls back to
+ * every hard coded column for the table, which keeps the original behaviour for existing callers.
+ */
+export const useTotalColumnsWidth = (tableId: TableId, columnIds?: readonly string[]) =>
   useTableColumnsStore((state) => {
-    // only add the values if they are a number
-    if (tableId === 'subscriptions') {
-      return SUBSCRIPTIONS_TABLE_COLUMNS.reduce((acc: number, curr: string) => acc + (state[curr as keyof TableColumnsState] as number), 0);
-    } else if (tableId === 'bills') {
-      return BILLS_TABLE_COLUMNS.reduce((acc: number, curr: string) => acc + (state[curr as keyof TableColumnsState] as number), 0);
+    const columnsToMeasure: readonly string[] | null =
+      columnIds ?? (tableId === 'subscriptions' ? SUBSCRIPTIONS_TABLE_COLUMNS
+      : tableId === 'bills' ? BILLS_TABLE_COLUMNS
+      : null);
+
+    if (!columnsToMeasure) {
+      return 0;
     }
-    return 0;
+
+    // only add the values if they are a number
+    return columnsToMeasure.reduce((acc: number, curr: string) => acc + ((state[curr as keyof TableColumnsState] as number) ?? 0), 0);
   });
 
-export const useColumnOrdinalObject = (tableId: TableId) =>
+/** Stable empty reference so tables without a persisted ordering do not re-render on every store read. */
+const EMPTY_COLUMN_ORDINALS: Readonly<Record<string, number>> = {};
+
+export const useColumnOrdinalObject = (tableId: TableId): Readonly<Record<string, number>> =>
   useTableColumnsStore((state) => {
     if (tableId === 'subscriptions') {
       return state.subscriptionsTableColumnOrdinal;
     } else if (tableId === 'bills') {
       return state.billsTableColumnOrdinal;
     }
-    return {};
+    return EMPTY_COLUMN_ORDINALS;
   });
 
 export const useTableColumnsActions = () => useTableColumnsStore((state) => state.actions);

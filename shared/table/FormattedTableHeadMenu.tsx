@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 
 import FormattedTableHeadMenuPinOption from './FormattedTableHeadMenuPinOption';
 import FormattedTableHeadMenuFilterOption from './FormattedTableHeadMenuFilterOption';
+import FormattedTableHeadMenuDisplayOption from './FormattedTableHeadMenuDisplayOption';
 
 type FormattedTableHeadMenuProps = {
   columnId: string;
@@ -23,7 +24,7 @@ export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOp
   const [isOpen, setIsOpen] = useState(false);
   const { activeCount } = useTableFilterMenuActive(tableId, columnId as AppColumnId);
 
-  const handlePinColumn = () => {
+  const handleMenuAction = () => {
     setIsOpen(false);
   };
 
@@ -56,11 +57,12 @@ export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOp
       </div>
       <DropdownMenuContent align="start">
         <FormattedTableHeadMenuPinOption
-          onAction={ handlePinColumn }
+          onAction={ handleMenuAction }
           tableId={ tableId }
           columnId={ columnId as AppColumnId }
           columnIndex={ columnIndex }
         />
+        <FormattedTableHeadMenuDisplayOption onAction={ handleMenuAction } tableId={ tableId } columnId={ columnId as AppColumnId } />
         { showFilterOptions ?
           <FormattedTableHeadMenuFilterOption tableId={ tableId } columnId={ columnId as AppColumnId } />
         : null }

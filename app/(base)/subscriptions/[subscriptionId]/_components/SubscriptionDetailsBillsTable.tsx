@@ -8,7 +8,7 @@ import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
 import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
 import FormattedTableHeadFiller from '@/shared/table/FormattedTableHeadFiller';
 import { SortDataUpsertable } from '@/models/sort-data/SortData.model';
-import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
+import useOrderedVisibleTableColumns from '@/hooks/table-columns-adjust/useOrderedVisibleTableColumns';
 import BillsTableParentRow from '@/shared/table/BillsDueTableParentRow';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
 
@@ -17,7 +17,7 @@ interface SubscriptionDetailsBillsTableProps {
 }
 
 export default function SubscriptionDetailsBillsTable({ billDues }: SubscriptionDetailsBillsTableProps) {
-  const columnsSorted: string[] = [...BILLS_TABLE_COLUMNS] as string[];
+  const columnsSorted: string[] = useOrderedVisibleTableColumns('bills');
 
   const handleOnSortUpdate = (sortDataToUpdate: SortDataUpsertable) => {
     upsertSortData2(sortDataToUpdate);
