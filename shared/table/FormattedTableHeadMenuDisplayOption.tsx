@@ -29,7 +29,7 @@ interface Props {
  */
 export default function FormattedTableHeadMenuDisplayOption({ onAction, tableId, columnId }: Props) {
   const { allColumns } = useTableColumnVisibility(tableId);
-  const { hideColumn, toggleColumnDisplay, isColumnShown, canHideColumn } = useTableColumnDisplayToggle(tableId);
+  const { hideColumn, toggleColumnDisplay, isColumnShown, isColumnHideable } = useTableColumnDisplayToggle(tableId);
 
   const handleHideColumn = () => {
     hideColumn(columnId);
@@ -41,10 +41,13 @@ export default function FormattedTableHeadMenuDisplayOption({ onAction, tableId,
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
         <DropdownMenuLabel className="text-foreground/50">Display</DropdownMenuLabel>
-        <DropdownMenuItem onClick={ handleHideColumn } className="cursor-pointer" disabled={ !canHideColumn }>
-          <EyeOff className="size-4" />
-          Hide Column
-        </DropdownMenuItem>
+        { /* The first column of the table can never be hidden, so it is not offered the option. */ }
+        { isColumnHideable(columnId) ?
+          <DropdownMenuItem onClick={ handleHideColumn } className="cursor-pointer">
+            <EyeOff className="size-4" />
+            Hide Column
+          </DropdownMenuItem>
+        : null }
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className="cursor-pointer">
             <Columns3 className="size-4" />
@@ -60,7 +63,7 @@ export default function FormattedTableHeadMenuDisplayOption({ onAction, tableId,
                 <DropdownMenuCheckboxItem
                   key={ menuColumnId }
                   checked={ isShown }
-                  disabled={ isShown && !canHideColumn }
+                  disabled={ isShown && !isColumnHideable(menuColumnId) }
                   // Keep the menu open so several columns can be toggled in one go.
                   onSelect={ (event: Event) => event.preventDefault() }
                   onCheckedChange={ () => toggleColumnDisplay(menuColumnId) }

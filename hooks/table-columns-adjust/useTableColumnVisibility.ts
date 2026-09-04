@@ -25,8 +25,6 @@ import {
  * - `visibleColumns` – the shown columns, in hard coded order (ordering is applied separately).
  * - `hiddenColumns`  – the hidden columns, in hard coded order.
  * - `isColumnShown`  – predicate for a single column id.
- * - `canHideColumn`  – `false` when only one column is left, so a table can never be emptied out
- *                      (the header menu is the only way to bring columns back).
  */
 export default function useTableColumnVisibility<TTableId extends TableId>(tableId: TTableId) {
   const configuration = useTableColumnDisplayConfiguration(tableId);
@@ -47,6 +45,5 @@ export default function useTableColumnVisibility<TTableId extends TableId>(table
     visibleColumns,
     hiddenColumns,
     isColumnShown,
-    canHideColumn: visibleColumns.length > 1,
   };
 }
