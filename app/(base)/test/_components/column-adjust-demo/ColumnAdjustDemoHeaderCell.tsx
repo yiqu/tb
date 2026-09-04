@@ -1,17 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { EllipsisVertical } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
 import RowStack from '@/shared/components/RowStack';
 import useColumnResize from '@/hooks/useColumnResize';
 import Typography from '@/components/typography/Typography';
 import FormattedTableHead from '@/shared/table/FormattedTableHead';
 import FormattedTableHeadDragHandle from '@/shared/table/FormattedTableHeadDragHandle';
 import FormattedTableHeadResizeHandle from '@/shared/table/FormattedTableHeadResizeHandle';
-import FormattedTableHeadMenuDisplayOption from '@/shared/table/FormattedTableHeadMenuDisplayOption';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/custom/dropdown-menu';
+import TableColumnDisplayMenuButton from '@/shared/table-columns-adjust/TableColumnDisplayMenuButton';
 import { TableColumnOrderingSource } from '@/store/table-columns-adjust/table-column-adjuster.types';
 import { TestTableColumnId, TEST_TABLE_COLUMN_LABELS } from '@/store/test-table/test-table.columns';
 import { useTestTableColumnWidth, useTestTableColumnsActions } from '@/store/test-table/test-table.store';
@@ -44,7 +39,6 @@ export default function ColumnAdjustDemoHeaderCell({
   dragHandleProps,
   isDragging,
 }: Props) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const columnWidth = useTestTableColumnWidth(columnId);
   const { setColumnWidth } = useTestTableColumnsActions();
   const { currentWidth, isResizing, handleResizePointerDown, handleResizeDoubleClick } = useColumnResize({
@@ -70,22 +64,14 @@ export default function ColumnAdjustDemoHeaderCell({
           { TEST_TABLE_COLUMN_LABELS[columnId] }
         </Typography>
 
-        <DropdownMenu open={ isMenuOpen } onOpenChange={ setIsMenuOpen }>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Column actions" className="ml-auto size-6 shrink-0 rounded-md">
-              <EllipsisVertical className="size-4 text-muted-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <FormattedTableHeadMenuDisplayOption
-              onAction={ () => setIsMenuOpen(false) }
-              tableId="test"
-              columnId={ columnId }
-              columnLabels={ TEST_TABLE_COLUMN_LABELS }
-              ordering={ ordering }
-            />
-          </DropdownMenuContent>
-        </DropdownMenu>
+        { /* The whole header menu, dropped in with one component. */ }
+        <TableColumnDisplayMenuButton
+          tableId="test"
+          columnId={ columnId }
+          columnLabels={ TEST_TABLE_COLUMN_LABELS }
+          ordering={ ordering }
+          className="ml-auto"
+        />
       </RowStack>
 
       <FormattedTableHeadResizeHandle

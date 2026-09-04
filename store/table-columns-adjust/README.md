@@ -33,11 +33,9 @@ Hooks live in `/hooks/table-columns-adjust`:
   written to. Defaults to the app's table store; pass a `TableColumnOrderingSource` and every hook
   above follows your store instead. This is what lets a new table bring its own zustand store.
 
-UI: `shared/table/FormattedTableHeadMenuDisplayOption.tsx` renders the "Display" section of a column's
-three dot menu (Hide Column + a collision-aware submenu of checkbox items for every column, closing
-with Hide All / Show All). Drop it
-into any `<DropdownMenuContent>`; it takes `tableId`, `columnId`, and optionally `columnLabels` and
-`ordering` for a table that is not one of the app's own.
+UI lives in `/shared/table-columns-adjust`, one component per file — see its README. The two entry
+points are `TableColumnDisplayMenuButton` (the whole header menu, for a new table) and
+`TableColumnDisplayMenuSection` (the "Display" group, for a menu that already has other options).
 
 ## Adding a table
 
@@ -62,9 +60,9 @@ new table — five columns, fake rows, its own store — built only from the pie
    const { reorderVisibleColumns } = useTableColumnReorder('myTable', ordering);
    ```
 
-   Map headers *and* rows over `columnsSorted`, and render
-   `<FormattedTableHeadMenuDisplayOption tableId="myTable" columnId={ columnId } columnLabels={ … } ordering={ ordering } />`
-   inside each header's dropdown. Gate the table on `useIsClient()` — the column state comes from
+   Map headers *and* rows over `columnsSorted`, and drop
+   `<TableColumnDisplayMenuButton tableId="myTable" columnId={ columnId } columnLabels={ … } ordering={ ordering } />`
+   into each header cell. Gate the table on `useIsClient()` — the column state comes from
    local storage, so rendering it before mount would not match the server's markup.
 
 ## Notes

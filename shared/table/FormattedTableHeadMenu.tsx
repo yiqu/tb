@@ -7,11 +7,12 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import useTableFilterMenuActive from '@/hooks/useTableFilterMenuActive';
 import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
+import { SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
+import TableColumnDisplayMenuSection from '@/shared/table-columns-adjust/TableColumnDisplayMenuSection';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/custom/dropdown-menu';
 
 import FormattedTableHeadMenuPinOption from './FormattedTableHeadMenuPinOption';
 import FormattedTableHeadMenuFilterOption from './FormattedTableHeadMenuFilterOption';
-import FormattedTableHeadMenuDisplayOption from './FormattedTableHeadMenuDisplayOption';
 
 type FormattedTableHeadMenuProps = {
   columnId: string;
@@ -63,7 +64,12 @@ export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOp
           columnIndex={ columnIndex }
         />
         <DropdownMenuSeparator />
-        <FormattedTableHeadMenuDisplayOption onAction={ handleMenuAction } tableId={ tableId } columnId={ columnId as AppColumnId } />
+        <TableColumnDisplayMenuSection
+          onAction={ handleMenuAction }
+          tableId={ tableId }
+          columnId={ columnId as AppColumnId }
+          columnLabels={ SEARCH_TABLE_COLUMN_TEXT }
+        />
         { showFilterOptions ?
           <FormattedTableHeadMenuFilterOption tableId={ tableId } columnId={ columnId as AppColumnId } />
         : null }
