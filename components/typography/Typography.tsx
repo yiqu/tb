@@ -1,5 +1,5 @@
 /* eslint-disable better-tailwindcss/enforce-consistent-line-wrapping */
-import { createElement, type ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { cva, VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
@@ -87,18 +87,20 @@ export const typographyVariants = cva('scroll-m-20', {
   defaultVariants: { variant: 'body1' },
 });
 
-type TypographyTag = keyof React.JSX.IntrinsicElements;
-
 export interface TypographyProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof typographyVariants> {
-  as?: TypographyTag;
+  as?: React.ElementType;
   children?: ReactNode;
   ref?: React.Ref<HTMLElement>;
 }
 
 export default function Typography({ children, variant = 'body1', as, className, ...props }: TypographyProps) {
-  const tag = as ?? getDefaultTag(variant);
+  const Tag: React.ElementType = as ?? getDefaultTag(variant);
 
-  return createElement(tag, { className: cn(typographyVariants({ variant: variant, className: className })), ...props }, children);
+  return (
+    <Tag className={ cn(typographyVariants({ variant: variant, className: className })) } { ...props }>
+      { children }
+    </Tag>
+  );
 }
 
 // h6 intentionally left out: it renders as a span for now
@@ -109,7 +111,7 @@ function isIntrinsicVariant(variant: TypographyProps['variant']): variant is Int
   return intrinsicVariants.includes(variant as IntrinsicVariant);
 }
 
-function getDefaultTag(variant: TypographyProps['variant']): TypographyTag {
+function getDefaultTag(variant: TypographyProps['variant']): React.ElementType {
   if (isIntrinsicVariant(variant)) {
     return variant;
   }
