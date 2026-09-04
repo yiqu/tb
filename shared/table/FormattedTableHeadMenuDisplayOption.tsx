@@ -18,11 +18,11 @@ import {
   DropdownMenuCheckboxItem,
 } from '@/components/ui/custom/dropdown-menu';
 
-type Props = {
+interface Props {
   onAction: () => void;
   tableId: TableId;
   columnId: AppColumnId;
-};
+}
 
 /**
  * "Display" section of a column's three dot menu: hide this column, or toggle any of the table's

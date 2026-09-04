@@ -1,7 +1,9 @@
 'use client';
 
 import { CardContent } from '@/components/ui/card';
+import useIsClient from '@/hooks/useIsClient';
 import DisplayCard from '@/shared/components/DisplayCard';
+import BillsTableLoading from '@/shared/loading/BillsTableLoading';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
@@ -17,11 +19,24 @@ interface SubscriptionDetailsBillsTableProps {
 }
 
 export default function SubscriptionDetailsBillsTable({ billDues }: SubscriptionDetailsBillsTableProps) {
+  const isClient = useIsClient();
   const columnsSorted: string[] = useOrderedVisibleTableColumns('bills');
 
   const handleOnSortUpdate = (sortDataToUpdate: SortDataUpsertable) => {
     upsertSortData2(sortDataToUpdate);
   };
+
+  // Column visibility/order come from local storage, so render the table only on the client to keep
+  // the markup from differing between the server render and the hydrated one.
+  if (!isClient) {
+    return (
+      <DisplayCard className="w-full py-0">
+        <CardContent className="overflow-x-auto px-0">
+          <BillsTableLoading rowCount={ billDues.length } />
+        </CardContent>
+      </DisplayCard>
+    );
+  }
 
   return (
     <DisplayCard className="w-full py-0">

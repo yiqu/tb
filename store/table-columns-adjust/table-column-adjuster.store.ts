@@ -11,16 +11,18 @@ import {
   normalizeTableColumnDisplayConfigurations,
 } from './table-column-adjuster.utils';
 
-type TableColumnAdjusterState = {
+interface TableColumnAdjusterActions {
+  setColumnDisplay: <TTableId extends TableId>(_tableId: TTableId, _columnId: TableColumnId<TTableId>, _isShown: boolean) => void;
+  toggleColumnDisplay: <TTableId extends TableId>(_tableId: TTableId, _columnId: TableColumnId<TTableId>) => void;
+  resetTableColumnDisplay: (_tableId: TableId) => void;
+}
+
+interface TableColumnAdjusterState {
   /** One show/hide configuration object per table id, persisted to local storage. */
   columnDisplayConfigurations: TableColumnDisplayConfigurations;
 
-  actions: {
-    setColumnDisplay: <TTableId extends TableId>(_tableId: TTableId, _columnId: TableColumnId<TTableId>, _isShown: boolean) => void;
-    toggleColumnDisplay: <TTableId extends TableId>(_tableId: TTableId, _columnId: TableColumnId<TTableId>) => void;
-    resetTableColumnDisplay: (_tableId: TableId) => void;
-  };
-};
+  actions: TableColumnAdjusterActions;
+}
 
 /**
  * Show/hide state for table columns, keyed by table id then column id.
