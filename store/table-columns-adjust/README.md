@@ -21,6 +21,8 @@ Hooks live in `/hooks/table-columns-adjust`:
 - `useTableColumnVisibility(tableId)` — all / visible / hidden columns, `isColumnShown`, `canHideColumn`.
 - `useOrderedVisibleTableColumns(tableId)` — visible columns in the user's persisted order. This is what
   a table maps over for both its headers and its rows.
+- `useOrderedTableColumns(tableId)` — every column, shown or hidden, in that same order. The show/hide
+  menu lists these, so its list matches the table left to right.
 - `useVisibleTableColumnsWidth(tableId)` — total width of the visible columns only.
 - `useTableColumnDisplayToggle(tableId)` — `showColumn` / `hideColumn` / `toggleColumnDisplay`, plus
   `isColumnHideable(columnId)`. Hiding a column leaves its place in the ordering alone, so showing it

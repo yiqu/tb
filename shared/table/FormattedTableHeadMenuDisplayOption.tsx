@@ -4,7 +4,7 @@ import { EyeOff, Columns3 } from 'lucide-react';
 
 import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
 import { SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
-import useTableColumnVisibility from '@/hooks/table-columns-adjust/useTableColumnVisibility';
+import useOrderedTableColumns from '@/hooks/table-columns-adjust/useOrderedTableColumns';
 import useTableColumnDisplayToggle from '@/hooks/table-columns-adjust/useTableColumnDisplayToggle';
 import {
   DropdownMenuSub,
@@ -28,7 +28,8 @@ interface Props {
  * columns from a submenu listing every possible column for that table.
  */
 export default function FormattedTableHeadMenuDisplayOption({ onAction, tableId, columnId }: Props) {
-  const { allColumns } = useTableColumnVisibility(tableId);
+  // Listed in the table's current column order, so the menu matches the table left to right.
+  const orderedColumns = useOrderedTableColumns(tableId);
   const { hideColumn, toggleColumnDisplay, isColumnShown, isColumnHideable } = useTableColumnDisplayToggle(tableId);
 
   const handleHideColumn = () => {
@@ -56,7 +57,7 @@ export default function FormattedTableHeadMenuDisplayOption({ onAction, tableId,
           { /* No `side` prop on purpose: Radix picks the side with room (right, flipping left near
                the viewport edge) instead of us hard coding one. */ }
           <DropdownMenuSubContent className="max-h-80 min-w-56 overflow-x-hidden overflow-y-auto">
-            { allColumns.map((menuColumnId: AppColumnId) => {
+            { orderedColumns.map((menuColumnId: AppColumnId) => {
               const isShown: boolean = isColumnShown(menuColumnId);
 
               return (
