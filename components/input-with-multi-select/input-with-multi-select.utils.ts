@@ -31,16 +31,28 @@ export const createInputWithMultiSelectValue = (
 };
 
 /**
- * Normalizes anything a form / URL hands us into a usable value. Missing pieces fall back to
- * an empty string and the default option, so the component never renders with `undefined`.
+ * Normalizes anything a form / URL hands us into a usable value, so the component never renders
+ * with `undefined`. A missing selection falls back to the default option, but an explicit `null`
+ * is kept as is: that is a form saying "nothing is picked yet", and overwriting it would show a
+ * selection the form does not actually hold (and hide the validator's "selection is required").
  */
 export const normalizeInputWithMultiSelectValue = (
   value: Partial<InputWithMultiSelectValue> | null | undefined,
   options: InputWithMultiSelectSelectOption[],
   defaultSelectedOptionId?: string,
 ): InputWithMultiSelectValue => {
-  const selection = value?.selection ? findOptionById(options, value.selection.id) : null;
-  return createInputWithMultiSelectValue(value?.input ?? '', selection ?? resolveDefaultOption(options, defaultSelectedOptionId));
+  const rawSelection = value?.selection;
+  const input = value?.input ?? '';
+
+  if (rawSelection === null) {
+    return createInputWithMultiSelectValue(input, null);
+  }
+  if (rawSelection === undefined) {
+    return createInputWithMultiSelectValue(input, resolveDefaultOption(options, defaultSelectedOptionId));
+  }
+
+  // A selection that is no longer part of `options` (a stale id) falls back to the default.
+  return createInputWithMultiSelectValue(input, findOptionById(options, rawSelection.id) ?? resolveDefaultOption(options, defaultSelectedOptionId));
 };
 
 /** The trimmed text of a value — what should actually be searched / stored. */

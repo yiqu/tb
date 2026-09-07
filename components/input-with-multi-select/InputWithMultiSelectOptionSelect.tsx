@@ -40,7 +40,9 @@ export default function InputWithMultiSelectOptionSelect({
   };
 
   return (
-    <Select value={ selectedOptionId ?? undefined } onValueChange={ handleOnValueChange } disabled={ disabled || options.length === 0 }>
+    // `''` rather than `undefined` for "nothing selected": Radix shows the placeholder for both,
+    // but `undefined` would make the select uncontrolled until the user picks an option.
+    <Select value={ selectedOptionId ?? '' } onValueChange={ handleOnValueChange } disabled={ disabled || options.length === 0 }>
       <SelectTrigger
         aria-label={ label }
         className={ cn(
