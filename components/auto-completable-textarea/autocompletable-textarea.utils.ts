@@ -80,22 +80,89 @@ interface PendingChipInsert<T> {
   item: T;
 }
 
+/** A caret position inside the contentEditable DOM: a text node and an offset into it. */
+export interface EditorDomCaret {
+  node: Node;
+  offset: number;
+}
+
+/** The same caret expressed in VALUE space: which segment it sits in, and how far into it. */
+export interface SegmentCaretPosition {
+  segmentIndex: number;
+  offset: number;
+}
+
+interface ReadEditorDomOptions<T> {
+  pendingInsert?: PendingChipInsert<T>;
+  /** When given (and found during the walk), the caret is reported back in segment space. */
+  caret?: EditorDomCaret | null;
+}
+
+interface ReadEditorDomResult<T> {
+  segments: AutoCompleteValue<T>;
+  caret: SegmentCaretPosition | null;
+}
+
 /**
- * Reads the contentEditable DOM back into segments. This is the bridge between free typing
- * (which the browser owns) and the React value:
+ * The current collapsed caret inside `editor`, expressed against a text node.
+ *
+ * A caret is not always anchored to a text node: right after a programmatic insert (paste) the
+ * range sits in the PARENT, addressed by child index. Those are resolved to the end of the text
+ * node before the caret, or the start of the one after it. Returns null when there is no usable
+ * caret at all (no selection, a non-collapsed one, a caret outside the editor, or one with no
+ * adjacent text node — e.g. between two chips). Callers treat null as "caret unknown" and skip
+ * the work that depends on it.
+ */
+export const getEditorDomCaret = (editor: HTMLElement): EditorDomCaret | null => {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || !selection.isCollapsed) {
+    return null;
+  }
+  const range = selection.getRangeAt(0);
+  const container = range.startContainer;
+  if (!editor.contains(container)) {
+    return null;
+  }
+  if (container.nodeType === Node.TEXT_NODE) {
+    return { node: container, offset: range.startOffset };
+  }
+  const before = container.childNodes[range.startOffset - 1];
+  if (before && before.nodeType === Node.TEXT_NODE) {
+    return { node: before, offset: (before.textContent ?? '').length };
+  }
+  const after = container.childNodes[range.startOffset];
+  if (after && after.nodeType === Node.TEXT_NODE) {
+    return { node: after, offset: 0 };
+  }
+  return null;
+};
+
+/**
+ * Reads the contentEditable DOM back into segments, optionally translating a DOM caret into
+ * segment space along the way. This is the bridge between free typing (which the browser owns)
+ * and the React value:
  * - text nodes become text segments
  * - elements tagged with the chip attribute become item segments (resolved through `chipItems`;
  *   a chip deleted by the map simply disappears from the value)
  * - a marker element (inserted at the caret right before committing a selection) becomes the
  *   `pendingInsert` item segment
  * - <br> and block elements become newlines
+ *
+ * Most callers only want the segments and use `parseEditorDom` below; the caret translation exists
+ * for the typing-time id scan, which must know where the user is before it converts anything.
  */
-export const parseEditorDom = <T>(
+export const readEditorDom = <T>(
   root: HTMLElement | DocumentFragment,
   chipItems: ReadonlyMap<string, T>,
-  pendingInsert?: PendingChipInsert<T>,
-): AutoCompleteValue<T> => {
+  options: ReadEditorDomOptions<T> = {},
+): ReadEditorDomResult<T> => {
   const segments: AutoCompleteValue<T> = [];
+  const pendingInsert = options.pendingInsert;
+  const caret = options.caret ?? null;
+  // Held in an object rather than a bare `let`: it is only ever written from inside the walk
+  // callbacks, which TypeScript's control-flow analysis cannot see, so a plain variable would be
+  // narrowed to `null` at the checks below.
+  const caretHolder: { position: SegmentCaretPosition | null } = { position: null };
 
   const pushText = (text: string) => {
     if (text === '') {
@@ -109,8 +176,25 @@ export const parseEditorDom = <T>(
     segments.push({ kind: 'text', text: text });
   };
 
+  /**
+   * Records where the caret lands, called right BEFORE the text node holding it is pushed: the
+   * caret's offset within that node is offset into whatever text segment the node is about to
+   * extend (adjacent text nodes are merged into a single segment).
+   */
+  const recordCaret = (offsetInNode: number) => {
+    const last = segments[segments.length - 1];
+    if (last && last.kind === 'text') {
+      caretHolder.position = { segmentIndex: segments.length - 1, offset: last.text.length + offsetInNode };
+      return;
+    }
+    caretHolder.position = { segmentIndex: segments.length, offset: offsetInNode };
+  };
+
   const walk = (node: Node) => {
     if (node.nodeType === Node.TEXT_NODE) {
+      if (caret && caret.node === node) {
+        recordCaret(caret.offset);
+      }
       pushText(node.textContent ?? '');
       return;
     }
@@ -145,7 +229,60 @@ export const parseEditorDom = <T>(
 
   root.childNodes.forEach((child: Node) => walk(child));
 
-  return segments;
+  // An empty text node holding the caret pushes nothing, which can leave the recorded index one
+  // past the end. Pin it to the end of the last segment instead of returning something invalid.
+  if (caretHolder.position !== null && caretHolder.position.segmentIndex >= segments.length) {
+    const lastIndex = segments.length - 1;
+    const last = segments[lastIndex];
+    caretHolder.position =
+      last && last.kind === 'text' ? { segmentIndex: lastIndex, offset: last.text.length } : { segmentIndex: Math.max(lastIndex, 0), offset: 0 };
+  }
+
+  return { segments: segments, caret: caretHolder.position };
+};
+
+/** Segments only — the shape almost every caller wants. See `readEditorDom`. */
+export const parseEditorDom = <T>(
+  root: HTMLElement | DocumentFragment,
+  chipItems: ReadonlyMap<string, T>,
+  pendingInsert?: PendingChipInsert<T>,
+): AutoCompleteValue<T> => {
+  return readEditorDom(root, chipItems, { pendingInsert: pendingInsert }).segments;
+};
+
+/**
+ * The inverse of `hydrateAutoCompleteValue`: replaces every autocompleted item segment with its
+ * plain text, merging it into the surrounding runs. Used when `showOriginal` is switched ON, so
+ * existing chips collapse back into the raw text they represent.
+ *
+ * Lossless for the submitted string: pass the same `itemToText` used to serialize the value
+ * (normally `itemTransformFunction`) and `autoCompleteValueToText` yields an identical result
+ * before and after. Returns the original reference when there is nothing to flatten.
+ */
+export const flattenAutoCompleteValue = <T>(value: AutoCompleteValue<T>, itemToText: (item: T) => string): AutoCompleteValue<T> => {
+  if (!value.some((segment: AutoCompleteSegment<T>) => segment.kind === 'item')) {
+    return value;
+  }
+
+  const flattened: AutoCompleteValue<T> = [];
+
+  const pushText = (text: string) => {
+    if (text === '') {
+      return;
+    }
+    const last = flattened[flattened.length - 1];
+    if (last && last.kind === 'text') {
+      last.text = last.text + text;
+      return;
+    }
+    flattened.push({ kind: 'text', text: text });
+  };
+
+  for (const segment of value) {
+    pushText(segment.kind === 'text' ? segment.text : itemToText(segment.item));
+  }
+
+  return flattened;
 };
 
 /**
@@ -153,36 +290,22 @@ export const parseEditorDom = <T>(
  * item segment (chip). Used to hydrate an incoming value (e.g. an initial blob of text that
  * contains ids saved earlier by `autoCompleteValueToText` + the transform function).
  *
- * Performance: instead of testing every item id at every character, the text is only searched for
- * the id prefixes (via indexOf) — each prefix occurrence is the only candidate position where ids
- * are compared. Ids that don't start with their own prefix are skipped (they would defeat the scan).
- * When nothing matches, the original value reference is returned unchanged.
+ * Matching is pattern-based, the same way the read-only display works: `itemRegex` finds candidate
+ * text and `resolveItem` maps it to an item. A match that resolves to nothing is LEFT AS TEXT —
+ * this component never shows a chip for an item it does not have.
+ *
+ * The caller's regex is never used directly: a fresh `g`-flagged copy is built per scan, so a
+ * caller-held regex never has its `lastIndex` mutated and a non-global one still yields every
+ * match. Zero-length matches are stepped over so a pathological pattern cannot spin forever.
+ *
+ * Returns the original value reference when nothing matched, which callers rely on to skip work.
  */
 export const hydrateAutoCompleteValue = <T>(
   value: AutoCompleteValue<T>,
-  items: T[],
-  itemTransformFunction: (item: T) => string,
-  getItemIdPrefix: (item: T) => string,
+  itemRegex: RegExp,
+  resolveItem: (matchedText: string) => T | undefined,
+  protectedCaret?: SegmentCaretPosition | null,
 ): AutoCompleteValue<T> => {
-  interface TokenEntry {
-    token: string;
-    item: T;
-  }
-
-  const tokenEntries: TokenEntry[] = [];
-  const prefixes = new Set<string>();
-  for (const item of items) {
-    const token = itemTransformFunction(item);
-    const prefix = getItemIdPrefix(item);
-    if (token.length > 0 && prefix.length > 0 && token.startsWith(prefix)) {
-      tokenEntries.push({ token: token, item: item });
-      prefixes.add(prefix);
-    }
-  }
-  if (tokenEntries.length === 0) {
-    return value;
-  }
-
   const hydrated: AutoCompleteValue<T> = [];
   let didHydrate = false;
 
@@ -198,46 +321,138 @@ export const hydrateAutoCompleteValue = <T>(
     hydrated.push({ kind: 'text', text: text });
   };
 
-  for (const segment of value) {
+  value.forEach((segment: AutoCompleteSegment<T>, segmentIndex: number) => {
     if (segment.kind === 'item') {
       hydrated.push(segment);
-      continue;
+      return;
     }
     const text = segment.text;
-    let position = 0;
-    while (position < text.length) {
-      // Earliest prefix occurrence from the current position is the next candidate spot.
-      let candidateIndex = -1;
-      for (const prefix of prefixes) {
-        const index = text.indexOf(prefix, position);
-        if (index !== -1 && (candidateIndex === -1 || index < candidateIndex)) {
-          candidateIndex = index;
-        }
-      }
-      if (candidateIndex === -1) {
-        pushText(text.slice(position));
-        break;
-      }
-      // Longest id wins so an id that is a prefix of another id can't shadow it.
-      let matched: TokenEntry | null = null;
-      for (const entry of tokenEntries) {
-        if (text.startsWith(entry.token, candidateIndex) && (!matched || entry.token.length > matched.token.length)) {
-          matched = entry;
-        }
-      }
-      if (!matched) {
-        pushText(text.slice(position, candidateIndex + 1));
-        position = candidateIndex + 1;
+    const caretInSegment = protectedCaret && protectedCaret.segmentIndex === segmentIndex ? protectedCaret.offset : null;
+    const scanner = new RegExp(itemRegex.source, itemRegex.flags.includes('g') ? itemRegex.flags : `${itemRegex.flags}g`);
+    let sliceStart = 0;
+    let match = scanner.exec(text);
+
+    while (match !== null) {
+      if (match[0] === '') {
+        scanner.lastIndex = scanner.lastIndex + 1;
+        match = scanner.exec(text);
         continue;
       }
-      pushText(text.slice(position, candidateIndex));
-      hydrated.push({ kind: 'item', chipId: generateChipId(), item: matched.item });
+      // The match the caret is sitting in (or against) is still being typed: converting it would
+      // yank the text out from under the cursor, and the id may not be finished yet. Left as text —
+      // the next keystroke that moves the caret off it, or blurring, converts it.
+      if (caretInSegment !== null && caretInSegment >= match.index && caretInSegment <= match.index + match[0].length) {
+        match = scanner.exec(text);
+        continue;
+      }
+      const item = resolveItem(match[0]);
+      if (item === undefined) {
+        // Looks like an id but is not one of ours: leave it exactly as the user typed it.
+        match = scanner.exec(text);
+        continue;
+      }
+      pushText(text.slice(sliceStart, match.index));
+      hydrated.push({ kind: 'item', chipId: generateChipId(), item: item });
       didHydrate = true;
-      position = candidateIndex + matched.token.length;
+      sliceStart = match.index + match[0].length;
+      match = scanner.exec(text);
+    }
+
+    pushText(text.slice(sliceStart));
+  });
+
+  return didHydrate ? hydrated : value;
+};
+
+/**
+ * Length of a segment in "serialized text" space — what `autoCompleteValueToText` would emit for it.
+ * Hydration is length-preserving in this space (a chip is only ever created from text equal to its
+ * own serialization), which is what lets a caret offset survive the conversion.
+ */
+const getSegmentTextLength = <T>(segment: AutoCompleteSegment<T>, itemToText: (item: T) => string): number => {
+  return segment.kind === 'text' ? segment.text.length : itemToText(segment.item).length;
+};
+
+/** Flattens a segment-space caret into an absolute character offset over the whole value. */
+export const getAbsoluteTextOffset = <T>(
+  value: AutoCompleteValue<T>,
+  caret: SegmentCaretPosition,
+  itemToText: (item: T) => string,
+): number => {
+  let offset = 0;
+  for (let index = 0; index < caret.segmentIndex && index < value.length; index = index + 1) {
+    offset = offset + getSegmentTextLength(value[index], itemToText);
+  }
+  return offset + caret.offset;
+};
+
+/**
+ * Puts the caret at an absolute character offset (the space `getAbsoluteTextOffset` measures in)
+ * by walking the freshly re-mounted DOM the same way `readEditorDom` walks it. Chips are opaque:
+ * an offset landing inside one puts the caret just after it. Returns false when the offset runs
+ * past the end of the content, so the caller can fall back to placing the caret at the end.
+ */
+export const placeCaretAtAbsoluteTextOffset = <T>(
+  root: HTMLElement,
+  chipItems: ReadonlyMap<string, T>,
+  itemToText: (item: T) => string,
+  targetOffset: number,
+): boolean => {
+  let consumed = 0;
+  let placed = false;
+
+  const walk = (node: Node): boolean => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const length = (node.textContent ?? '').length;
+      if (consumed + length >= targetOffset) {
+        placeCaretAtTextOffset(node, targetOffset - consumed);
+        placed = true;
+        return true;
+      }
+      consumed = consumed + length;
+      return false;
+    }
+    if (!(node instanceof HTMLElement)) {
+      return false;
+    }
+    const chipId = node.getAttribute(AUTOCOMPLETE_CHIP_ID_ATTRIBUTE);
+    if (chipId) {
+      const item = chipItems.get(chipId);
+      if (item === undefined) {
+        return false;
+      }
+      const length = itemToText(item).length;
+      if (consumed + length >= targetOffset) {
+        placeCaretAfterNode(node);
+        placed = true;
+        return true;
+      }
+      consumed = consumed + length;
+      return false;
+    }
+    if (node.tagName === 'BR') {
+      consumed = consumed + 1;
+      return false;
+    }
+    const isBlock = node.tagName === 'DIV' || node.tagName === 'P';
+    if (isBlock && consumed > 0) {
+      consumed = consumed + 1;
+    }
+    for (const child of Array.from(node.childNodes)) {
+      if (walk(child)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  for (const child of Array.from(root.childNodes)) {
+    if (walk(child)) {
+      break;
     }
   }
 
-  return didHydrate ? hydrated : value;
+  return placed;
 };
 
 /**
@@ -286,34 +501,6 @@ export const placeCaretAfterNode = (node: Node) => {
 };
 
 /**
- * Writes text to the clipboard. Kept UI-free (no toast) so the component stays droppable into any
- * codebase — user feedback belongs to the menu items in `AutoCompleteChipMenu.tsx`.
- * Falls back to a hidden textarea + execCommand where the async Clipboard API is unavailable
- * (e.g. a non-secure origin).
- */
-export const copyTextToClipboard = async (text: string): Promise<void> => {
-  if (navigator.clipboard?.writeText) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return;
-    } catch {
-      // The API exists but refused — denied permission, an unfocused document, a blocked context.
-      // Fall through to the legacy path instead of failing the copy outright. Anything the
-      // fallback itself throws is left to propagate so the caller still sees a real failure.
-    }
-  }
-  const textarea = document.createElement('textarea');
-  textarea.value = text;
-  textarea.setAttribute('readonly', 'true');
-  textarea.style.position = 'fixed';
-  textarea.style.opacity = '0';
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand('copy');
-  textarea.remove();
-};
-
-/**
  * Places the caret `offset` characters into the given text node.
  */
 export const placeCaretAtTextOffset = (textNode: Node, offset: number) => {
@@ -323,6 +510,21 @@ export const placeCaretAtTextOffset = (textNode: Node, offset: number) => {
   }
   const range = document.createRange();
   range.setStart(textNode, offset);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
+
+/**
+ * Places the caret immediately before `node`.
+ */
+export const placeCaretBeforeNode = (node: Node) => {
+  const selection = window.getSelection();
+  if (!selection) {
+    return;
+  }
+  const range = document.createRange();
+  range.setStartBefore(node);
   range.collapse(true);
   selection.removeAllRanges();
   selection.addRange(range);
@@ -341,4 +543,67 @@ export const placeCaretAtEnd = (editor: HTMLElement) => {
   range.collapse(false);
   selection.removeAllRanges();
   selection.addRange(range);
+};
+
+/** Newlines in the value's TEXT runs. Chip text is ignored — only typed content is counted. */
+export const countTextNewlines = <T>(value: AutoCompleteValue<T>): number => {
+  let count = 0;
+  for (const segment of value) {
+    if (segment.kind === 'text') {
+      for (const character of segment.text) {
+        if (character === '\n') {
+          count = count + 1;
+        }
+      }
+    }
+  }
+  return count;
+};
+
+/**
+ * Deletes up to `count` browser-inserted placeholder <br> elements, and puts the caret where the
+ * first one was.
+ *
+ * Chromium drops a bare <br> in whenever a delete empties a text node that sits next to a chip
+ * (`contentEditable={false}`, inline-block): deleting the "a" from `a[chip]` leaves `<br>[chip]`,
+ * which pushes the chip onto a second visual line, strands the caret on the empty line above it,
+ * and parses as a leading newline the user never typed.
+ *
+ * The caller decides how many are spurious — this is only ever reached after a DELETE-type input
+ * whose parse gained newlines, which no browser does legitimately, since a deletion cannot add a
+ * line. That guard is what keeps a real <br> newline (the shape Firefox and Safari use for Enter)
+ * safe; within it, the ones adjacent to a chip are removed first, as those are the placeholders.
+ */
+export const removePlaceholderLineBreaks = (editor: HTMLElement, count: number): boolean => {
+  if (count <= 0) {
+    return false;
+  }
+  const isChip = (node: Node | null): boolean => {
+    return node instanceof HTMLElement && node.hasAttribute(AUTOCOMPLETE_CHIP_ID_ATTRIBUTE);
+  };
+  const touchesChip = (lineBreak: HTMLBRElement): boolean => {
+    return isChip(lineBreak.previousSibling) || isChip(lineBreak.nextSibling);
+  };
+  const ordered = Array.from(editor.querySelectorAll('br')).sort(
+    (a: HTMLBRElement, b: HTMLBRElement) => Number(touchesChip(b)) - Number(touchesChip(a)),
+  );
+
+  let removed = 0;
+  for (const lineBreak of ordered) {
+    if (removed >= count) {
+      break;
+    }
+    const anchor = lineBreak.nextSibling;
+    lineBreak.remove();
+    removed = removed + 1;
+    // Only the first removal owns the caret: it is the one the user just deleted into.
+    if (removed === 1) {
+      if (anchor) {
+        placeCaretBeforeNode(anchor);
+      } else {
+        placeCaretAtEnd(editor);
+      }
+    }
+  }
+  return removed > 0;
 };

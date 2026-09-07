@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import Typography from '@/components/typography/Typography';
 import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/custom/dropdown-menu';
 
-import { copyTextToClipboard } from './autocompletable-textarea-read-only.utils';
+import { copyTextToClipboard } from '@/components/auto-completable-shared/autocompletable-shared.utils';
 import {
   AutoCompleteReadOnlyChipMenuContext,
   AutoCompleteReadOnlyChipMenuItemConfig,
@@ -97,13 +97,17 @@ export default function AutoCompleteReadOnlyChip<T>({
           <ChevronDownIcon className="size-3 shrink-0 opacity-70" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" sideOffset={ 4 }>
+      { /* z-[200] clears the dialog layer (z-150 in components/ui/dialog.tsx): Radix copies the
+           content's z-index onto the popper wrapper it portals to <body>, and the shadcn default
+           of z-50 leaves the menu painted UNDERNEATH a dialog the text area sits in — present in
+           the DOM, invisible and unclickable. Same value ui/select.tsx already uses for this. */ }
+      <DropdownMenuContent className="z-[200]" align="start" sideOffset={ 4 }>
         { menuItems.map((menuItem: AutoCompleteReadOnlyChipMenuItemConfig<T>) => {
           return (
             <DropdownMenuItem
               key={ menuItem.key }
               variant={ menuItem.destructive ? 'destructive' : 'default' }
-              disabled={ menuItem.isDisabled?.({ item, matchedText, displayText, contentText }) ?? false }
+              disabled={ menuItem.isDisabled?.(menuContext) ?? false }
               onSelect={ () => menuItem.onSelect(menuContext) }
             >
               { menuItem.icon }

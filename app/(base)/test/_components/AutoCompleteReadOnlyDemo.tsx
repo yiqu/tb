@@ -15,7 +15,7 @@ import {
   getAutocompleteItemRegex,
 } from './test.utils';
 
-/** One labelled example, so the three below stay visually distinct. */
+/** One labelled example, so the ones below stay visually distinct. */
 function Example({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <ColumnStack className="gap-y-1">
@@ -39,7 +39,9 @@ export default function AutoCompleteReadOnlyDemo() {
           getAutocompleteItemRegex()
         </Typography>{ ' ' }
         and turns every match into a clickable chip (View details / Copy / Copy display). Chips show the gist alias; unknown ids stay
-        visible with a warning so a stale reference is not silently swallowed.
+        visible with a warning so a stale reference is not silently swallowed. The copy button in each corner copies the WHOLE display
+        as one string, with every chip serialized through <Typography variant="code1" as="span">itemCopyContentFunction</Typography> —
+        so what lands on the clipboard is the gist content, not the alias you can see.
       </Typography>
 
       <Example label="1. Two known ids in a sentence">
@@ -64,7 +66,7 @@ export default function AutoCompleteReadOnlyDemo() {
         />
       </Example>
 
-      <Example label="3. No ids at all, plus custom chip styling on a restyled surface">
+      <Example label="3. No ids at all, plus custom chip styling on a restyled surface (copy button turned off on the first)">
         <ColumnStack className="gap-y-3">
           <AutoCompletableTextAreaReadOnly<Gist>
             text={ READ_ONLY_TEXT_NONE }
@@ -72,6 +74,7 @@ export default function AutoCompleteReadOnlyDemo() {
             resolveItem={ resolveGistById }
             itemDisplayFunction={ textAreaItemDisplay }
             itemCopyContentFunction={ gistCopyContent }
+            showCopyButton={ false }
           />
           <AutoCompletableTextAreaReadOnly<Gist>
             text={ READ_ONLY_TEXT_SIMPLE }
@@ -83,6 +86,28 @@ export default function AutoCompleteReadOnlyDemo() {
             className="rounded-md bg-muted p-3 italic"
             textClassName="text-muted-foreground"
             chipClassName="border-emerald-500/50 bg-emerald-500/10 not-italic hover:bg-emerald-500/20"
+          />
+        </ColumnStack>
+      </Example>
+
+      <Example label="4. showOriginal — same string, scan turned off (raw ids, no chips)">
+        <ColumnStack className="gap-y-3">
+          <AutoCompletableTextAreaReadOnly<Gist>
+            text={ READ_ONLY_TEXT_SIMPLE }
+            getItemRegex={ getAutocompleteItemRegex }
+            resolveItem={ resolveGistById }
+            itemDisplayFunction={ textAreaItemDisplay }
+            itemCopyContentFunction={ gistCopyContent }
+            detailsDialogTitle="Gist details"
+          />
+          <AutoCompletableTextAreaReadOnly<Gist>
+            text={ READ_ONLY_TEXT_SIMPLE }
+            getItemRegex={ getAutocompleteItemRegex }
+            resolveItem={ resolveGistById }
+            itemDisplayFunction={ textAreaItemDisplay }
+            itemCopyContentFunction={ gistCopyContent }
+            detailsDialogTitle="Gist details"
+            showOriginal
           />
         </ColumnStack>
       </Example>

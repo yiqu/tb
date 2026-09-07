@@ -21,7 +21,7 @@ import {
   isItemDisabled,
   itemFilterFunction,
   textAreaItemDisplay,
-  getAutocompleteItemIdPrefix,
+  getAutocompleteItemRegex,
   textAreaItemTransformForServerFunction,
 } from './test.utils';
 
@@ -46,7 +46,7 @@ export default function AutoCompleteTextAreaDemo() {
   const { control, handleSubmit, reset } = useForm<AutoCompleteDemoSchema>({
     resolver: zodResolver(autoCompleteDemoSchema),
     // The initial blob of text contains a raw gist id — the component hydrates it into a chip
-    // on mount because the id starts with the prefix from getAutocompleteItemIdPrefix().
+    // on mount because it matches the pattern from getAutocompleteItemRegex().
     defaultValues: { note: [{ kind: 'text', text: SOME_INIT_TEXT }] },
   });
 
@@ -78,7 +78,7 @@ export default function AutoCompleteTextAreaDemo() {
                 filterFunction={ itemFilterFunction }
                 itemDisplayFunction={ textAreaItemDisplay }
                 itemTransformFunction={ textAreaItemTransformForServerFunction }
-                getItemIdPrefix={ getAutocompleteItemIdPrefix }
+                getItemRegex={ getAutocompleteItemRegex }
                 renderItemOption={ (gist: Gist) => <ItemOptionDisplay item={ gist } /> }
                 isItemDisabled={ isItemDisabled }
                 detailsDialogTitle="Gist details"

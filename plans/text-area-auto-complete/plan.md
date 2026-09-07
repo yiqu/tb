@@ -87,6 +87,15 @@ Demos — `app/(base)/test/`:
 - `_components/AutoCompleteTextAreaDemo.tsx` — controlled + react-hook-form (Controller) + Zod, Gist list, trigger `:`. Default form value contains a raw `GIST-3333333` to demo load-time hydration. Submit shows the server string.
 - `_components/AutoCompleteTextAreaDemo2.tsx` — same text area as one field among ordinary ones (Location seeded, Car name empty, Is driveable false), reusing `HFInputField` / `HFCheckbox`; submit echoes every value.
 - `_components/AutoCompleteTextAreaUncontrolledDemo.tsx` — uncontrolled + bonus `Teammate` type, trigger `@`.
+- `_components/test.utils.ts` — also carries `CriticalIssue`/`TEST_CRITICAL_ISSUES`, the
+  production-shaped example: ids look like `CRIT-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX` (each `X` a
+  letter in either case or a digit) and `getCriticalIssueRegex()` returns
+  ``/CRIT-[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}/g``.
+  Intentionally unguarded (no `\b`), because ids are often typed flush against neighbouring
+  characters and must still match. Consequences: `XCRIT-9f3a…` matches from the `C`, and an
+  over-long FINAL group matches greedily from the left, chipping the first twelve characters and
+  leaving the rest as text. An over-long group anywhere else fails to match outright, since each is
+  followed by a literal dash.
 - `_components/test.utils.ts` — `Gist`/`TEST_GISTS` (ids are `GIST-1111111`…`GIST-9999999`), `Teammate`/`TEST_TEAMMATES`, and the callback fns: `itemFilterFunction`, `textAreaItemDisplay`, `textAreaItemTransformForServerFunction` (returns `item.id`), `getAutocompleteItemIdPrefix` (returns `'GIST-'`), `isItemDisabled` (non-aliasable gists are unselectable), teammate equivalents.
 - `_components/Utils.tsx` — dropdown row renderers (`ItemOptionDisplay`, `TeammateOptionDisplay`).
 
@@ -98,6 +107,29 @@ is `{ kind: 'text', text }` or `{ kind: 'item', chipId, item }`. `chipId` is a u
 - `autoCompleteValueToText(value, itemToText)` — flatten to a string. Pass `itemDisplayFunction`
   for what the user sees, or `itemTransformFunction` (e.g. `item => item.id`) for the server string.
 - This value flows through react-hook-form as the field value; derive the server string at submit.
+
+## Shared substrate: `components/auto-completable-shared/`
+
+Pieces the editable and read-only components both need. The rule for this folder: only things with
+NO props (pure functions, types) or a small FIXED prop set that does not grow when either component
+changes. The two feature components, their chips, their menus and their prop interfaces stay
+separate on purpose — sharing those would produce one component with many props, which is what this
+design is trying to avoid.
+
+| File | Contents |
+| --- | --- |
+| `autocompletable-shared.utils.ts` | `copyTextToClipboard` — was byte-identical in both folders. |
+| `autocompletable-shared.models.ts` | `ItemDisplayFunction<T>`, `RenderItemDetails<T>`, and `ChipMenuItemConfig<TContext>`. |
+| `AutoCompleteItemDetailsDialog.tsx` | The details dialog + its generic key/value fallback. Five fixed props. |
+
+`ChipMenuItemConfig` is generic over the menu CONTEXT, not over the item type — that is what lets
+one config shape serve two unrelated menus. Each folder re-exports its own named alias
+(`AutoCompleteChipMenuItemConfig<T>` / `AutoCompleteReadOnlyChipMenuItemConfig<T>`) so call sites
+read unchanged and each menu still only sees its own actions.
+
+Trade-off, recorded deliberately: dropping either component into another codebase now means taking
+this folder too — three folders instead of two self-contained ones. Kept small and dependency-light
+(one `StyledDialogContent` import) so that stays cheap.
 
 ## Read-only display: `components/auto-completable-textarea-read-only/`
 
@@ -127,8 +159,15 @@ Key points:
   custom entries.
 - Styling hooks: `className` (whole surface), `textClassName` (plain runs), `chipClassName`,
   `unresolvedChipClassName`.
-- Demo: `_components/AutoCompleteReadOnlyDemo.tsx` with three examples (two known ids; multi-line
-  with an unknown id; no ids at all plus a restyled surface).
+- `showOriginal` skips the scan entirely: the whole string stays one plain-text run, so raw ids
+  show as ordinary text and nothing becomes a chip.
+- Demos: `_components/AutoCompleteReadOnlyDemo.tsx` (four examples: two known ids; multi-line with an
+  unknown id; no ids at all plus a restyled surface; scanned vs `showOriginal` side by side) and
+  `_components/AutoCompleteMoreExamplesDemo.tsx` (read-only with the Teammate type matched by email
+  regex; a custom menu entry; a custom details body; the editable component with a custom menu entry
+  and the same custom body; the editable component with the Teammate type on trigger `@`).
+- `_components/AutoCompleteShowOriginalDemo.tsx` drives BOTH components from one `showOriginal`
+  checkbox: ON means ids are left as raw text instead of being auto-converted to chips.
 
 ## Typing model: generic component, concrete callbacks
 
@@ -148,7 +187,13 @@ ANY item type and fails at runtime instead of at the call site. Verified: handin
 - `filterFunction(item, filter)` — dropdown search filtering.
 - `itemDisplayFunction(item)` — chip label text.
 - `itemTransformFunction?(item)` — "real" id text; used for clipboard copy/cut and id detection. Falls back to `itemDisplayFunction`.
-- `getItemIdPrefix?(item)` — prefix all ids start with (e.g. `'GIST-'`). Presence ENABLES hydration (load + blur). Ids that don't start with their own prefix are skipped by the scan.
+- `getItemRegex?()` — the regex that identifies an id in plain text, the SAME contract as the
+  read-only display's prop of the same name, so both components are configured alike. Each match is
+  looked up against `items` (keyed by `itemTransformFunction`, falling back to
+  `itemDisplayFunction`); a match that resolves to a real item becomes a chip, one that resolves to
+  nothing is left as plain text — the editable component never shows a chip for an item it does not
+  have. Omit to disable hydration. Replaced the old `getItemIdPrefix`, whose silent
+  `token.startsWith(prefix)` guard skipped items without warning.
 - `renderItemOption?/renderItemDetails?` — dropdown row / details dialog body renderers.
 - `isItemDisabled?(item)` — return true and that dropdown row is not selectable. Passed straight to
   cmdk's `CommandItem disabled`, which blocks click/Enter AND skips the row during arrow
@@ -161,6 +206,19 @@ ANY item type and fails at runtime instead of at the call site. Verified: handin
   the amber border while the icon still shows).
 - `triggerKey?` (default `':'`), `className`, `selectItemClassName`, `chipClassName`, `placeholder`, `searchPlaceholder`, `emptyText`, `disabled`, `chipMenuItems?`, `onBlur`, `id`.
 - `showClearButton?` (default `true`), `clearButtonClassName?`.
+- `showOriginal?` turns OFF the automatic id scan, on BOTH passes — the incoming value and the
+  blur-time one — so raw text stays raw. A dropdown pick inserts the `itemTransformFunction` text as
+  PLAIN TEXT (not a chip), so while the flag is on nothing on screen is a chip. That insertion goes
+  in as a text node followed by a re-parse, which keeps the caret after the inserted text rather
+  than re-mounting, and it is bracketed so it forms its own undo entry. The flag rides on
+  `hydrationRef` so the stable blur handler reads the current value.
+  It is also REACTIVE: a dedicated effect watches the flag and converts the CURRENT content in
+  place, both ways — ON flattens chips via `flattenAutoCompleteValue`, OFF re-scans via
+  `hydrateAutoCompleteValue`. It reads the content from the DOM (not `render.segments`, which is
+  intentionally stale between structural changes), skips work when either helper returns its input
+  reference unchanged, and only touches the caret when the editor actually has focus, so a toggle
+  elsewhere on the page cannot steal it. The conversion is lossless for the submitted string but
+  emits a new value, which dirties a react-hook-form field.
 
 ## Clear button
 
@@ -240,15 +298,123 @@ shadcn Textarea. The hard part is React vs. browser ownership of the DOM. The ru
 
 ## Id detection / hydration (`hydrateAutoCompleteValue`)
 
-Scans only text segments. Performance: builds `token = itemTransformFunction(item)` per item and a
-set of prefixes; the text is searched with `indexOf(prefix)` — each prefix occurrence is the only
-candidate position where full tokens are compared (longest match wins). Returns the ORIGINAL array
-reference when nothing matched (callers rely on that identity check). Runs:
+Scans only text segments. Candidates come from `getItemRegex()` (a fresh `g`-flagged copy per scan,
+so a caller-held regex never has its `lastIndex` mutated); each match is resolved back to an item
+through the text -> item map built from `items`, keyed by `resolveItemText`. A match that resolves
+to nothing is LEFT AS TEXT, and text that two or more items serialize to is treated as ambiguous
+and also left as text. Returns the ORIGINAL array reference when nothing matched (callers rely on
+that identity check). Runs:
 1. **On mount / true external value change** (the `[value]` effect). If hydration changed anything
    the hydrated value is emitted back so the form state gets the chips.
-2. **On blur** (`handleBlur`): re-parse DOM → hydrate → `commitStructural(..., { type: 'none' })`.
-   Skipped when `event.relatedTarget` is still inside the wrapper or the dropdown is open —
-   otherwise the remount would kill the chip menu / dropdown that is opening mid-interaction.
+2. **On every input** (`handleInput`) — typing, pasting, cutting; switched off by the
+   `updateOnBlur` prop, which reverts to blur-only detection. The match the caret is sitting in
+   (or immediately against) is passed as `protectedCaret` and skipped: converting an id under the
+   cursor would pull the text out from under it, and the id may not be finished yet. So an id chips
+   as soon as the caret moves off it, and a paste chips every id except one ending exactly at the
+   caret. Cost is one regex pass next to the DOM parse that already ran — measured at ~0.4 ms
+   median (1.4 ms max) per keystroke over a 7k-character document holding 181 chips. The expensive
+   part, re-mounting the surface, only runs when something actually converts.
+3. **On blur** (`handleBlur`): re-parse DOM → hydrate → `commitStructural(..., { type: 'none' })`.
+   This is what catches the id left protected at the caret. Skipped when `event.relatedTarget` is
+   still inside the wrapper or the dropdown is open — otherwise the remount would kill the chip
+   menu / dropdown that is opening mid-interaction.
+
+The typing-time scan is what needs `readEditorDom` (the caret-aware form of `parseEditorDom`) and
+the `'text-offset'` `PendingCaret`: the caret is translated DOM -> segment space on the way in, and
+back to an absolute character offset on the way out. Hydration is length-preserving in that space
+(a chip is only ever created from text equal to its own serialization), so the offset still points
+at the same character after the conversion, and `placeCaretAtAbsoluteTextOffset` walks the
+re-mounted DOM to put the caret back — the user keeps typing mid-sentence without noticing.
+The scan is skipped while `showOriginal` is on, while an IME composition is in flight, while the
+dropdown is open, and whenever the caret cannot be resolved to a text node.
+
+## autoFocus
+
+`autoFocus` focuses the surface and drops the caret at the end, once — React's own `autoFocus` does
+nothing here because the surface is a contentEditable div, not an `<input>`.
+
+"Once" is the first moment the component is ELIGIBLE (`autoFocus` on, `disabled` off), not
+literally mount, which is why the effect depends on both flags rather than running mount-only: a
+text area that mounts disabled cannot be focused then, and a mount-only effect would leave it never
+focused at all. `didAutoFocusRef` is what holds it to a single shot, so a prop that flips back and
+forth does not re-focus. Demoed by `_components/AutoCompleteDialogFocusDemo.tsx` on the test page.
+
+Two things it has to get right, both learned the hard way:
+- **It runs two animation frames out**, not synchronously. A Radix dialog claims focus for its
+  content when it opens, after this effect runs, and lands on the first tabbable thing inside —
+  which, with a hydrated initial value, is a CHIP. Focusing synchronously just loses that race.
+- **The "already focused" flag is set inside the frame callback**, not when the frames are
+  scheduled. StrictMode invokes the effect twice and the first run's cleanup cancels its frames, so
+  flagging up front makes the surviving run skip the focus entirely — the failure looks exactly
+  like the race above.
+
+It never fires twice. The surface re-mounts on every structural change (`render.key`), and
+refocusing on those would drag focus out of a chip menu or dropdown mid-use.
+
+## Read-only copy button (`showCopyButton`, default true)
+
+A copy button in the display's top right corner copies the WHOLE rendered content as one string:
+`readOnlySegmentsToCopyText` walks the same segments that were rendered, keeping plain runs verbatim
+and replacing each chip with `itemCopyContentFunction(item)`. So a display reading
+"she is [Ada Lovelace]" copies as "she is ada@example.com". Fallback order for a chip is
+content function -> matched text, so an unresolved id (or a display given no content function)
+copies as the raw id rather than vanishing. With `showOriginal` on there are no chips, so the
+string round-trips exactly.
+
+Feedback is a transient icon swap (Copy -> Check, 1.5s) rather than a toast: the button is a fixed
+part of the component, unlike the chip menu entries which are swappable defaults, so it stays free
+of whatever notification library the host app uses. The wrapper gains `relative` plus `pr-8` while
+the button is shown; `copyButtonClassName` repositions it. It is not rendered at all for empty text.
+
+## z-index inside a dialog
+
+Every popper this feature portals to `<body>` carries `z-[200]`: the chip menu (editable and
+read-only) and the caret-anchored dropdown. The shadcn defaults are `z-50`, and this project's
+dialog sits at `z-150` (`components/ui/dialog.tsx`), so a text area used INSIDE a dialog rendered
+its menus underneath it — open in the DOM, `isVisible()` true, but painted under the dialog panel
+and unclickable (`elementFromPoint` at the menu's centre returns the dialog). Radix copies the
+content's computed z-index onto the popper wrapper, so setting it on the content is enough.
+`components/ui/select.tsx` already uses `z-[200]` for exactly this reason — same layer, on purpose.
+
+## Placeholder <br> after a delete next to a chip
+
+Chromium answers a delete that empties a text node sitting next to a chip by dropping a bare `<br>`
+in its place: deleting the "a" from `a[chip]` leaves `<br>[chip]`. Three symptoms, one cause — the
+chip is bumped onto a second visual line, the caret is stranded on the empty line above it, and
+`parseEditorDom` reads the `<br>` as a leading newline the user never typed, so the VALUE is wrong
+too, not just the rendering.
+
+`handleInput` cleans this up via `removePlaceholderLineBreaks`, gated on two conditions together:
+the input was a DELETE (`inputType` starts with `delete`, or `handleCut` passing `isDeletion`), and
+the parse gained newlines versus `lastEmittedRef.current`. A deletion cannot legitimately add a
+line on any browser, so that combination is proof of a browser placeholder. The gate matters:
+Firefox and Safari represent Enter as a real `<br>`, and blanket-stripping would eat their line
+breaks. Within the gate, breaks adjacent to a chip are removed first, and the caret is placed where
+the first removed one was.
+
+Worth knowing for future debugging — in Chromium this editor never produces a `<br>` from user
+input: Enter yields `<div>` wrappers and Shift+Enter yields a "\n" text node. Every `<br>` seen
+there is a placeholder. That is NOT true cross-browser, hence the gate rather than a blanket rule.
+
+## Undo / redo
+
+Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z (plus Ctrl+Y) are handled by the component, over a history of
+VALUE snapshots — the browser's native stack cannot serve this component, because every structural
+change remounts the editable surface (`render.key`) and throws that stack away, and chips are
+inserted by direct DOM manipulation the browser never records. Left alone, typing was partly
+undoable but a chip insertion was not undoable at all.
+
+- `historyRef` / `historyIndexRef` hold the snapshots and the cursor; `recordHistory` is called from
+  `handleInput` (typing) and `commitStructural` (every structural change).
+- Consecutive typing within `HISTORY_COALESCE_MS` (600ms) collapses into ONE entry, so a single
+  undo removes a word/burst rather than one character. Structural changes always get their own entry.
+- A new edit after undoing drops the redo branch. `HISTORY_LIMIT` (200) caps retained snapshots.
+- `isRestoringRef` stops a restore from recording itself; restores go through `commitStructural`
+  with an end-of-content caret.
+- An incoming external value (form reset, setValue) re-seeds the history — the previous document's
+  entries are no longer meaningful.
+- The key handler and `commitStructural` reach `undo`/`redo`/`recordHistory` through refs, since
+  they are declared earlier; those refs are synced in the commit-phase effect, never during render.
 
 ## Focus/Radix gotchas (hard-won — do not "simplify" these away)
 

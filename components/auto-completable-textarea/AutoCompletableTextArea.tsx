@@ -7,6 +7,7 @@ import {
   Fragment,
   useEffect,
   FocusEvent,
+  FormEvent,
   useCallback,
   KeyboardEvent,
   ClipboardEvent,
@@ -18,8 +19,9 @@ import { cn } from '@/lib/utils';
 import AutoCompleteDropdown from './AutoCompleteDropdown';
 import AutoCompleteItemChip from './AutoCompleteItemChip';
 import AutoCompleteClearButton from './AutoCompleteClearButton';
+import AutoCompleteItemDetailsDialog from '@/components/auto-completable-shared/AutoCompleteItemDetailsDialog';
 import { getDefaultChipMenuItems } from './AutoCompleteChipMenu';
-import AutoCompleteItemDetailsDialog from './AutoCompleteItemDetailsDialog';
+
 import {
   AutoCompleteValue,
   AutoCompleteSegment,
@@ -29,19 +31,32 @@ import {
 import {
   generateChipId,
   parseEditorDom,
+  readEditorDom,
   placeCaretAtEnd,
   collectChipItems,
   placeCaretAfterNode,
   placeCaretAtTextOffset,
   autoCompleteValueToText,
   hydrateAutoCompleteValue,
+  flattenAutoCompleteValue,
   isAutoCompleteValueEmpty,
+  getEditorDomCaret,
+  countTextNewlines,
+  getAbsoluteTextOffset,
   getCaretPositionInWrapper,
   areAutoCompleteValuesEqual,
+  placeCaretAtAbsoluteTextOffset,
+  removePlaceholderLineBreaks,
   getElementPositionInWrapper,
   AUTOCOMPLETE_CHIP_ID_ATTRIBUTE,
   AUTOCOMPLETE_INSERT_MARKER_ATTRIBUTE,
 } from './autocompletable-textarea.utils';
+
+/** Consecutive typing within this many ms collapses into a single undo entry. */
+const HISTORY_COALESCE_MS = 600;
+
+/** Cap on retained undo snapshots, so a long editing session cannot grow without bound. */
+const HISTORY_LIMIT = 200;
 
 /**
  * State of the caret-anchored dropdown: closed (null), inserting a brand new chip at the caret,
@@ -58,10 +73,12 @@ interface DropdownState {
  * unfocused (e.g. blur-time id detection) so focus is not stolen back.
  */
 interface PendingCaret {
-  type: 'after-chip' | 'end' | 'none';
+  type: 'after-chip' | 'text-offset' | 'end' | 'none';
   chipId?: string;
   /** When set, the caret goes this many characters into the text node following the chip. */
   offsetIntoNext?: number;
+  /** For 'text-offset': absolute character offset into the committed content (chips count as their text). */
+  offset?: number;
 }
 
 /**
@@ -94,7 +111,7 @@ export default function AutoCompletableTextArea<T>({
   filterFunction,
   itemDisplayFunction,
   itemTransformFunction,
-  getItemIdPrefix,
+  getItemRegex,
   renderItemOption,
   isItemDisabled,
   renderItemDetails,
@@ -107,6 +124,9 @@ export default function AutoCompletableTextArea<T>({
   searchPlaceholder,
   emptyText,
   disabled,
+  autoFocus = false,
+  showOriginal,
+  updateOnBlur = false,
   showClearButton = true,
   clearButtonClassName,
   chipMenuItems,
@@ -130,11 +150,39 @@ export default function AutoCompletableTextArea<T>({
   /** Last value this component emitted, used to tell external resets apart from our own echoes. */
   const lastEmittedRef = useRef<AutoCompleteValue<T>>(value);
 
+  /**
+   * Undo/redo history over the VALUE, not the DOM.
+   *
+   * The browser's native undo stack is unusable here: every structural change remounts the editable
+   * surface (see `render.key`), which throws that stack away, and chips are inserted by direct DOM
+   * manipulation, which the browser never records. So Ctrl/Cmd+Z is handled here instead, over
+   * snapshots of the segment value.
+   */
+  const historyRef = useRef<AutoCompleteValue<T>[]>([value]);
+  const historyIndexRef = useRef<number>(0);
+  const lastRecordAtRef = useRef<number>(0);
+  const lastRecordWasTypingRef = useRef<boolean>(false);
+  /** True while a snapshot is being restored, so the restore does not record itself. */
+  const isRestoringRef = useRef<boolean>(false);
+  /** Indirection so commitStructural (declared first, deps []) can reach recordHistory. */
+  const recordHistoryRef = useRef<(next: AutoCompleteValue<T>, isTyping: boolean) => void>(() => {});
+  /** Same indirection for the key handler, which is declared before undo/redo exist. */
+  const undoRef = useRef<() => void>(() => {});
+  const redoRef = useRef<() => void>(() => {});
+  /** ...and for the dropdown handler, which is declared before handleInput. */
+  const handleInputRef = useRef<() => void>(() => {});
+
   // Keep the latest onValueChange reachable from stable callbacks.
   const onValueChangeRef = useRef(onValueChange);
 
   // Latest item-related props, reachable from stable callbacks and the value-sync effect.
-  const hydrationRef = useRef({ items, itemTransformFunction, getItemIdPrefix });
+  const hydrationRef = useRef({
+    getItemRegex,
+    resolveItemFromText: (_matchedText: string): T | undefined => undefined,
+    resolveItemText: (_item: T): string => '',
+    showOriginal,
+    updateOnBlur,
+  });
 
   // Refs are synced in the commit phase, never during render: a render that is double-invoked
   // (StrictMode) or interrupted and thrown away must not leave handlers reading values from a
@@ -143,7 +191,11 @@ export default function AutoCompletableTextArea<T>({
   useEffect(() => {
     dropdownStateRef.current = dropdownState;
     onValueChangeRef.current = onValueChange;
-    hydrationRef.current = { items, itemTransformFunction, getItemIdPrefix };
+    hydrationRef.current = { getItemRegex, resolveItemFromText, resolveItemText, showOriginal, updateOnBlur };
+    recordHistoryRef.current = recordHistory;
+    undoRef.current = undo;
+    redoRef.current = redo;
+    handleInputRef.current = handleInput;
   });
 
   /**
@@ -158,13 +210,42 @@ export default function AutoCompletableTextArea<T>({
     [itemDisplayFunction, itemTransformFunction],
   );
 
+  /**
+   * matched text -> item, so a regex match can be resolved back to a real item in O(1).
+   * Built from the same `items` the dropdown uses, keyed by each item's serialized text, so the
+   * component never needs a separate resolver prop the way the read-only display does.
+   *
+   * Text that two or more items serialize to is recorded as AMBIGUOUS rather than letting the last
+   * one win: there is no way to tell which item was meant, and silently guessing would attach an
+   * arbitrary item to the chip. Ambiguous text resolves to nothing, so it stays plain text — the
+   * same outcome as text that matches no item at all.
+   */
+  const { itemsByText, ambiguousItemTexts } = useMemo(() => {
+    const byText = new Map<string, T>();
+    const ambiguous = new Set<string>();
+    for (const item of items) {
+      const text = resolveItemText(item);
+      if (byText.has(text)) {
+        ambiguous.add(text);
+        continue;
+      }
+      byText.set(text, item);
+    }
+    return { itemsByText: byText, ambiguousItemTexts: ambiguous };
+  }, [items, resolveItemText]);
+
+  const resolveItemFromText = useCallback(
+    (matchedText: string) => (ambiguousItemTexts.has(matchedText) ? undefined : itemsByText.get(matchedText)),
+    [itemsByText, ambiguousItemTexts],
+  );
+
   const resolvedChipMenuItems = useMemo(() => chipMenuItems ?? getDefaultChipMenuItems<T>(), [chipMenuItems]);
 
   const mountedRef = useRef(false);
 
   // Incoming value sync. On mount and on every true external change (form reset, setValue, ...)
-  // the value is hydrated — plain-text item ids (recognized via getItemIdPrefix +
-  // itemTransformFunction) are swapped into chips — and the surface is re-mounted from it.
+  // the value is hydrated — plain-text item ids (found via getItemRegex, then resolved against
+  // items) are swapped into chips — and the surface is re-mounted from it.
   // Our own emissions round-trip back here with equal content and are ignored, preserving the caret.
   useEffect(() => {
     const isMount = !mountedRef.current;
@@ -173,20 +254,69 @@ export default function AutoCompletableTextArea<T>({
         lastEmittedRef.current = value;
         return;
       }
-    const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix } = hydrationRef.current;
-    const hydrated = transform && idPrefix ? hydrateAutoCompleteValue(value, currentItems, transform, idPrefix) : value;
+    const { getItemRegex: regex, resolveItemFromText: resolve, resolveItemText: toText, showOriginal: raw } = hydrationRef.current;
+    // showOriginal means nothing on screen is a chip, so an incoming value carrying item segments
+    // (a form reset to chipped defaults, a controlled parent) is flattened back to its raw text
+    // rather than passed through. Without the flag, ids in the text are scanned into chips instead.
+    const hydrated =
+      raw ? flattenAutoCompleteValue(value, toText)
+      : regex ? hydrateAutoCompleteValue(value, regex(), resolve)
+      : value;
     const changedByHydration = hydrated !== value && !areAutoCompleteValuesEqual(hydrated, value);
     if (isMount && !changedByHydration) {
       lastEmittedRef.current = value;
       return;
     }
     lastEmittedRef.current = hydrated;
+    // An external value (form reset, setValue) starts a fresh history — the previous document's
+    // undo entries are no longer meaningful.
+    historyRef.current = [hydrated];
+    historyIndexRef.current = 0;
+    lastRecordWasTypingRef.current = false;
     chipItemsRef.current = collectChipItems(hydrated);
     setRender((prev: EditorRenderState<T>) => ({ key: prev.key + 1, segments: hydrated }));
     if (changedByHydration) {
       onValueChangeRef.current(hydrated);
     }
   }, [value]);
+
+  /** True once the autoFocus effect has fired, so it never takes focus a second time. */
+  const didAutoFocusRef = useRef<boolean>(false);
+
+  /**
+   * autoFocus: focus the surface and drop the caret at the end of the content, once.
+   *
+   * "Once" is the first moment the component is eligible — `autoFocus` on and not `disabled` —
+   * which is why both are dependencies rather than this being a mount-only effect. A text area
+   * that mounts disabled could not be focused then, and a mount-only effect would leave it never
+   * focused at all; `didAutoFocusRef` is what keeps it to a single shot. See the prop's doc
+   * comment for the contract this exposes.
+   */
+  useEffect(() => {
+    if (!autoFocus || disabled || didAutoFocusRef.current) {
+      return;
+    }
+    let frameId = 0;
+    const focusEditor = () => {
+      const editor = editorRef.current;
+      if (!editor) {
+        return;
+      }
+      // Flagged here rather than when the frames are scheduled: in StrictMode the effect is
+      // invoked twice and the first run's frames are cancelled by its cleanup, so flagging up
+      // front would make the surviving run skip the focus entirely.
+      didAutoFocusRef.current = true;
+      editor.focus();
+      placeCaretAtEnd(editor);
+    };
+    // Two frames out: a Radix dialog claims focus for its own content on open (landing on the
+    // first tabbable thing inside, often a chip), and that happens after this effect runs. One
+    // frame is not always enough, so this settles on the second.
+    frameId = window.requestAnimationFrame(() => {
+      frameId = window.requestAnimationFrame(focusEditor);
+    });
+    return () => window.cancelAnimationFrame(frameId);
+  }, [autoFocus, disabled]);
 
   // After a structural re-mount, put the caret back where the user expects it.
   useLayoutEffect(() => {
@@ -197,6 +327,12 @@ export default function AutoCompletableTextArea<T>({
       return;
     }
     editor.focus();
+    if (caret.type === 'text-offset' && caret.offset !== undefined) {
+      const placed = placeCaretAtAbsoluteTextOffset(editor, chipItemsRef.current, hydrationRef.current.resolveItemText, caret.offset);
+      if (placed) {
+        return;
+      }
+    }
     if (caret.type === 'after-chip' && caret.chipId) {
       const chipElement = editor.querySelector(`[${AUTOCOMPLETE_CHIP_ID_ATTRIBUTE}="${caret.chipId}"]`);
       if (chipElement) {
@@ -222,23 +358,168 @@ export default function AutoCompletableTextArea<T>({
     lastEmittedRef.current = segments;
     setRender((prev: EditorRenderState<T>) => ({ key: prev.key + 1, segments: segments }));
     onValueChangeRef.current(segments);
+    recordHistoryRef.current(segments, false);
   }, []);
 
-  /** Plain typing: parse the DOM into segments and emit, without touching the rendered tree. */
-  const handleInput = useCallback(() => {
+  /**
+   * Appends a snapshot to the history.
+   *
+   * Consecutive typing inside a short window is coalesced into one entry, so a single Ctrl+Z undoes
+   * a word or burst rather than one character — closer to what a native textarea does. Structural
+   * changes (chip inserted / removed / edited, clear, showOriginal conversion) always get their own
+   * entry. Redo entries ahead of the cursor are dropped once a new edit branches off them.
+   */
+  const recordHistory = useCallback((next: AutoCompleteValue<T>, isTyping: boolean) => {
+    if (isRestoringRef.current) {
+      return;
+    }
+    const now = Date.now();
+    const entries = historyRef.current;
+    // Drop any redo branch: a fresh edit invalidates whatever came after the cursor.
+    if (historyIndexRef.current < entries.length - 1) {
+      entries.length = historyIndexRef.current + 1;
+    }
+    const coalesce = isTyping && lastRecordWasTypingRef.current && now - lastRecordAtRef.current < HISTORY_COALESCE_MS;
+    if (coalesce && entries.length > 0) {
+      entries[entries.length - 1] = next;
+    } else {
+      entries.push(next);
+      if (entries.length > HISTORY_LIMIT) {
+        entries.shift();
+      }
+    }
+    historyIndexRef.current = entries.length - 1;
+    lastRecordAtRef.current = now;
+    lastRecordWasTypingRef.current = isTyping;
+  }, []);
+
+  /** Restores a snapshot without recording it, and re-seeds the coalescing window. */
+  const restoreHistoryEntry = useCallback(
+    (entry: AutoCompleteValue<T>) => {
+      isRestoringRef.current = true;
+      try {
+        commitStructural(entry, { type: 'end' });
+      } finally {
+        isRestoringRef.current = false;
+      }
+      lastRecordWasTypingRef.current = false;
+    },
+    [commitStructural],
+  );
+
+  const undo = useCallback(() => {
+    if (historyIndexRef.current <= 0) {
+      return;
+    }
+    historyIndexRef.current = historyIndexRef.current - 1;
+    restoreHistoryEntry(historyRef.current[historyIndexRef.current]);
+  }, [restoreHistoryEntry]);
+
+  const redo = useCallback(() => {
+    if (historyIndexRef.current >= historyRef.current.length - 1) {
+      return;
+    }
+    historyIndexRef.current = historyIndexRef.current + 1;
+    restoreHistoryEntry(historyRef.current[historyIndexRef.current]);
+  }, [restoreHistoryEntry]);
+
+  /** Previous showOriginal, so the effect below only fires on an actual flip, not on mount. */
+  const previousShowOriginalRef = useRef(showOriginal);
+
+  // Toggling showOriginal converts the CURRENT content in place, both ways:
+  //   ON  -> existing chips flatten back into the raw text they represent
+  //   OFF -> raw ids in the text are scanned back into chips
+  // The content is read from the DOM rather than `render.segments`, because plain typing is
+  // browser-owned and those segments are intentionally stale between structural changes.
+  useEffect(() => {
+    const previous = previousShowOriginalRef.current;
+    previousShowOriginalRef.current = showOriginal;
+    if (previous === showOriginal) {
+      return;
+    }
     const editor = editorRef.current;
     if (!editor) {
       return;
     }
-    const segments = parseEditorDom(editor, chipItemsRef.current);
-    lastEmittedRef.current = segments;
-    editor.setAttribute('data-empty', String(isAutoCompleteValueEmpty(segments)));
-    onValueChangeRef.current(segments);
-  }, []);
+    const current = parseEditorDom(editor, chipItemsRef.current);
+    const converted =
+      showOriginal ? flattenAutoCompleteValue(current, resolveItemText)
+      : getItemRegex ? hydrateAutoCompleteValue(current, getItemRegex(), resolveItemFromText)
+      : current;
+    // Both helpers return the original reference when they had nothing to do.
+    if (converted === current) {
+      return;
+    }
+    // Only reach for the caret if the user is actually in the editor; a toggle elsewhere on the
+    // page must not steal focus.
+    const hasFocus = editor.contains(document.activeElement);
+    commitStructural(converted, { type: hasFocus ? 'end' : 'none' });
+  }, [showOriginal, getItemRegex, resolveItemFromText, resolveItemText, commitStructural]);
+
+  /**
+   * Plain typing: parse the DOM into segments and emit, without touching the rendered tree.
+   *
+   * This also runs the id scan, so an id that was typed or pasted turns into a chip as soon as the
+   * caret moves off it — no blur needed. The match the caret is sitting in is deliberately left
+   * alone (see `hydrateAutoCompleteValue`): converting an id mid-keystroke would pull the text out
+   * from under the cursor while it may still be unfinished.
+   *
+   * Cost per keystroke is one regex pass over the text, next to the DOM parse that already happens
+   * here; the expensive part — re-mounting the surface — only runs when a match is actually
+   * converted, which is rare. When nothing converts, this is the same work as before.
+   */
+  const handleInput = useCallback(
+    (event?: FormEvent<HTMLDivElement>, options?: { isDeletion?: boolean }) => {
+      const editor = editorRef.current;
+      if (!editor) {
+        return;
+      }
+      const nativeEvent = event !== undefined && event.nativeEvent instanceof InputEvent ? event.nativeEvent : null;
+      let parsed = readEditorDom(editor, chipItemsRef.current, { caret: getEditorDomCaret(editor) });
+
+      // Chromium answers a delete that empties a text node next to a chip by dropping a bare <br>
+      // in its place, which bumps the chip onto a second visual line, leaves the caret stranded on
+      // the empty line above it, and shows up in the value as a newline the user never typed.
+      // A deletion cannot legitimately ADD a line, so newlines appearing on one is proof of a
+      // browser placeholder — and that guard is what keeps a real <br> newline (how Firefox and
+      // Safari represent Enter) safe from this cleanup.
+      const isDeletion = options?.isDeletion === true || nativeEvent?.inputType.startsWith('delete') === true;
+      if (isDeletion) {
+        const gainedNewlines = countTextNewlines(parsed.segments) - countTextNewlines(lastEmittedRef.current);
+        if (removePlaceholderLineBreaks(editor, gainedNewlines)) {
+          parsed = readEditorDom(editor, chipItemsRef.current, { caret: getEditorDomCaret(editor) });
+        }
+      }
+
+      const { segments, caret: caretInSegments } = parsed;
+
+      const { getItemRegex: regex, resolveItemFromText: resolve, resolveItemText: toText, showOriginal: raw, updateOnBlur: blurOnly } = hydrationRef.current;
+      // Mid-composition (IME) the text is not final yet, and the dropdown owns the caret while it
+      // is open — neither is a moment to restructure the content.
+      const isComposing = event !== undefined && event.nativeEvent instanceof InputEvent && event.nativeEvent.isComposing;
+      const canScan =
+        !raw && !blurOnly && regex !== undefined && !isComposing && caretInSegments !== null && dropdownStateRef.current === null;
+      const hydrated = canScan && regex ? hydrateAutoCompleteValue(segments, regex(), resolve, caretInSegments) : segments;
+
+      editor.setAttribute('data-empty', String(isAutoCompleteValueEmpty(segments)));
+
+      if (hydrated !== segments && caretInSegments !== null) {
+        // Hydration preserves the serialized text exactly, so the caret's absolute offset still
+        // points at the same character once the chips are in place.
+        commitStructural(hydrated, { type: 'text-offset', offset: getAbsoluteTextOffset(segments, caretInSegments, toText) });
+        return;
+      }
+
+      lastEmittedRef.current = segments;
+      onValueChangeRef.current(segments);
+      recordHistoryRef.current(segments, true);
+    },
+    [commitStructural],
+  );
 
   /**
    * Blur: run id detection over the current content — any existing item id typed or pasted as
-   * plain text (recognized via getItemIdPrefix + itemTransformFunction) is converted into an
+   * plain text (found via getItemRegex, then resolved against items) is converted into an
    * autocompleted item chip. Committed without touching focus, so nothing is stolen back.
    */
   const handleBlur = useCallback(
@@ -248,10 +529,11 @@ export default function AutoCompletableTextArea<T>({
       // Focus moving within the component (a chip button, the dropdown opening) is not a real
       // "leave" — re-mounting mid-interaction would break the menu/dropdown that is opening.
       const stillInside = event.relatedTarget !== null && wrapper !== null && wrapper.contains(event.relatedTarget);
-      const { items: currentItems, itemTransformFunction: transform, getItemIdPrefix: idPrefix } = hydrationRef.current;
-      if (editor && transform && idPrefix && !stillInside && !dropdownStateRef.current) {
+      const { getItemRegex: regex, resolveItemFromText: resolve, showOriginal: raw } = hydrationRef.current;
+      // showOriginal also switches off the blur-time scan, so typed ids stay as typed.
+      if (editor && !raw && regex && !stillInside && !dropdownStateRef.current) {
         const segments = parseEditorDom(editor, chipItemsRef.current);
-        const hydrated = hydrateAutoCompleteValue(segments, currentItems, transform, idPrefix);
+        const hydrated = hydrateAutoCompleteValue(segments, regex(), resolve);
         if (hydrated !== segments) {
           commitStructural(hydrated, { type: 'none' });
         }
@@ -301,7 +583,8 @@ export default function AutoCompletableTextArea<T>({
       range.deleteContents();
       selection.removeAllRanges();
       selection.addRange(range);
-      handleInput();
+      // Flagged as a deletion: a cut can strand the same placeholder <br> a Backspace does.
+      handleInput(undefined, { isDeletion: true });
     },
     [resolveItemText, handleInput],
   );
@@ -341,6 +624,24 @@ export default function AutoCompletableTextArea<T>({
       if (disabled || event.nativeEvent.isComposing) {
         return;
       }
+      // Undo/redo is handled here, over the value history. The native stack cannot serve this
+      // component (structural changes remount the surface and chips are inserted via direct DOM
+      // manipulation), so the browser default is suppressed rather than left to fight ours.
+      const isUndoModifier = event.metaKey || event.ctrlKey;
+      if (isUndoModifier && (event.key === 'z' || event.key === 'Z')) {
+        event.preventDefault();
+        if (event.shiftKey) {
+          redoRef.current();
+        } else {
+          undoRef.current();
+        }
+        return;
+      }
+      if (isUndoModifier && !event.shiftKey && (event.key === 'y' || event.key === 'Y')) {
+        event.preventDefault();
+        redoRef.current();
+        return;
+      }
       if (event.key === triggerKey && !event.ctrlKey && !event.metaKey && !event.altKey) {
         // The trigger key itself is swallowed — it only opens the dropdown, it is never typed.
         event.preventDefault();
@@ -370,6 +671,32 @@ export default function AutoCompletableTextArea<T>({
       }
       setDropdownState(null);
 
+      // showOriginal means "show me the underlying text": a pick inserts the item's raw text
+      // (itemTransformFunction) at the caret rather than a chip, so nothing on screen is a chip
+      // while the flag is on. Inserted as a text node and re-parsed, which keeps the caret right
+      // after the inserted text instead of re-mounting the surface.
+      if (showOriginal) {
+        const insertedText = resolveItemText(item);
+        const range = insertRangeRef.current;
+        const textNode = document.createTextNode(insertedText);
+        if (range && editor.contains(range.commonAncestorContainer)) {
+          range.deleteContents();
+          range.insertNode(textNode);
+          placeCaretAfterNode(textNode);
+        } else {
+          editor.appendChild(textNode);
+          placeCaretAtEnd(editor);
+        }
+        editor.focus();
+        // Bracket the emit so this insertion is its own undo entry, never coalesced with the
+        // typing before or after it.
+        lastRecordWasTypingRef.current = false;
+        handleInputRef.current();
+        lastRecordWasTypingRef.current = false;
+        insertRangeRef.current = null;
+        return;
+      }
+
       if (current.mode.type === 'edit') {
         const {chipId} = current.mode;
         const nextChipItems = new Map(chipItemsRef.current);
@@ -395,18 +722,13 @@ export default function AutoCompletableTextArea<T>({
       const segments = parseEditorDom(editor, chipItemsRef.current, { chipId: chipId, item: item });
       marker.remove();
 
-      // Guarantee a text node right after the chip so typing can continue naturally.
-      const chipIndex = segments.findIndex((segment: AutoCompleteSegment<T>) => segment.kind === 'item' && segment.chipId === chipId);
-      const followedByText = chipIndex >= 0 && segments[chipIndex + 1]?.kind === 'text';
-      let caret: PendingCaret = { type: 'after-chip', chipId: chipId };
-      if (chipIndex >= 0 && !followedByText) {
-        segments.splice(chipIndex + 1, 0, { kind: 'text', text: ' ' });
-        caret = { type: 'after-chip', chipId: chipId, offsetIntoNext: 1 };
-      }
-      commitStructural(segments, caret);
+      // No trailing space is added: the inserted content is exactly what was picked, matching what
+      // showOriginal mode does. The caret lands after the chip either way — see the caret-restore
+      // layout effect, which falls back to placeCaretAfterNode when no text node follows.
+      commitStructural(segments, { type: 'after-chip', chipId: chipId });
       insertRangeRef.current = null;
     },
-    [dropdownState, commitStructural],
+    [dropdownState, commitStructural, showOriginal, resolveItemText],
   );
 
   /** Escape / outside click: close the dropdown and hand focus back to the text area. */
@@ -484,7 +806,9 @@ export default function AutoCompletableTextArea<T>({
         key={ segment.chipId }
         chipId={ segment.chipId }
         item={ segment.item }
-        label={ itemDisplayFunction(segment.item) }
+        // showOriginal means "show me the underlying value": the chip is labelled with the text that
+        // would be sent to the server (itemTransformFunction) instead of the friendly display text.
+        label={ showOriginal ? resolveItemText(segment.item) : itemDisplayFunction(segment.item) }
         serverText={ resolveItemText(segment.item) }
         isItemDisabled={ isItemDisabled?.(segment.item) ?? false }
         className={ chipClassName }
@@ -565,6 +889,7 @@ export default function AutoCompletableTextArea<T>({
         onClose={ () => setDetailsItem(null) }
         renderItemDetails={ renderItemDetails }
         title={ detailsDialogTitle }
+        description="Everything about this autocompleted item."
       />
     </div>
   );

@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 
+import { ChipMenuItemConfig, ItemDisplayFunction, RenderItemDetails } from '@/components/auto-completable-shared/autocompletable-shared.models';
+
 /**
  * A plain text chunk the user typed themselves inside the text area.
  */
@@ -56,19 +58,11 @@ export interface AutoCompleteChipMenuContext<T> {
  * One entry of the popover menu shown when an autocompleted item (chip) is clicked.
  * The menu is fully composable: pass your own array via the `chipMenuItems` prop to add,
  * remove or reorder options. Defaults live in `AutoCompleteChipMenu.tsx`.
+ *
+ * The shape comes from the shared `ChipMenuItemConfig`; the context stays this component's own,
+ * so these entries only ever see editable-text-area actions (edit / show details / remove).
  */
-export interface AutoCompleteChipMenuItemConfig<T> {
-  /** Unique key for React rendering. */
-  key: string;
-  /** Label shown in the menu, can be any node. */
-  label: ReactNode;
-  /** Optional leading icon node. */
-  icon?: ReactNode;
-  /** Renders the menu item in the destructive style (red) when true. */
-  destructive?: boolean;
-  /** Called when the menu item is picked. Use the context to run built-in actions or your own. */
-  onSelect: (context: AutoCompleteChipMenuContext<T>) => void;
-}
+export type AutoCompleteChipMenuItemConfig<T> = ChipMenuItemConfig<AutoCompleteChipMenuContext<T>>;
 
 /**
  * Where the caret-anchored dropdown should be positioned, relative to the component wrapper.
@@ -94,23 +88,30 @@ export interface AutoCompletableTextAreaProps<T> {
   /** Filter callback used by the dropdown's search inbox. Return true to keep the item. */
   filterFunction: (item: T, filter: string) => boolean;
   /** Returns the text shown inside the chip once an item is autocompleted into the text area. */
-  itemDisplayFunction: (item: T) => string;
+  itemDisplayFunction: ItemDisplayFunction<T>;
   /**
    * Serializes an autocompleted item to its "real" text (e.g. `item => item.id`).
    * Used when copying/cutting text-area content to the clipboard — chips are copied as this text —
-   * and to recognize item ids inside an incoming value (see `getItemIdPrefix`).
+   * and as the key an incoming value's matched text is resolved against (see `getItemRegex`).
    * Falls back to `itemDisplayFunction` when omitted.
    */
   itemTransformFunction?: (item: T) => string;
   /**
-   * Returns the prefix every item id (the `itemTransformFunction` output) starts with, e.g. 'GIST-'.
-   * When provided, incoming values (initial value, form resets) and the content on every blur of
-   * the text area are scanned for the prefix, and any matching item id found in plain text
-   * (typed or pasted) is swapped into an autocompleted item chip. The prefix keeps
-   * the scan cheap: only prefix occurrences are candidate positions, instead of matching every id at
-   * every character of the text. Omit to disable hydration.
+   * Returns the regex that identifies an item id inside plain text, e.g. `() => /GIST-\d{7}/g`.
+   * The same contract as the read-only display's prop of the same name, so both components are
+   * configured the same way.
+   *
+   * When provided, incoming values (initial value, form resets) and the content on every blur are
+   * scanned with it, and each match is looked up against `items` (keyed by `itemTransformFunction`,
+   * falling back to `itemDisplayFunction`). A match that resolves to a real item becomes a chip; a
+   * match that resolves to nothing is left as plain text, so this component never shows a chip for
+   * an item it does not have. Omit to disable hydration entirely.
+   *
+   * Takes no argument: it describes the id FORMAT, which must be known before any item exists to
+   * match against. Do not anchor it (`^`/`$`), or nothing inside a sentence can match; the `g` flag
+   * is applied for you and a fresh regex is used per scan, so `lastIndex` is never carried over.
    */
-  getItemIdPrefix?: (item: T) => string;
+  getItemRegex?: () => RegExp;
   /** Renders one row of the dropdown list. Falls back to `itemDisplayFunction` text when omitted. */
   renderItemOption?: (item: T) => ReactNode;
   /**
@@ -120,7 +121,7 @@ export interface AutoCompletableTextAreaProps<T> {
    */
   isItemDisabled?: (item: T) => boolean;
   /** Renders the body of the "Show details" dialog. Falls back to a generic key/value dump when omitted. */
-  renderItemDetails?: (item: T) => ReactNode;
+  renderItemDetails?: RenderItemDetails<T>;
   /** Title of the "Show details" dialog. */
   detailsDialogTitle?: ReactNode;
   /** Keyboard key that opens the dropdown at the caret (e.g. ':', '?', '+', '@'). Defaults to ':'. */
@@ -139,6 +140,53 @@ export interface AutoCompletableTextAreaProps<T> {
   emptyText?: string;
   /** Disables typing and chip interactions. */
   disabled?: boolean;
+  /**
+   * Focuses the text area ONCE and puts the caret at the end of the content.
+   *
+   * The editable surface is a contentEditable div, not an `<input>`, so React's own `autoFocus`
+   * does not apply to it — this prop is the equivalent.
+   *
+   * "Once" means the first moment the component is both mounted and eligible: `autoFocus` true and
+   * `disabled` false. Usually that is mount. But the flag is read reactively, so a text area that
+   * mounts `disabled` (or with `autoFocus` false) takes focus the moment that changes — which is
+   * the point, since focusing at mount was impossible then and a mount-only effect would leave it
+   * never focused at all. That also makes `autoFocus={isEditing}` work as written. It never fires
+   * a second time: the surface is re-mounted on every structural change (chip inserted, value
+   * reset), and refocusing on those would drag focus back out of a chip menu or dropdown the user
+   * is interacting with.
+   *
+   * Do NOT drive this from state that flips back and forth mid-session expecting each flip to
+   * re-focus — only the first eligible moment is honoured. An imperative focus handle would be the
+   * right tool for that, and does not exist yet.
+   *
+   * Inside a Radix dialog, focus is claimed by the dialog when it opens; this focus is deferred by
+   * two animation frames so it lands after that and wins.
+   */
+  autoFocus?: boolean;
+  /**
+   * Shows the content as-is: the automatic id scan is turned off, so raw text stays raw text
+   * instead of being converted into chips. Affects BOTH scan passes — the incoming value
+   * (initial value, form resets) and the one on blur. Picking from the dropdown also inserts the
+   * item's `itemTransformFunction` text as PLAIN TEXT rather than a chip, so while the flag is on
+   * nothing on screen is a chip and the underlying value is exactly what you see.
+   * The flag is REACTIVE: toggling it converts the current content in place, both ways. Switching
+   * it ON flattens existing chips back into the raw text they represent; switching it OFF scans raw
+   * ids back into chips. The conversion is lossless for the submitted string (a chip's raw text is
+   * its `itemTransformFunction` output), but it does emit a new value, which dirties a
+   * react-hook-form field. Un-chipping needs `itemTransformFunction`; re-chipping additionally
+   * needs `getItemRegex`.
+   */
+  showOriginal?: boolean;
+  /**
+   * Defers id detection to blur. By default the scan runs on every input, so an id that is typed
+   * or pasted becomes a chip as soon as the caret moves off it (the match the caret is sitting in
+   * is always left alone, so an id is never converted mid-keystroke). Set this to true to get the
+   * older behaviour instead: typed and pasted ids stay raw text until focus leaves the text area.
+   *
+   * The blur scan runs either way — this only controls the one on input. Ignored while
+   * `showOriginal` is on, which turns every scan off. Defaults to false.
+   */
+  updateOnBlur?: boolean;
   /**
    * Shows a clear ("X") button in the top right corner that wipes all content. Defaults to true.
    * The cleared value is emitted through the normal change callback, so react-hook-form (controlled)
