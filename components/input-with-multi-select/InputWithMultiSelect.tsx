@@ -4,7 +4,9 @@ import { useState, KeyboardEvent, ChangeEvent } from 'react';
 
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import RowStack from '@/shared/components/RowStack';
 
+import InputWithMultiSelectClearButton from './InputWithMultiSelectClearButton';
 import InputWithMultiSelectOptionSelect from './InputWithMultiSelectOptionSelect';
 import InputWithMultiSelectSubmitTrigger from './InputWithMultiSelectSubmitTrigger';
 import { InputWithMultiSelectProps, InputWithMultiSelectValue, InputWithMultiSelectSelectOption } from './input-with-multi-select.models';
@@ -30,15 +32,19 @@ export default function InputWithMultiSelect({
   onChange,
   submitOnEnter = true,
   clearOnSubmit = false,
-  disableSubmitWhenEmpty = true,
+  disableSubmitWhenEmpty = false,
   triggerIcon,
   triggerLabel,
+  clearIcon,
+  clearLabel,
   selectLabel,
   hideTrigger = false,
+  hideClearButton = false,
   containerClassName,
   selectClassName,
   selectContentClassName,
   triggerClassName,
+  clearClassName,
   className,
   disabled,
   onKeyDown,
@@ -85,6 +91,17 @@ export default function InputWithMultiSelect({
     }
   };
 
+  // Clearing is a submit of the emptied value, so whoever listens to `onChange` gets to react —
+  // that is what drops the query param in the nuqs flavour.
+  const handleOnClear = () => {
+    if (disabled) {
+      return;
+    }
+    const clearedValue = createInputWithMultiSelectValue('', value.selection);
+    applyValue(clearedValue);
+    onChange?.(clearedValue);
+  };
+
   const handleOnKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(event);
     // `defaultPrevented` lets a caller's own onKeyDown opt out of the built in submit.
@@ -94,6 +111,12 @@ export default function InputWithMultiSelect({
       handleOnSubmit();
     }
   };
+
+  // Nothing typed means nothing to search and nothing to clear, so neither icon is offered.
+  const hasInput = value.input !== '';
+  const showClearButton = hasInput && !hideClearButton;
+  const showSubmitTrigger = hasInput && !hideTrigger;
+  const adornmentCount = Number(showClearButton) + Number(showSubmitTrigger);
 
   return (
     <div className={ cn('flex w-full flex-row items-stretch', containerClassName) }>
@@ -116,19 +139,33 @@ export default function InputWithMultiSelect({
           className={ cn(
             'rounded-l-none',
             {
-              'pr-9': !hideTrigger,
+              'pr-9': adornmentCount === 1,
+              'pr-16': adornmentCount === 2,
             },
             className,
           ) }
         />
-        { hideTrigger ? null : (
-          <InputWithMultiSelectSubmitTrigger
-            onSubmit={ handleOnSubmit }
-            disabled={ isSubmitDisabled }
-            icon={ triggerIcon }
-            label={ triggerLabel }
-            className={ triggerClassName }
-          />
+        { adornmentCount === 0 ? null : (
+          <RowStack className="absolute top-1/2 right-1 items-center gap-x-0.5 -translate-y-1/2">
+            { showClearButton ?
+              <InputWithMultiSelectClearButton
+                onClear={ handleOnClear }
+                disabled={ disabled }
+                icon={ clearIcon }
+                label={ clearLabel }
+                className={ clearClassName }
+              />
+            : null }
+            { showSubmitTrigger ?
+              <InputWithMultiSelectSubmitTrigger
+                onSubmit={ handleOnSubmit }
+                disabled={ isSubmitDisabled }
+                icon={ triggerIcon }
+                label={ triggerLabel }
+                className={ triggerClassName }
+              />
+            : null }
+          </RowStack>
         ) }
       </div>
     </div>

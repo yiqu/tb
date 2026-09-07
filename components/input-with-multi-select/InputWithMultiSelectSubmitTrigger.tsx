@@ -19,7 +19,8 @@ interface InputWithMultiSelectSubmitTriggerProps {
 
 /**
  * Right hand side of `InputWithMultiSelect`: an icon button living inside the input that
- * submits the current value manually. `type="button"` so it never submits a surrounding form.
+ * submits the current value manually. Positioning is the parent's job — it lays this out next to
+ * the clear button. `type="button"` so it never submits a surrounding form.
  */
 export default function InputWithMultiSelectSubmitTrigger({
   onSubmit,
@@ -39,7 +40,7 @@ export default function InputWithMultiSelectSubmitTrigger({
       onClick={ onSubmit }
       className={ cn(
         `
-          absolute top-1/2 right-1 size-7 -translate-y-1/2 text-muted-foreground
+          size-7 text-muted-foreground
           hover:bg-accent hover:text-foreground
         `,
         className,

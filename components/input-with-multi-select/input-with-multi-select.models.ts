@@ -42,8 +42,14 @@ export interface InputWithMultiSelectClassNames {
   selectContentClassName?: string;
   /** The clickable submit icon on the right, inside the input. */
   triggerClassName?: string;
+  /** The clear ("X") icon, inside the input, to the left of the submit icon. */
+  clearClassName?: string;
 }
 
+/**
+ * Props of `InputWithMultiSelect`. Both in-field icons only appear once there is text to act on:
+ * an empty input shows neither, so it never offers a search of nothing or a clear of nothing.
+ */
 export interface InputWithMultiSelectProps
   extends Omit<ComponentProps<'input'>, 'onChange' | 'value' | 'defaultValue' | 'onSubmit'>,
     InputWithMultiSelectClassNames {
@@ -76,15 +82,25 @@ export interface InputWithMultiSelectProps
   submitOnEnter?: boolean;
   /** Clear the text (keeping the selection) right after a successful submit. Defaults to `false`. */
   clearOnSubmit?: boolean;
-  /** Block submits while the text is empty / whitespace only. Defaults to `true`. */
+  /**
+   * Block submits while the text is empty / whitespace only. Defaults to `false`, so submitting an
+   * emptied input is a real event — that is how a search gets cleared (and how the nuqs flavour
+   * drops its query param).
+   */
   disableSubmitWhenEmpty?: boolean;
 
   /** Icon rendered in the trigger. Defaults to lucide's `Search`. */
   triggerIcon?: ReactNode;
   /** Accessible label of the trigger button. Defaults to `'Submit'`. */
   triggerLabel?: string;
+  /** Icon rendered in the clear button. Defaults to lucide's `X`. */
+  clearIcon?: ReactNode;
+  /** Accessible label of the clear button. Defaults to `'Clear'`. */
+  clearLabel?: string;
   /** Accessible label of the left dropdown. Defaults to `'Select an option'`. */
   selectLabel?: string;
   /** Hides the trigger icon when the whole control should be driven by Enter only. */
   hideTrigger?: boolean;
+  /** Hides the clear button, leaving the user to empty the input by hand. */
+  hideClearButton?: boolean;
 }
