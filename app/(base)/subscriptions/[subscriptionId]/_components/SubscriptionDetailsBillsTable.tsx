@@ -1,6 +1,7 @@
 'use client';
 
 import { CardContent } from '@/components/ui/card';
+import useIsClient from '@/hooks/useIsClient';
 import DisplayCard from '@/shared/components/DisplayCard';
 import { SORT_DATA_PAGE_IDS } from '@/constants/constants';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
@@ -8,20 +9,30 @@ import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
 import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
 import FormattedTableHeadFiller from '@/shared/table/FormattedTableHeadFiller';
 import { SortDataUpsertable } from '@/models/sort-data/SortData.model';
-import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
+import useOrderedVisibleTableColumns from '@/hooks/table-columns-adjust/useOrderedVisibleTableColumns';
 import BillsTableParentRow from '@/shared/table/BillsDueTableParentRow';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
+
+import SubscriptionDetailsBillsTableLoading from './SubscriptionDetailsBillsTableLoading';
 
 interface SubscriptionDetailsBillsTableProps {
   billDues: BillDueWithSubscription[];
 }
 
 export default function SubscriptionDetailsBillsTable({ billDues }: SubscriptionDetailsBillsTableProps) {
-  const columnsSorted: string[] = [...BILLS_TABLE_COLUMNS] as string[];
+  const isClient = useIsClient();
+  const columnsSorted: string[] = useOrderedVisibleTableColumns('bills');
 
   const handleOnSortUpdate = (sortDataToUpdate: SortDataUpsertable) => {
     upsertSortData2(sortDataToUpdate);
   };
+
+  // Column visibility/order come from local storage, so render the table only on the client to keep
+  // the markup from differing between the server render and the hydrated one. The mask is the same
+  // one the page's Suspense fallback shows, so this reads as one uninterrupted skeleton.
+  if (!isClient) {
+    return <SubscriptionDetailsBillsTableLoading />;
+  }
 
   return (
     <DisplayCard className="w-full py-0">

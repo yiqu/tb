@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 
-import { Skeleton } from '@/components/ui/skeleton';
 import ColumnStack from '@/shared/components/ColumnStack';
 import EditBillForm from '@/components/bills/EditBillForm';
 import Typography from '@/components/typography/Typography';
@@ -11,6 +10,7 @@ import BillsTableActionDialog from '@/app/(base)/bills/_components/BillsTableAct
 import { getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
 import SubscriptionDetailsMetadata from './SubscriptionDetailsMetadata';
+import SubscriptionDetailsBillsTableLoading from './SubscriptionDetailsBillsTableLoading';
 import SubscriptionDetailsBillsTableParentParent from './SubscriptionDetailsBillsTableParentParent';
 
 interface SubscriptionDetailsParentProps {
@@ -44,11 +44,16 @@ export default async function SubscriptionDetailsParent({ paramsPromise }: Subsc
   );
 }
 
+/**
+ * Mirrors the resolved layout (heading + one bill dues card) using the same mask the table itself
+ * shows while it waits for the client, so the page shows one continuous skeleton rather than
+ * swapping between two different looking ones.
+ */
 function TableLoading() {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-6">
       <Typography variant="h3">Bill Dues</Typography>
-      <Skeleton className="h-200 w-full" />
+      <SubscriptionDetailsBillsTableLoading />
     </div>
   );
 }
