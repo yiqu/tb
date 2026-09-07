@@ -15,6 +15,8 @@ interface InputWithMultiSelectNuqsDemoProps {
   nuqsOptions?: Options;
   defaultSelectedOptionId?: string;
   clearOtherQueryParams?: boolean;
+  updateQueryOnSelectionChange?: boolean;
+  updateQueryOnInputChange?: boolean;
   placeholder?: string;
   triggerIcon?: ReactNode;
   className?: string;
@@ -33,6 +35,8 @@ export default function InputWithMultiSelectNuqsDemo({
   nuqsOptions,
   defaultSelectedOptionId,
   clearOtherQueryParams,
+  updateQueryOnSelectionChange,
+  updateQueryOnInputChange,
   placeholder,
   triggerIcon,
   className,
@@ -50,6 +54,8 @@ export default function InputWithMultiSelectNuqsDemo({
         nuqsOptions={ nuqsOptions }
         defaultSelectedOptionId={ defaultSelectedOptionId }
         clearOtherQueryParams={ clearOtherQueryParams }
+        updateQueryOnSelectionChange={ updateQueryOnSelectionChange }
+        updateQueryOnInputChange={ updateQueryOnInputChange }
         placeholder={ placeholder ?? 'Type an id and hit Enter...' }
         triggerIcon={ triggerIcon }
         onChange={ setLastSubmitted }

@@ -24,12 +24,28 @@ export interface InputWithMultiSelectNuqsProps extends Omit<InputWithMultiSelect
    * Later external URL changes (back / forward) are not mirrored back into the input.
    */
   syncFromUrlOnMount?: boolean;
+  /**
+   * Write to the URL as soon as the dropdown selection changes, without waiting for a submit.
+   * Defaults to `false` — the plain component treats a selection change as "not a submit".
+   * With `clearOtherQueryParams` on, this moves the current text onto the newly selected
+   * option's parameter and drops the previous one.
+   */
+  updateQueryOnSelectionChange?: boolean;
+  /**
+   * Write to the URL on every keystroke instead of only on submit. Defaults to `false`.
+   * URL writes stay rate limited by nuqs, so `throttleMs` / `limitUrlUpdates` in `nuqsOptions`
+   * decide how often the address bar actually changes while typing.
+   */
+  updateQueryOnInputChange?: boolean;
 }
 
 /**
- * `InputWithMultiSelect` wired to the URL: submitting (Enter or the trigger icon) writes the
- * trimmed text to the query parameter of whichever option is selected — `queryParam` on
- * `InputWithMultiSelectSelectOption` decides the key.
+ * `InputWithMultiSelect` wired to the URL: submitting (Enter, the trigger icon, or the clear
+ * button) writes the trimmed text to the query parameter of whichever option is selected —
+ * `queryParam` on `InputWithMultiSelectSelectOption` decides the key.
+ *
+ * `updateQueryOnSelectionChange` and `updateQueryOnInputChange` widen what counts as a submit
+ * here, so a dropdown change or a keystroke can drive the URL too.
  *
  * Requires a nuqs adapter above it (this app mounts `NuqsAdapter` in the layout).
  */
@@ -40,6 +56,8 @@ export default function InputWithMultiSelectNuqs({
   nuqsOptions,
   clearOtherQueryParams = true,
   syncFromUrlOnMount = true,
+  updateQueryOnSelectionChange = false,
+  updateQueryOnInputChange = false,
   onChange,
   ...rest
 }: InputWithMultiSelectNuqsProps) {
@@ -56,9 +74,22 @@ export default function InputWithMultiSelectNuqs({
   });
 
   const handleOnSubmit = (submittedValue: InputWithMultiSelectValue) => {
+    // nuqs rate limits the write itself, so a keystroke driven caller still honours throttleMs.
     setQueryValues(buildQueryPatchFromValue(options, submittedValue, clearOtherQueryParams));
     onChange?.(submittedValue);
   };
 
-  return <InputWithMultiSelect { ...rest } options={ options } value={ value } onValueChange={ setValue } onChange={ handleOnSubmit } />;
+  // The inner component only ever changes one half at a time, so comparing against the value we
+  // are holding is enough to tell a dropdown change apart from a keystroke.
+  const handleOnValueChange = (nextValue: InputWithMultiSelectValue) => {
+    const isSelectionChange = nextValue.selection?.id !== value.selection?.id;
+    const isInputChange = nextValue.input !== value.input;
+    setValue(nextValue);
+
+    if ((isSelectionChange && updateQueryOnSelectionChange) || (isInputChange && updateQueryOnInputChange)) {
+      handleOnSubmit(nextValue);
+    }
+  };
+
+  return <InputWithMultiSelect { ...rest } options={ options } value={ value } onValueChange={ handleOnValueChange } onChange={ handleOnSubmit } />;
 }

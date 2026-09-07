@@ -59,6 +59,16 @@ export default function InputWithMultiSelectNuqsDemos() {
         selectClassName="bg-amber-500/10 dark:bg-amber-500/10"
         triggerClassName="text-amber-600 dark:text-amber-400"
       />
+
+      <InputWithMultiSelectNuqsDemo
+        title="5. Live: updates on selection change and while typing"
+        description="No Enter needed. Switching the id kind moves the search onto the new param, and every keystroke writes to the URL — throttled to one write per 500ms by nuqs."
+        options={ ID_SEARCH_OPTIONS }
+        nuqsOptions={ { throttleMs: 500, history: 'replace', scroll: false } }
+        updateQueryOnSelectionChange
+        updateQueryOnInputChange
+        placeholder="Start typing — the URL follows along..."
+      />
     </ColumnStack>
   );
 }
