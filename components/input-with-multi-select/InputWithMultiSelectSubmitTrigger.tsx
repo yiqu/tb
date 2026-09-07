@@ -18,9 +18,9 @@ interface InputWithMultiSelectSubmitTriggerProps {
 }
 
 /**
- * Right hand side of `InputWithMultiSelect`: an icon button living inside the input that
- * submits the current value manually. Positioning is the parent's job — it lays this out next to
- * the clear button. `type="button"` so it never submits a surrounding form.
+ * Leading icon of `InputWithMultiSelect`: an icon button living inside the input, at its left
+ * edge, that submits the current value manually. Positioning is the parent's job.
+ * `type="button"` so it never submits a surrounding form.
  */
 export default function InputWithMultiSelectSubmitTrigger({
   onSubmit,

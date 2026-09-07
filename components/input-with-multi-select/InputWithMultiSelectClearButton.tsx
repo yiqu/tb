@@ -18,9 +18,8 @@ interface InputWithMultiSelectClearButtonProps {
 }
 
 /**
- * Clears the text of `InputWithMultiSelect`. Rendered inside the input, to the left of the submit
- * trigger, and only while there is something to clear. `type="button"` so it never submits a
- * surrounding form.
+ * Clears the text of `InputWithMultiSelect`. Rendered inside the input, at its right edge, and
+ * only while there is something to clear. `type="button"` so it never submits a surrounding form.
  */
 export default function InputWithMultiSelectClearButton({
   onClear,

@@ -40,9 +40,9 @@ export interface InputWithMultiSelectClassNames {
   selectClassName?: string;
   /** The dropdown's popover content. */
   selectContentClassName?: string;
-  /** The clickable submit icon on the right, inside the input. */
+  /** The clickable submit icon at the left edge, inside the input. */
   triggerClassName?: string;
-  /** The clear ("X") icon, inside the input, to the left of the submit icon. */
+  /** The clear ("X") icon at the right edge, inside the input. */
   clearClassName?: string;
 }
 

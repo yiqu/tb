@@ -116,7 +116,6 @@ export default function InputWithMultiSelect({
   const hasInput = value.input !== '';
   const showClearButton = hasInput && !hideClearButton;
   const showSubmitTrigger = hasInput && !hideTrigger;
-  const adornmentCount = Number(showClearButton) + Number(showSubmitTrigger);
 
   return (
     <div className={ cn('flex w-full flex-row items-stretch', containerClassName) }>
@@ -139,34 +138,34 @@ export default function InputWithMultiSelect({
           className={ cn(
             'rounded-l-none',
             {
-              'pr-9': adornmentCount === 1,
-              'pr-16': adornmentCount === 2,
+              'pl-9': showSubmitTrigger,
+              'pr-9': showClearButton,
             },
             className,
           ) }
         />
-        { adornmentCount === 0 ? null : (
-          <RowStack className="absolute top-1/2 right-1 items-center gap-x-0.5 -translate-y-1/2">
-            { showClearButton ?
-              <InputWithMultiSelectClearButton
-                onClear={ handleOnClear }
-                disabled={ disabled }
-                icon={ clearIcon }
-                label={ clearLabel }
-                className={ clearClassName }
-              />
-            : null }
-            { showSubmitTrigger ?
-              <InputWithMultiSelectSubmitTrigger
-                onSubmit={ handleOnSubmit }
-                disabled={ isSubmitDisabled }
-                icon={ triggerIcon }
-                label={ triggerLabel }
-                className={ triggerClassName }
-              />
-            : null }
+        { showSubmitTrigger ?
+          <RowStack className="absolute top-1/2 left-1 items-center -translate-y-1/2">
+            <InputWithMultiSelectSubmitTrigger
+              onSubmit={ handleOnSubmit }
+              disabled={ isSubmitDisabled }
+              icon={ triggerIcon }
+              label={ triggerLabel }
+              className={ triggerClassName }
+            />
           </RowStack>
-        ) }
+        : null }
+        { showClearButton ?
+          <RowStack className="absolute top-1/2 right-1 items-center -translate-y-1/2">
+            <InputWithMultiSelectClearButton
+              onClear={ handleOnClear }
+              disabled={ disabled }
+              icon={ clearIcon }
+              label={ clearLabel }
+              className={ clearClassName }
+            />
+          </RowStack>
+        : null }
       </div>
     </div>
   );
