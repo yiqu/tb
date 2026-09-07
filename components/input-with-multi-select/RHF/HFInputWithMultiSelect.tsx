@@ -3,9 +3,10 @@
 import { Control, FieldValues, FieldPathByValue, ControllerRenderProps } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
-import { FormItem, FormField, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
+import { FormItem, FormField, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
 
 import InputWithMultiSelect from '../InputWithMultiSelect';
+import HFInputWithMultiSelectFormMessage from './HFInputWithMultiSelectFormMessage';
 import { normalizeInputWithMultiSelectValue } from '../input-with-multi-select.utils';
 import { InputWithMultiSelectProps, InputWithMultiSelectValue } from '../input-with-multi-select.models';
 
@@ -81,7 +82,7 @@ export default function HFInputWithMultiSelect<
             { description ?
               <FormDescription>{ description }</FormDescription>
             : null }
-            <FormMessage />
+            <HFInputWithMultiSelectFormMessage />
           </FormItem>
         );
       } }
