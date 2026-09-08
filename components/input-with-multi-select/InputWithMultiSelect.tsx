@@ -19,8 +19,9 @@ import {
 import { resolveDefaultOption, getTrimmedInput, createInputWithMultiSelectValue } from './input-with-multi-select.utils';
 
 /**
- * An input made of three parts: an option dropdown on the left, the text field in the middle,
- * and a clickable submit icon inside the field on the right.
+ * An input made of three parts: an option dropdown on the left, the text field in the middle, and
+ * two icon buttons inside the field — the submit trigger at its left edge, the clear button at its
+ * right edge. Both appear only once the field holds text.
  *
  * Uncontrolled by default — it owns `{ input, selection }` and hands the whole thing to `onChange`
  * when the user submits (Enter or the trigger icon). Changing the dropdown alone never fires
@@ -85,6 +86,9 @@ export default function InputWithMultiSelect({
     applyValue(createInputWithMultiSelectValue(value.input, option), INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES.selection);
   };
 
+  // `readOnly` arrives through the native input props. The browser blocks typing on its own, but
+  // the clear button would still mutate the value, so it is suppressed alongside.
+  const isReadOnly = !!inputProps.readOnly;
   const isSubmitDisabled = !!disabled || (disableSubmitWhenEmpty && getTrimmedInput(value) === '');
 
   const handleOnSubmit = () => {
@@ -100,33 +104,44 @@ export default function InputWithMultiSelect({
   // Clearing is a submit of the emptied value, so whoever listens to `onChange` gets to react —
   // that is what drops the query param in the nuqs flavour. It is a compound event: the `clear`
   // cause tells `onValueChange` listeners that the submit below is already on its way.
+  //
+  // `disableSubmitWhenEmpty` is honoured here too: a caller that blocks empty submits gets a
+  // button that only empties the field, rather than the one affordance that smuggles one through.
   const handleOnClear = () => {
-    if (disabled) {
+    if (disabled || isReadOnly) {
       return;
     }
     const clearedValue = createInputWithMultiSelectValue('', value.selection);
     applyValue(clearedValue, INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES.clear);
-    onChange?.(clearedValue);
+    if (!disableSubmitWhenEmpty) {
+      onChange?.(clearedValue);
+    }
   };
 
   const handleOnKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(event);
     // `defaultPrevented` lets a caller's own onKeyDown opt out of the built in submit.
-    if (submitOnEnter && event.key === 'Enter' && !event.defaultPrevented && !event.nativeEvent.isComposing) {
-      // Stop a surrounding <form> from submitting on our behalf.
-      event.preventDefault();
-      handleOnSubmit();
+    if (!submitOnEnter || event.key !== 'Enter' || event.defaultPrevented || event.nativeEvent.isComposing) {
+      return;
     }
+    // Nothing of ours to run — swallowing Enter here would leave a surrounding <form> unable to
+    // submit at all, so let the key through instead.
+    if (isSubmitDisabled || !onChange) {
+      return;
+    }
+    // Stop a surrounding <form> from submitting on our behalf: this Enter is ours.
+    event.preventDefault();
+    handleOnSubmit();
   };
 
   // Raw string on purpose, not trimmed: whitespace is still something the clear button has to be
   // able to remove, and submitting it trims to empty, which is how a search gets cleared.
   const hasInput = value.input !== '';
-  const showClearButton = hasInput && !hideClearButton;
+  const showClearButton = hasInput && !hideClearButton && !isReadOnly;
   const showSubmitTrigger = hasInput && !hideTrigger;
 
   return (
-    <div className={ cn('flex w-full flex-row items-stretch', containerClassName) }>
+    <RowStack className={ cn('w-full items-stretch', containerClassName) }>
       <InputWithMultiSelectOptionSelect
         options={ options }
         selectedOptionId={ value.selection?.id ?? null }
@@ -175,6 +190,6 @@ export default function InputWithMultiSelect({
           </RowStack>
         : null }
       </div>
-    </div>
+    </RowStack>
   );
 }

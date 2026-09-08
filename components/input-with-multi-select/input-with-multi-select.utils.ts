@@ -32,9 +32,13 @@ export const createInputWithMultiSelectValue = (
 
 /**
  * Normalizes anything a form / URL hands us into a usable value, so the component never renders
- * with `undefined`. A missing selection falls back to the default option, but an explicit `null`
- * is kept as is: that is a form saying "nothing is picked yet", and overwriting it would show a
- * selection the form does not actually hold (and hide the validator's "selection is required").
+ * with `undefined`.
+ *
+ * A selection that is absent — `null` or `undefined` — stays absent. Rendering the default option
+ * instead would show a selection the form does not actually hold: validation would then fail under
+ * a control that looks completely filled in, and the only cure would be re-picking the option
+ * already on screen. In react-hook-form the form owns its defaults, so a starting selection
+ * belongs in `defaultValues`, not in something this component writes behind the form's back.
  */
 export const normalizeInputWithMultiSelectValue = (
   value: Partial<InputWithMultiSelectValue> | null | undefined,
@@ -44,11 +48,8 @@ export const normalizeInputWithMultiSelectValue = (
   const rawSelection = value?.selection;
   const input = value?.input ?? '';
 
-  if (rawSelection === null) {
+  if (rawSelection === null || rawSelection === undefined) {
     return createInputWithMultiSelectValue(input, null);
-  }
-  if (rawSelection === undefined) {
-    return createInputWithMultiSelectValue(input, resolveDefaultOption(options, defaultSelectedOptionId));
   }
 
   // A selection that is no longer part of `options` (a stale id) falls back to the default.
@@ -58,19 +59,4 @@ export const normalizeInputWithMultiSelectValue = (
 /** The trimmed text of a value — what should actually be searched / stored. */
 export const getTrimmedInput = (value: InputWithMultiSelectValue): string => {
   return value.input.trim();
-};
-
-/** True when the value carries a selection and some non whitespace text. */
-export const isInputWithMultiSelectValueSubmittable = (value: InputWithMultiSelectValue): boolean => {
-  return value.selection !== null && getTrimmedInput(value) !== '';
-};
-
-/** The query parameter the current selection maps to, `null` when nothing is selected. */
-export const getSelectedQueryParam = (value: InputWithMultiSelectValue): string | null => {
-  return value.selection?.queryParam ?? null;
-};
-
-/** Every query parameter covered by an option list. Useful to clear them all at once. */
-export const getAllQueryParams = (options: InputWithMultiSelectSelectOption[]): string[] => {
-  return options.map((option: InputWithMultiSelectSelectOption) => option.queryParam);
 };

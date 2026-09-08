@@ -1,5 +1,3 @@
-'use client';
-
 import { SendHorizontal } from 'lucide-react';
 
 import ColumnStack from '@/shared/components/ColumnStack';

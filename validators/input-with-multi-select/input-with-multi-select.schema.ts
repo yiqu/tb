@@ -38,7 +38,15 @@ export const createInputWithMultiSelectValueSchema = ({
     .min(1, { message: inputRequiredMessage });
 
   return z.object({
-    selection: inputWithMultiSelectSelectOptionSchema
+    // Same shape, re-created with the error params so a field whose value never carried a
+    // `selection` key reports `selectionRequiredMessage` instead of zod's bare "Required".
+    // Reusing `.shape` keeps this in step with the exported option schema, and the resulting
+    // output type stays `option | null` so `FieldPathByValue` still matches the value interface.
+    selection: z
+      .object(inputWithMultiSelectSelectOptionSchema.shape, {
+        required_error: selectionRequiredMessage,
+        invalid_type_error: selectionRequiredMessage,
+      })
       .nullable()
       // Annotated as `boolean` on purpose: an inferred type predicate would narrow the parsed
       // output to a non-null selection, which no longer lines up with `InputWithMultiSelectValue`

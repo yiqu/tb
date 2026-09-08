@@ -57,7 +57,7 @@ export default function InputWithMultiSelectHookFormDemo() {
               control={ methods.control }
               name="idSearch"
               label="Search by id"
-              description="Enter submits the component's own onSubmit; the button below submits the form."
+              description="No onSubmit is wired here, so Enter falls through to the form — same as the button below."
               options={ ID_SEARCH_OPTIONS }
               placeholder="Type an id..."
             />

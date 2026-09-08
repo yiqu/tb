@@ -22,7 +22,11 @@ export interface HFInputWithMultiSelectProps<
   formItemClassName?: string;
   /** Optional: fires on every value change (typing and dropdown), after the form field is updated. */
   onChange?: (value: InputWithMultiSelectValue) => void;
-  /** Optional: fires only on submit (Enter or the trigger icon). */
+  /**
+   * Optional: fires on submit — Enter, the trigger icon, and the clear button, which submits the
+   * emptied value so a search can be cleared. It is not called for plain typing or dropdown
+   * changes; use `onChange` for those.
+   */
   onSubmit?: (value: InputWithMultiSelectValue) => void;
 }
 
@@ -31,8 +35,10 @@ export interface HFInputWithMultiSelectProps<
  * `InputWithMultiSelectValue` object (`{ input, selection }`), not a plain string, so the
  * selection travels with the text — validate it with `inputWithMultiSelectValueSchema`.
  *
- * `defaultValues` for the field should therefore be an `InputWithMultiSelectValue`; anything
- * missing is normalized against `options` / `defaultSelectedOptionId`.
+ * `defaultValues` for the field should therefore be an `InputWithMultiSelectValue`, and that is
+ * where a starting selection belongs — the form owns its defaults. A field whose value carries no
+ * selection renders as "nothing picked" rather than being silently filled in with the first
+ * option, so what the dropdown shows always matches what the form will validate.
  */
 export default function HFInputWithMultiSelect<
   TFieldValues extends FieldValues,
