@@ -30,6 +30,27 @@ export interface InputWithMultiSelectValue {
 }
 
 /**
+ * What produced a value change, handed to `onValueChange` so a wrapper can tell a plain edit
+ * apart from a change the component is already submitting on its own.
+ *
+ * `clear` (the X button) and `reset` (the `clearOnSubmit` follow-up) are compound events: the
+ * component fires `onChange` for them too, so treating them as an edit would submit twice.
+ */
+export const INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES = {
+  /** The user typed in the text field. */
+  input: 'input',
+  /** The user picked a different option in the dropdown. */
+  selection: 'selection',
+  /** The user pressed the clear button — `onChange` fires alongside this. */
+  clear: 'clear',
+  /** The text was emptied by `clearOnSubmit` right after a submit. */
+  reset: 'reset',
+} as const;
+
+export type InputWithMultiSelectChangeCause =
+  (typeof INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES)[keyof typeof INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES];
+
+/**
  * Every part of the component that can be restyled from the outside. Kept as its own interface
  * so the nuqs / react-hook-form wrappers can re-expose it without duplicating props.
  */
@@ -47,8 +68,10 @@ export interface InputWithMultiSelectClassNames {
 }
 
 /**
- * Props of `InputWithMultiSelect`. Both in-field icons only appear once there is text to act on:
- * an empty input shows neither, so it never offers a search of nothing or a clear of nothing.
+ * Props of `InputWithMultiSelect`. Both in-field icons appear once the field holds any characters
+ * at all — the raw string, deliberately not the trimmed one. Whitespace is still something the
+ * clear button has to be able to remove, and submitting it is a real action (it trims to empty,
+ * which is how a search gets cleared). Only a genuinely empty field shows neither icon.
  */
 export interface InputWithMultiSelectProps
   extends Omit<ComponentProps<'input'>, 'onChange' | 'value' | 'defaultValue' | 'onSubmit'>,
@@ -69,8 +92,11 @@ export interface InputWithMultiSelectProps
    * `onValueChange`. Leave it out for the uncontrolled behaviour (state lives inside).
    */
   value?: InputWithMultiSelectValue;
-  /** Fires on EVERY change: each keystroke and each dropdown change. */
-  onValueChange?: (value: InputWithMultiSelectValue) => void;
+  /**
+   * Fires on EVERY change: each keystroke, each dropdown change, and each clear. `cause` says
+   * which, so a wrapper can avoid acting twice on the changes that also fire `onChange`.
+   */
+  onValueChange?: (value: InputWithMultiSelectValue, cause: InputWithMultiSelectChangeCause) => void;
 
   /**
    * Fires only when the user submits: Enter inside the input, or a click on the trigger icon.

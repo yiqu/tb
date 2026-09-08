@@ -4,7 +4,12 @@ import { Options, useQueryStates } from 'nuqs';
 import { useMemo, useState } from 'react';
 
 import InputWithMultiSelect from '../InputWithMultiSelect';
-import { InputWithMultiSelectProps, InputWithMultiSelectValue } from '../input-with-multi-select.models';
+import {
+  InputWithMultiSelectProps,
+  InputWithMultiSelectValue,
+  InputWithMultiSelectChangeCause,
+  INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES,
+} from '../input-with-multi-select.models';
 import { createInputWithMultiSelectValue, resolveDefaultOption } from '../input-with-multi-select.utils';
 import { buildQueryPatchFromValue, buildQueryParsersFromOptions, resolveValueFromQueryValues } from './input-with-multi-select-nuqs.utils';
 
@@ -79,14 +84,16 @@ export default function InputWithMultiSelectNuqs({
     onChange?.(submittedValue);
   };
 
-  // The inner component only ever changes one half at a time, so comparing against the value we
-  // are holding is enough to tell a dropdown change apart from a keystroke.
-  const handleOnValueChange = (nextValue: InputWithMultiSelectValue) => {
-    const isSelectionChange = nextValue.selection?.id !== value.selection?.id;
-    const isInputChange = nextValue.input !== value.input;
+  // Only a plain edit is auto-submitted. `clear` and `reset` already come with the component's own
+  // `onChange`, so submitting them here as well would write the URL and call back twice.
+  const handleOnValueChange = (nextValue: InputWithMultiSelectValue, cause: InputWithMultiSelectChangeCause) => {
     setValue(nextValue);
 
-    if ((isSelectionChange && updateQueryOnSelectionChange) || (isInputChange && updateQueryOnInputChange)) {
+    const shouldSubmit =
+      (cause === INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES.selection && updateQueryOnSelectionChange) ||
+      (cause === INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES.input && updateQueryOnInputChange);
+
+    if (shouldSubmit) {
       handleOnSubmit(nextValue);
     }
   };

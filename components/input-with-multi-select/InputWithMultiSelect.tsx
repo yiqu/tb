@@ -9,7 +9,13 @@ import RowStack from '@/shared/components/RowStack';
 import InputWithMultiSelectClearButton from './InputWithMultiSelectClearButton';
 import InputWithMultiSelectOptionSelect from './InputWithMultiSelectOptionSelect';
 import InputWithMultiSelectSubmitTrigger from './InputWithMultiSelectSubmitTrigger';
-import { InputWithMultiSelectProps, InputWithMultiSelectValue, InputWithMultiSelectSelectOption } from './input-with-multi-select.models';
+import {
+  InputWithMultiSelectProps,
+  InputWithMultiSelectValue,
+  InputWithMultiSelectChangeCause,
+  InputWithMultiSelectSelectOption,
+  INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES,
+} from './input-with-multi-select.models';
 import { resolveDefaultOption, getTrimmedInput, createInputWithMultiSelectValue } from './input-with-multi-select.utils';
 
 /**
@@ -63,20 +69,20 @@ export default function InputWithMultiSelect({
       createInputWithMultiSelectValue(internalValue.input, internalValue.selection ?? resolveDefaultOption(options, defaultSelectedOptionId))
     );
 
-  const applyValue = (nextValue: InputWithMultiSelectValue) => {
+  const applyValue = (nextValue: InputWithMultiSelectValue, cause: InputWithMultiSelectChangeCause) => {
     if (!isControlled) {
       setInternalValue(nextValue);
     }
-    onValueChange?.(nextValue);
+    onValueChange?.(nextValue, cause);
   };
 
   const handleOnInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    applyValue(createInputWithMultiSelectValue(event.target.value, value.selection));
+    applyValue(createInputWithMultiSelectValue(event.target.value, value.selection), INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES.input);
   };
 
   // Selection changes are deliberately NOT a submit: only `onValueChange` hears about them.
   const handleOnOptionChange = (option: InputWithMultiSelectSelectOption) => {
-    applyValue(createInputWithMultiSelectValue(value.input, option));
+    applyValue(createInputWithMultiSelectValue(value.input, option), INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES.selection);
   };
 
   const isSubmitDisabled = !!disabled || (disableSubmitWhenEmpty && getTrimmedInput(value) === '');
@@ -87,18 +93,19 @@ export default function InputWithMultiSelect({
     }
     onChange?.(value);
     if (clearOnSubmit) {
-      applyValue(createInputWithMultiSelectValue('', value.selection));
+      applyValue(createInputWithMultiSelectValue('', value.selection), INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES.reset);
     }
   };
 
   // Clearing is a submit of the emptied value, so whoever listens to `onChange` gets to react —
-  // that is what drops the query param in the nuqs flavour.
+  // that is what drops the query param in the nuqs flavour. It is a compound event: the `clear`
+  // cause tells `onValueChange` listeners that the submit below is already on its way.
   const handleOnClear = () => {
     if (disabled) {
       return;
     }
     const clearedValue = createInputWithMultiSelectValue('', value.selection);
-    applyValue(clearedValue);
+    applyValue(clearedValue, INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES.clear);
     onChange?.(clearedValue);
   };
 
@@ -112,7 +119,8 @@ export default function InputWithMultiSelect({
     }
   };
 
-  // Nothing typed means nothing to search and nothing to clear, so neither icon is offered.
+  // Raw string on purpose, not trimmed: whitespace is still something the clear button has to be
+  // able to remove, and submitting it trims to empty, which is how a search gets cleared.
   const hasInput = value.input !== '';
   const showClearButton = hasInput && !hideClearButton;
   const showSubmitTrigger = hasInput && !hideTrigger;
