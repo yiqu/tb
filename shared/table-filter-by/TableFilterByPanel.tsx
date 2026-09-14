@@ -25,6 +25,8 @@ export interface TableFilterByPanelProps {
   applyText?: React.ReactNode;
   /** Clear button text. */
   clearText?: React.ReactNode;
+  /** Called after the filter is applied, so the host menu can close itself. */
+  onAction?: () => void;
   className?: string;
 }
 
@@ -35,11 +37,29 @@ export interface TableFilterByPanelProps {
  * button renders off `commitOnChange`, so turning that back on in `useTableFilterByQuery` removes
  * the button here without touching this file.
  */
-export default function TableFilterByPanel({ tableId, columnId, label, applyText, clearText, className }: TableFilterByPanelProps) {
+export default function TableFilterByPanel({
+  tableId,
+  columnId,
+  label,
+  applyText,
+  clearText,
+  onAction,
+  className,
+}: TableFilterByPanelProps) {
   const inputId: string = useId();
   const { draftValue, isDirty, hasFilterValue, commitOnChange, changeDraftValue, applyFilterValue, clearFilterValue } =
     useTableFilterByQuery(tableId, columnId);
   const hint: string | undefined = getTableFilterByColumnConfig(columnId)?.hint;
+
+  /**
+   * The one way this panel commits, shared by the Apply button and Enter in the input, so the two
+   * can never drift. Closes the host menu on the way out — applying is the end of the interaction,
+   * and the table behind the menu is what you want to look at next.
+   */
+  const handleApplyFilter = () => {
+    applyFilterValue();
+    onAction?.();
+  };
 
   return (
     <ColumnStack className={ cn('gap-y-2', className) }>
@@ -56,7 +76,7 @@ export default function TableFilterByPanel({ tableId, columnId, label, applyText
         columnId={ columnId }
         value={ draftValue }
         onValueChange={ changeDraftValue }
-        onSubmit={ applyFilterValue }
+        onSubmit={ handleApplyFilter }
         onClear={ clearFilterValue }
       />
 
@@ -65,7 +85,7 @@ export default function TableFilterByPanel({ tableId, columnId, label, applyText
       : null }
 
       { commitOnChange ? null : (
-        <TableFilterByApplyButton onApply={ applyFilterValue } isDirty={ isDirty }>
+        <TableFilterByApplyButton onApply={ handleApplyFilter } isDirty={ isDirty }>
           { applyText }
         </TableFilterByApplyButton>
       ) }

@@ -60,7 +60,10 @@ needs, such as one key deliberately shared by two tables. Nothing uses it today.
 ## Apply vs. filter-as-you-type
 
 The input is a draft in local state and nothing reaches the URL until Apply (or Enter in the
-input). To go back to writing the param on every keystroke, flip one constant in
+input). Both go through one handler in `TableFilterByPanel`, so they can never drift, and that
+handler closes the host menu through `onAction` — applying ends the interaction, and the table
+behind the menu is what you want to look at next. The panel's Clear button deliberately leaves the
+menu open, since clearing is usually a prelude to typing something else. To go back to writing the param on every keystroke, flip one constant in
 `/hooks/table-filter-by/useTableFilterByQuery.ts`:
 
 ```ts
