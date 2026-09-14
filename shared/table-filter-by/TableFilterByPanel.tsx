@@ -27,8 +27,6 @@ export interface TableFilterByPanelProps {
   clearText?: React.ReactNode;
   /** Called after the filter is applied, so the host menu can close itself. */
   onAction?: () => void;
-  /** Focus the input as the panel opens, so you can type straight away. @default true */
-  autoFocusInput?: boolean;
   className?: string;
 }
 
@@ -46,7 +44,6 @@ export default function TableFilterByPanel({
   applyText,
   clearText,
   onAction,
-  autoFocusInput = true,
   className,
 }: TableFilterByPanelProps) {
   const inputId: string = useId();
@@ -78,7 +75,6 @@ export default function TableFilterByPanel({
         id={ inputId }
         columnId={ columnId }
         value={ draftValue }
-        autoFocus={ autoFocusInput }
         onValueChange={ changeDraftValue }
         onSubmit={ handleApplyFilter }
         onClear={ clearFilterValue }

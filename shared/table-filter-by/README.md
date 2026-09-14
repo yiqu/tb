@@ -18,17 +18,7 @@ so your class wins), and props for its text.
 | `TableFilterByApplyButton` | You want only the Apply button. |
 | `TableFilterByClearButton` | You want only the Clear button. |
 
-## Opening the panel
-
-The input takes focus as the panel opens, so hovering "Filter By" leaves you able to type without a
-click into the field — and since the input selects on focus, typing replaces the current value.
-That is `autoFocusInput` on `TableFilterByPanel`, on by default.
-
-It is a hand rolled focus rather than the native `autoFocus` attribute: Radix opens a submenu on
-hover without moving focus off the trigger, and on a keyboard open it focuses the panel in its own
-effect, which runs after the input's. A `requestAnimationFrame` puts our focus last in both cases.
-Passing `onOpenAutoFocus` to `DropdownMenuSubContent` does not work here — Radix spreads incoming
-props before setting its own, so it wins.
+## Marking an active filter
 
 A column with a filter applied shows an "Active" chip next to the "Filter By" label. Deliberately a
 chip and not a tinted row: the menu already uses its accent background for hover and open state, so
