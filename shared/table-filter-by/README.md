@@ -45,6 +45,12 @@ already has a `frequency` multi select reading a comma separated list of exact v
 this free text `contains` filter — and it keeps the same column filterable in two tables without
 them sharing one value.
 
+The two frequency filters stay separate on purpose, and they answer different questions. The one
+above the table takes exact values off a multi select and matches with `IN`. The column one is free
+text and matches with `contains`, comma separated for more than one term: `year,month` matches
+yearly and monthly. Both push into the same `AND`, so setting both narrows. `bills.server.ts` does
+that splitting, so keep it in step with the `frequency` entry in `TABLE_FILTER_BY_COLUMNS`.
+
 `searchParamKey` on a column overrides the whole key when the default cannot produce what a column
 needs, such as one key deliberately shared by two tables. Nothing uses it today.
 
