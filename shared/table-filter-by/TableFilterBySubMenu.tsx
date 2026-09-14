@@ -3,6 +3,8 @@
 import { ListFilter } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import Typography from '@/components/typography/Typography';
 import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
 import useTableFilterByActive from '@/hooks/table-filter-by/useTableFilterByActive';
 import { DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/custom/dropdown-menu';
@@ -30,8 +32,11 @@ export interface TableFilterBySubMenuProps {
 }
 
 /**
- * The "Filter By" submenu: a trigger row that highlights while a filter is applied, opening onto the
- * filter panel.
+ * The "Filter By" submenu: a trigger row carrying an "Active" chip while a filter is applied,
+ * opening onto the filter panel.
+ *
+ * The chip rather than a highlighted row: the menu already uses its accent background for hover and
+ * open state, so tinting the row to mean "has a filter" competed with that and read as selection.
  *
  * Opens by default when the column already has a filter, so the value the table is filtered on is
  * one hover away rather than hidden. No `side` prop on purpose — Radix picks the side with room.
@@ -51,17 +56,16 @@ export default function TableFilterBySubMenu({
 
   return (
     <DropdownMenuSub defaultOpen={ hasActive }>
-      <DropdownMenuSubTrigger
-        className={ cn(
-          'cursor-pointer',
-          {
-            'bg-accent text-accent-foreground': hasActive,
-          },
-          className,
-        ) }
-      >
+      <DropdownMenuSubTrigger className={ cn('cursor-pointer', className) }>
         <ListFilter className="size-4" />
         { triggerText ?? 'Filter By' }
+        { hasActive ?
+          <Badge variant="secondary" className="px-1.5 py-0">
+            <Typography as="span" variant="span0">
+              Active
+            </Typography>
+          </Badge>
+        : null }
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className={ cn('min-w-64 p-4', contentClassName) }>
         <TableFilterByPanel

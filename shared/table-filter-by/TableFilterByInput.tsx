@@ -1,5 +1,7 @@
 'use client';
 
+import { useRef, useEffect } from 'react';
+
 import { cn } from '@/lib/utils';
 import UncontrolledInput from '@/components/hook-form/UnInput';
 import { AppColumnId } from '@/store/subscriptions/table.store';
@@ -16,6 +18,8 @@ export interface TableFilterByInputProps {
   onSubmit?: () => void;
   onClear?: () => void;
   placeholder?: string;
+  /** Take focus on mount, so a hover into the submenu leaves you able to type. @default false */
+  autoFocus?: boolean;
   className?: string;
 }
 
@@ -24,6 +28,10 @@ export interface TableFilterByInputProps {
  *
  * Stops `pointerdown` and `keydown` from bubbling: both belong to the dropdown, which would
  * otherwise steal the click and treat typing as its own type-ahead.
+ *
+ * `autoFocus` is done by hand rather than with the native attribute. Radix opens a submenu on hover
+ * without moving focus off the trigger, and on a keyboard open it focuses the panel in its own
+ * effect — which runs after this component's. A frame's delay puts our focus last in both cases.
  */
 export default function TableFilterByInput({
   columnId,
@@ -33,8 +41,24 @@ export default function TableFilterByInput({
   onSubmit,
   onClear,
   placeholder,
+  autoFocus = false,
   className,
 }: TableFilterByInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!autoFocus) {
+      return;
+    }
+    const frame: number = requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+
+    return () => {
+      cancelAnimationFrame(frame);
+    };
+  }, [autoFocus]);
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onValueChange(e.target.value);
   };
@@ -49,6 +73,7 @@ export default function TableFilterByInput({
 
   return (
     <UncontrolledInput
+      ref={ inputRef }
       id={ id }
       placeholder={ placeholder ?? getTableFilterByPlaceholder(columnId) }
       onKeyDown={ handleOnKeyDown }
