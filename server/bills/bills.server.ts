@@ -356,8 +356,8 @@ export async function getAllBills(
     });
   }
 
-  if (searchParams?.cost && searchParams.cost.trim() !== '') {
-    const costRaw: string = searchParams.cost.trim();
+  if (searchParams?.['bills__cost'] && searchParams['bills__cost'].trim() !== '') {
+    const costRaw: string = searchParams['bills__cost'].trim();
     let operator: 'equals' | 'gte' | 'lte' | 'gt' | 'lt' = 'equals';
     let numericPart: string = costRaw;
 
@@ -384,8 +384,8 @@ export async function getAllBills(
     }
   }
 
-  if (searchParams?.subscription && searchParams.subscription.trim() !== '') {
-    const subscriptionName: string = searchParams.subscription.trim();
+  if (searchParams?.['bills__subscription'] && searchParams['bills__subscription'].trim() !== '') {
+    const subscriptionName: string = searchParams['bills__subscription'].trim();
     whereClause.AND.push({
       subscription: {
         name: { contains: subscriptionName, mode: 'insensitive' },

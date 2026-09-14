@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 
-import { AppColumnId } from '@/store/subscriptions/table.store';
+import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
 import { getIsColumnFilterable, getTableFilterByParamKey } from '@/shared/table-filter-by/table-filter-by.utils';
 
 /**
@@ -11,14 +11,15 @@ import { getIsColumnFilterable, getTableFilterByParamKey } from '@/shared/table-
  * Reads the committed search param rather than the draft in `useTableFilterByQuery`, so the badge
  * only counts filters the server actually ran.
  *
+ * @param tableId - The table the column is rendered in.
  * @param columnId - The column the header menu belongs to.
  */
-export default function useTableFilterByActive(columnId: AppColumnId) {
+export default function useTableFilterByActive(tableId: TableId, columnId: AppColumnId) {
   const searchParams = useSearchParams();
   // A column with no "Filter By" item never counts, even if some unrelated search param happens to
   // share its id.
   const isFilterable: boolean = getIsColumnFilterable(columnId);
-  const filterValue: string = isFilterable ? (searchParams.get(getTableFilterByParamKey(columnId)) ?? '') : '';
+  const filterValue: string = isFilterable ? (searchParams.get(getTableFilterByParamKey(tableId, columnId)) ?? '') : '';
   const hasFilterValue: boolean = !!filterValue.trim();
 
   return {

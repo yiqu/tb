@@ -3,13 +3,15 @@
 import { ListFilter } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { AppColumnId } from '@/store/subscriptions/table.store';
+import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
 import useTableFilterByActive from '@/hooks/table-filter-by/useTableFilterByActive';
 import { DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/custom/dropdown-menu';
 
 import TableFilterByPanel from './TableFilterByPanel';
 
 export interface TableFilterBySubMenuProps {
+  /** The table the column is rendered in. Prefixes the search param key. */
+  tableId: TableId;
   /** The column being filtered. */
   columnId: AppColumnId;
   triggerText?: React.ReactNode;
@@ -31,6 +33,7 @@ export interface TableFilterBySubMenuProps {
  * one hover away rather than hidden. No `side` prop on purpose — Radix picks the side with room.
  */
 export default function TableFilterBySubMenu({
+  tableId,
   columnId,
   triggerText,
   label,
@@ -38,7 +41,7 @@ export default function TableFilterBySubMenu({
   className,
   contentClassName,
 }: TableFilterBySubMenuProps) {
-  const { hasActive } = useTableFilterByActive(columnId);
+  const { hasActive } = useTableFilterByActive(tableId, columnId);
 
   return (
     <DropdownMenuSub defaultOpen={ hasActive }>
@@ -55,7 +58,7 @@ export default function TableFilterBySubMenu({
         { triggerText ?? 'Filter By' }
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className={ cn('min-w-64 p-4', contentClassName) }>
-        <TableFilterByPanel columnId={ columnId } label={ label } applyText={ applyText } />
+        <TableFilterByPanel tableId={ tableId } columnId={ columnId } label={ label } applyText={ applyText } />
       </DropdownMenuSubContent>
     </DropdownMenuSub>
   );

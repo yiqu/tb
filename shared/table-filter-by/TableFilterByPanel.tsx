@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import ColumnStack from '@/shared/components/ColumnStack';
 import Typography from '@/components/typography/Typography';
-import { AppColumnId } from '@/store/subscriptions/table.store';
+import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
 import useTableFilterByQuery from '@/hooks/table-filter-by/useTableFilterByQuery';
 import { getTableFilterByColumnConfig } from '@/shared/table-filter-by/table-filter-by.utils';
 
@@ -14,6 +14,8 @@ import TableFilterByInput from './TableFilterByInput';
 import TableFilterByApplyButton from './TableFilterByApplyButton';
 
 export interface TableFilterByPanelProps {
+  /** The table the column is rendered in. Prefixes the search param key. */
+  tableId: TableId;
   /** The column being filtered. */
   columnId: AppColumnId;
   /** Field label. Pass `null` to drop it. */
@@ -30,10 +32,10 @@ export interface TableFilterByPanelProps {
  * button renders off `commitOnChange`, so turning that back on in `useTableFilterByQuery` removes
  * the button here without touching this file.
  */
-export default function TableFilterByPanel({ columnId, label, applyText, className }: TableFilterByPanelProps) {
+export default function TableFilterByPanel({ tableId, columnId, label, applyText, className }: TableFilterByPanelProps) {
   const inputId: string = useId();
   const { draftValue, isDirty, commitOnChange, changeDraftValue, applyFilterValue, clearFilterValue } =
-    useTableFilterByQuery(columnId);
+    useTableFilterByQuery(tableId, columnId);
   const hint: string | undefined = getTableFilterByColumnConfig(columnId)?.hint;
 
   return (

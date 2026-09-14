@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Options, debounce, useQueryState } from 'nuqs';
 
 import { parseAsTrimmedString } from '@/nuqs-parsers/string.parser';
-import { AppColumnId } from '@/store/subscriptions/table.store';
+import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
 import { getTableFilterByParamKey } from '@/shared/table-filter-by/table-filter-by.utils';
 
 /**
@@ -36,11 +36,11 @@ const FILTER_BY_COMMIT_ON_CHANGE_DEBOUNCE_MS = 500;
  * (the Apply button, or Enter in the input). `filterValue` stays the committed value, so the menu
  * badge and the submenu's open state read what the server actually filtered on.
  *
- * @param columnId - The column the filter belongs to. Its id is the search param key, unless the
- *   column names its own in `TABLE_FILTER_BY_COLUMNS`.
+ * @param tableId - The table the column is rendered in. Prefixes the search param key.
+ * @param columnId - The column the filter belongs to.
  */
-export default function useTableFilterByQuery(columnId: AppColumnId) {
-  const searchParamKey: string = getTableFilterByParamKey(columnId);
+export default function useTableFilterByQuery(tableId: TableId, columnId: AppColumnId) {
+  const searchParamKey: string = getTableFilterByParamKey(tableId, columnId);
 
   const [filterValue, setFilterValue] = useQueryState(
     searchParamKey,

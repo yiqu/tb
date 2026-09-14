@@ -22,7 +22,7 @@ type FormattedTableHeadMenuProps = {
 
 export default function FormattedTableHeadMenu({ columnId, tableId, columnIndex }: FormattedTableHeadMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { activeCount } = useTableFilterByActive(columnId as AppColumnId);
+  const { activeCount } = useTableFilterByActive(tableId, columnId as AppColumnId);
 
   const handleMenuAction = () => {
     setIsOpen(false);
@@ -69,7 +69,7 @@ export default function FormattedTableHeadMenu({ columnId, tableId, columnIndex 
           columnId={ columnId as AppColumnId }
           columnLabels={ SEARCH_TABLE_COLUMN_TEXT }
         />
-        <TableFilterByMenuSection columnId={ columnId as AppColumnId } />
+        <TableFilterByMenuSection tableId={ tableId } columnId={ columnId as AppColumnId } />
       </DropdownMenuContent>
     </DropdownMenu>
   );

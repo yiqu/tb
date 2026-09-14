@@ -1,20 +1,22 @@
-import { AppColumnId } from '@/store/subscriptions/table.store';
+import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
+
+/** Joins the table id and the column id into a filter's search param key. */
+export const TABLE_FILTER_BY_PARAM_SEPARATOR = '__';
 
 /**
  * How one column's "Filter By" menu item behaves.
  *
  * Every field is optional — an empty object is a perfectly good entry and means "filterable, with
- * the defaults". The search param key defaults to the column id, which is what we want almost
- * everywhere; `searchParamKey` is the escape hatch for a column id that is already taken by another
- * search param on the same page.
+ * the defaults". The search param key defaults to `tableId__columnId`; `searchParamKey` is the
+ * escape hatch for a column that needs some other key.
  */
 export interface TableFilterByColumnConfig {
   /**
-   * Search param the filter writes to. Defaults to the column id.
+   * Search param the filter writes to, overriding the `tableId__columnId` default.
    *
-   * Only set this when the bare column id would collide with a different search param on the same
-   * page, and name it `tableId__columnId` when you do — `frequency` is the one such case today,
-   * see below.
+   * Only set this when a column needs a key the default cannot produce — one shared by two tables,
+   * say. Nothing needs it today; the table prefix already keeps every filter out of the way of the
+   * other params on its page.
    */
   searchParamKey?: string;
   /** Placeholder for the filter input. Falls back to a generic one. */
@@ -29,21 +31,16 @@ export interface TableFilterByColumnConfig {
  * A column id that is absent from this object has no "Filter By" item — that is the whole test, so
  * adding the filter to a new column is one entry here and a matching read on the server.
  *
- * Column ids are shared across tables on purpose (`cost` is filterable in both the bills and the
- * subscriptions table). They never render on the same page, so one entry covers both.
+ * One entry covers that column in every table that has it: `cost` is filterable in both the bills
+ * and the subscriptions table, and the table prefix keeps their search params apart
+ * (`bills__cost`, `subscriptions__cost`).
  */
 export const TABLE_FILTER_BY_COLUMNS: Partial<Record<AppColumnId, TableFilterByColumnConfig>> = {
   cost: {
     placeholder: 'e.g. 10, >10, <=99.99',
     hint: 'Supports >, <, >= and <=',
   },
-  /**
-   * `frequency` the search param is already the bills page's frequency multi select, which reads a
-   * comma separated list of exact values. This free text filter is a different thing (a `contains`
-   * match), so it keeps the table prefixed key instead of fighting over that one.
-   */
   frequency: {
-    searchParamKey: 'bills__frequency',
     placeholder: 'e.g. monthly',
   },
   subscription: {
@@ -85,16 +82,20 @@ export function getTableFilterByColumnConfig(columnId: AppColumnId): TableFilter
 }
 
 /**
- * The search param a column's filter reads and writes: the column id, unless the column names its
- * own `tableId__columnId` key to get out of the way of another param.
+ * The search param a column's filter reads and writes: `tableId__columnId`, unless the column names
+ * its own key.
  *
- * This is the only place the key is derived. Change the shape here (add a table prefix back, switch
- * to a single packed param) and every consumer follows.
+ * The table prefix is what keeps a filter clear of the other params on its page — `bills__frequency`
+ * next to the bills page's own `frequency` multi select — and keeps the same column filterable in
+ * two tables without them sharing one value.
  *
+ * This is the only place the key is derived. Change the shape here and every consumer follows.
+ *
+ * @param tableId - The table the column is rendered in.
  * @param columnId - The column the header menu belongs to.
  */
-export function getTableFilterByParamKey(columnId: AppColumnId): string {
-  return TABLE_FILTER_BY_COLUMNS[columnId]?.searchParamKey ?? columnId;
+export function getTableFilterByParamKey(tableId: TableId, columnId: AppColumnId): string {
+  return TABLE_FILTER_BY_COLUMNS[columnId]?.searchParamKey ?? `${tableId}${TABLE_FILTER_BY_PARAM_SEPARATOR}${columnId}`;
 }
 
 /**
@@ -110,8 +111,9 @@ export function getTableFilterByPlaceholder(columnId: AppColumnId): string {
  * Search param keys for every filterable column of a table, for a consumer that clears them as a
  * group.
  *
+ * @param tableId - The table the columns are rendered in.
  * @param columnIds - The table's column ids.
  */
-export function getTableFilterByParamKeys(columnIds: readonly AppColumnId[]): string[] {
-  return columnIds.filter((columnId) => getIsColumnFilterable(columnId)).map((columnId) => getTableFilterByParamKey(columnId));
+export function getTableFilterByParamKeys(tableId: TableId, columnIds: readonly AppColumnId[]): string[] {
+  return columnIds.filter((columnId) => getIsColumnFilterable(columnId)).map((columnId) => getTableFilterByParamKey(tableId, columnId));
 }

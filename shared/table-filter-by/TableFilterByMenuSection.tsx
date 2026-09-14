@@ -1,13 +1,15 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { AppColumnId } from '@/store/subscriptions/table.store';
+import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
 import { DropdownMenuGroup, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/custom/dropdown-menu';
 import { getIsColumnFilterable } from '@/shared/table-filter-by/table-filter-by.utils';
 
 import TableFilterBySubMenu from './TableFilterBySubMenu';
 
 export interface TableFilterByMenuSectionProps {
+  /** The table the column is rendered in. Prefixes the search param key. */
+  tableId: TableId;
   /** The column whose header this menu belongs to. */
   columnId: AppColumnId;
   /** Section heading. Pass `null` to drop it. */
@@ -31,6 +33,7 @@ export interface TableFilterByMenuSectionProps {
  * Drop it into an existing `<DropdownMenuContent>` that already has other options.
  */
 export default function TableFilterByMenuSection({
+  tableId,
   columnId,
   label,
   showSeparator = true,
@@ -49,7 +52,7 @@ export default function TableFilterByMenuSection({
         { label === null ? null : (
           <DropdownMenuLabel className={ cn('text-foreground/50', labelClassName) }>{ label ?? 'Filter' }</DropdownMenuLabel>
         ) }
-        <TableFilterBySubMenu columnId={ columnId } contentClassName={ subMenuContentClassName } />
+        <TableFilterBySubMenu tableId={ tableId } columnId={ columnId } contentClassName={ subMenuContentClassName } />
       </DropdownMenuGroup>
     </>
   );
