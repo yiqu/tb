@@ -1,0 +1,62 @@
+'use client';
+
+import { ListFilter } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
+import { AppColumnId } from '@/store/subscriptions/table.store';
+import useTableFilterByActive from '@/hooks/table-filter-by/useTableFilterByActive';
+import { DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/custom/dropdown-menu';
+
+import TableFilterByPanel from './TableFilterByPanel';
+
+export interface TableFilterBySubMenuProps {
+  /** The column being filtered. */
+  columnId: AppColumnId;
+  triggerText?: React.ReactNode;
+  /** Field label inside the panel. Pass `null` to drop it. */
+  label?: React.ReactNode;
+  /** Apply button text. */
+  applyText?: React.ReactNode;
+  /** Class for the submenu trigger row. */
+  className?: string;
+  /** Class for the submenu panel — where to change its width or padding. */
+  contentClassName?: string;
+}
+
+/**
+ * The "Filter By" submenu: a trigger row that highlights while a filter is applied, opening onto the
+ * filter panel.
+ *
+ * Opens by default when the column already has a filter, so the value the table is filtered on is
+ * one hover away rather than hidden. No `side` prop on purpose — Radix picks the side with room.
+ */
+export default function TableFilterBySubMenu({
+  columnId,
+  triggerText,
+  label,
+  applyText,
+  className,
+  contentClassName,
+}: TableFilterBySubMenuProps) {
+  const { hasActive } = useTableFilterByActive(columnId);
+
+  return (
+    <DropdownMenuSub defaultOpen={ hasActive }>
+      <DropdownMenuSubTrigger
+        className={ cn(
+          'cursor-pointer',
+          {
+            'bg-accent text-accent-foreground': hasActive,
+          },
+          className,
+        ) }
+      >
+        <ListFilter className="size-4" />
+        { triggerText ?? 'Filter By' }
+      </DropdownMenuSubTrigger>
+      <DropdownMenuSubContent className={ cn('min-w-64 p-4', contentClassName) }>
+        <TableFilterByPanel columnId={ columnId } label={ label } applyText={ applyText } />
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>
+  );
+}

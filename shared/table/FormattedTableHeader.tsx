@@ -6,14 +6,13 @@ import { cn } from '@/lib/utils';
 import useColumnResize from '@/hooks/useColumnResize';
 import Typography from '@/components/typography/Typography';
 import { SortDataModel, SortDataPageId, SortDataUpsertable } from '@/models/sort-data/SortData.model';
-import { TableId, AppColumnId, useTableColumn, useTableColumnsActions } from '@/store/subscriptions/table.store';
+import { TableId, useTableColumn, useTableColumnsActions } from '@/store/subscriptions/table.store';
 import {
   SortData,
   SortField,
   SortDirection,
   getSortInfoText,
   getNextSortDirection,
-  getIsColumnFilterable,
   SEARCH_TABLE_COLUMN_TEXT,
 } from '@/shared/table/table.utils';
 
@@ -81,7 +80,6 @@ export default function FormattedTableHeader({
   const isColumnSorted: boolean = optimisticSortData.sort === columnId && optimisticSortData.direction !== '';
   const sortDirection: string | undefined = optimisticSortData.direction;
   const columnSortTooltip: string = getSortInfoText(columnId, !!sortable, isColumnSorted, sortDirection as SortDirection, nextSortData);
-  const showFilterOptions = getIsColumnFilterable(columnId as AppColumnId);
 
   const handleOnHeaderClick = (columnId: string) => {
     if (!sortable) {
@@ -139,7 +137,7 @@ export default function FormattedTableHeader({
             isPending={ isPending }
           />
         </RowStack>
-        <FormattedTableHeadMenu columnId={ columnId } tableId={ tableId } showFilterOptions={ showFilterOptions } columnIndex={ index } />
+        <FormattedTableHeadMenu columnId={ columnId } tableId={ tableId } columnIndex={ index } />
       </RowStack>
       <FormattedTableHeadResizeHandle
         handleResizePointerDown={ handleResizePointerDown }

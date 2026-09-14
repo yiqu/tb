@@ -356,8 +356,8 @@ export async function getAllBills(
     });
   }
 
-  if (searchParams?.['bills__cost'] && searchParams['bills__cost'].trim() !== '') {
-    const costRaw: string = searchParams['bills__cost'].trim();
+  if (searchParams?.cost && searchParams.cost.trim() !== '') {
+    const costRaw: string = searchParams.cost.trim();
     let operator: 'equals' | 'gte' | 'lte' | 'gt' | 'lt' = 'equals';
     let numericPart: string = costRaw;
 
@@ -384,8 +384,8 @@ export async function getAllBills(
     }
   }
 
-  if (searchParams?.['bills__subscription'] && searchParams['bills__subscription'].trim() !== '') {
-    const subscriptionName: string = searchParams['bills__subscription'].trim();
+  if (searchParams?.subscription && searchParams.subscription.trim() !== '') {
+    const subscriptionName: string = searchParams.subscription.trim();
     whereClause.AND.push({
       subscription: {
         name: { contains: subscriptionName, mode: 'insensitive' },
@@ -393,8 +393,8 @@ export async function getAllBills(
     });
   }
 
-  if (searchParams?.['bills__frequency'] && searchParams['bills__frequency'].trim() !== '') {
-    const frequencyRaw: string = searchParams['bills__frequency'].trim();
+  if (searchParams?.frequencyText && searchParams.frequencyText.trim() !== '') {
+    const frequencyRaw: string = searchParams.frequencyText.trim();
     whereClause.AND.push({
       subscription: {
         billCycleDuration: { contains: frequencyRaw, mode: 'insensitive' },

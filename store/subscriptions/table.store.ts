@@ -47,8 +47,6 @@ export const unsortableBillsColumns: Record<string, boolean> = {
   tableActions: false,
 };
 
-export const BILLS_TABLE_FILTER_PARAMS_OPTIONS = ['bills__cost', 'bills__subscription', 'bills__frequency'];
-
 type TableColumnsState = {
   frequency: number;
   dueDate: number;

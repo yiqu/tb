@@ -159,8 +159,8 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     });
   }
 
-  if (searchParams?.['subscriptions__cost'] && searchParams['subscriptions__cost'].trim() !== '') {
-    const costRaw: string = searchParams['subscriptions__cost'].trim();
+  if (searchParams?.cost && searchParams.cost.trim() !== '') {
+    const costRaw: string = searchParams.cost.trim();
     let operator: 'equals' | 'gte' | 'lte' | 'gt' | 'lt' = 'equals';
     let numericPart: string = costRaw;
 
@@ -187,29 +187,29 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
     }
   }
 
-  if (searchParams?.['subscriptions__name'] && searchParams['subscriptions__name'].trim() !== '') {
-    const name: string = searchParams['subscriptions__name'].trim();
+  if (searchParams?.name && searchParams.name.trim() !== '') {
+    const name: string = searchParams.name.trim();
     whereClause.AND.push({
       name: { contains: name, mode: 'insensitive' },
     });
   }
 
-  if (searchParams?.['subscriptions__billCycleDuration'] && searchParams['subscriptions__billCycleDuration'].trim() !== '') {
-    const frequency: string = searchParams['subscriptions__billCycleDuration'].trim();
+  if (searchParams?.billCycleDuration && searchParams.billCycleDuration.trim() !== '') {
+    const frequency: string = searchParams.billCycleDuration.trim();
     whereClause.AND.push({
       billCycleDuration: { contains: frequency, mode: 'insensitive' },
     });
   }
 
-  if (searchParams?.['subscriptions__description'] && searchParams['subscriptions__description'].trim() !== '') {
-    const description: string = searchParams['subscriptions__description'].trim();
+  if (searchParams?.description && searchParams.description.trim() !== '') {
+    const description: string = searchParams.description.trim();
     whereClause.AND.push({
       description: { contains: description, mode: 'insensitive' },
     });
   }
 
-  if (searchParams?.['subscriptions__url'] && searchParams['subscriptions__url'].trim() !== '') {
-    const url: string = searchParams['subscriptions__url'].trim();
+  if (searchParams?.url && searchParams.url.trim() !== '') {
+    const url: string = searchParams.url.trim();
     whereClause.AND.push({
       url: { contains: url, mode: 'insensitive' },
     });
