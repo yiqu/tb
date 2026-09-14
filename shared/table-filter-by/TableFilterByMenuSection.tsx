@@ -6,6 +6,7 @@ import { DropdownMenuGroup, DropdownMenuLabel, DropdownMenuSeparator } from '@/c
 import { getIsColumnFilterable } from '@/shared/table-filter-by/table-filter-by.utils';
 
 import TableFilterBySubMenu from './TableFilterBySubMenu';
+import TableFilterByClearMenuItem from './TableFilterByClearMenuItem';
 
 export interface TableFilterByMenuSectionProps {
   /** The table the column is rendered in. Prefixes the search param key. */
@@ -14,6 +15,8 @@ export interface TableFilterByMenuSectionProps {
   columnId: AppColumnId;
   /** Section heading. Pass `null` to drop it. */
   label?: React.ReactNode;
+  /** Called after "Clear Filter" runs, so the host menu can close itself. */
+  onAction?: () => void;
   /** Draw a separator above the section. @default true */
   showSeparator?: boolean;
   /** Class for the group wrapper. */
@@ -36,6 +39,7 @@ export default function TableFilterByMenuSection({
   tableId,
   columnId,
   label,
+  onAction,
   showSeparator = true,
   className,
   labelClassName,
@@ -53,6 +57,7 @@ export default function TableFilterByMenuSection({
           <DropdownMenuLabel className={ cn('text-foreground/50', labelClassName) }>{ label ?? 'Filter' }</DropdownMenuLabel>
         ) }
         <TableFilterBySubMenu tableId={ tableId } columnId={ columnId } contentClassName={ subMenuContentClassName } />
+        <TableFilterByClearMenuItem tableId={ tableId } columnId={ columnId } onAction={ onAction } />
       </DropdownMenuGroup>
     </>
   );

@@ -69,7 +69,7 @@ export default function FormattedTableHeadMenu({ columnId, tableId, columnIndex 
           columnId={ columnId as AppColumnId }
           columnLabels={ SEARCH_TABLE_COLUMN_TEXT }
         />
-        <TableFilterByMenuSection tableId={ tableId } columnId={ columnId as AppColumnId } />
+        <TableFilterByMenuSection onAction={ handleMenuAction } tableId={ tableId } columnId={ columnId as AppColumnId } />
       </DropdownMenuContent>
     </DropdownMenu>
   );

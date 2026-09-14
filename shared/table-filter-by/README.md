@@ -12,9 +12,18 @@ so your class wins), and props for its text.
 | --- | --- |
 | `TableFilterByMenuSection` | Your header menu wants the whole "Filter" group. Renders nothing for a column that is not filterable, so you can drop it in unconditionally. |
 | `TableFilterBySubMenu` | You want only the "Filter By" submenu, without the group heading or separator. |
-| `TableFilterByPanel` | You are building your own popover and want the label, input and Apply button. |
+| `TableFilterByClearMenuItem` | You want only the "Clear Filter" row. Renders nothing while the column has no filter. |
+| `TableFilterByPanel` | You are building your own popover and want the label, input and buttons. |
 | `TableFilterByInput` | You want only the input. |
 | `TableFilterByApplyButton` | You want only the Apply button. |
+| `TableFilterByClearButton` | You want only the Clear button. |
+
+## Clearing a filter
+
+Three ways, all writing the same param: the X inside the input, the Clear button under Apply, and
+"Clear Filter" in the main menu — the last one so dropping a filter does not mean hovering into the
+submenu first. The two dedicated controls appear only while the column actually has a filter
+applied, and "Clear Filter" closes the host menu through its `onAction`.
 
 ## Which columns are filterable
 

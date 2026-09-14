@@ -11,6 +11,7 @@ import useTableFilterByQuery from '@/hooks/table-filter-by/useTableFilterByQuery
 import { getTableFilterByColumnConfig } from '@/shared/table-filter-by/table-filter-by.utils';
 
 import TableFilterByInput from './TableFilterByInput';
+import TableFilterByClearButton from './TableFilterByClearButton';
 import TableFilterByApplyButton from './TableFilterByApplyButton';
 
 export interface TableFilterByPanelProps {
@@ -22,6 +23,8 @@ export interface TableFilterByPanelProps {
   label?: React.ReactNode;
   /** Apply button text. */
   applyText?: React.ReactNode;
+  /** Clear button text. */
+  clearText?: React.ReactNode;
   className?: string;
 }
 
@@ -32,9 +35,9 @@ export interface TableFilterByPanelProps {
  * button renders off `commitOnChange`, so turning that back on in `useTableFilterByQuery` removes
  * the button here without touching this file.
  */
-export default function TableFilterByPanel({ tableId, columnId, label, applyText, className }: TableFilterByPanelProps) {
+export default function TableFilterByPanel({ tableId, columnId, label, applyText, clearText, className }: TableFilterByPanelProps) {
   const inputId: string = useId();
-  const { draftValue, isDirty, commitOnChange, changeDraftValue, applyFilterValue, clearFilterValue } =
+  const { draftValue, isDirty, hasFilterValue, commitOnChange, changeDraftValue, applyFilterValue, clearFilterValue } =
     useTableFilterByQuery(tableId, columnId);
   const hint: string | undefined = getTableFilterByColumnConfig(columnId)?.hint;
 
@@ -66,6 +69,10 @@ export default function TableFilterByPanel({ tableId, columnId, label, applyText
           { applyText }
         </TableFilterByApplyButton>
       ) }
+
+      { hasFilterValue ?
+        <TableFilterByClearButton onClear={ clearFilterValue }>{ clearText }</TableFilterByClearButton>
+      : null }
     </ColumnStack>
   );
 }

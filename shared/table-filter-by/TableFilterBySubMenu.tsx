@@ -19,6 +19,8 @@ export interface TableFilterBySubMenuProps {
   label?: React.ReactNode;
   /** Apply button text. */
   applyText?: React.ReactNode;
+  /** Clear button text. */
+  clearText?: React.ReactNode;
   /** Class for the submenu trigger row. */
   className?: string;
   /** Class for the submenu panel — where to change its width or padding. */
@@ -38,6 +40,7 @@ export default function TableFilterBySubMenu({
   triggerText,
   label,
   applyText,
+  clearText,
   className,
   contentClassName,
 }: TableFilterBySubMenuProps) {
@@ -58,7 +61,7 @@ export default function TableFilterBySubMenu({
         { triggerText ?? 'Filter By' }
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className={ cn('min-w-64 p-4', contentClassName) }>
-        <TableFilterByPanel tableId={ tableId } columnId={ columnId } label={ label } applyText={ applyText } />
+        <TableFilterByPanel tableId={ tableId } columnId={ columnId } label={ label } applyText={ applyText } clearText={ clearText } />
       </DropdownMenuSubContent>
     </DropdownMenuSub>
   );
