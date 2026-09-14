@@ -1,8 +1,12 @@
 import { parseAsString, useQueryState, useQueryStates } from 'nuqs';
 
-import { BILLS_TABLE_FILTER_PARAMS_OPTIONS } from '@/store/subscriptions/table.store';
+import { BILLS_TABLE_COLUMNS } from '@/store/subscriptions/table.store';
+import { getTableFilterByParamKeys } from '@/shared/table-filter-by/table-filter-by.utils';
 
-const billsFilterParamsConfig = Object.fromEntries(BILLS_TABLE_FILTER_PARAMS_OPTIONS.map((key) => [key, parseAsString]));
+/** Search params every filterable column of the bills table writes to. */
+const BILLS_TABLE_FILTER_PARAM_KEYS: string[] = getTableFilterByParamKeys('bills', BILLS_TABLE_COLUMNS);
+
+const billsFilterParamsConfig = Object.fromEntries(BILLS_TABLE_FILTER_PARAM_KEYS.map((key) => [key, parseAsString]));
 
 export default function useDashboardRangeSelect() {
   const [monthDueBillsNavigation, setMonthDueBillsNavigation] = useQueryState('selectedMonthYear', {
@@ -18,7 +22,7 @@ export default function useDashboardRangeSelect() {
   };
 
   const clearBillsTableFilterParams = () => {
-    const nullParams = Object.fromEntries(BILLS_TABLE_FILTER_PARAMS_OPTIONS.map((key) => [key, null]));
+    const nullParams = Object.fromEntries(BILLS_TABLE_FILTER_PARAM_KEYS.map((key) => [key, null]));
     setBillsFilterParams(nullParams);
   };
 

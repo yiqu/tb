@@ -5,25 +5,24 @@ import { EllipsisVertical } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import useTableFilterMenuActive from '@/hooks/useTableFilterMenuActive';
 import { TableId, AppColumnId } from '@/store/subscriptions/table.store';
 import { SEARCH_TABLE_COLUMN_TEXT } from '@/shared/table/table.utils';
+import useTableFilterByActive from '@/hooks/table-filter-by/useTableFilterByActive';
+import TableFilterByMenuSection from '@/shared/table-filter-by/TableFilterByMenuSection';
 import TableColumnDisplayMenuSection from '@/shared/table-columns-adjust/TableColumnDisplayMenuSection';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/custom/dropdown-menu';
 
 import FormattedTableHeadMenuPinOption from './FormattedTableHeadMenuPinOption';
-import FormattedTableHeadMenuFilterOption from './FormattedTableHeadMenuFilterOption';
 
 type FormattedTableHeadMenuProps = {
   columnId: string;
   tableId: TableId;
-  showFilterOptions?: boolean;
   columnIndex: number;
 };
 
-export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOptions, columnIndex }: FormattedTableHeadMenuProps) {
+export default function FormattedTableHeadMenu({ columnId, tableId, columnIndex }: FormattedTableHeadMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { activeCount } = useTableFilterMenuActive(tableId, columnId as AppColumnId);
+  const { activeCount } = useTableFilterByActive(tableId, columnId as AppColumnId);
 
   const handleMenuAction = () => {
     setIsOpen(false);
@@ -70,9 +69,7 @@ export default function FormattedTableHeadMenu({ columnId, tableId, showFilterOp
           columnId={ columnId as AppColumnId }
           columnLabels={ SEARCH_TABLE_COLUMN_TEXT }
         />
-        { showFilterOptions ?
-          <FormattedTableHeadMenuFilterOption tableId={ tableId } columnId={ columnId as AppColumnId } />
-        : null }
+        <TableFilterByMenuSection onAction={ handleMenuAction } tableId={ tableId } columnId={ columnId as AppColumnId } />
       </DropdownMenuContent>
     </DropdownMenu>
   );
