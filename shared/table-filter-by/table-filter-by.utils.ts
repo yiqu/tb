@@ -40,13 +40,8 @@ export const TABLE_FILTER_BY_COLUMNS: Partial<Record<AppColumnId, TableFilterByC
     placeholder: 'e.g. 10, >10, <=99.99',
     hint: 'Supports >, <, >= and <=',
   },
-  /**
-   * Free text, and comma separated to match more than one: "year,month" matches yearly and monthly.
-   * `bills.server.ts` does the splitting — keep the two in step.
-   */
   frequency: {
-    placeholder: 'e.g. month, or year,month',
-    hint: 'Comma separate to match more than one',
+    placeholder: 'e.g. monthly',
   },
   subscription: {
     placeholder: 'Subscription name',

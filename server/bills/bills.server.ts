@@ -393,24 +393,13 @@ export async function getAllBills(
     });
   }
 
-  // The frequency column's "Filter By" menu, which is not the `frequency` filter above the table:
-  // that one takes exact values off a multi select, this one is free text. Comma separate to match
-  // more than one, so "year,month" matches yearly and monthly.
   if (searchParams?.['bills__frequency'] && searchParams['bills__frequency'].trim() !== '') {
-    const frequencyTerms: string[] = searchParams['bills__frequency']
-      .split(',')
-      .map((term: string) => term.trim())
-      .filter((term: string) => term !== '');
-
-    if (frequencyTerms.length > 0) {
-      whereClause.AND.push({
-        OR: frequencyTerms.map((term: string) => ({
-          subscription: {
-            billCycleDuration: { contains: term, mode: 'insensitive' },
-          },
-        })),
-      });
-    }
+    const frequencyRaw: string = searchParams['bills__frequency'].trim();
+    whereClause.AND.push({
+      subscription: {
+        billCycleDuration: { contains: frequencyRaw, mode: 'insensitive' },
+      },
+    });
   }
 
   if (searchParams?.paymentStatus && searchParams.paymentStatus.trim() !== '') {
