@@ -393,8 +393,8 @@ export async function getAllBills(
     });
   }
 
-  if (searchParams?.frequencyText && searchParams.frequencyText.trim() !== '') {
-    const frequencyRaw: string = searchParams.frequencyText.trim();
+  if (searchParams?.['bills__frequency'] && searchParams['bills__frequency'].trim() !== '') {
+    const frequencyRaw: string = searchParams['bills__frequency'].trim();
     whereClause.AND.push({
       subscription: {
         billCycleDuration: { contains: frequencyRaw, mode: 'insensitive' },

@@ -13,7 +13,8 @@ export interface TableFilterByColumnConfig {
    * Search param the filter writes to. Defaults to the column id.
    *
    * Only set this when the bare column id would collide with a different search param on the same
-   * page — `frequency` is the one such case today, see below.
+   * page, and name it `tableId__columnId` when you do — `frequency` is the one such case today,
+   * see below.
    */
   searchParamKey?: string;
   /** Placeholder for the filter input. Falls back to a generic one. */
@@ -39,10 +40,10 @@ export const TABLE_FILTER_BY_COLUMNS: Partial<Record<AppColumnId, TableFilterByC
   /**
    * `frequency` the search param is already the bills page's frequency multi select, which reads a
    * comma separated list of exact values. This free text filter is a different thing (a `contains`
-   * match), so it gets its own key instead of fighting over that one.
+   * match), so it keeps the table prefixed key instead of fighting over that one.
    */
   frequency: {
-    searchParamKey: 'frequencyText',
+    searchParamKey: 'bills__frequency',
     placeholder: 'e.g. monthly',
   },
   subscription: {
@@ -85,7 +86,7 @@ export function getTableFilterByColumnConfig(columnId: AppColumnId): TableFilter
 
 /**
  * The search param a column's filter reads and writes: the column id, unless the column names its
- * own key.
+ * own `tableId__columnId` key to get out of the way of another param.
  *
  * This is the only place the key is derived. Change the shape here (add a table prefix back, switch
  * to a single packed param) and every consumer follows.

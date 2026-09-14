@@ -60,7 +60,7 @@ export const billSearchParamsSchema = z.object({
   selectedMonthYear: z.string().optional(),
   cost: z.string().optional(),
   subscription: z.string().optional(),
-  frequencyText: z.string().optional(),
+  ['bills__frequency']: z.string().optional(),
 });
 
 export const newBillDueSchema = z.object({
