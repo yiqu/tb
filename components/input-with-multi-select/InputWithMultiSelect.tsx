@@ -91,11 +91,16 @@ export default function InputWithMultiSelect({
   const isReadOnly = !!inputProps.readOnly;
   const isSubmitDisabled = !!disabled || (disableSubmitWhenEmpty && getTrimmedInput(value) === '');
 
+  // Both submit affordances read this, so the trigger and Enter can never disagree about whether
+  // there is a submit to run. Without an `onChange` there is nowhere to submit to, and going ahead
+  // anyway would let `clearOnSubmit` wipe the user's text in exchange for nothing.
+  const canSubmit = !isSubmitDisabled && !!onChange;
+
   const handleOnSubmit = () => {
-    if (isSubmitDisabled) {
+    if (!canSubmit) {
       return;
     }
-    onChange?.(value);
+    onChange(value);
     if (clearOnSubmit) {
       applyValue(createInputWithMultiSelectValue('', value.selection), INPUT_WITH_MULTI_SELECT_CHANGE_CAUSES.reset);
     }
@@ -126,7 +131,7 @@ export default function InputWithMultiSelect({
     }
     // Nothing of ours to run — swallowing Enter here would leave a surrounding <form> unable to
     // submit at all, so let the key through instead.
-    if (isSubmitDisabled || !onChange) {
+    if (!canSubmit) {
       return;
     }
     // Stop a surrounding <form> from submitting on our behalf: this Enter is ours.
