@@ -11,44 +11,44 @@ import { Button } from '@/components/ui/button';
 import RowStack from '@/shared/components/RowStack';
 import ColumnStack from '@/shared/components/ColumnStack';
 import Typography from '@/components/typography/Typography';
+import AutoCompletableTextArea from '@/components/auto-completable-textarea/AutoCompletableTextArea';
 import { getDefaultChipMenuItems } from '@/components/auto-completable-textarea/AutoCompleteChipMenu';
 import { autoCompleteValueToText } from '@/components/auto-completable-textarea/autocompletable-textarea.utils';
-import { AutoCompleteValue, AutoCompleteChipMenuItemConfig } from '@/components/auto-completable-textarea/autocompletable-textarea.models';
-import AutoCompletableTextArea from '@/components/auto-completable-textarea/AutoCompletableTextArea';
 import AutoCompletableTextAreaUncontrolled from '@/components/auto-completable-textarea/AutoCompletableTextAreaUncontrolled';
 import AutoCompletableTextAreaReadOnly from '@/components/auto-completable-textarea-read-only/AutoCompletableTextAreaReadOnly';
 import { getDefaultReadOnlyChipMenuItems } from '@/components/auto-completable-textarea-read-only/AutoCompleteReadOnlyChipMenu';
+import { AutoCompleteValue, AutoCompleteChipMenuItemConfig } from '@/components/auto-completable-textarea/autocompletable-textarea.models';
 import { AutoCompleteReadOnlyChipMenuItemConfig } from '@/components/auto-completable-textarea-read-only/autocompletable-textarea-read-only.models';
 
 import { ItemOptionDisplay, TeammateOptionDisplay } from './Utils';
 import {
   Gist,
   Teammate,
-  CriticalIssue,
-  CRITICAL_INIT_TEXT,
-  criticalIssueDisplay,
-  getCriticalIssueRegex,
-  TEST_CRITICAL_ISSUES,
-  criticalIssueCopyContent,
-  resolveCriticalIssueById,
-  READ_ONLY_TEXT_CRITICAL,
-  criticalIssueFilterFunction,
-  criticalIssueTransformForServer,
   TEST_GISTS,
+  CriticalIssue,
   TEST_TEAMMATES,
   isItemDisabled,
   gistCopyContent,
   resolveGistById,
+  CRITICAL_INIT_TEXT,
   itemFilterFunction,
   teammateCopyContent,
   textAreaItemDisplay,
+  criticalIssueDisplay,
+  TEST_CRITICAL_ISSUES,
+  READ_ONLY_TEXT_MIXED,
+  getCriticalIssueRegex,
   getTeammateEmailRegex,
   resolveTeammateByEmail,
-  READ_ONLY_TEXT_MIXED,
   teammateFilterFunction,
+  READ_ONLY_TEXT_CRITICAL,
+  criticalIssueCopyContent,
+  resolveCriticalIssueById,
   getAutocompleteItemRegex,
   READ_ONLY_TEXT_TEAMMATES,
+  criticalIssueFilterFunction,
   teammateTextAreaItemDisplay,
+  criticalIssueTransformForServer,
   teammateTransformForServerFunction,
   textAreaItemTransformForServerFunction,
 } from './test.utils';
@@ -172,7 +172,10 @@ export default function AutoCompleteMoreExamplesDemo() {
       <Typography variant="h5">More examples — refactored components</Typography>
       <Typography variant="caption1">
         These exercise the shared substrate: the details dialog, the clipboard helper and the
-        <Typography variant="code1" as="span"> ChipMenuItemConfig </Typography>
+        <Typography variant="code1" as="span">
+          { ' ' }
+          ChipMenuItemConfig{ ' ' }
+        </Typography>
         shape are defined once now, yet each component still has its own chip and menu.
       </Typography>
 
