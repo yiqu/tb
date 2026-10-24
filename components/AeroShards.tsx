@@ -939,7 +939,7 @@ const createShards = (count: number, seed: number): Shard[] => {
     for (let index = 0; index < amount; index += 1) {
       const flat = next() * 2 - 1;
       const family = next();
-      const outline = [];
+      const outline: [number, number][] = [];
       if (family < 0.55) {
         const spread = 0.17 + next() * 0.15;
         outline.push([1, (next() - 0.5) * 0.08]);
@@ -967,7 +967,7 @@ const createShards = (count: number, seed: number): Shard[] => {
         mx += point[0] / sides;
         my += point[1] / sides;
       }
-      const shape = [];
+      const shape: number[] = [];
       for (let corner = 0; corner < 5; corner += 1) {
         const point = outline[Math.min(corner, sides - 1)];
         shape.push(point[0] - mx, point[1] - my);
