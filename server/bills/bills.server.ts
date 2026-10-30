@@ -986,6 +986,9 @@ export async function getNavigationMonthData(
   currentYear: number,
   manuallySelectedMonthYear?: string,
 ): Promise<NavigationMonthData> {
+  'use cache';
+  cacheLife('max');
+
   let cMonth = currentMonth;
   let cYear = currentYear;
 

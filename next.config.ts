@@ -4,7 +4,6 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     //viewTransition: true,
-    useCache: true,
     //turbopackFileSystemCacheForBuild: true,
     //turbopackFileSystemCacheForDev: true,
     // Cache dynamic pages in the Router Cache to prevent Suspense re-triggering on back navigation
@@ -12,10 +11,12 @@ const nextConfig: NextConfig = {
     //   dynamic: 30, // Cache dynamic pages for 30 seconds
     //   static: 180, // Cache static pages for 3 minutes (default is 5 minutes)
     // },
+    cachedNavigations: true,
   },
   reactCompiler: process.env.NODE_ENV === 'production' ? true : false,
   cacheComponents: true,
-  
+  partialPrefetching: true,
+
   // typedRoutes: true
 
   // 10/7/2025 added this to fix the prisma client initialization error

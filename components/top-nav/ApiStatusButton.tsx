@@ -9,7 +9,7 @@ export default function ApiStatusButtonParent() {
   return (
     <HoverCard openDelay={ 220 }>
       <ApiStatusButtonWrapper>
-        <Link href="/api-status" prefetch={ true }>
+        <Link href="/api-status">
           <ApiStatusButtonContent />
         </Link>
       </ApiStatusButtonWrapper>

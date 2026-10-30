@@ -1,14 +1,18 @@
 import { DateTime } from 'luxon';
+import { cacheLife } from 'next/cache';
 
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import NavHeaderLogo from '@/components/side-nav/header/NavHeaderLogo';
 
-export default function FestiveLeftNavHeaderLogo() {
-  const [imageUrlLight, imageUrlDark] = getFestiveLogo();
+export default async function FestiveLeftNavHeaderLogo() {
+  const [imageUrlLight, imageUrlDark] = await getFestiveLogo();
   return <NavHeaderLogo imageUrlLight={ imageUrlLight } imageUrlDark={ imageUrlDark } />;
 }
 
-function getFestiveLogo(): [string, string] {
+async function getFestiveLogo(): Promise<[string, string]> {
+  'use cache';
+  cacheLife('hours');
+
   const currentDateLuxon: DateTime = DateTime.now().setZone(EST_TIME_ZONE);
   const currenMonth = currentDateLuxon.month;
   const currentDay = currentDateLuxon.day;

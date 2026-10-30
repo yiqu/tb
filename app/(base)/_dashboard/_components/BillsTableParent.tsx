@@ -46,13 +46,13 @@ export default async function BillsTableParent({ searchParamsPromise, pagination
         <div className="flex flex-col items-center justify-center gap-y-2">
           <div className="flex flex-row items-center justify-start gap-x-2">
             <Button variant="link">
-              <Link href="/add/subscription" prefetch className="flex flex-row items-center gap-x-2">
+              <Link href="/add/subscription" className="flex flex-row items-center gap-x-2">
                 <ArrowRight />
                 Add a new subscription
               </Link>
             </Button>
             <Button variant="link">
-              <Link href="/add/bill" prefetch className="flex flex-row items-center gap-x-2">
+              <Link href="/add/bill" className="flex flex-row items-center gap-x-2">
                 <ArrowRight />
                 Add a new bill
               </Link>

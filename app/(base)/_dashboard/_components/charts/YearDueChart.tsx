@@ -54,7 +54,7 @@ export default function YearDueChart({ chartDataPromise }: Props) {
 
   return (
     <div className="h-148 w-full">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" initialDimension={ { width: 640, height: 592 } }>
         <BarChart
           data={ data }
           margin={ {
@@ -100,6 +100,10 @@ export default function YearDueChart({ chartDataPromise }: Props) {
             verticalAlign="middle"
             wrapperStyle={ {
               right: 0,
+              top: 0,
+              bottom: 0,
+              height: 'auto',
+              overflowY: 'auto',
             } }
             content={ <CustomLegend subscriptions={ chartData.subscriptions } /> }
           />
@@ -169,12 +173,14 @@ function CustomLegend({ payload, subscriptions }: CustomLegendProps) {
   });
 
   return (
-    <div className="flex flex-col gap-2 pl-4">
+    <div className="flex flex-col gap-2 py-1 pr-1 pl-4">
       { sortedPayload.map((item, index) => {
         const subscription = subscriptions?.find((sub) => sub.name.trim() === item.value.trim());
         return (
           <div key={ index } className="flex items-center gap-2">
-            <Typography variant="body0" className="min-w-3 tabular-nums">{ index + 1 }</Typography>
+            <Typography variant="body0" className="min-w-3 tabular-nums">
+              { index + 1 }
+            </Typography>
             <div className="h-3 w-3 rounded-sm" style={ { backgroundColor: item.color } } />
             { subscription ?
               <SubscriptionLogoAvatar subscription={ subscription } avatarProps={ { className: 'size-5' } } />

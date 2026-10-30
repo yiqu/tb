@@ -110,6 +110,12 @@ export function getSubscriptionLogoUrl(subscriptionName: string): { light: strin
       break;
     }
 
+    case 'T3 Credits': {
+      logoLightUrl = 'chat_t3';
+      logoDarkUrl = 'chat_t3';
+      break;
+    }
+
     case 'Vercel v0': {
       logoLightUrl = 'v0_light';
       logoDarkUrl = 'v0_dark';
@@ -235,6 +241,18 @@ export function getSubscriptionLogoUrl(subscriptionName: string): { light: strin
       logoDarkUrl = 'claude-dark';
       break;
     }
+
+    case 'Wispr Flow Dictation': {
+      logoLightUrl = 'wisprflow';
+      logoDarkUrl = 'wisprflow';
+      break;
+    }
+
+    case 'Code Rabbit': {
+      logoLightUrl = 'coderabbit';
+      logoDarkUrl = 'coderabbit';
+      break;
+    }
   }
 
   return {
@@ -253,6 +271,7 @@ export default function SubscriptionLogo({ subscriptionName, className, height =
         height={ height }
         alt="logo"
         className={ cn('shrink-0', className) }
+        style={ { width: height, height } }
         data-hide-on-theme="dark"
         priority
       />
@@ -263,6 +282,7 @@ export default function SubscriptionLogo({ subscriptionName, className, height =
         height={ height }
         alt="logo"
         className={ cn('shrink-0', className) }
+        style={ { width: height, height } }
         data-hide-on-theme="light"
         priority
       />

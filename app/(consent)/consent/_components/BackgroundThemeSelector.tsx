@@ -34,9 +34,7 @@ export default function BackgroundThemeSelector({ currentMonth }: { currentMonth
     );
   }
   if (currentMonth === 2) {
-    return (
-      <LogoGrid />
-    );
+    return <LogoGrid />;
     // return (
     //   <Lightspeed
     //     width="100%"
@@ -158,7 +156,20 @@ export default function BackgroundThemeSelector({ currentMonth }: { currentMonth
     );
   }
   if (currentMonth === 10) {
-    return <Plasma color="#ff6b35" speed={ 0.6 } direction="forward" scale={ 1.1 } opacity={ 0.8 } mouseInteractive={ true } />;
+    return (
+      <PrismaticBurst
+        animationType="rotate3d"
+        intensity={ 2 }
+        speed={ 0.5 }
+        distort={ 0 }
+        paused={ false }
+        offset={ { x: 0, y: 0 } }
+        hoverDampness={ 0.25 }
+        rayCount={ 0 }
+        mixBlendMode="lighten"
+        colors={ WEST_D_PALETTE }
+      />
+    );
   }
   if (currentMonth === 11) {
     return (

@@ -27,20 +27,20 @@ export default function FooterMenuContent() {
 
       <DropdownMenuGroup>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/account` } prefetch={ true }>
+          <Link href={ `/account` }>
             <Settings />
             Settings
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/account/personal-info` } prefetch={ true }>
+          <Link href={ `/account/personal-info` }>
             <UserRound />
             Account
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/art` } prefetch={ true }>
+          <Link href={ `/art` }>
             <Brush />
             Art
           </Link>
@@ -56,7 +56,7 @@ export default function FooterMenuContent() {
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/page-info` } prefetch={ true }>
+          <Link href={ `/page-info` }>
             <Info />
             Page Information
           </Link>
@@ -65,13 +65,13 @@ export default function FooterMenuContent() {
 
       <DropdownMenuGroup>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/login` } prefetch={ true }>
+          <Link href={ `/login` }>
             <Shield />
             Admin Panel
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href={ `/welcome` } prefetch={ true }>
+          <Link href={ `/welcome` }>
             <Presentation />
             Welcome Page
           </Link>

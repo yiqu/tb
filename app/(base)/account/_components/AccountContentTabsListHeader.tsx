@@ -11,7 +11,7 @@ export default function AccountContentTabsListHeader() {
         { TAB_OPTIONS.map((tab: AccountTabListItem) => {
           return (
             <TabsTrigger key={ tab.id } value={ tab.url } asChild>
-              <Link href={ `/account${tab.url}` } prefetch={ true }>
+              <Link href={ `/account${tab.url}` }>
                 { tab.displayText }
               </Link>
             </TabsTrigger>
