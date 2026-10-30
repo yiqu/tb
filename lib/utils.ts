@@ -1,12 +1,8 @@
 import { Metadata } from 'next';
-import { twMerge } from 'tailwind-merge';
-import { clsx, type ClassValue } from 'clsx';
 
 import { appName } from '@/constants/constants';
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export { cn } from 'cn';
 
 /**
  * String
