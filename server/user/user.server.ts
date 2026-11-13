@@ -34,12 +34,13 @@ export async function addNewUser(user: UserProfileAddable): Promise<UserProfile>
     });
 
     return newUser;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at addNewUser(): ', JSON.stringify(error));
-    if (error.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       throw new Error(`User '${user.name}' already exists.`);
     }
-    throw new Error(`User '${user.name}' could not be added. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`User '${user.name}' could not be added. Code: ${errorCode}`);
   }
 }
 
@@ -49,9 +50,10 @@ export async function getUserById(id: string) {
       where: { id },
     });
     return user;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-    console.error('Server error at getUser()!!: ', JSON.stringify(error));
-    throw new Error(`User '${id}' could not be found. Code: ${error.code}`);
+  } catch (error: unknown) {
+    console.error('Server error at getUserById(): ', JSON.stringify(error));
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`User '${id}' could not be found. Code: ${errorCode}`);
   }
 }
 
@@ -63,9 +65,10 @@ export async function getUser(): Promise<UserProfile | null> {
   try {
     const users = await prisma.userProfile.findFirst();
     return users;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-    console.error('Server error at getUser()??: ', JSON.stringify(error));
-    throw new Error(`Users could not be found??. Code: ${error.code}`);
+  } catch (error: unknown) {
+    console.error('Server error at getUser(): ', JSON.stringify(error));
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`Users could not be found. Code: ${errorCode}`);
   }
 }
 
@@ -104,9 +107,10 @@ export async function updateUserAction(
         zodErrorIssues: undefined,
         updatedAt: updatedUser.updatedAt,
       };
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    } catch (error: unknown) {
       console.error('Server error at updateUserAction() - updating user: ', JSON.stringify(error));
-      throw new Error(`User '${userId}' could not be updated. Code: ${error.code}`);
+      const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+      throw new Error(`User '${userId}' could not be updated. Code: ${errorCode}`);
     }
   } else {
     try {
@@ -123,9 +127,10 @@ export async function updateUserAction(
         zodErrorIssues: undefined,
         updatedAt: newUser.updatedAt,
       };
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    } catch (error: unknown) {
       console.error('Server error at updateUserAction() - adding new user: ', JSON.stringify(error));
-      throw new Error(`User could not be added. Code: ${error.code}`);
+      const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+      throw new Error(`User could not be added. Code: ${errorCode}`);
     }
   }
 }
@@ -137,15 +142,14 @@ export async function updateUser(id: string, user: UserProfileEditable) {
       data: user,
     });
     return updatedUser;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at updateUser(): ', JSON.stringify(error));
-    throw new Error(`User '${id}' could not be updated. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`User '${id}' could not be updated. Code: ${errorCode}`);
   }
 }
 
 export async function toggleAdminMode(userId: string, isAdmin: boolean) {
-  //sleep
-  //await new Promise((resolve) => setTimeout(resolve, 2000));
   try {
     const updatedUser = await prisma.userProfile.update({
       where: { id: userId },
@@ -155,18 +159,19 @@ export async function toggleAdminMode(userId: string, isAdmin: boolean) {
     revalidateUser();
 
     return updatedUser;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at toggleAdminMode(): ', JSON.stringify(error));
-    throw new Error(`User '${userId}' could not be updated. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`User '${userId}' could not be updated. Code: ${errorCode}`);
   }
 }
 
 export async function toggleAdminModeAction(
   prevState: SettingsPersonalInfoAdminModeActionState,
-  formData: any,
+  formData: FormData | Record<string, unknown>,
 ): Promise<SettingsPersonalInfoAdminModeActionState> {
-  const isAdminString: string = formData.isAdmin || '';
-  const userId: string = formData.userId || '';
+  const isAdminString: string = formData instanceof FormData ? (formData.get('isAdmin') as string) || '' : (formData.isAdmin as string) || '';
+  const userId: string = formData instanceof FormData ? (formData.get('userId') as string) || '' : (formData.userId as string) || '';
 
   const isAdmin: boolean = isAdminString.toString() === 'true';
 
@@ -181,9 +186,10 @@ export async function toggleAdminModeAction(
         updatedAt: updatedUser.updatedAt,
         zodErrorIssues: undefined,
       };
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    } catch (error: unknown) {
       console.error('Server error at toggleAdminModeAction(): ', JSON.stringify(error));
-      throw new Error(`User '${userId}' could not be updated. Code: ${error.code}`);
+      const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+      throw new Error(`User '${userId}' could not be updated. Code: ${errorCode}`);
     }
   }
 
@@ -199,17 +205,21 @@ export async function toggleAdminModeAction(
 
 export async function updateUserLocationAction(
   prevState: SettingsPersonalInfoLocationActionState,
-  formData: any,
+  formData: FormData | Record<string, unknown>,
 ): Promise<SettingsPersonalInfoLocationActionState> {
-  const locationData: UserLocationEditable = {
-    address: (formData.address as string) || '',
-    city: (formData.city as string) || '',
-    state: (formData.state as string) || '',
-    zip: (formData.zip as string) || '',
-    country: (formData.country as string) || '',
+  const getFormValue = (key: string): string => {
+    return formData instanceof FormData ? (formData.get(key) as string) || '' : (formData[key] as string) || '';
   };
 
-  const userId: string = (formData.userId as string) || '';
+  const locationData: UserLocationEditable = {
+    address: getFormValue('address'),
+    city: getFormValue('city'),
+    state: getFormValue('state'),
+    zip: getFormValue('zip'),
+    country: getFormValue('country'),
+  };
+
+  const userId: string = getFormValue('userId');
 
   if (userId) {
     try {
@@ -228,9 +238,10 @@ export async function updateUserLocationAction(
         zodErrorIssues: undefined,
         updatedAt: updatedUser.updatedAt,
       };
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    } catch (error: unknown) {
       console.error('Server error at updateUserLocationAction(): ', JSON.stringify(error));
-      throw new Error(`User '${userId}' could not be updated. Code: ${error.code}`);
+      const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+      throw new Error(`User '${userId}' could not be updated. Code: ${errorCode}`);
     }
   }
 
@@ -245,9 +256,6 @@ export async function updateUserLocationAction(
 }
 
 export async function updateUserLocation(userId: string, location: UserLocationEditable) {
-  // delay
-  // await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     const updatedUser = await prisma.userProfile.update({
       where: { id: userId },
@@ -257,9 +265,10 @@ export async function updateUserLocation(userId: string, location: UserLocationE
     revalidateUser();
 
     return updatedUser;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at updateUserLocation(): ', JSON.stringify(error));
-    throw new Error(`User '${userId}' could not be updated. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`User '${userId}' could not be updated. Code: ${errorCode}`);
   }
 }
 
@@ -292,8 +301,9 @@ export async function getUserAchievements(): Promise<UserAchievement[]> {
   ];
   try {
     return userAchievements;
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error: unknown) {
     console.error('Server error at getUserAchievements(): ', JSON.stringify(error));
-    throw new Error(`User achievements could not be retrieved. Code: ${error.code}`);
+    const errorCode = error instanceof Prisma.PrismaClientKnownRequestError ? error.code : 'UNKNOWN';
+    throw new Error(`User achievements could not be retrieved. Code: ${errorCode}`);
   }
 }
