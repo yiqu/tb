@@ -61,10 +61,11 @@ export function getSubscriptionDetailsStats(bills: SubscriptionDetailsStatsBill[
 
     if (bill.paid && bill.reimbursed) {
       statusBreakdown.completed += 1;
+    } else if (bill.paid) {
+      // checked before the due date so a bill paid ahead of time is not hidden under upcoming
+      statusBreakdown.paidNotReimbursed += 1;
     } else if (isFuture) {
       statusBreakdown.upcoming += 1;
-    } else if (bill.paid) {
-      statusBreakdown.paidNotReimbursed += 1;
     } else {
       statusBreakdown.notPaid += 1;
     }

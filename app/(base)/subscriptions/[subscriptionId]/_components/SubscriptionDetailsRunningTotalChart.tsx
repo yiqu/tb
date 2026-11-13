@@ -20,10 +20,11 @@ const usdFormatter = getUSDFormatter();
 
 export default function SubscriptionDetailsRunningTotalChart({ runningTotal }: { runningTotal: SubscriptionDetailsStatsRunningTotalNode[] }) {
   const hasUpcoming: boolean = runningTotal.some((node) => node.upcoming !== null);
-  const nowMillis: number = DateTime.now().setZone(EST_TIME_ZONE).toMillis();
+  // the end of today, the same cut-off the stats use, so a bill due later today sits before the marker
+  const todayMillis: number = DateTime.now().setZone(EST_TIME_ZONE).endOf('day').toMillis();
   const firstDueDate: number = runningTotal[0].dueDate;
   const lastDueDate: number = runningTotal[runningTotal.length - 1].dueDate;
-  const isTodayInRange: boolean = nowMillis > firstDueDate && nowMillis < lastDueDate;
+  const isTodayInRange: boolean = todayMillis > firstDueDate && todayMillis < lastDueDate;
   // a single bill has no width to draw a line across, so give the axis a month on either side
   const isSinglePoint: boolean = firstDueDate === lastDueDate;
   const domain: [number, number] =
@@ -76,7 +77,7 @@ export default function SubscriptionDetailsRunningTotalChart({ runningTotal }: {
             <Tooltip cursor={ { stroke: 'var(--muted-foreground)', strokeDasharray: '3 3' } } animationDuration={ 0 } content={ <RunningTotalTooltip /> } />
             { isTodayInRange ?
               <ReferenceLine
-                x={ nowMillis }
+                x={ todayMillis }
                 stroke="var(--muted-foreground)"
                 strokeDasharray="3 3"
                 label={ { value: 'Today', position: 'top', style: CHART_AXIS_TICK_STYLE } }

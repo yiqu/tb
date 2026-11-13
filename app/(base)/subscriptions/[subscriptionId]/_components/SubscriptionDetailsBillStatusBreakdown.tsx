@@ -40,11 +40,26 @@ const STATUS_SEGMENTS: StatusSegment[] = [
   {
     id: 'upcoming',
     label: 'Upcoming',
-    description: 'Due after today',
+    description: 'Due after today, not paid',
     color: 'var(--muted-foreground)',
     icon: <Clock className="size-4 text-muted-foreground" />,
   },
 ];
+
+/** A share that is not zero never reads as 0%, and one that is not everything never reads as 100%. */
+function formatShare(count: number, totalCount: number): string {
+  if (count === 0) {
+    return '0%';
+  }
+  const percent: number = (count / totalCount) * 100;
+  if (percent < 1) {
+    return '<1%';
+  }
+  if (count < totalCount && percent > 99) {
+    return '>99%';
+  }
+  return `${Math.round(percent)}%`;
+}
 
 interface Props {
   statusBreakdown: SubscriptionDetailsStatsStatusBreakdown;
@@ -53,7 +68,7 @@ interface Props {
 
 export default function SubscriptionDetailsBillStatusBreakdown({ statusBreakdown, totalCount }: Props) {
   return (
-    <SubscriptionDetailsChartCard title="Bill status" description={ `Where all ${totalCount} ${totalCount === 1 ? 'bill stands' : 'bills stand'}.` }>
+    <SubscriptionDetailsChartCard title="Bill status" description={ totalCount === 1 ? 'Where the bill stands.' : `Where all ${totalCount} bills stand.` }>
       <ColumnStack className="grow justify-center gap-y-4">
         <div className="flex h-3 w-full flex-row gap-x-0.5 overflow-hidden rounded-full">
           { STATUS_SEGMENTS.filter((segment) => statusBreakdown[segment.id] > 0).map((segment) => (
@@ -84,7 +99,7 @@ export default function SubscriptionDetailsBillStatusBreakdown({ statusBreakdown
                   { statusBreakdown[segment.id] }
                 </Typography>
                 <Typography variant="caption1" className="w-9 text-right tabular-nums">
-                  { Math.round((statusBreakdown[segment.id] / totalCount) * 100) }%
+                  { formatShare(statusBreakdown[segment.id], totalCount) }
                 </Typography>
               </div>
             </div>

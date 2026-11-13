@@ -23,13 +23,13 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
       className={ `
         grid w-full grid-cols-2 gap-x-6 gap-y-4
         @3xl:grid-cols-3
-        @6xl:grid-cols-[repeat(5,minmax(0,auto))_minmax(0,2fr)]
+        @6xl:grid-cols-[minmax(0,2fr)_auto_auto_auto_auto_minmax(0,3fr)]
       ` }
     >
       <Field label="Name">
-        <div className="flex flex-row items-center justify-start gap-x-2">
-          <SubscriptionLogo subscriptionName={ subscription.name } height={ 20 } />
-          <Typography variant="labelvalue1" className="truncate font-semibold">
+        <div className="flex min-w-0 flex-row items-center justify-start gap-x-2">
+          <SubscriptionLogo subscriptionName={ subscription.name } height={ 20 } className="shrink-0" />
+          <Typography variant="labelvalue1" className="min-w-0 truncate font-semibold" title={ subscription.name }>
             { subscription.name }
           </Typography>
         </div>
@@ -60,7 +60,7 @@ export default function SubscriptionDetailsMetadataData({ subscription }: { subs
         <DatePopover date={ subscription.updatedAt } />
       </Field>
       <Field label="Description" className="col-span-2 @3xl:col-span-1">
-        <Typography variant="labelvalue1" className="line-clamp-2" title={ subscription.description ?? undefined }>
+        <Typography variant="labelvalue1" className="wrap-break-word">
           { subscription.description || 'N/A' }
         </Typography>
       </Field>

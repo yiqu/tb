@@ -5,6 +5,7 @@ import { Bar, Cell, XAxis, YAxis, Tooltip, BarChart, LabelList, CartesianGrid, R
 import { getUSDFormatter } from '@/lib/number.utils';
 import { SubscriptionDetailsStatsYearNode } from '@/models/subscriptions/subscription-details-stats.model';
 
+import { CHART_WIDE_CLASS_NAME } from './SubscriptionDetailsStatsLoading';
 import { formatCompactUsd } from './subscription-details-stats.utils';
 import SubscriptionDetailsChartCard, {
   ChartLegend,
@@ -40,7 +41,7 @@ export default function SubscriptionDetailsSpendPerYearChart({ perYear, currentY
     <SubscriptionDetailsChartCard
       title="Spend per year"
       description="Total cost of the bills due in each year, all time."
-      className="@4xl:col-span-2 @7xl:col-span-1"
+      className={ CHART_WIDE_CLASS_NAME }
       legend={
         hasUpcoming ?
           <ChartLegend
