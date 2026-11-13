@@ -1,9 +1,10 @@
 'use client';
 
 import { CalendarRange } from 'lucide-react';
-import { useQueryState, parseAsInteger } from 'nuqs';
+import { useQueryState, parseAsString } from 'nuqs';
 
 import Typography from '@/components/typography/Typography';
+import { yearlyBillsSearchParamsSchema } from '@/validators/bills/yearly-bills.schema';
 import { Select, SelectItem, SelectValue, SelectContent, SelectTrigger } from '@/components/ui/select';
 
 interface YearlyBillsYearSelectProps {
@@ -14,22 +15,25 @@ interface YearlyBillsYearSelectProps {
 export default function YearlyBillsYearSelect({ years, selectedYear }: YearlyBillsYearSelectProps) {
   const [yearParam, setYear] = useQueryState(
     'year',
-    parseAsInteger.withOptions({
+    parseAsString.withOptions({
       history: 'push',
       scroll: false,
       shallow: false,
     }),
   );
 
+  // validate the URL year with the same schema as the server, so the trigger never shows a year the page did not load
+  const parsedParam = yearlyBillsSearchParamsSchema.safeParse({ year: yearParam ?? undefined });
+  const validParamYear: number | undefined = parsedParam.success ? parsedParam.data.year : undefined;
+
   // show the picked year right away; the server-resolved year covers a missing or invalid param
-  const displayedYear: number = yearParam !== null && years.includes(yearParam) ? yearParam : selectedYear;
+  const displayedYear: number = validParamYear !== undefined && years.includes(validParamYear) ? validParamYear : selectedYear;
 
   const handleOnValueChange = (value: string) => {
-    const year: number = Number.parseInt(value);
-    if (year === displayedYear) {
+    if (value === yearParam) {
       return;
     }
-    setYear(year);
+    setYear(value);
   };
 
   return (

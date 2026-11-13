@@ -1,5 +1,6 @@
 import { YearlyBillsYearOptions } from '@/models/bills/yearly-bills.model';
 import { getYearlyBillsYearOptionsCached } from '@/server/bills/yearly-bills.server';
+import { YEARLY_BILLS_MAX_YEAR, YEARLY_BILLS_MIN_YEAR } from '@/validators/bills/yearly-bills.schema';
 
 import { getYearlyBillsSelection } from './yearly-bills.utils';
 import YearlyBillsYearSelect from './YearlyBillsYearSelect';
@@ -13,8 +14,11 @@ export default async function YearlyBillsYearSelectWrapper({ searchParamsPromise
   const { selectedYear, currentYear } = await getYearlyBillsSelection(searchParams);
   const { years }: YearlyBillsYearOptions = await getYearlyBillsYearOptionsCached();
 
-  // always offer the current year (the cached list may predate New Year) and a year typed into the URL
-  const options: number[] = [...new Set([...years, currentYear, selectedYear])].toSorted((a, b) => b - a);
+  // always offer the current year (the cached list may predate New Year) and a year typed into the URL,
+  // and only years the validator accepts, so a pick always loads that year
+  const options: number[] = [...new Set([...years, currentYear, selectedYear])]
+    .filter((year: number) => year >= YEARLY_BILLS_MIN_YEAR && year <= YEARLY_BILLS_MAX_YEAR)
+    .toSorted((a, b) => b - a);
 
   return <YearlyBillsYearSelect years={ options } selectedYear={ selectedYear } />;
 }
