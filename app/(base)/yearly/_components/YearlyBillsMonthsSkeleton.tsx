@@ -8,12 +8,12 @@ export default function YearlyBillsMonthsSkeleton() {
       <Skeleton className="h-7 w-[420px]" />
       { Array.from({ length: 3 }, (_, index: number) => (
         <ColumnStack key={ index } className="w-full gap-y-3">
-          <RowStack className="w-full items-center justify-between">
+          <RowStack className="w-full flex-wrap items-center justify-between gap-x-6 gap-y-3">
             <RowStack className="items-center gap-x-3">
               <Skeleton className="size-11 rounded-md" />
               <Skeleton className="h-8 w-[140px]" />
             </RowStack>
-            <RowStack className="gap-3">
+            <RowStack className="flex-wrap gap-3">
               <Skeleton className="h-16 w-[150px]" />
               <Skeleton className="h-16 w-[150px]" />
               <Skeleton className="h-16 w-[150px]" />

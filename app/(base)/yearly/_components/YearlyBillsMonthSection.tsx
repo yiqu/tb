@@ -43,7 +43,7 @@ export default function YearlyBillsMonthSection({ year, month, sortData, isCurre
       <ColumnStack className="w-full gap-y-3">
         <RowStack className="w-full flex-wrap items-center justify-between gap-x-6 gap-y-3">
           <RowStack className="items-center gap-x-3">
-            <MonthImage month={ `${month.month}` } height={ 44 } />
+            <MonthImage month={ `${month.month}` } height={ 44 } priority={ month.month === 1 } />
             <ColumnStack>
               <Typography variant="h3" className={ cn({ 'text-primary': isCurrentMonth }) }>
                 { month.monthName }
@@ -76,6 +76,7 @@ export default function YearlyBillsMonthSection({ year, month, sortData, isCurre
                 pageId={ SORT_DATA_PAGE_IDS.yearly }
                 tableId={ `yearly-bills-table-${month.month}` }
                 loadingMaskRowCount={ month.billsCount }
+                showFilters={ false }
               />
             </CardContent>
           </DisplayCard>

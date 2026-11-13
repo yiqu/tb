@@ -12,7 +12,7 @@ interface YearlyBillsYearSelectProps {
 }
 
 export default function YearlyBillsYearSelect({ years, selectedYear }: YearlyBillsYearSelectProps) {
-  const [, setYear] = useQueryState(
+  const [yearParam, setYear] = useQueryState(
     'year',
     parseAsInteger.withOptions({
       history: 'push',
@@ -21,16 +21,19 @@ export default function YearlyBillsYearSelect({ years, selectedYear }: YearlyBil
     }),
   );
 
+  // show the picked year right away; the server-resolved year covers a missing or invalid param
+  const displayedYear: number = yearParam !== null && years.includes(yearParam) ? yearParam : selectedYear;
+
   const handleOnValueChange = (value: string) => {
     const year: number = Number.parseInt(value);
-    if (year === selectedYear) {
+    if (year === displayedYear) {
       return;
     }
     setYear(year);
   };
 
   return (
-    <Select value={ `${selectedYear}` } onValueChange={ handleOnValueChange }>
+    <Select value={ `${displayedYear}` } onValueChange={ handleOnValueChange }>
       <SelectTrigger className="w-[160px]" aria-label="Select year">
         <CalendarRange />
         <SelectValue placeholder="Year" />

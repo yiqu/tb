@@ -12,7 +12,7 @@ export interface YearlyBillsSelection {
 
 // Selected year from the URL, or the current EST year when it is missing or invalid.
 // Waits for the request first, because reading the current time during prerender is not allowed.
-export async function getYearlyBillsSelection(searchParams: unknown): Promise<YearlyBillsSelection> {
+export async function getYearlyBillsSelection(searchParams: Record<string, string | string[] | undefined>): Promise<YearlyBillsSelection> {
   await connection();
 
   const now: DateTime = DateTime.now().setZone(EST_TIME_ZONE);

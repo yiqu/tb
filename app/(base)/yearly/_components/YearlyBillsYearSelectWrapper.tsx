@@ -10,11 +10,11 @@ interface YearlyBillsYearSelectWrapperProps {
 
 export default async function YearlyBillsYearSelectWrapper({ searchParamsPromise }: YearlyBillsYearSelectWrapperProps) {
   const searchParams = await searchParamsPromise;
-  const { selectedYear } = await getYearlyBillsSelection(searchParams);
+  const { selectedYear, currentYear } = await getYearlyBillsSelection(searchParams);
   const { years }: YearlyBillsYearOptions = await getYearlyBillsYearOptionsCached();
 
-  // keep a year typed into the URL selectable even if it has no bills
-  const options: number[] = years.includes(selectedYear) ? years : [...years, selectedYear].toSorted((a, b) => b - a);
+  // always offer the current year (the cached list may predate New Year) and a year typed into the URL
+  const options: number[] = [...new Set([...years, currentYear, selectedYear])].toSorted((a, b) => b - a);
 
   return <YearlyBillsYearSelect years={ options } selectedYear={ selectedYear } />;
 }

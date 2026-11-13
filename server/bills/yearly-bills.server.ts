@@ -74,8 +74,8 @@ export async function getYearlyDueBills(year: number, sortData: SortDataModel | 
   const endOfYear: DateTime = startOfYear.endOf('year');
 
   try {
-    // dueDate is an epoch-millis string. Every date from 2001 to 2286 has 13 digits, so a string range
-    // compare matches the numeric one and can use the dueDate index.
+    // dueDate is an epoch-millis string. Every date from 2002 through 2286 has 13 digits, so a string range
+    // compare matches the numeric one and can use the dueDate index (the year select starts at 2002).
     const billDuesInYear: BillDueWithSubscription[] = await prisma.billDue.findMany({
       where: {
         dueDate: {
@@ -145,14 +145,14 @@ function getBillDueCost(billDue: BillDueWithSubscription): number {
 function withEstDates(billDue: BillDueWithSubscription): BillDueWithSubscription {
   const dueDate: DateTime = DateTime.fromMillis(Number.parseInt(billDue.dueDate), { zone: EST_TIME_ZONE });
   const dateAdded: DateTime = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`)).setZone(EST_TIME_ZONE);
-  const updatedAt: DateTime = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`)).setZone(EST_TIME_ZONE);
+  const updatedAt: DateTime | null = billDue.updatedAt ? DateTime.fromJSDate(new Date(`${billDue.updatedAt}`)).setZone(EST_TIME_ZONE) : null;
 
   return {
     ...billDue,
     dueDateInEst: dueDate.toLocaleString(DateTime.DATETIME_SHORT),
     dateAddedInEst: dateAdded.toLocaleString(DateTime.DATETIME_SHORT),
     dateAddedInEstRelative: formatDistanceToNow(dateAdded.toJSDate(), { addSuffix: true }),
-    updatedAtInEst: updatedAt.toLocaleString(DateTime.DATETIME_SHORT),
-    updatedAtInEstRelative: formatDistanceToNow(updatedAt.toJSDate(), { addSuffix: true }),
+    updatedAtInEst: updatedAt?.toLocaleString(DateTime.DATETIME_SHORT),
+    updatedAtInEstRelative: updatedAt ? formatDistanceToNow(updatedAt.toJSDate(), { addSuffix: true }) : undefined,
   };
 }
