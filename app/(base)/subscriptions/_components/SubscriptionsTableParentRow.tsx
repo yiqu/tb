@@ -15,7 +15,6 @@ export default function SubscriptionsTableParentRow({ subscription }: { subscrip
           key={ column }
           colId={ column }
           subscription={ subscription }
-          showVerticalBorder
           isSticky={ index === 0 }
         />
       )) }
