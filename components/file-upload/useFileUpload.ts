@@ -19,8 +19,8 @@ interface UseFileUploadResult {
   setStagedFiles: (files: File[]) => void;
   startUpload: (metadata?: FileUploadMetadata) => void;
   /**
-   * Call when the upload surface closes. If Upload was pressed the surface starts empty the next
-   * time, files that were only staged are kept. Running uploads keep going either way.
+   * Call when the upload surface opens. If Upload was pressed the last time it starts empty again,
+   * files that were only staged are kept. Running uploads keep going either way.
    */
   endSession: () => void;
 }

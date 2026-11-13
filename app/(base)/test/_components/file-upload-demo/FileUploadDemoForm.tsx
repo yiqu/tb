@@ -13,6 +13,7 @@ import FileUploadDropzone from '@/components/file-upload/FileUploadDropzone';
 import FileUploadActionBar from '@/components/file-upload/FileUploadActionBar';
 import FileUploadStatusList from '@/components/file-upload/FileUploadStatusList';
 import { FILE_UPLOAD_PHASE } from '@/components/file-upload/file-upload.constants';
+import FileUploadInProgressAlert from '@/components/file-upload/FileUploadInProgressAlert';
 import FileUploadFailedMessage from '@/components/file-upload/FileUploadFailedMessage';
 import FileUploadRejectedMessage from '@/components/file-upload/FileUploadRejectedMessage';
 import FileUploadCompletedMessage from '@/components/file-upload/FileUploadCompletedMessage';
@@ -29,7 +30,7 @@ const REJECTED_MESSAGE_GRACE_MS = 1000;
  *
  * - empty / staging: package name, divider, drop zone (FilePond lists the staged files itself)
  * - staging: the action bar with the Upload button shows up
- * - uploading: the drop zone is replaced by the progress of each file, the Upload button is disabled with a spinner
+ * - uploading: an info alert says the dialog can be closed, the drop zone is replaced by the progress of each file, the Upload button is disabled with a spinner
  * - completed: "Upload completed", the Upload button is gone
  */
 export default function FileUploadDemoForm() {
@@ -66,6 +67,10 @@ export default function FileUploadDemoForm() {
   };
 
   const handleOnUpload = (data: FileUploadPackageFormValues) => {
+    // pressing Enter in the package name submits the form too, there may be nothing to upload yet
+    if (stagedFiles.length === 0) {
+      return;
+    }
     // FilePond posts the metadata next to every file, under the same field name
     startUpload({ packageName: data.packageName });
     setDraftPackageName('');
@@ -84,6 +89,10 @@ export default function FileUploadDemoForm() {
         />
 
         <Separator />
+
+        { isUploading ?
+          <FileUploadInProgressAlert />
+        : null }
 
         { hasStarted ?
           <FileUploadStatusList uploads={ sessionUploads } />

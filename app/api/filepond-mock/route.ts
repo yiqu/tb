@@ -74,7 +74,6 @@ export async function POST(request: NextRequest) {
     return textResponse(`No file was posted under the "${FIELD_NAME}" field`, 400);
   }
   await sleep(getSlowUploadDurationMs());
-  transfers.set(id, { length: file.size, offset: file.size, name: file.name, durationMs: 0 });
   return textResponse(id, 200);
 }
 
@@ -98,6 +97,10 @@ export async function PATCH(request: NextRequest) {
 
   transfer.offset = offset + chunk.byteLength;
   transfer.name = request.headers.get('Upload-Name');
+  // nothing is stored, so a finished transfer is forgotten right away to keep the map from growing
+  if (id !== null && transfer.offset >= transfer.length) {
+    transfers.delete(id);
+  }
   return textResponse(null, 204);
 }
 

@@ -17,11 +17,12 @@ export default function FileUploadDemoDialog() {
   const { endSession } = useFileUploadActions();
 
   const handleOnOpenChange = (nextOpen: boolean) => {
-    setOpen(nextOpen);
-    if (!nextOpen) {
-      // once Upload was pressed the dialog starts empty the next time, files that were only staged are kept
+    if (nextOpen) {
+      // once Upload was pressed the dialog starts empty the next time, files that were only staged are kept.
+      // Done on open and not on close, so the progress stays in place while the dialog fades out.
       endSession();
     }
+    setOpen(nextOpen);
   };
 
   return (

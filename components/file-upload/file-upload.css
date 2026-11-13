@@ -4,6 +4,10 @@
  */
 
 /* the height comes from the wrapper (a Tailwind h-* class), FilePond then scrolls its list inside it */
+.file-upload-dropzone .filepond--wrapper {
+  height: 100%;
+}
+
 .file-upload-dropzone .filepond--root {
   height: 100%;
   margin-bottom: 0;

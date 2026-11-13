@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useEffect, useLayoutEffect } from 'react';
 import { FilePond } from 'react-filepond';
 
 import { cn } from '@/lib/utils';
@@ -12,7 +13,11 @@ import { FILE_UPLOAD_REMOVE_ICON_SVG } from './file-upload.constants';
 import { isFileExtensionAllowed, normalizeFileExtension } from './file-upload.utils';
 
 interface FileUploadDropzoneProps {
-  /** The staged files. Controlled, so the selection can outlive this component (e.g. a dialog closing). */
+  /**
+   * The staged files, kept by the caller so the selection can outlive this component (e.g. a dialog
+   * closing). They are handed to FilePond when it mounts, after that FilePond owns the list and
+   * reports every change through `onFilesChange`. Emptying it from outside clears the drop zone.
+   */
   files: File[];
   onFilesChange: (files: File[]) => void;
   /** Extensions that may be selected, e.g. `['.txt']`. Leave empty to allow everything. */
@@ -44,30 +49,74 @@ export default function FileUploadDropzone({
   label,
   className,
 }: FileUploadDropzoneProps) {
-  const handleOnUpdateFiles = (items: FilePondFile[]) => {
-    const nextFiles: File[] = items.map((item: FilePondFile) => item.file).filter((file): file is File => file instanceof File);
-    const isSameSelection: boolean = nextFiles.length === files.length && nextFiles.every((file: File, index: number) => file === files[index]);
-    if (!isSameSelection) {
-      onFilesChange(nextFiles);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const pondRef = useRef<FilePond>(null);
+  // FilePond calls back outside of React's render cycle, the callbacks read the current props through this ref
+  const latestRef = useRef({ files, onFilesChange, allowedExtensions, onFileRejected });
+  useLayoutEffect(() => {
+    latestRef.current = { files, onFilesChange, allowedExtensions, onFileRejected };
+  });
+
+  /** FilePond has no core option for it, so the `accept` attribute of its browse input is set by hand. */
+  const syncAcceptAttribute = () => {
+    const browseInput: HTMLInputElement | null | undefined = wrapperRef.current?.querySelector<HTMLInputElement>('input.filepond--browser');
+    const extensions: string[] = (latestRef.current.allowedExtensions ?? []).map(normalizeFileExtension).filter(Boolean);
+    if (!browseInput) {
+      return;
+    }
+    if (extensions.length > 0) {
+      browseInput.setAttribute('accept', extensions.join(','));
+    } else {
+      browseInput.removeAttribute('accept');
     }
   };
 
+  /** Reports the selection once a file finished loading or was removed, read straight from FilePond. */
+  const reportFiles = () => {
+    const current: File[] = latestRef.current.files;
+    const nextFiles: File[] = (pondRef.current?.getFiles() ?? [])
+      .filter((item: FilePondFile) => isFileExtensionAllowed(item.filename, latestRef.current.allowedExtensions))
+      .map((item: FilePondFile) => item.file)
+      .filter((file): file is File => file instanceof File);
+    const isSameSelection: boolean = nextFiles.length === current.length && nextFiles.every((file: File, index: number) => file === current[index]);
+    if (!isSameSelection) {
+      latestRef.current.onFilesChange(nextFiles);
+    }
+    // FilePond replaces its browse input after a selection
+    syncAcceptAttribute();
+  };
+
+  const handleOnInit = () => {
+    syncAcceptAttribute();
+    // restore the selection that was staged before this component was last unmounted
+    if (latestRef.current.files.length > 0) {
+      pondRef.current?.addFiles(latestRef.current.files);
+    }
+  };
+
+  useEffect(() => {
+    // the caller emptied the selection (e.g. the upload started): clear what FilePond still shows
+    if (files.length === 0 && (pondRef.current?.getFiles().length ?? 0) > 0) {
+      pondRef.current?.removeFiles();
+    }
+  }, [files]);
+
   const handleBeforeAddFile = (item: FilePondFile): boolean => {
-    const isAllowed: boolean = isFileExtensionAllowed(item.filename, allowedExtensions);
+    const isAllowed: boolean = isFileExtensionAllowed(item.filename, latestRef.current.allowedExtensions);
     if (!isAllowed) {
-      onFileRejected?.(item.filename);
+      latestRef.current.onFileRejected?.(item.filename);
     }
     return isAllowed;
   };
 
   return (
+    <div ref={ wrapperRef } className={ cn('file-upload-dropzone h-56 w-full', className) }>
     <FilePond
-      className={ cn('file-upload-dropzone h-56 w-full', className) }
-      files={ files }
-      onupdatefiles={ handleOnUpdateFiles }
+      ref={ pondRef }
+      oninit={ handleOnInit }
+      onaddfile={ reportFiles }
+      onremovefile={ reportFiles }
       beforeAddFile={ handleBeforeAddFile }
-      // sets the `accept` attribute of the browse input, so the file picker only offers these extensions
-      acceptedFileTypes={ allowedExtensions?.map(normalizeFileExtension) }
       allowMultiple={ allowMultiple }
       disabled={ disabled }
       // staging only: nothing is sent until the caller starts the upload
@@ -80,5 +129,6 @@ export default function FileUploadDropzone({
       iconRemove={ FILE_UPLOAD_REMOVE_ICON_SVG }
       { ...(label ? { labelIdle: label } : {}) }
     />
+    </div>
   );
 }

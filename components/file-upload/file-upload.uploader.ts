@@ -92,6 +92,15 @@ function getChunkSize(file: File, config: FileUploadServerConfig): number {
   return Math.max(1, Math.floor(chunkSize));
 }
 
+/**
+ * FilePond sends the raw file name. A header value has to be ISO-8859-1 though, so a name with
+ * characters outside of it (which FilePond itself cannot send) is percent-encoded instead.
+ */
+function getUploadNameHeader(fileName: string): string {
+  const isHeaderSafe: boolean = /^[\x20-\x7E\xA0-\xFF]*$/.test(fileName);
+  return isHeaderSafe ? fileName : encodeURIComponent(fileName);
+}
+
 function appendMetadata(formData: FormData, fieldName: string, metadata?: FileUploadMetadata): void {
   if (metadata) {
     formData.append(fieldName, JSON.stringify(metadata));
@@ -147,8 +156,7 @@ async function uploadFileInChunks({ file, config, metadata, onProgress }: Upload
         'Content-Type': 'application/offset+octet-stream',
         'Upload-Offset': String(offset),
         'Upload-Length': String(file.size),
-        // header values must be ISO-8859-1, so the name is encoded
-        'Upload-Name': encodeURIComponent(file.name),
+        'Upload-Name': getUploadNameHeader(file.name),
       },
       withCredentials: config.withCredentials,
     });
