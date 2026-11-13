@@ -157,6 +157,7 @@ failed chunk after the delays in `chunkRetryDelays`.
 | `FileUploadActionBar`, `FileUploadButton` | The row under the drop zone and the Upload button (spinner while uploading). |
 | `FileUploadInProgressAlert` | Info alert for the uploading phase. Wording is in `file-upload.constants.ts`. |
 | `FileUploadStatusList`, `FileUploadStatusRow`, `FileUploadProgressBar` | Progress per file. Yellow below 70%, dark green from 70%. |
+| `FileUploadRetryButton` | Sends the failed files again. Reads the store, renders nothing when no file failed. Remove the element to remove the feature. |
 | `FileUploadCompletedMessage`, `FileUploadFailedMessage`, `FileUploadRejectedMessage` | Result and validation messages. |
 | `FileUploadStatusOverview`, `FileUploadClearFinishedButton`, `FileUploadActiveIndicator` | Store-connected pieces used in the notifications popover. |
 | `FileUploadDocumentTitle` | Puts `45% (1/3)` in the browser tab while uploading. Mounted once in `BodyParent`. |

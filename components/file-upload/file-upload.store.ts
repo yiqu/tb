@@ -26,6 +26,8 @@ interface FileUploadState {
     startUpload: (config: FileUploadServerConfig, metadata?: FileUploadMetadata) => void;
     /** Forgets the batch the surface was following so it starts empty again. Running uploads are NOT cancelled. */
     endSession: () => void;
+    /** Sends the failed files again, from the start. Pass a batch id to only retry the files of that batch. */
+    retryFailedUploads: (batchId?: string) => void;
     /** Removes the uploads that are completed or failed from the list. */
     clearFinishedUploads: () => void;
   };
@@ -39,6 +41,8 @@ interface QueuedUpload {
 }
 
 const queuedUploads: QueuedUpload[] = [];
+/** What is needed to send a file again, kept (outside of the state) until the file is completed or cleared. */
+const uploadSources = new Map<string, QueuedUpload>();
 let runningUploadCount = 0;
 
 function createId(): string {
@@ -70,6 +74,7 @@ function runQueuedUploads(): void {
       onProgress: (progress: number) => patchUpload(next.id, { progress: clampProgress(progress) }),
     })
       .then((serverId: string) => {
+        uploadSources.delete(next.id);
         patchUpload(next.id, { status: FILE_UPLOAD_STATUS.completed, progress: 100, serverId: serverId });
       })
       .catch((error: unknown) => {
@@ -118,7 +123,9 @@ export const useFileUploadStore = create<FileUploadState>()((set, get) => ({
       }));
 
       items.forEach((item: FileUploadItem, index: number) => {
-        queuedUploads.push({ id: item.id, file: files[index], config: config, metadata: metadata });
+        const source: QueuedUpload = { id: item.id, file: files[index], config: config, metadata: metadata };
+        uploadSources.set(item.id, source);
+        queuedUploads.push(source);
       });
       runQueuedUploads();
     },
@@ -127,8 +134,32 @@ export const useFileUploadStore = create<FileUploadState>()((set, get) => ({
       set({ sessionBatchId: null });
     },
 
+    retryFailedUploads: (batchId?: string) => {
+      const retried: QueuedUpload[] = [];
+      set((state: FileUploadState) => ({
+        uploads: state.uploads.map((upload: FileUploadItem) => {
+          const source: QueuedUpload | undefined = uploadSources.get(upload.id);
+          const isInScope: boolean = batchId === undefined || upload.batchId === batchId;
+          if (upload.status !== FILE_UPLOAD_STATUS.failed || !isInScope || !source) {
+            return upload;
+          }
+          retried.push(source);
+          return { ...upload, status: FILE_UPLOAD_STATUS.queued, progress: 0, error: null };
+        }),
+      }));
+      queuedUploads.push(...retried);
+      runQueuedUploads();
+    },
+
     clearFinishedUploads: () => {
-      set((state: FileUploadState) => ({ uploads: state.uploads.filter(isFileUploadActive) }));
+      set((state: FileUploadState) => {
+        state.uploads.forEach((upload: FileUploadItem) => {
+          if (!isFileUploadActive(upload)) {
+            uploadSources.delete(upload.id);
+          }
+        });
+        return { uploads: state.uploads.filter(isFileUploadActive) };
+      });
     },
   },
 }));

@@ -14,6 +14,7 @@ import FileUploadActionBar from '@/components/file-upload/FileUploadActionBar';
 import FileUploadStatusList from '@/components/file-upload/FileUploadStatusList';
 import { FILE_UPLOAD_PHASE } from '@/components/file-upload/file-upload.constants';
 import FileUploadInProgressAlert from '@/components/file-upload/FileUploadInProgressAlert';
+import FileUploadRetryButton from '@/components/file-upload/FileUploadRetryButton';
 import FileUploadFailedMessage from '@/components/file-upload/FileUploadFailedMessage';
 import FileUploadRejectedMessage from '@/components/file-upload/FileUploadRejectedMessage';
 import FileUploadCompletedMessage from '@/components/file-upload/FileUploadCompletedMessage';
@@ -32,6 +33,7 @@ const REJECTED_MESSAGE_GRACE_MS = 1000;
  * - staging: the action bar with the Upload button shows up
  * - uploading: an info alert says the dialog can be closed, the drop zone is replaced by the progress of each file, the Upload button is disabled with a spinner
  * - completed: "Upload completed", the Upload button is gone
+ * - failed: a message and the retry button, which sends only the failed files again
  */
 export default function FileUploadDemoForm() {
   const { phase, stagedFiles, sessionUploads, hasStarted, isUploading, setStagedFiles, startUpload } = useFileUpload(FILE_UPLOAD_DEMO_SERVER);
@@ -118,7 +120,11 @@ export default function FileUploadDemoForm() {
           <FileUploadCompletedMessage />
         : null }
         { phase === FILE_UPLOAD_PHASE.failed ?
-          <FileUploadFailedMessage />
+          <FileUploadActionBar className="justify-between">
+            <FileUploadFailedMessage />
+            { /* optional: remove this element to take the retry feature out */ }
+            <FileUploadRetryButton />
+          </FileUploadActionBar>
         : null }
       </ColumnStack>
     </form>
