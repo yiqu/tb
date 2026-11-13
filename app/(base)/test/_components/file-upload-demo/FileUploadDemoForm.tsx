@@ -15,6 +15,7 @@ import FileUploadStatusList from '@/components/file-upload/FileUploadStatusList'
 import { FILE_UPLOAD_PHASE } from '@/components/file-upload/file-upload.constants';
 import FileUploadInProgressAlert from '@/components/file-upload/FileUploadInProgressAlert';
 import FileUploadRetryButton from '@/components/file-upload/FileUploadRetryButton';
+import FileUploadInProgressSection from '@/components/file-upload/FileUploadInProgressSection';
 import FileUploadFailedMessage from '@/components/file-upload/FileUploadFailedMessage';
 import FileUploadRejectedMessage from '@/components/file-upload/FileUploadRejectedMessage';
 import FileUploadCompletedMessage from '@/components/file-upload/FileUploadCompletedMessage';
@@ -29,6 +30,7 @@ const REJECTED_MESSAGE_GRACE_MS = 1000;
 /**
  * The body of the upload dialog, one block per phase:
  *
+ * - reopened while earlier uploads are still running: their progress on top, then a divider, then the form below
  * - empty / staging: package name, divider, drop zone (FilePond lists the staged files itself)
  * - staging: the action bar with the Upload button shows up
  * - uploading: an info alert says the dialog can be closed, the drop zone is replaced by the progress of each file, the Upload button is disabled with a spinner
@@ -36,7 +38,7 @@ const REJECTED_MESSAGE_GRACE_MS = 1000;
  * - failed: a message and the retry button, which sends only the failed files again
  */
 export default function FileUploadDemoForm() {
-  const { phase, stagedFiles, sessionUploads, hasStarted, isUploading, setStagedFiles, startUpload } = useFileUpload(FILE_UPLOAD_DEMO_SERVER);
+  const { phase, stagedFiles, sessionBatchId, sessionUploads, hasStarted, isUploading, setStagedFiles, startUpload } = useFileUpload(FILE_UPLOAD_DEMO_SERVER);
   const draftPackageName = useFileUploadDemoStore((state) => state.draftPackageName);
   const setDraftPackageName = useFileUploadDemoStore((state) => state.setDraftPackageName);
   const [rejectedFileNames, setRejectedFileNames] = useState<string[]>([]);
@@ -81,6 +83,9 @@ export default function FileUploadDemoForm() {
   return (
     <form onSubmit={ methods.handleSubmit(handleOnUpload) } noValidate>
       <ColumnStack className="w-full gap-y-4">
+        { /* uploads from an earlier press of Upload that are still running, same rows as the notifications popover */ }
+        <FileUploadInProgressSection excludeBatchId={ sessionBatchId } withDivider />
+
         <HFInputField
           control={ methods.control }
           name="packageName"

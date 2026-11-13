@@ -11,6 +11,8 @@ import type { FileUploadItem, FileUploadPhase, FileUploadMetadata, FileUploadSer
 interface UseFileUploadResult {
   phase: FileUploadPhase;
   stagedFiles: File[];
+  /** The batch started by the last press of Upload on this surface, null while nothing was started. */
+  sessionBatchId: string | null;
   /** The uploads started by the last press of Upload on this surface. */
   sessionUploads: FileUploadItem[];
   /** True once Upload was pressed, whether the uploads are still running or already done. */
@@ -41,6 +43,7 @@ export function useFileUpload(config: FileUploadServerConfig): UseFileUploadResu
   return {
     phase,
     stagedFiles,
+    sessionBatchId,
     sessionUploads,
     hasStarted: sessionBatchId !== null,
     isUploading: phase === FILE_UPLOAD_PHASE.uploading,

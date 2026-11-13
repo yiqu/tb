@@ -47,6 +47,15 @@ export function getFileUploadPhase(stagedFileCount: number, hasSession: boolean,
   return FILE_UPLOAD_PHASE.completed;
 }
 
+/**
+ * The uploads that are still going: every file of a batch that has at least one file queued or
+ * uploading. Files of such a batch that are already done are included, so the batch reads as a whole.
+ */
+export function getInProgressFileUploads(uploads: FileUploadItem[], excludeBatchId?: string | null): FileUploadItem[] {
+  const activeBatchIds = new Set<string>(uploads.filter(isFileUploadActive).map((upload: FileUploadItem) => upload.batchId));
+  return uploads.filter((upload: FileUploadItem) => activeBatchIds.has(upload.batchId) && upload.batchId !== excludeBatchId);
+}
+
 export function clampProgress(progress: number): number {
   if (Number.isNaN(progress)) {
     return 0;

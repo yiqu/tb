@@ -39,6 +39,9 @@ export const FILE_UPLOAD_DEFAULT_MAX_PARALLEL_UPLOADS = 2;
 export const FILE_UPLOAD_REMOVE_ICON_SVG =
   '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><g transform="translate(5 5) scale(0.6667)" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></g></svg>';
 
+/** Label of the section that lists the uploads still running when an upload surface is opened again. */
+export const FILE_UPLOAD_IN_PROGRESS_SECTION_TITLE = 'Currently uploading';
+
 /** Info alert shown on an upload surface while files are uploading. Edit the wording here. */
 export const FILE_UPLOAD_IN_PROGRESS_ALERT_TITLE = 'Your files are uploading';
 export const FILE_UPLOAD_IN_PROGRESS_ALERT_MESSAGE =
