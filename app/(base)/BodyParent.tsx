@@ -5,7 +5,7 @@
  * responsible for:
  *
  * 1. **Server-side settings resolution** - Fetches user preferences (vibe theme, font,
- *    compact mode, admin mode) in parallel on the server before rendering.
+ *    compact mode, admin mode, table borders) in parallel on the server before rendering.
  *
  * 2. **Theme flash prevention** - Injects preload hints and stylesheet links into `<head>`
  *    so the active vibe theme and custom font are applied before first paint.

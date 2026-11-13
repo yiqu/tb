@@ -20,6 +20,8 @@ export const SETTINGS_TABLE_HORIZONTAL_BORDERS_COOKIE_NAME = 'settings-table-hor
 export const SETTINGS_TABLE_VERTICAL_BORDERS_COOKIE_NAME = 'settings-table-vertical-borders';
 
 // Attributes set on <body> so every table (including ones in portals) can read the border settings via CSS.
+// Keep in sync: Tailwind needs literal class names, so the `in-data-[table-*-borders=false]` classes in
+// `components/ui/table.tsx` and `shared/table/table-border.utils.ts` repeat these names.
 export const TABLE_BORDER_DATA_ATTRIBUTES = {
   horizontal: 'data-table-h-borders',
   vertical: 'data-table-v-borders',

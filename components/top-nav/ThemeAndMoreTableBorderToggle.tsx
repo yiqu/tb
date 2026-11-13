@@ -42,7 +42,7 @@ export default function ThemeAndMoreTableBorderToggle({ direction }: Props) {
         <Icon className="size-4" />
         { TABLE_BORDER_TOGGLE_TEXT[direction] }
       </Typography>
-      <Switch checked={ checked } onCheckedChange={ onCheckedChange } />
+      <Switch aria-label={ TABLE_BORDER_TOGGLE_TEXT[direction] } checked={ checked } onCheckedChange={ onCheckedChange } />
     </DropdownMenuItem>
   );
 }
