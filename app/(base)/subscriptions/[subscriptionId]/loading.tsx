@@ -1,6 +1,4 @@
-import { CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import DisplayCard from '@/shared/components/DisplayCard';
 import Typography from '@/components/typography/Typography';
 
 export default function SubscriptionDetailsLoading() {
@@ -11,11 +9,11 @@ function LoadingMask() {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-9">
       <div className="flex w-full flex-col items-start justify-start gap-y-6">
-        <DisplayCard className="h-[535px] w-full">
-          <CardContent className="overflow-hidden">
-            <Skeleton className="h-200 w-full" />
-          </CardContent>
-        </DisplayCard>
+        <div className="flex w-full flex-col items-start justify-start gap-y-3">
+          <Skeleton className="h-21 w-full" />
+          <Skeleton className="h-31.5 w-full" />
+          <Skeleton className="h-80 w-full" />
+        </div>
 
         <div className="flex w-full flex-col items-start justify-start gap-y-6">
           <Typography variant="h3">Bill Dues</Typography>
