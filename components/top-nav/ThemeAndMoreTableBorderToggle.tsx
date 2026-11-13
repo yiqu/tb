@@ -30,8 +30,16 @@ export default function ThemeAndMoreTableBorderToggle({ direction }: Props) {
   const Icon = isHorizontal ? Rows3 : Columns3;
 
   return (
+    // The whole row is the control so Enter/Space (and clicks anywhere on the row) toggle it.
+    // The switch is only a visual indicator, kept out of the tab order and pointer events
+    // so a click on it doesn't toggle twice.
     <DropdownMenuItem
-      onSelect={ (event) => event.preventDefault() }
+      role="menuitemcheckbox"
+      aria-checked={ checked }
+      onSelect={ (event) => {
+        event.preventDefault();
+        onCheckedChange(!checked);
+      } }
       className="
         flex items-center justify-between gap-x-3
         hover:bg-transparent! hover:text-black!
@@ -42,7 +50,7 @@ export default function ThemeAndMoreTableBorderToggle({ direction }: Props) {
         <Icon className="size-4" />
         { TABLE_BORDER_TOGGLE_TEXT[direction] }
       </Typography>
-      <Switch aria-label={ TABLE_BORDER_TOGGLE_TEXT[direction] } checked={ checked } onCheckedChange={ onCheckedChange } />
+      <Switch checked={ checked } tabIndex={ -1 } aria-hidden="true" className="pointer-events-none" />
     </DropdownMenuItem>
   );
 }
