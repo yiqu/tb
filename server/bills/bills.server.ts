@@ -9,12 +9,12 @@ import uniqBy from 'lodash/uniqBy';
 import { Prisma } from '@prisma/client';
 import { cacheTag, updateTag } from 'next/cache';
 import { cacheLife, revalidatePath } from 'next/cache';
-import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
 import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
+import { FavoriteEntity } from '@/models/favorites/favorite.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
 import { AllBillsChartNode, DashboardYearBillsChartData } from '@/models/charts/chart.model';
 import { billAddableSchema, billEditableSchema, billSearchParamsSchema, AutoSelectedDefaultStatus } from '@/validators/bills/bill.schema';
@@ -46,11 +46,16 @@ import {
 } from '@/constants/constants';
 
 import {
+  BillDueDateFilter,
   getSortedBillDues,
-  getFilteredBillDuesByYear,
-  getFilteredBillDuesByMonth,
-  getFilteredBillDuesBySpecialYear,
-  getFilteredBillDuesBySpecialYearAndMonth,
+  getBillDueDbOrderBy,
+  getBillDuesTotalCost,
+  getDueDateRangeWhere,
+  getBillDueWithDatesInEst,
+  getBillDueDateFilterByYear,
+  getBillDueDateFilterByMonth,
+  getBillDueDateFilterFromParams,
+  getBillDueDateFilterBySpecialYear,
 } from './bills.server.utils';
 
 export async function revalidatePaginationForPage(pageId: string) {
@@ -191,11 +196,10 @@ export async function getEntireBills() {
     const billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
       include: {
         subscription: true,
-        favorites: true,
       },
     });
 
-    return billDues;
+    return await getBillDuesWithFavorites(billDues);
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getEntireBills(): ', JSON.stringify(error));
     throw new Error(`Error retrieving entire bill dues. Code: ${error.code}`);
@@ -207,8 +211,13 @@ export async function getEntireBillsChartData(): Promise<DashboardYearBillsChart
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
 
-  const billDues: BillDueWithSubscription[] = await getEntireBills();
-  let results: AllBillsChartNode[] = [];
+  // let the database sort by due date (indexed). Favorites are not needed for the chart.
+  const billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
+    include: {
+      subscription: true,
+    },
+    orderBy: [{ dueDate: 'asc' }, { id: 'asc' }],
+  });
 
   if (billDues.length === 0) {
     return {
@@ -221,11 +230,7 @@ export async function getEntireBillsChartData(): Promise<DashboardYearBillsChart
     (billDue: BillDueWithSubscription) => billDue.subscription,
   );
 
-  const sortedByDueDate = billDues.toSorted((a: BillDueWithSubscription, b: BillDueWithSubscription) => {
-    return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
-  });
-
-  const firstBillDue: BillDueWithSubscription = sortedByDueDate[0];
+  const firstBillDue: BillDueWithSubscription = billDues[0];
 
   // first bill due's month starting date, as the beginning point for the chart's first node
   const firstBillDueMonthStart = DateTime.fromMillis(Number.parseInt(firstBillDue.dueDate), {
@@ -233,76 +238,55 @@ export async function getEntireBillsChartData(): Promise<DashboardYearBillsChart
   }).startOf('month');
 
   // final chart node
-  const lastBillDue = sortedByDueDate[sortedByDueDate.length - 1];
+  const lastBillDue = billDues[billDues.length - 1];
+  const lastBillDueDate: number = Number.parseInt(lastBillDue.dueDate);
 
   // get the list of months' nodes for beginning to end
-  let allMonthStartEpochs: number[] = [];
-  let monthIterator = firstBillDueMonthStart.toMillis();
-  while (monthIterator < Number.parseInt(lastBillDue.dueDate)) {
-    const currentMonthLuxon = DateTime.fromMillis(monthIterator, {
-      zone: EST_TIME_ZONE,
-    }).startOf('month');
-
-    allMonthStartEpochs.push(currentMonthLuxon.toMillis());
-    const nextMonthLuxon = currentMonthLuxon.plus({ months: 1 });
-    monthIterator = nextMonthLuxon.toMillis();
-  }
-
-  results = allMonthStartEpochs.map((monthStart: number) => {
-    const monthLuxon = DateTime.fromMillis(monthStart, {
-      zone: EST_TIME_ZONE,
-    });
-    const endOfMonthEpoch = monthLuxon.endOf('month').toMillis();
-
-    return {
+  const results: AllBillsChartNode[] = [];
+  let monthLuxon = firstBillDueMonthStart;
+  while (monthLuxon.toMillis() < lastBillDueDate) {
+    results.push({
       billDues: [],
-      dateStart: monthStart,
-      dateEnd: endOfMonthEpoch,
+      dateStart: monthLuxon.toMillis(),
+      dateEnd: monthLuxon.endOf('month').toMillis(),
       displayName: `${monthLuxon.month}/${monthLuxon.year}`,
       month: monthLuxon.month,
       year: monthLuxon.year,
       totalCost: 0,
-    };
-  });
+    });
+    monthLuxon = monthLuxon.plus({ months: 1 }).startOf('month');
+  }
 
-  // now append the bills for each month node
+  // now append the bills for each month node.
+  // both the bills and the month nodes are sorted by date, so a single pass with a moving pointer is enough
+  let monthNodeIndex: number = 0;
   for (const bill of billDues) {
     const billDueDate: number = Number.parseInt(bill.dueDate);
-    const monthNodeIndex: number = results.findIndex((monthNode: AllBillsChartNode) => {
-      return billDueDate >= monthNode.dateStart && billDueDate <= monthNode.dateEnd;
-    });
 
-    if (monthNodeIndex !== -1) {
-      const resultAtNode: AllBillsChartNode | undefined = results[monthNodeIndex];
+    while (monthNodeIndex < results.length && billDueDate > results[monthNodeIndex].dateEnd) {
+      monthNodeIndex++;
+    }
 
-      const billDueCost: number = bill.cost ?? bill.subscription.cost ?? 0;
+    const resultAtNode: AllBillsChartNode | undefined = results[monthNodeIndex];
+    if (!resultAtNode || billDueDate < resultAtNode.dateStart) {
+      continue;
+    }
 
-      if (resultAtNode) {
-        resultAtNode.billDues.push(bill);
-        resultAtNode.totalCost = resultAtNode.totalCost + billDueCost;
+    const billDueCost: number = bill.cost ?? bill.subscription.cost ?? 0;
 
-        // if subscription name property already exist
-        const subscriptionResultAtNode: any = resultAtNode[bill.subscription.name];
-        if (subscriptionResultAtNode) {
-          subscriptionResultAtNode.billDues.push(bill);
-          subscriptionResultAtNode.totalCost = subscriptionResultAtNode.totalCost + billDueCost;
-        } else {
-          resultAtNode[bill.subscription.name] = {
-            billDues: [bill],
-            totalCost: billDueCost,
-          };
-        }
-      } else {
-        results[monthNodeIndex] = {
-          ...results[monthNodeIndex],
-          billDues: [bill],
-          totalCost: billDueCost,
-          [bill.subscription.name]: {
-            billDues: [bill],
-            totalCost: billDueCost,
-          },
-        };
-      }
+    resultAtNode.billDues.push(bill);
+    resultAtNode.totalCost = resultAtNode.totalCost + billDueCost;
+
+    // if subscription name property already exist
+    const subscriptionResultAtNode: any = resultAtNode[bill.subscription.name];
+    if (subscriptionResultAtNode) {
+      subscriptionResultAtNode.billDues.push(bill);
+      subscriptionResultAtNode.totalCost = subscriptionResultAtNode.totalCost + billDueCost;
+    } else {
+      resultAtNode[bill.subscription.name] = {
+        billDues: [bill],
+        totalCost: billDueCost,
+      };
     }
   }
 
@@ -432,138 +416,99 @@ export async function getAllBills(
     }
   }
 
+  // Due date related filters
+  const yearParams: string | undefined = searchParams?.year;
+  const monthParams: string | undefined = searchParams?.month;
+
+  let startDateEpoch: number = 0;
+  let endDateEpoch: number = 0;
+
+  // the due date filters are applied one after another (same order as before): upcoming first, then year / month
+  const dueDateFilters: BillDueDateFilter[] = [];
+  if (autoSelectedDefaultStatus === 'future-include-today') {
+    dueDateFilters.push(getBillDueDateFilterBySpecialYear('future-include-today'));
+  }
+  const paramsDueDateFilter: BillDueDateFilter | null = getBillDueDateFilterFromParams(yearParams, monthParams);
+  if (paramsDueDateFilter) {
+    dueDateFilters.push(paramsDueDateFilter);
+  }
+
+  for (const dueDateFilter of dueDateFilters) {
+    if (dueDateFilter.where) {
+      whereClause.AND.push(dueDateFilter.where);
+    }
+    startDateEpoch = dueDateFilter.startDateEpoch;
+    endDateEpoch = dueDateFilter.endDateEpoch;
+  }
+
+  const pageSize: number = paginationData?.pageSize ?? DEFAULT_PAGE_SIZE;
+  // page starts at 1
+  const pageNumber: number =
+    searchParams?.page && isNumeric(searchParams?.page) && Number.parseInt(`${searchParams?.page}`) > 0 ?
+      Number.parseInt(`${searchParams?.page}`)
+    : 1;
+  const startIndex: number = (pageNumber - 1) * pageSize;
+
+  const dbOrderBy = getBillDueDbOrderBy(sortData);
+  const canFilterInDb: boolean = dueDateFilters.every((dueDateFilter) => dueDateFilter.isExactInDb);
+
   try {
-    let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
-      include: {
-        subscription: true,
-        favorites: true,
-      },
-      where: whereClause,
-    });
+    let billDuesToReturn: BillDueWithSubscription[] = [];
+    let totalBillsCount: number = 0;
 
-    // Due date related filters
-    const yearParams: string | undefined = searchParams?.year;
-    const monthParams: string | undefined = searchParams?.month;
+    if (dbOrderBy && canFilterInDb) {
+      // Fast path: the database filters, sorts and paginates. Only one page of bills is loaded.
+      const [count, pageOfBillDues] = await Promise.all([
+        prisma.billDue.count({ where: whereClause }),
+        prisma.billDue.findMany({
+          include: {
+            subscription: true,
+          },
+          where: whereClause,
+          orderBy: dbOrderBy,
+          skip: startIndex,
+          take: pageSize,
+        }),
+      ]);
 
-    let startDateEpoch: number = 0;
-    let endDateEpoch: number = 0;
+      totalBillsCount = count;
+      billDuesToReturn = pageOfBillDues;
+    } else {
+      // The sort depends on the subscription (name, frequency, cost fallback), or the due date filter needs a
+      // check the database can not do. The database still narrows the bills down as much as it can.
+      let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
+        include: {
+          subscription: true,
+        },
+        where: whereClause,
+      });
 
-    if (autoSelectedDefaultStatus === 'future-include-today') {
-      const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYear(billDues, 'future-include-today');
-      billDues = filteredBillDues;
-      startDateEpoch = startDateEpochLocal;
-      endDateEpoch = endDateEpochLocal;
+      for (const dueDateFilter of dueDateFilters) {
+        [billDues] = dueDateFilter.filterInMemory(billDues);
+      }
+
+      // sort the bill dues
+      if (sortData) {
+        billDues = getSortedBillDues(billDues, sortData);
+      }
+
+      totalBillsCount = billDues.length;
+      billDuesToReturn = billDues.slice(startIndex, startIndex + pageSize);
     }
 
-    if ((yearParams && yearParams.trim() !== '') || (monthParams && monthParams.trim() !== '')) {
-      const doesMonthExist: boolean = !!(monthParams && monthParams.trim() !== '');
-      const doesYearExist: boolean = !!(yearParams && yearParams.trim() !== '');
-
-      const isYearInt: boolean = isNumeric(yearParams);
-
-      // both month and year are numbers
-      if (isYearInt && doesMonthExist && doesYearExist && monthParams && yearParams) {
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(billDues, monthParams, yearParams);
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-      // only year is a number
-      else if (isYearInt && doesYearExist && yearParams) {
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByYear(billDues, yearParams);
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-      // only month is selected, auto default year to current year
-      else if (!doesYearExist && doesMonthExist && monthParams) {
-        const currentYear: number = DateTime.now().setZone(EST_TIME_ZONE).year;
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(
-          billDues,
-          monthParams,
-          currentYear.toString(),
-        );
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-      // if the year is special scenario
-      else if (doesYearExist && !isYearInt && !doesMonthExist) {
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYear(billDues, yearParams ?? '');
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-      // if the year is special and month is selected
-      else if (doesYearExist && !isYearInt && doesMonthExist) {
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYearAndMonth(
-          billDues,
-          yearParams ?? '',
-          monthParams ?? '',
-        );
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-    }
-
-    // sort the bill dues
-    if (sortData) {
-      billDues = getSortedBillDues(billDues, sortData);
-    }
-
-    const pageSize: number = paginationData?.pageSize ?? DEFAULT_PAGE_SIZE;
-    const totalPages: number = Math.ceil(billDues.length / pageSize);
-    // page starts at 1
-    const pageNumber: number =
-      searchParams?.page && isNumeric(searchParams?.page) && Number.parseInt(`${searchParams?.page}`) > 0 ?
-        Number.parseInt(`${searchParams?.page}`)
-      : 1;
-
-    const startIndex: number = (pageNumber - 1) * pageSize;
+    const totalPages: number = Math.ceil(totalBillsCount / pageSize);
     // if we are on the last page, the end index should be the total number of bills
-    const endIndex: number = pageNumber === totalPages ? billDues.length : startIndex + pageSize;
-    const billDuesToReturn: BillDueWithSubscription[] = billDues.slice(startIndex, endIndex);
+    const endIndex: number = pageNumber === totalPages ? totalBillsCount : startIndex + pageSize;
 
-    const billDuesToReturnWithDateInEST: BillDueWithSubscription[] = billDuesToReturn.map((billDue) => {
-      const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate), {
-        zone: EST_TIME_ZONE,
-      }).toLocaleString(DateTime.DATETIME_SHORT);
-      //const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toFormat('MM/dd/yyyy');
-
-      const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
-        .setZone(EST_TIME_ZONE)
-        .toJSDate();
-      const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
-        .setZone(EST_TIME_ZONE)
-        .toLocaleString(DateTime.DATETIME_SHORT);
-      //.toFormat('MM/dd/yyyy');
-      const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
-
-      const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
-        .setZone(EST_TIME_ZONE)
-        .toJSDate();
-      const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
-        .setZone(EST_TIME_ZONE)
-        .toLocaleString(DateTime.DATETIME_SHORT);
-      // .toFormat('MM/dd/yyyy');
-      const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
-
-      return {
-        ...billDue,
-        dueDateInEst: dueDateInEst,
-        dateAddedInEst: dateAddedInEst,
-        dateAddedInEstRelative: dateAddedRelativeDate,
-        updatedAtInEst: updatedAtInEst,
-        updatedAtInEstRelative: updatedAtRelativeDate,
-      };
-    });
+    // favorites are only needed for the bills on the page
+    const billDuesToReturnWithFavorites: BillDueWithSubscription[] = await getBillDuesWithFavorites(billDuesToReturn);
+    const billDuesToReturnWithDateInEST: BillDueWithSubscription[] = billDuesToReturnWithFavorites.map(getBillDueWithDatesInEst);
 
     return {
       billDues: billDuesToReturnWithDateInEST,
       sortData,
       totalPages,
-      totalBillsCount: billDues.length,
+      totalBillsCount,
       startIndex,
       endIndex,
       yearParams,
@@ -592,72 +537,14 @@ async function getAllBillsByMonthAndYear(
   cacheTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR, `${CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR}-${yearParams}-${monthParams}`);
 
   try {
-    let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
-      include: {
-        subscription: true,
-        favorites: true,
-      },
-    });
+    // only load the bills within the requested time range
+    const dueDateFilter: BillDueDateFilter | null = getBillDueDateFilterFromParams(yearParams, monthParams);
 
-    let startDateEpoch: number = 0;
-    let endDateEpoch: number = 0;
+    const billDues: BillDueWithSubscription[] = await getBillDuesWithinDateFilter(dueDateFilter);
+    const startDateEpoch: number = dueDateFilter?.startDateEpoch ?? 0;
+    const endDateEpoch: number = dueDateFilter?.endDateEpoch ?? 0;
 
-    if ((yearParams && yearParams.trim() !== '') || (monthParams && monthParams.trim() !== '')) {
-      const doesMonthExist: boolean = !!(monthParams && monthParams.trim() !== '');
-      const doesYearExist: boolean = !!(yearParams && yearParams.trim() !== '');
-
-      const isYearInt: boolean = isNumeric(yearParams);
-
-      // both month and year are numbers
-      if (isYearInt && doesMonthExist && doesYearExist && monthParams && yearParams) {
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(billDues, monthParams, yearParams);
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-      // only year is a number
-      else if (isYearInt && doesYearExist && yearParams) {
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByYear(billDues, yearParams);
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-      // only month is selected, auto default year to current year
-      else if (!doesYearExist && doesMonthExist && monthParams) {
-        const currentYear: number = DateTime.now().setZone(EST_TIME_ZONE).year;
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(
-          billDues,
-          monthParams,
-          currentYear.toString(),
-        );
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-      // if the year is special scenario
-      else if (doesYearExist && !isYearInt && !doesMonthExist) {
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYear(billDues, yearParams ?? '');
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-      // if the year is special and month is selected
-      else if (doesYearExist && !isYearInt && doesMonthExist) {
-        const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesBySpecialYearAndMonth(
-          billDues,
-          yearParams ?? '',
-          monthParams ?? '',
-        );
-        billDues = filteredBillDues;
-        startDateEpoch = startDateEpochLocal;
-        endDateEpoch = endDateEpochLocal;
-      }
-    }
-
-    const totalBillsCost: number = billDues.reduce(
-      (acc, billDue) => acc + Number.parseFloat(`${billDue.cost ?? billDue.subscription.cost ?? 0}`),
-      0,
-    );
+    const totalBillsCost: number = getBillDuesTotalCost(billDues);
 
     return {
       billDues: billDues,
@@ -716,31 +603,12 @@ async function getAllBillsByMonthAndYearParams(
   cacheTag(CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR, `${CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR}-${monthYearTag}`);
 
   try {
-    let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
-      include: {
-        subscription: true,
-        favorites: true,
-      },
-    });
+    // only load the bills of the selected month
+    const dueDateFilter: BillDueDateFilter = getBillDueDateFilterByMonth(currentMonth.toString(), currentYear.toString());
+    const billDues: BillDueWithSubscription[] = await getBillDuesWithinDateFilter(dueDateFilter);
+    const { startDateEpoch, endDateEpoch } = dueDateFilter;
 
-    let startDateEpoch: number = 0;
-    let endDateEpoch: number = 0;
-
-    // both month and year are numbers
-    const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByMonth(
-      billDues,
-      currentMonth.toString(),
-      currentYear.toString(),
-    );
-
-    billDues = filteredBillDues;
-    startDateEpoch = startDateEpochLocal;
-    endDateEpoch = endDateEpochLocal;
-
-    const totalBillsCost: number = billDues.reduce(
-      (acc, billDue) => acc + Number.parseFloat(`${billDue.cost ?? billDue.subscription.cost ?? 0}`),
-      0,
-    );
+    const totalBillsCost: number = getBillDuesTotalCost(billDues);
 
     return {
       billDues: billDues,
@@ -789,29 +657,14 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
   cacheTag(CACHE_TAG_BILL_DUES_BY_YEAR, `${CACHE_TAG_BILL_DUES_BY_YEAR}-${currentYear}`);
 
   try {
-    let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
-      include: {
-        subscription: true,
-        favorites: true,
-      },
-    });
+    // only load the bills of the selected year
+    const dueDateFilter: BillDueDateFilter = getBillDueDateFilterByYear(currentYear.toString());
+    const billDues: BillDueWithSubscription[] = await getBillDuesWithinDateFilter(dueDateFilter);
+    const { startDateEpoch, endDateEpoch } = dueDateFilter;
 
-    let startDateEpoch: number = 0;
-    let endDateEpoch: number = 0;
+    const uniqueBySubscription: BillDueWithSubscription[] = uniqBy(billDues, 'subscription.id');
 
-    // both month and year are numbers
-    const [filteredBillDues, startDateEpochLocal, endDateEpochLocal] = getFilteredBillDuesByYear(billDues, currentYear.toString());
-
-    billDues = filteredBillDues;
-    startDateEpoch = startDateEpochLocal;
-    endDateEpoch = endDateEpochLocal;
-
-    const uniqueBySubscription: BillDueWithSubscription[] = uniqBy(filteredBillDues, 'subscription.id');
-
-    const totalBillsCost: number = billDues.reduce(
-      (acc, billDue) => acc + Number.parseFloat(`${billDue.cost ?? billDue.subscription.cost ?? 0}`),
-      0,
-    );
+    const totalBillsCost: number = getBillDuesTotalCost(billDues);
 
     return {
       billDues: billDues,
@@ -830,19 +683,72 @@ async function getAllBillsByYearFromParams(params: string | undefined, yearOffse
   }
 }
 
+/**
+ * Loads the bills (with subscription and favorites) that match a due date filter.
+ * The database does the filtering whenever the filter can be expressed as a query.
+ */
+async function getBillDuesWithinDateFilter(dueDateFilter: BillDueDateFilter | null): Promise<BillDueWithSubscription[]> {
+  let billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
+    include: {
+      subscription: true,
+    },
+    where: dueDateFilter?.where ?? undefined,
+  });
+
+  if (dueDateFilter && !dueDateFilter.isExactInDb) {
+    [billDues] = dueDateFilter.filterInMemory(billDues);
+  }
+
+  return getBillDuesWithFavorites(billDues);
+}
+
+// above this many bills it is cheaper to read every bill favorite than to send one condition per bill
+const MAX_BILL_DUE_IDS_PER_FAVORITES_QUERY = 100;
+
+/**
+ * Attaches the favorites to a list of bill dues with one query.
+ *
+ * `include: { favorites: true }` on a list makes Prisma send one "billDueId equals ..." condition per bill,
+ * which gets very slow as the list grows. Favorites are few, so for long lists all bill favorites are read instead.
+ */
+async function getBillDuesWithFavorites(billDues: BillDueWithSubscription[]): Promise<BillDueWithSubscription[]> {
+  if (billDues.length === 0) {
+    return billDues;
+  }
+
+  const favorites: FavoriteEntity[] = await prisma.favoriteEntity.findMany({
+    where:
+      billDues.length <= MAX_BILL_DUE_IDS_PER_FAVORITES_QUERY ?
+        { billDueId: { in: billDues.map((billDue: BillDueWithSubscription) => billDue.id) } }
+      : { entityType: 'BILL_DUE' },
+  });
+
+  const favoritesByBillDueId = new Map<string, FavoriteEntity[]>();
+  for (const favorite of favorites) {
+    if (!favorite.billDueId) {
+      continue;
+    }
+    const favoritesOfBillDue: FavoriteEntity[] | undefined = favoritesByBillDueId.get(favorite.billDueId);
+    if (favoritesOfBillDue) {
+      favoritesOfBillDue.push(favorite);
+    } else {
+      favoritesByBillDueId.set(favorite.billDueId, [favorite]);
+    }
+  }
+
+  return billDues.map((billDue: BillDueWithSubscription) => ({
+    ...billDue,
+    favorites: favoritesByBillDueId.get(billDue.id) ?? [],
+  }));
+}
+
 export async function getAllBillsCount(): Promise<number> {
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_BILL_DUES_ALL);
 
   try {
-    const billDues: BillDueWithSubscription[] = await prisma.billDue.findMany({
-      include: {
-        subscription: true,
-      },
-    });
-
-    return billDues.length;
+    return await prisma.billDue.count();
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllBillsCount(): ', JSON.stringify(error));
     throw new Error(`Error retrieving bill dues count. Code: ${error.code}`);
@@ -855,8 +761,6 @@ export async function getCurrentMonthBillsCount(month: string, year: string): Pr
   cacheTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT);
 
   try {
-    const allBillsDue = await prisma.billDue.findMany();
-
     const startDateLuxon = DateTime.fromObject(
       { month: Number.parseInt(month), year: Number.parseInt(year) },
       {
@@ -864,13 +768,21 @@ export async function getCurrentMonthBillsCount(month: string, year: string): Pr
       },
     ).startOf('month');
     const endDateLuxon = startDateLuxon.endOf('month');
+    const startDateEpoch: number = startDateLuxon.toMillis();
+    const endDateEpoch: number = endDateLuxon.toMillis();
 
-    const filtered = allBillsDue.filter((billDue) => {
+    const dueDateWhere = getDueDateRangeWhere(startDateEpoch, endDateEpoch);
+    if (dueDateWhere) {
+      return await prisma.billDue.count({ where: dueDateWhere });
+    }
+
+    // the range can not be compared in the database (dates before 2001), count in memory
+    const allBillsDue = await prisma.billDue.findMany({ select: { dueDate: true } });
+
+    return allBillsDue.filter((billDue) => {
       const dueDateNumber = Number.parseInt(billDue.dueDate);
-      return dueDateNumber >= startDateLuxon.toMillis() && dueDateNumber <= endDateLuxon.toMillis();
-    });
-
-    return filtered.length;
+      return dueDateNumber >= startDateEpoch && dueDateNumber <= endDateEpoch;
+    }).length;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getCurrentMonthBillsCount(): ', JSON.stringify(error));
     throw new Error(`Error retrieving current month bill dues count. Code: ${error.code}`);
@@ -893,19 +805,15 @@ async function getBillsForCurrentMonth(): Promise<BillsForCurrentMonth> {
   ).monthLong;
 
   try {
-    const allBillsDue: BillDueWithSubscription[] = await prisma.billDue.findMany({
-      include: {
-        favorites: true,
-        subscription: true,
-      },
-    });
-
-    const currentMonthBillsDue = allBillsDue.filter((billDue: BillDueWithSubscription) => {
-      const billDueDateInMillis = Number.parseInt(billDue.dueDate);
-      const currentMonthStartEpoch = currentMonthStartLuxon.toMillis();
-      const endOfMonthEpoch = endOfMonthLuxon.toMillis();
-      return billDueDateInMillis >= currentMonthStartEpoch && billDueDateInMillis <= endOfMonthEpoch;
-    });
+    // only load the bills of the current month
+    const currentMonthBillsDue: BillDueWithSubscription[] = await getBillDuesWithFavorites(
+      await prisma.billDue.findMany({
+        include: {
+          subscription: true,
+        },
+        where: getDueDateRangeWhere(currentMonthStartLuxon.toMillis(), endOfMonthLuxon.toMillis()) ?? undefined,
+      }),
+    );
 
     return {
       bills: currentMonthBillsDue,
@@ -1052,14 +960,27 @@ export async function getOutstandingBillsCountForPriorMonths(): Promise<number> 
 
   const currentDateLuxon = DateTime.now().setZone(EST_TIME_ZONE);
   const endOfMonthLuxon = currentDateLuxon.endOf('month');
-  const allBillsDue = await prisma.billDue.findMany();
+  return getOutstandingBillsCount(null, endOfMonthLuxon.toMillis());
+}
 
-  const outstanding = allBillsDue.filter((bill) => {
+/**
+ * Counts the bills that still need a payment or a reimbursement within an inclusive due date range.
+ */
+async function getOutstandingBillsCount(startDateEpoch: number | null, endDateEpoch: number): Promise<number> {
+  const outstandingWhere: Prisma.BillDueWhereInput = { OR: [{ paid: false }, { reimbursed: false }] };
+  const dueDateWhere = getDueDateRangeWhere(startDateEpoch, endDateEpoch);
+
+  if (dueDateWhere) {
+    return prisma.billDue.count({ where: { AND: [dueDateWhere, outstandingWhere] } });
+  }
+
+  // the range can not be compared in the database (dates before 2001), count in memory
+  const outstandingBillsDue = await prisma.billDue.findMany({ where: outstandingWhere, select: { dueDate: true } });
+
+  return outstandingBillsDue.filter((bill) => {
     const dueDate = Number.parseInt(bill.dueDate);
-    return dueDate <= endOfMonthLuxon.toMillis() && (!bill.reimbursed || !bill.paid);
-  });
-
-  return outstanding.length;
+    return dueDate <= endDateEpoch && (startDateEpoch === null || dueDate >= startDateEpoch);
+  }).length;
 }
 
 export async function getOutstandingBillsCountForMonthAndYear(selectedMonthYear: string | undefined): Promise<number> {
@@ -1089,14 +1010,7 @@ export async function getOutstandingBillsCountForMonthAndYear(selectedMonthYear:
     endOfMonthLuxon = monthLuxon.endOf('month');
   }
 
-  const allBillsDue = await prisma.billDue.findMany();
-
-  const outstanding = allBillsDue.filter((bill) => {
-    const dueDate = Number.parseInt(bill.dueDate);
-    return dueDate <= endOfMonthLuxon.toMillis() && dueDate >= startOfMonthLuxon.toMillis() && (!bill.reimbursed || !bill.paid);
-  });
-
-  return outstanding.length;
+  return getOutstandingBillsCount(startOfMonthLuxon.toMillis(), endOfMonthLuxon.toMillis());
 }
 
 export async function updateIsBillDuePaid(billDueId: string, isPaid: boolean, subscriptionId: string): Promise<BillDue> {
