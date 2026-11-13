@@ -1,6 +1,6 @@
 import type { FileUploadServerConfig } from '@/components/file-upload/file-upload.models';
 
-/** The only extensions the example accepts. */
+/** The only extensions the example accepts. An empty array allows every file type. */
 export const FILE_UPLOAD_DEMO_ALLOWED_EXTENSIONS: string[] = ['.txt'];
 
 /** How many chunks every file of the example is cut into, so even a tiny text file reports progress step by step. */
