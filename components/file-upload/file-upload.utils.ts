@@ -53,3 +53,25 @@ export function clampProgress(progress: number): number {
   }
   return Math.min(100, Math.max(0, Math.round(progress)));
 }
+
+export interface FileUploadSummary {
+  /** Number of files. */
+  total: number;
+  /** Number of files that reached the server. */
+  completed: number;
+  /** Average progress of the files, 0 to 100. With one file this is that file's progress. */
+  percent: number;
+}
+
+/** Overall progress by number of files: every file weighs the same, whatever its size. */
+export function getFileUploadSummary(uploads: FileUploadItem[]): FileUploadSummary {
+  const total: number = uploads.length;
+  const completed: number = uploads.filter((upload: FileUploadItem) => upload.status === FILE_UPLOAD_STATUS.completed).length;
+  const progressSum: number = uploads.reduce((sum: number, upload: FileUploadItem) => sum + upload.progress, 0);
+  return { total, completed, percent: total === 0 ? 0 : clampProgress(progressSum / total) };
+}
+
+/** `45% (1/3)` */
+export function formatFileUploadSummary(summary: FileUploadSummary): string {
+  return `${summary.percent}% (${summary.completed}/${summary.total})`;
+}
