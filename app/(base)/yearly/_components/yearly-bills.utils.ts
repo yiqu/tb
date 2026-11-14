@@ -16,7 +16,9 @@ export async function getYearlyBillsSelection(searchParams: Record<string, strin
   await connection();
 
   const now: DateTime = DateTime.now().setZone(EST_TIME_ZONE);
-  const parsed = yearlyBillsSearchParamsSchema.safeParse(searchParams);
+  // a repeated ?year= uses its first value, matching how nuqs reads it on the client
+  const rawYear: string | string[] | undefined = searchParams.year;
+  const parsed = yearlyBillsSearchParamsSchema.safeParse({ year: Array.isArray(rawYear) ? rawYear[0] : rawYear });
   const year: number | undefined = parsed.success ? parsed.data.year : undefined;
 
   return {
