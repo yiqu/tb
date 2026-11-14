@@ -51,7 +51,7 @@ docker exec tb-mongo mongosh --quiet --eval 'rs.initiate({_id:"rs0",members:[{_i
 # DATABASE_URL="mongodb://localhost:27017/tb?replicaSet=rs0&directConnection=true"
 
 npx prisma db push
-npm run seed                 # ~30 subscriptions, ~600 bills (needs Node 22.6 or newer)
+npm run seed                 # ~30 subscriptions, ~600 bills (needs Node 22.9 or newer)
 npm run seed -- --scale=40   # 40x the volume, for checking query speed and indexes
 ```
 

@@ -41,7 +41,7 @@ export async function getYearlyBillsYearOptions(): Promise<YearlyBillsYearOption
     // dueDate is an epoch-millis string, which orders numerically only while every value has 13 digits (2002 on)
     const thirteenDigitRange: Prisma.StringFilter<'BillDue'> = {
       gte: `${DateTime.fromObject({ year: 2002, month: 1, day: 1 }, { zone: EST_TIME_ZONE }).toMillis()}`,
-      lt: '10000000000000',
+      lt: `${DateTime.fromObject({ year: 2201, month: 1, day: 1 }, { zone: EST_TIME_ZONE }).toMillis()}`,
     };
     const [first, last] = await Promise.all([
       prisma.billDue.findFirst({ select: { dueDate: true }, where: { dueDate: thirteenDigitRange }, orderBy: { dueDate: 'asc' } }),
