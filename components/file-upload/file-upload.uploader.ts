@@ -24,7 +24,7 @@ import type { FileUploadMetadata, FileUploadServerConfig } from './file-upload.m
  *    - `PATCH /api/filepond-mock?patch=<id>` once per chunk
  *      body is the raw chunk, headers `Content-Type: application/offset+octet-stream`,
  *      `Upload-Offset: <offset of the chunk>`, `Upload-Length: <file size>`, `Upload-Name: <file name>`.
- *    - `HEAD /api/filepond-mock?patch=<id>` (resume, not used here yet)
+ *    - `HEAD /api/filepond-mock?patch=<id>` (resume, not used here yet: a failed upload starts over)
  *      responds with the header `Upload-Offset: <next expected offset>`.
  *
  * 3. Revert, removes an uploaded file again
@@ -94,10 +94,11 @@ function getChunkSize(file: File, config: FileUploadServerConfig): number {
 
 /**
  * FilePond sends the raw file name. A header value has to be ISO-8859-1 though, so a name with
- * characters outside of it (which FilePond itself cannot send) is percent-encoded instead.
+ * characters outside of it (which FilePond itself cannot send) is percent-encoded instead. A name
+ * containing `%` is encoded too, so the server can decode any name with `%` unambiguously.
  */
 function getUploadNameHeader(fileName: string): string {
-  const isHeaderSafe: boolean = /^[\x20-\x7E\xA0-\xFF]*$/.test(fileName);
+  const isHeaderSafe: boolean = /^[\x20-\x7E\xA0-\xFF]*$/.test(fileName) && !fileName.includes('%');
   return isHeaderSafe ? fileName : encodeURIComponent(fileName);
 }
 

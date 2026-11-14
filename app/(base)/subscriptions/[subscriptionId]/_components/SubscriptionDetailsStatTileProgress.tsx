@@ -26,7 +26,7 @@ export default function SubscriptionDetailsStatTileProgress({ period }: { period
       <Progress
         value={ (period.completedCount / period.count) * 100 }
         className="h-1.5"
-        aria-label={ `${period.completedCount} of ${period.count} bills completed` }
+        aria-label={ `${period.completedCount} of ${period.count} ${period.count === 1 ? 'bill' : 'bills'} completed` }
       />
     </ColumnStack>
   );

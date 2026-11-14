@@ -22,7 +22,7 @@ export default function YearlyBillsYearSelect({ years, selectedYear }: YearlyBil
     }),
   );
 
-  // validate the URL year with the same schema as the server, so the trigger never shows a year the page did not load
+  // validate the URL year with the same schema as the server, so an invalid year param is ignored
   const parsedParam = yearlyBillsSearchParamsSchema.safeParse({ year: yearParam ?? undefined });
   const validParamYear: number | undefined = parsedParam.success ? parsedParam.data.year : undefined;
 

@@ -11,7 +11,7 @@ export function normalizeFileExtension(extension: string): string {
   return trimmed.startsWith('.') ? trimmed : `.${trimmed}`;
 }
 
-/** The extension of a file name including the dot and lower cased, `''` when there is none. */
+/** The last extension of a file name including the dot and lower cased, `''` when there is none. Multi-part extensions such as `.tar.gz` are not supported. */
 export function getFileExtension(fileName: string): string {
   const lastDotIndex: number = fileName.lastIndexOf('.');
   if (lastDotIndex <= 0 || lastDotIndex === fileName.length - 1) {
@@ -26,7 +26,7 @@ export function isFileExtensionAllowed(fileName: string, allowedExtensions?: rea
     return true;
   }
   const extension: string = getFileExtension(fileName);
-  return allowedExtensions.some((allowed: string) => normalizeFileExtension(allowed) === extension);
+  return allowedExtensions.map(normalizeFileExtension).some((allowed: string) => allowed !== '' && allowed === extension);
 }
 
 export function isFileUploadActive(upload: FileUploadItem): boolean {

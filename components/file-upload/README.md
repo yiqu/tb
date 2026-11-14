@@ -38,8 +38,8 @@ a chunked transfer", absent means "here is the whole file". When the last chunk 
 assembles the file, and the transfer id is from then on the id of the file.
 
 `Upload-Name` is the raw file name, like FilePond sends it. If the name has characters that cannot
-go in a header (outside ISO-8859-1) it is percent-encoded instead, so decode it on the server if it
-contains `%`.
+go in a header (outside ISO-8859-1), or contains `%` itself, it is percent-encoded instead, so decode
+it on the server if it contains `%`.
 
 ### Optional: revert
 

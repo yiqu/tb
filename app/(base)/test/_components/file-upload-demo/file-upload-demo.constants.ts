@@ -3,7 +3,7 @@ import type { FileUploadServerConfig } from '@/components/file-upload/file-uploa
 /** The only extensions the example accepts. An empty array allows every file type. */
 export const FILE_UPLOAD_DEMO_ALLOWED_EXTENSIONS: string[] = ['.txt'];
 
-/** How many chunks every file of the example is cut into, so even a tiny text file reports progress step by step. */
+/** At most how many chunks a file of the example is cut into (small files get fewer, each chunk is at least a byte), so even a tiny text file reports progress step by step. */
 const FILE_UPLOAD_DEMO_CHUNK_COUNT = 25;
 
 /**

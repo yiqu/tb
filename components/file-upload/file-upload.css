@@ -79,10 +79,13 @@
   background-color: transparent;
 }
 
-.file-upload-dropzone .filepond--file-action-button:hover,
-.file-upload-dropzone .filepond--file-action-button:focus {
+.file-upload-dropzone .filepond--file-action-button:hover {
   color: var(--destructive);
   box-shadow: none;
+}
+
+.file-upload-dropzone .filepond--file-action-button:focus-visible {
+  color: var(--destructive);
 }
 
 .file-upload-dropzone .filepond--drip-blob {

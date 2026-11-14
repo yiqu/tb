@@ -83,6 +83,7 @@ const PAGE_IDS: string[] = [
   'subscriptions',
   'outstanding',
   'upcoming',
+  'yearly',
   'add-new-bill-due-recently-added',
   'subscription-details-bills-bills-table',
 ];
@@ -187,7 +188,7 @@ async function main(): Promise<void> {
     }),
   });
 
-  const subscriptions = await prisma.subscription.findMany({ select: { id: true, name: true, cost: true, billCycleDuration: true } });
+  const subscriptions = await prisma.subscription.findMany({ select: { id: true, name: true, cost: true, billCycleDuration: true }, orderBy: { name: 'asc' } });
   const subscriptionByName = new Map(subscriptions.map((s) => [s.name, s]));
 
   // --------------------------- bill dues ---------------------------

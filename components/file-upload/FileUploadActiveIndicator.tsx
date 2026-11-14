@@ -18,8 +18,9 @@ export default function FileUploadActiveIndicator({ className }: FileUploadActiv
   return (
     <span
       role="status"
-      aria-label="Uploads in progress"
       className={ cn('absolute -top-1 -right-1 size-2.5 animate-pulse rounded-full bg-yellow-500 ring-2 ring-background dark:bg-yellow-400', className) }
-    />
+    >
+      <span className="sr-only">Uploads in progress</span>
+    </span>
   );
 }

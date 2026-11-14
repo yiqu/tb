@@ -85,8 +85,9 @@ export async function PATCH(request: NextRequest) {
     return textResponse('Unknown transfer id', 404);
   }
 
-  const offset: number = Number(request.headers.get('Upload-Offset'));
-  if (!Number.isFinite(offset) || offset !== transfer.offset) {
+  const offsetHeader: string | null = request.headers.get('Upload-Offset');
+  const offset: number = Number(offsetHeader);
+  if (offsetHeader === null || !Number.isFinite(offset) || offset !== transfer.offset) {
     return textResponse(`Expected Upload-Offset ${transfer.offset}`, 409);
   }
 
