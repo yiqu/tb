@@ -44,7 +44,7 @@ The script wipes the database first, so it refuses to run unless `DATABASE_URL` 
 
 ```bash
 # local MongoDB as a single node replica set (Prisma needs one)
-docker run -d --name tb-mongo -p 27017:27017 mongo:7 --replSet rs0
+docker run -d --name tb-mongo -p 127.0.0.1:27017:27017 mongo:7 --replSet rs0
 docker exec tb-mongo mongosh --quiet --eval 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
 
 # .env
