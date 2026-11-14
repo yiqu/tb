@@ -9,8 +9,9 @@
  * Safety: this script WIPES the target database first. It refuses to run unless
  * DATABASE_URL points at localhost / 127.0.0.1 (pass --force to override).
  *
- * The data is deterministic (seeded PRNG), so two runs produce the same documents
- * (apart from the generated ObjectIds).
+ * Names, costs and paid / reimbursed flags come from a seeded PRNG, so they are the same on every run.
+ * Dates are relative to today (bills from two years ago until 8 months ahead), so the app always has
+ * current, past and upcoming bills to show.
  */
 import { DateTime } from 'luxon';
 import { PrismaClient } from '@prisma/client';
@@ -124,10 +125,20 @@ function assertLocalDatabase(): void {
   }
 }
 
+function getDatabaseName(): string {
+  const match = /^mongodb(?:\+srv)?:\/\/[^/]+\/([^?]*)/.exec(process.env.DATABASE_URL ?? '');
+  return match?.[1] || 'unknown';
+}
+
 async function main(): Promise<void> {
   assertLocalDatabase();
 
-  const scale: number = Math.max(1, Number.parseInt(getArgValue('scale') ?? '1'));
+  // validate before anything is deleted
+  const scale: number = Number(getArgValue('scale') ?? '1');
+  if (!Number.isInteger(scale) || scale < 1 || scale > 1000) {
+    throw new Error(`Invalid --scale value '${getArgValue('scale')}'. Use a whole number between 1 and 1000.`);
+  }
+
   const prisma = new PrismaClient();
 
   const now = DateTime.now().setZone(EST_TIME_ZONE);
@@ -135,7 +146,8 @@ async function main(): Promise<void> {
   const firstMonth = now.minus({ years: 2 }).startOf('year');
   const lastMonth = now.plus({ months: 8 }).startOf('month');
 
-  console.log(`Seeding ${process.env.DATABASE_URL} (scale=${scale})`);
+  // never print the connection string, it can hold credentials
+  console.log(`Seeding database '${getDatabaseName()}' (scale=${scale})`);
 
   // ----------------------------- wipe -----------------------------
   await prisma.favoriteEntity.deleteMany();

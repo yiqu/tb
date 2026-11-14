@@ -216,7 +216,8 @@ export async function getEntireBillsChartData(): Promise<DashboardYearBillsChart
     include: {
       subscription: true,
     },
-    orderBy: [{ dueDate: 'asc' }, { id: 'asc' }],
+    // walks the [dueDate desc, id asc] index backwards
+    orderBy: [{ dueDate: 'asc' }, { id: 'desc' }],
   });
 
   if (billDues.length === 0) {
