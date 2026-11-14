@@ -541,6 +541,8 @@ export async function updateIsSubscriptionApproved(subscriptionId: string, isApp
     revalidateSubscriptions();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
+    // the yearly bills page caches the subscription's approved and signed flags with its bills
+    revalidateBillDue();
 
     return subscription;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -563,6 +565,8 @@ export async function updateIsSubscriptionSigned(subscriptionId: string, isSigne
     revalidateSubscriptions();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
+    // the yearly bills page caches the subscription's approved and signed flags with its bills
+    revalidateBillDue();
 
     return subscription;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
