@@ -1,4 +1,4 @@
-import { Calendar } from 'lucide-react';
+import { Calendar, CalendarRange } from 'lucide-react';
 
 import Link from '@/shared/components/Link';
 import { SidebarMenu, SidebarGroup, SidebarMenuItem, SidebarGroupLabel } from '@/components/ui/sidebar';
@@ -15,6 +15,14 @@ export default function BillsGroup() {
             <Link href={ `/bills` } prefetch={ true }>
               <Calendar />
               <span>{ 'Bills' }</span>
+            </Link>
+          </SidebarMenuButtonParentWithActive>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButtonParentWithActive url="yearly" tooltip="Yearly Bills">
+            <Link href={ `/yearly` } prefetch={ true }>
+              <CalendarRange />
+              <span>{ 'Yearly Bills' }</span>
             </Link>
           </SidebarMenuButtonParentWithActive>
         </SidebarMenuItem>

@@ -38,6 +38,7 @@ interface FormattedTableHeaderProps {
   dragHandleProps?: DraggableProvidedDragHandleProps | null;
   isDragging?: boolean;
   onSortUpdate?: (_sortData: SortDataUpsertable) => void;
+  showFilters?: boolean;
 }
 
 export default function FormattedTableHeader({
@@ -52,6 +53,7 @@ export default function FormattedTableHeader({
   dragHandleProps,
   isDragging,
   onSortUpdate,
+  showFilters = true,
 }: FormattedTableHeaderProps) {
   const [isPending, startTransition] = useTransition();
   const columnWidth = useTableColumn(columnId);
@@ -137,7 +139,7 @@ export default function FormattedTableHeader({
             isPending={ isPending }
           />
         </RowStack>
-        <FormattedTableHeadMenu columnId={ columnId } tableId={ tableId } columnIndex={ index } />
+        <FormattedTableHeadMenu columnId={ columnId } tableId={ tableId } columnIndex={ index } showFilters={ showFilters } />
       </RowStack>
       <FormattedTableHeadResizeHandle
         handleResizePointerDown={ handleResizePointerDown }
