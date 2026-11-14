@@ -8,14 +8,14 @@ import { cacheLife } from 'next/cache';
 // eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
 import { cacheTag, updateTag } from 'next/cache';
-import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
 import prisma from '@/lib/prisma';
 import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
+import { FavoriteEntity } from '@/models/favorites/favorite.model';
 import { PaginationDataModel } from '@/models/pagination-data/pagination-data.model';
-import { BillDueGroupedByYear, BillDueWithSubscription, BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
+import { BillDue, BillDueWithSubscription, BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
 import {
   SubscriptionOriginal,
   SubscriptionWithBillDues,
@@ -39,8 +39,9 @@ import {
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
-import { transformSubscriptionExtraProps } from './utils';
-import { getSortedSubscriptions } from './subscriptions.utils';
+import { getBillDueWithDatesInEst } from '../bills/bills.server.utils';
+import { getSortedSubscriptions, SUBSCRIPTION_OWN_SORT_FIELDS } from './subscriptions.utils';
+import { transformSubscriptionExtraProps, attachSubscriptionToBillDues } from './utils';
 
 export async function revalidateBillDue() {
   updateTag(CACHE_TAG_BILL_DUES_ALL);
@@ -216,20 +217,13 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
   }
 
   try {
-    let subscriptions: SubscriptionWithBillDues[] = await prisma.subscription.findMany({
-      include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
-        favorites: true,
-      },
+    // Subscriptions are loaded without their bills first. The bills are only loaded for the subscriptions that need them.
+    const subscriptionsOnly: SubscriptionOriginal[] = await prisma.subscription.findMany({
       where: whereClause.AND.length > 0 ? whereClause : {},
     });
 
     const pageSize: number = paginationData?.pageSize ?? DEFAULT_PAGE_SIZE;
-    const totalPages: number = Math.ceil(subscriptions.length / pageSize);
+    const totalPages: number = Math.ceil(subscriptionsOnly.length / pageSize);
 
     let startDateEpoch: number = 0;
     let endDateEpoch: number = Infinity;
@@ -259,18 +253,6 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
       endDateEpoch = currentYearEndLuxon.toMillis();
     }
 
-    // Massage the data to return
-    const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = transformSubscriptionExtraProps(
-      subscriptions,
-      startDateEpoch,
-      endDateEpoch,
-    );
-
-    // sort the bill dues
-    if (sortData) {
-      subscriptions = getSortedSubscriptions(subscriptionsToReturnWithDateInEST, sortData);
-    }
-
     // Pagination
     // page starts at 1
     const pageNumber: number =
@@ -280,14 +262,45 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
 
     const startIndex: number = (pageNumber - 1) * pageSize;
     // if we are on the last page, the end index should be the total number of bills
-    const endIndex: number = pageNumber === totalPages ? subscriptions.length : startIndex + pageSize;
-    let subscriptionsToReturn: SubscriptionWithBillDues[] = subscriptions.slice(startIndex, endIndex);
+    const endIndex: number = pageNumber === totalPages ? subscriptionsOnly.length : startIndex + pageSize;
+
+    // Sorting by a value that is calculated from the bills (e.g. total cost) needs the bills of every subscription.
+    // Sorting by one of the subscription's own fields only needs the bills of the subscriptions on the requested page.
+    const isSortedByBillDues: boolean = !!sortData?.sortField && !SUBSCRIPTION_OWN_SORT_FIELDS.includes(sortData.sortField);
+
+    let subscriptionsToReturn: SubscriptionWithBillDues[];
+
+    if (isSortedByBillDues && sortData) {
+      const subscriptionsWithBillDues: SubscriptionWithBillDues[] = await getSubscriptionsWithTheirBillDues(
+        subscriptionsOnly,
+        whereClause.AND.length === 0,
+      );
+      const transformed: SubscriptionWithBillDues[] = transformSubscriptionExtraProps(subscriptionsWithBillDues, startDateEpoch, endDateEpoch);
+      subscriptionsToReturn = getSortedSubscriptions(transformed, sortData).slice(startIndex, endIndex);
+    } else {
+      // the sort only reads the subscription's own fields, so it can run before the bills are loaded
+      const sorted = sortData ? getSortedSubscriptions(subscriptionsOnly as SubscriptionWithBillDues[], sortData) : subscriptionsOnly;
+      const subscriptionsOnPage: SubscriptionWithBillDues[] = await getSubscriptionsWithTheirBillDues(sorted.slice(startIndex, endIndex), false);
+      subscriptionsToReturn = transformSubscriptionExtraProps(subscriptionsOnPage, startDateEpoch, endDateEpoch);
+    }
+
+    // favorites are only needed for the subscriptions on the page
+    const favorites: FavoriteEntity[] =
+      subscriptionsToReturn.length > 0 ?
+        await prisma.favoriteEntity.findMany({
+          where: { subscriptionId: { in: subscriptionsToReturn.map((subscription) => subscription.id) } },
+        })
+      : [];
+    subscriptionsToReturn = subscriptionsToReturn.map((subscription: SubscriptionWithBillDues) => ({
+      ...subscription,
+      favorites: favorites.filter((favorite: FavoriteEntity) => favorite.subscriptionId === subscription.id),
+    }));
 
     return {
       subscriptions: subscriptionsToReturn,
       sortData,
       totalPages,
-      totalSubscriptionsCount: subscriptions.length,
+      totalSubscriptionsCount: subscriptionsOnly.length,
       startIndex,
       endIndex,
     };
@@ -299,23 +312,52 @@ export async function getAllSubscriptionsWithBillDuesPaginated(
   }
 }
 
+/**
+ * Loads the bill dues of the given subscriptions with a single query and attaches them.
+ *
+ * @param subscriptions subscriptions without bill dues
+ * @param isEverySubscription true when the list holds every subscription - no id filter is needed then
+ */
+async function getSubscriptionsWithTheirBillDues(
+  subscriptions: SubscriptionOriginal[],
+  isEverySubscription: boolean,
+): Promise<SubscriptionWithBillDues[]> {
+  if (subscriptions.length === 0) {
+    return [];
+  }
+
+  const billDues: BillDue[] = await prisma.billDue.findMany({
+    where: isEverySubscription ? undefined : { subscriptionId: { in: subscriptions.map((subscription) => subscription.id) } },
+  });
+
+  const billDuesBySubscriptionId = new Map<string, BillDue[]>();
+  for (const billDue of billDues) {
+    const billDuesOfSubscription: BillDue[] | undefined = billDuesBySubscriptionId.get(billDue.subscriptionId);
+    if (billDuesOfSubscription) {
+      billDuesOfSubscription.push(billDue);
+    } else {
+      billDuesBySubscriptionId.set(billDue.subscriptionId, [billDue]);
+    }
+  }
+
+  return subscriptions.map((subscription: SubscriptionOriginal) =>
+    attachSubscriptionToBillDues(subscription, billDuesBySubscriptionId.get(subscription.id) ?? []),
+  );
+}
+
 async function getAllSubscriptionsWithBillDues(): Promise<SubscriptionWithBillDues[]> {
   'use cache';
   cacheLife('weeks');
   cacheTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
   try {
-    const subscriptions: SubscriptionWithBillDues[] = await prisma.subscription.findMany({
+    const subscriptions = await prisma.subscription.findMany({
       include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
+        billDues: true,
       },
     });
 
-    return subscriptions;
+    return subscriptions.map((subscription) => attachSubscriptionToBillDues(subscription));
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllSubscriptionsWithBillDues(): ', JSON.stringify(error));
     throw new Error(`Error retrieving subscriptions with bill dues. Code: ${error.code}`);
@@ -347,18 +389,14 @@ export async function getSubscriptionWithBillDuesById(subscriptionId: string): P
   cacheTag(`${CACHE_TAG_SUBSCRIPTION_DETAILS}${subscriptionId}`);
 
   try {
-    const subscription: SubscriptionWithBillDues | null = await prisma.subscription.findUnique({
+    const subscription = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
       include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
+        billDues: true,
       },
     });
 
-    return subscription;
+    return subscription ? attachSubscriptionToBillDues(subscription) : null;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getSubscriptionWithBillDuesById(): ', JSON.stringify(error));
     throw new Error(`Error retrieving subscription by id. Code: ${error.code}`);
@@ -367,18 +405,14 @@ export async function getSubscriptionWithBillDuesById(subscriptionId: string): P
 
 export async function getSubscriptionWithBillDuesByIdUncached(subscriptionId: string): Promise<SubscriptionWithBillDues | null> {
   try {
-    const subscription: SubscriptionWithBillDues | null = await prisma.subscription.findUnique({
+    const subscription = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
       include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
+        billDues: true,
       },
     });
 
-    return subscription;
+    return subscription ? attachSubscriptionToBillDues(subscription) : null;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getSubscriptionWithBillDuesById(): ', JSON.stringify(error));
     throw new Error(`Error retrieving subscription by id. Code: ${error.code}`);
@@ -387,18 +421,14 @@ export async function getSubscriptionWithBillDuesByIdUncached(subscriptionId: st
 
 export async function getAllSubscriptionsWithBillDuesByIdsUncached(subscriptionIds: string[]): Promise<SubscriptionWithBillDues[]> {
   try {
-    const subscriptions: SubscriptionWithBillDues[] = await prisma.subscription.findMany({
+    const subscriptions = await prisma.subscription.findMany({
       where: { id: { in: subscriptionIds } },
       include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
+        billDues: true,
       },
     });
 
-    return subscriptions;
+    return subscriptions.map((subscription) => attachSubscriptionToBillDues(subscription));
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllSubscriptionsWithBillDuesByIdsUncached(): ', JSON.stringify(error));
     throw new Error(`Error retrieving subscriptions by ids. Code: ${error.code}`);
@@ -411,75 +441,37 @@ export async function getSubscriptionBillsGroupedByYearById(subscriptionId: stri
   cacheTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}${subscriptionId}`);
 
   try {
-    const subscription: SubscriptionWithBillDues | null = await prisma.subscription.findUnique({
+    // the database returns the bills newest first (indexed), so no extra sorting is needed afterwards
+    const subscription = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
       include: {
         billDues: {
-          include: {
-            subscription: true,
-          },
+          orderBy: { dueDate: 'desc' },
         },
       },
     });
 
-    const billDues: BillDueWithSubscription[] = subscription?.billDues ?? [];
+    const billDues: BillDueWithSubscription[] = subscription ? attachSubscriptionToBillDues(subscription).billDues : [];
 
-    const billDuesToReturnWithDateInEST: BillDueWithSubscription[] = billDues.map((billDue) => {
-      const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate), {
-        zone: EST_TIME_ZONE,
-      }).toLocaleString(DateTime.DATETIME_SHORT);
-      //const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate)).setZone(EST_TIME_ZONE).toFormat('MM/dd/yyyy');
-
-      const dateAddedInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
-        .setZone(EST_TIME_ZONE)
-        .toJSDate();
-      const dateAddedInEst: string = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`))
-        .setZone(EST_TIME_ZONE)
-        .toLocaleString(DateTime.DATETIME_SHORT);
-      //.toFormat('MM/dd/yyyy');
-      const dateAddedRelativeDate = formatDistanceToNow(dateAddedInEstDate, { addSuffix: true });
-
-      const updatedAtInEstDate: Date = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
-        .setZone(EST_TIME_ZONE)
-        .toJSDate();
-      const updatedAtInEst: string = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`))
-        .setZone(EST_TIME_ZONE)
-        .toLocaleString(DateTime.DATETIME_SHORT);
-      // .toFormat('MM/dd/yyyy');
-      const updatedAtRelativeDate = formatDistanceToNow(updatedAtInEstDate, { addSuffix: true });
-
-      return {
-        ...billDue,
-        dueDateInEst: dueDateInEst,
-        dateAddedInEst: dateAddedInEst,
-        dateAddedInEstRelative: dateAddedRelativeDate,
-        updatedAtInEst: updatedAtInEst,
-        updatedAtInEstRelative: updatedAtRelativeDate,
-      };
-    });
-
-    const billDuesGroupedByYear: BillDueGroupedByYear = billDuesToReturnWithDateInEST.reduce((acc, billDue) => {
-      const billDueDateLuxon = DateTime.fromMillis(Number.parseInt(billDue.dueDate), {
+    // group by year. Map keeps the insertion order, which is newest year first
+    const billDuesGroupedByYear = new Map<number, BillDueWithSubscription[]>();
+    for (const billDue of billDues) {
+      const { year } = DateTime.fromMillis(Number.parseInt(billDue.dueDate), {
         zone: EST_TIME_ZONE,
       });
-      const { year } = billDueDateLuxon;
-      if (!acc[year]) {
-        acc[year] = [];
+      const billDueWithDatesInEst: BillDueWithSubscription = getBillDueWithDatesInEst(billDue);
+      const billsOfYear: BillDueWithSubscription[] | undefined = billDuesGroupedByYear.get(year);
+      if (billsOfYear) {
+        billsOfYear.push(billDueWithDatesInEst);
+      } else {
+        billDuesGroupedByYear.set(year, [billDueWithDatesInEst]);
       }
-      acc[year].push(billDue);
-      return acc;
-    }, {} as BillDueGroupedByYear);
+    }
 
-    const billsDueGroupedByYear: BillsDueGroupedByYearObject[] = Object.entries(billDuesGroupedByYear).map(([year, bills]) => ({
-      year: year,
-      bills: bills.toSorted((a, b) => {
-        return Number.parseInt(a.dueDate) < Number.parseInt(b.dueDate) ? 1 : -1;
-      }),
+    const sortedBillsDueGroupedByYear: BillsDueGroupedByYearObject[] = [...billDuesGroupedByYear.entries()].map(([year, bills]) => ({
+      year: year.toString(),
+      bills,
     }));
-
-    const sortedBillsDueGroupedByYear: BillsDueGroupedByYearObject[] = billsDueGroupedByYear.sort((a, b) => {
-      return Number.parseInt(a.year) < Number.parseInt(b.year) ? 1 : -1;
-    });
 
     return sortedBillsDueGroupedByYear;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -493,7 +485,7 @@ export async function updateSubscription(
   payload: z.infer<typeof subscriptionEditableSchema>,
 ): Promise<SubscriptionWithBillDues> {
   try {
-    const subscription: SubscriptionWithBillDues = await prisma.subscription.update({
+    const savedSubscription = await prisma.subscription.update({
       where: { id: subscriptionId },
       data: {
         name: payload.name,
@@ -505,13 +497,10 @@ export async function updateSubscription(
         billCycleDuration: payload.billCycleDuration,
       },
       include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
+        billDues: true,
       },
     });
+    const subscription: SubscriptionWithBillDues = attachSubscriptionToBillDues(savedSubscription);
 
     revalidateSubscriptions();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
@@ -531,9 +520,7 @@ export async function getAllSubscriptionsCount(): Promise<number> {
   cacheTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
 
   try {
-    const subscriptions: SubscriptionOriginal[] = await prisma.subscription.findMany();
-
-    return subscriptions.length;
+    return await prisma.subscription.count();
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
     console.error('Server error at getAllSubscriptionsCount(): ', JSON.stringify(error));
     throw new Error(`Error retrieving subscriptions count. Code: ${error.code}`);
@@ -542,21 +529,20 @@ export async function getAllSubscriptionsCount(): Promise<number> {
 
 export async function updateIsSubscriptionApproved(subscriptionId: string, isApproved: boolean): Promise<SubscriptionWithBillDues> {
   try {
-    const subscription: SubscriptionWithBillDues = await prisma.subscription.update({
+    const savedSubscription = await prisma.subscription.update({
       where: { id: subscriptionId },
       data: { approved: isApproved },
       include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
+        billDues: true,
       },
     });
+    const subscription: SubscriptionWithBillDues = attachSubscriptionToBillDues(savedSubscription);
 
     revalidateSubscriptions();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
+    // the yearly bills page caches the subscription's approved and signed flags with its bills
+    revalidateBillDue();
 
     return subscription;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -567,21 +553,20 @@ export async function updateIsSubscriptionApproved(subscriptionId: string, isApp
 
 export async function updateIsSubscriptionSigned(subscriptionId: string, isSigned: boolean): Promise<SubscriptionWithBillDues> {
   try {
-    const subscription: SubscriptionWithBillDues = await prisma.subscription.update({
+    const savedSubscription = await prisma.subscription.update({
       where: { id: subscriptionId },
       data: { signed: isSigned },
       include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
+        billDues: true,
       },
     });
+    const subscription: SubscriptionWithBillDues = attachSubscriptionToBillDues(savedSubscription);
 
     revalidateSubscriptions();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
+    // the yearly bills page caches the subscription's approved and signed flags with its bills
+    revalidateBillDue();
 
     return subscription;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -592,7 +577,7 @@ export async function updateIsSubscriptionSigned(subscriptionId: string, isSigne
 
 export async function createNewSubscription(payload: z.infer<typeof subscriptionAddableSchema>): Promise<SubscriptionWithBillDues> {
   try {
-    const subscription: SubscriptionWithBillDues = await prisma.subscription.create({
+    const savedSubscription = await prisma.subscription.create({
       data: {
         name: payload.name,
         description: payload.description,
@@ -603,13 +588,10 @@ export async function createNewSubscription(payload: z.infer<typeof subscription
         billCycleDuration: payload.billCycleDuration,
       },
       include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
+        billDues: true,
       },
     });
+    const subscription: SubscriptionWithBillDues = attachSubscriptionToBillDues(savedSubscription);
 
     revalidateSubscriptions();
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscription.id);
@@ -625,29 +607,28 @@ export async function createNewSubscription(payload: z.infer<typeof subscription
 
 export async function deleteSubscription(subscriptionId: string): Promise<SubscriptionWithBillDues> {
   try {
-    await prisma.billDue.deleteMany({
-      where: {
-        subscriptionId: subscriptionId,
-      },
-    });
+    // the bills and the favorite of the subscription do not depend on each other, delete them at the same time
+    await Promise.all([
+      prisma.billDue.deleteMany({
+        where: {
+          subscriptionId: subscriptionId,
+        },
+      }),
+      //delete the favorite associated with the subscription
+      prisma.favoriteEntity.deleteMany({
+        where: {
+          subscriptionId: subscriptionId,
+        },
+      }),
+    ]);
 
-    //delete the favorite associated with the subscription
-    await prisma.favoriteEntity.deleteMany({
-      where: {
-        subscriptionId: subscriptionId,
-      },
-    });
-
-    const subscription: SubscriptionWithBillDues = await prisma.subscription.delete({
+    const savedSubscription = await prisma.subscription.delete({
       where: { id: subscriptionId },
       include: {
-        billDues: {
-          include: {
-            subscription: true,
-          },
-        },
+        billDues: true,
       },
     });
+    const subscription: SubscriptionWithBillDues = attachSubscriptionToBillDues(savedSubscription);
 
     updateTag(CACHE_TAG_FAVORITES_ALL);
     revalidateSubscriptions();

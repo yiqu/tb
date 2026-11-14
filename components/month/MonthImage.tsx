@@ -2,8 +2,8 @@ import Image from 'next/image';
 
 import { getMonthImage } from '@/lib/month-icons.utils';
 
-export default function MonthImage({ month, height = 200 }: { month: string; height?: number }) {
+export default function MonthImage({ month, height = 200, priority = true }: { month: string; height?: number; priority?: boolean }) {
   const imgSrc: string = getMonthImage(month);
 
-  return <Image src={ imgSrc } width={ height } height={ height } alt="month" className="shrink-0" priority />;
+  return <Image src={ imgSrc } width={ height } height={ height } alt="month" className="shrink-0" priority={ priority } />;
 }

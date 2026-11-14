@@ -16,6 +16,16 @@ export const SETTINGS_APPLICATION_COMPACT_MODE_COOKIE_NAME = 'settings-applicati
 export const SETTINGS_APPLICATION_ADMIN_MODE_COOKIE_NAME = 'settings-application-admin-mode';
 export const SETTINGS_USER_VIBE_COOKIE_NAME = 'settings-user-vibe';
 export const SETTINGS_USER_FONT_COOKIE_NAME = 'settings-user-font-override';
+export const SETTINGS_TABLE_HORIZONTAL_BORDERS_COOKIE_NAME = 'settings-table-horizontal-borders';
+export const SETTINGS_TABLE_VERTICAL_BORDERS_COOKIE_NAME = 'settings-table-vertical-borders';
+
+// Attributes set on <body> so every table (including ones in portals) can read the border settings via CSS.
+// Keep in sync: Tailwind needs literal class names, so the `in-data-[table-*-borders=false]` classes in
+// `components/ui/table.tsx` and `shared/table/table-border.utils.ts` repeat these names.
+export const TABLE_BORDER_DATA_ATTRIBUTES = {
+  horizontal: 'data-table-h-borders',
+  vertical: 'data-table-v-borders',
+} as const;
 
 export const ADMIN_PASSWORD_CORRECT_COOKIE_NAME = 'admin-password-correct';
 
@@ -69,6 +79,7 @@ export const SORT_DATA_PAGE_IDS = {
   subscriptions: 'subscriptions',
   outstanding: 'outstanding',
   upcoming: 'upcoming',
+  yearly: 'yearly',
   addNewBillDueRecentlyAdded: 'add-new-bill-due-recently-added',
   subscriptionDetailsBillsBillsTable: 'subscription-details-bills-bills-table',
 } as const;
@@ -92,6 +103,7 @@ export const APP_TITLE_GRADIENT_COLORS = {
   subscriptions: ['#005493', '#f5aa1c', '#c63527', '#002754'],
   outstanding: ['#FF4757', '#FF6B35', '#FFA726', '#0070F3'],
   upcoming: ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF'],
+  yearly: ['#005493', '#6BCB77', '#FFA726', '#4D96FF'],
   add: ['#ed6b06', '#9d1348', '#008b5d', '#364395'],
 };
 

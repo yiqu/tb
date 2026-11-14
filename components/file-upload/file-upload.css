@@ -1,0 +1,93 @@
+/*
+ * FilePond theme for <FileUploadDropzone>, driven by the shadcn CSS variables so it follows the
+ * light and dark theme. Everything is scoped under .file-upload-dropzone.
+ */
+
+/* the height comes from the wrapper (a Tailwind h-* class), FilePond then scrolls its list inside it */
+.file-upload-dropzone .filepond--wrapper {
+  height: 100%;
+}
+
+.file-upload-dropzone .filepond--root {
+  height: 100%;
+  margin-bottom: 0;
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.file-upload-dropzone .filepond--panel-root {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px);
+}
+
+.file-upload-dropzone .filepond--drop-label {
+  color: var(--foreground);
+}
+
+.file-upload-dropzone .filepond--drop-label label {
+  cursor: pointer;
+}
+
+.file-upload-dropzone .filepond--label-action {
+  text-decoration-color: var(--muted-foreground);
+}
+
+/* each staged file is a bordered card row */
+.file-upload-dropzone .filepond--item-panel {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.file-upload-dropzone .filepond--file {
+  color: var(--foreground);
+  align-items: center;
+}
+
+/* "name (size)" on one line instead of the size stacked under the name */
+.file-upload-dropzone .filepond--file-info {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.file-upload-dropzone .filepond--file-info .filepond--file-info-main {
+  width: auto;
+  flex: 0 1 auto;
+  font-size: 0.875rem;
+}
+
+.file-upload-dropzone .filepond--file-info .filepond--file-info-sub {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  opacity: 1;
+  color: var(--muted-foreground);
+}
+
+.file-upload-dropzone .filepond--file-info .filepond--file-info-sub::before {
+  content: '(';
+}
+
+.file-upload-dropzone .filepond--file-info .filepond--file-info-sub::after {
+  content: ')';
+}
+
+.file-upload-dropzone .filepond--file-action-button {
+  cursor: pointer;
+  color: var(--muted-foreground);
+  background-color: transparent;
+}
+
+.file-upload-dropzone .filepond--file-action-button:hover {
+  color: var(--destructive);
+  box-shadow: none;
+}
+
+.file-upload-dropzone .filepond--file-action-button:focus-visible {
+  color: var(--destructive);
+}
+
+.file-upload-dropzone .filepond--drip-blob {
+  background-color: var(--muted-foreground);
+}

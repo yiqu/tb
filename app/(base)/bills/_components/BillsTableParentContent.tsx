@@ -24,9 +24,11 @@ type Props = {
   sortData: SortDataModel | null;
   pageId: SortDataPageId;
   loadingMaskRowCount?: number;
+  // hide the column filter menus and cell hover filters, for tables whose query does not read the filter params
+  showFilters?: boolean;
 };
 
-export default function BillsTableParentContent({ billDues, tableId, sortData, pageId, loadingMaskRowCount = 15 }: Props) {
+export default function BillsTableParentContent({ billDues, tableId, sortData, pageId, loadingMaskRowCount = 15, showFilters = true }: Props) {
   const isClient = useIsClient();
   const totalColumnsWidth = useVisibleTableColumnsWidth('bills');
   const columnsSorted: string[] = useOrderedVisibleTableColumns('bills');
@@ -80,6 +82,7 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
                               pageId={ pageId }
                               sortable={ unsortableBillsColumns[column] ?? true }
                               onSortUpdate={ handleOnSortUpdate }
+                              showFilters={ showFilters }
                             />
                           );
                         } }
@@ -96,7 +99,7 @@ export default function BillsTableParentContent({ billDues, tableId, sortData, p
         </TableHeader>
         <TableBody>
           { billDues.billDues.map((billDue: BillDueWithSubscription) => (
-            <BillsTableParentRow key={ billDue.id } billDue={ billDue } />
+            <BillsTableParentRow key={ billDue.id } billDue={ billDue } showFilters={ showFilters } />
           )) }
         </TableBody>
       </Table>

@@ -18,7 +18,8 @@
     "lint-check": "npx eslint . --ext js,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "push-prisma": "npx prisma db push",
     "update-prisma": "npx prisma generate",
-    "postinstall": "npx prisma generate"
+    "postinstall": "npx prisma generate",
+    "seed": "node --env-file-if-exists=.env --experimental-strip-types prisma/seed.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
