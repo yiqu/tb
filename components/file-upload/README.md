@@ -25,7 +25,8 @@ nothing else is called.
 ### Optional: chunked uploads
 
 Only called when `chunkUploads: true`. Worth having for large files, because progress is then
-confirmed by the server chunk by chunk and an interrupted upload can be resumed.
+confirmed by the server chunk by chunk. The uploader does not resume yet: a failed upload starts a
+new transfer from the first byte, so the resume step below is only needed once that is added.
 
 | Step | Request | Details | Response |
 | --- | --- | --- | --- |

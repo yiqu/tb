@@ -23,7 +23,7 @@ export default function FileUploadStatusRow({ upload, className }: FileUploadSta
         { upload.name }
       </Typography>
       <RowStack className="items-center gap-x-2">
-        <FileUploadProgressBar progress={ upload.progress } isFailed={ isFailed } />
+        <FileUploadProgressBar progress={ upload.progress } isFailed={ isFailed } label={ `Upload progress of ${upload.name}` } />
         <Typography variant="body0" className={ cn('w-10 shrink-0 text-right tabular-nums', { 'text-destructive': isFailed }) }>
           { isFailed ? 'Failed' : `${upload.progress}%` }
         </Typography>

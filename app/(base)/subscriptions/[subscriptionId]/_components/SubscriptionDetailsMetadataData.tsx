@@ -87,7 +87,8 @@ function DatePopover({ date }: { date: Date | null }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div
+        <button
+          type="button"
           title={ `${DateTime.fromJSDate(new Date(date as unknown as string))
             .setZone(EST_TIME_ZONE)
             .toLocaleString(DateTime.DATETIME_MED)}` }
@@ -95,6 +96,7 @@ function DatePopover({ date }: { date: Date | null }) {
             light-dashed-underline -ml-1 flex cursor-pointer flex-row items-center justify-start gap-x-1 truncate rounded-md border
             border-transparent px-1 select-none
             hover:border-border hover:bg-accent
+            focus-visible:border-ring focus-visible:outline-none
           ` }
         >
           <DateDisplay date={ date } dateFormat="MM/dd/yy" clientLoadingClassName="h-[20px] w-[60px]" />
@@ -106,7 +108,7 @@ function DatePopover({ date }: { date: Date | null }) {
             largest={ 2 }
             isCompleted
           />
-        </div>
+        </button>
       </PopoverTrigger>
       <PopoverContent className="min-w-96">
         <Suspense>

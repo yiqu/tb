@@ -158,7 +158,10 @@ export const useFileUploadStore = create<FileUploadState>()((set, get) => ({
             uploadSources.delete(upload.id);
           }
         });
-        return { uploads: state.uploads.filter(isFileUploadActive) };
+        const uploads: FileUploadItem[] = state.uploads.filter(isFileUploadActive);
+        // a session with nothing left would otherwise read as completed, even when every file failed
+        const hasSessionUploads: boolean = uploads.some((upload: FileUploadItem) => upload.batchId === state.sessionBatchId);
+        return { uploads, sessionBatchId: hasSessionUploads ? state.sessionBatchId : null };
       });
     },
   },

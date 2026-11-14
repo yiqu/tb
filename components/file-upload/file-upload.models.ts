@@ -36,7 +36,7 @@ export interface FileUploadServerConfig {
   headers?: Record<string, string>;
   /** Send cookies on cross origin requests. */
   withCredentials?: boolean;
-  /** FilePond `chunkUploads`: upload in chunks so progress is confirmed by the server and uploads are resumable. */
+  /** FilePond `chunkUploads`: upload in chunks so progress is confirmed by the server (resuming is not implemented yet). */
   chunkUploads?: boolean;
   /** FilePond `chunkForce`: also chunk files that are smaller than the chunk size. */
   chunkForce?: boolean;
