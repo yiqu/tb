@@ -28,13 +28,14 @@ interface FileUploadState {
     endSession: () => void;
     /** Sends the failed files again, from the start. Pass a batch id to only retry the files of that batch. */
     retryFailedUploads: (batchId?: string) => void;
-    /** Removes the uploads that are completed or failed from the list. */
+    /** Removes every batch whose files are all completed or failed. A cleared session starts over. */
     clearFinishedUploads: () => void;
   };
 }
 
 interface QueuedUpload {
   id: string;
+  batchId: string;
   file: File;
   config: FileUploadServerConfig;
   metadata?: FileUploadMetadata;
@@ -43,7 +44,8 @@ interface QueuedUpload {
 const queuedUploads: QueuedUpload[] = [];
 /** What is needed to send a file again, kept (outside of the state) until the file is completed or cleared. */
 const uploadSources = new Map<string, QueuedUpload>();
-let runningUploadCount = 0;
+/** Running uploads per batch: `maxParallelUploads` applies to each batch, like it does to each FilePond instance. */
+const runningCountByBatchId = new Map<string, number>();
 
 function createId(): string {
   return typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -55,35 +57,58 @@ function patchUpload(id: string, patch: Partial<FileUploadItem>): void {
   }));
 }
 
-function runQueuedUploads(): void {
-  while (queuedUploads.length > 0) {
-    const maxParallelUploads: number = Math.max(1, queuedUploads[0].config.maxParallelUploads ?? FILE_UPLOAD_DEFAULT_MAX_PARALLEL_UPLOADS);
-    if (runningUploadCount >= maxParallelUploads) {
-      return;
-    }
-    const next: QueuedUpload | undefined = queuedUploads.shift();
-    if (!next) {
-      return;
-    }
-    runningUploadCount++;
-    patchUpload(next.id, { status: FILE_UPLOAD_STATUS.uploading });
-    uploadFile({
-      file: next.file,
-      config: next.config,
-      metadata: next.metadata,
-      onProgress: (progress: number) => patchUpload(next.id, { progress: clampProgress(progress) }),
+function changeRunningCount(batchId: string, delta: number): void {
+  const count: number = (runningCountByBatchId.get(batchId) ?? 0) + delta;
+  if (count <= 0) {
+    runningCountByBatchId.delete(batchId);
+  } else {
+    runningCountByBatchId.set(batchId, count);
+  }
+}
+
+function hasFreeSlot(queued: QueuedUpload): boolean {
+  const maxParallelUploads: number = Math.max(1, queued.config.maxParallelUploads ?? FILE_UPLOAD_DEFAULT_MAX_PARALLEL_UPLOADS);
+  return (runningCountByBatchId.get(queued.batchId) ?? 0) < maxParallelUploads;
+}
+
+function startQueuedUpload(next: QueuedUpload): void {
+  changeRunningCount(next.batchId, 1);
+  patchUpload(next.id, { status: FILE_UPLOAD_STATUS.uploading });
+  // started inside a promise so that an error thrown synchronously (e.g. by a `chunkSize` callback)
+  // still lands in catch/finally and frees the slot, instead of wedging the queue
+  Promise.resolve()
+    .then(() =>
+      uploadFile({
+        file: next.file,
+        config: next.config,
+        metadata: next.metadata,
+        onProgress: (progress: number) => patchUpload(next.id, { progress: clampProgress(progress) }),
+      }),
+    )
+    .then((serverId: string) => {
+      uploadSources.delete(next.id);
+      patchUpload(next.id, { status: FILE_UPLOAD_STATUS.completed, progress: 100, serverId: serverId });
     })
-      .then((serverId: string) => {
-        uploadSources.delete(next.id);
-        patchUpload(next.id, { status: FILE_UPLOAD_STATUS.completed, progress: 100, serverId: serverId });
-      })
-      .catch((error: unknown) => {
-        patchUpload(next.id, { status: FILE_UPLOAD_STATUS.failed, error: error instanceof Error ? error.message : 'Upload failed' });
-      })
-      .finally(() => {
-        runningUploadCount--;
-        runQueuedUploads();
-      });
+    .catch((error: unknown) => {
+      patchUpload(next.id, { status: FILE_UPLOAD_STATUS.failed, error: error instanceof Error ? error.message : 'Upload failed' });
+    })
+    .finally(() => {
+      changeRunningCount(next.batchId, -1);
+      runQueuedUploads();
+    });
+}
+
+/** Starts every queued file whose batch has a free slot, oldest first. */
+function runQueuedUploads(): void {
+  let index = 0;
+  while (index < queuedUploads.length) {
+    const queued: QueuedUpload = queuedUploads[index];
+    if (!hasFreeSlot(queued)) {
+      index++;
+      continue;
+    }
+    queuedUploads.splice(index, 1);
+    startQueuedUpload(queued);
   }
 }
 
@@ -123,7 +148,7 @@ export const useFileUploadStore = create<FileUploadState>()((set, get) => ({
       }));
 
       items.forEach((item: FileUploadItem, index: number) => {
-        const source: QueuedUpload = { id: item.id, file: files[index], config: config, metadata: metadata };
+        const source: QueuedUpload = { id: item.id, batchId: batchId, file: files[index], config: config, metadata: metadata };
         uploadSources.set(item.id, source);
         queuedUploads.push(source);
       });
@@ -153,12 +178,18 @@ export const useFileUploadStore = create<FileUploadState>()((set, get) => ({
 
     clearFinishedUploads: () => {
       set((state: FileUploadState) => {
+        // a batch is cleared as a whole once none of its files is running. A batch that is still going
+        // keeps its finished files, so its outcome (e.g. a failed file) is not lost before it ends.
+        const activeBatchIds = new Set<string>(state.uploads.filter(isFileUploadActive).map((upload: FileUploadItem) => upload.batchId));
+        const keptUploads: FileUploadItem[] = state.uploads.filter((upload: FileUploadItem) => activeBatchIds.has(upload.batchId));
         state.uploads.forEach((upload: FileUploadItem) => {
-          if (!isFileUploadActive(upload)) {
+          if (!activeBatchIds.has(upload.batchId)) {
             uploadSources.delete(upload.id);
           }
         });
-        return { uploads: state.uploads.filter(isFileUploadActive) };
+        // the surface's session was cleared away: start it over, instead of showing an empty batch as completed
+        const isSessionCleared: boolean = state.sessionBatchId !== null && !activeBatchIds.has(state.sessionBatchId);
+        return { uploads: keptUploads, sessionBatchId: isSessionCleared ? null : state.sessionBatchId };
       });
     },
   },

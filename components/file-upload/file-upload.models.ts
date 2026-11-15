@@ -4,8 +4,13 @@ export type FileUploadStatus = (typeof FILE_UPLOAD_STATUS)[keyof typeof FILE_UPL
 
 export type FileUploadPhase = (typeof FILE_UPLOAD_PHASE)[keyof typeof FILE_UPLOAD_PHASE];
 
+/** A value that survives `JSON.stringify` unchanged. */
+export type FileUploadMetadataValue = string | number | boolean | null | FileUploadMetadataValue[] | FileUploadMetadata;
+
 /** Extra data sent along with every file, FilePond posts it as a JSON string under the same field name as the file. */
-export type FileUploadMetadata = Record<string, unknown>;
+export interface FileUploadMetadata {
+  [key: string]: FileUploadMetadataValue;
+}
 
 /**
  * Where and how files are uploaded. Mirrors FilePond's own `server` + chunk options
@@ -30,19 +35,32 @@ export interface FileUploadServerConfig {
   processPath?: string;
   /** Path appended to `url` for chunk requests, the transfer id is appended to it. Defaults to `'?patch='`. */
   patchPath?: string;
+  /** Path appended to `url` for the revert (DELETE) request. Defaults to `''` like FilePond's string config. */
+  revertPath?: string;
   /** Form field name. Defaults to `filepond`. */
   fieldName?: string;
   /** Extra request headers, e.g. an auth token. */
   headers?: Record<string, string>;
   /** Send cookies on cross origin requests. */
   withCredentials?: boolean;
-  /** FilePond `chunkUploads`: upload in chunks so progress is confirmed by the server and uploads are resumable. */
+  /**
+   * A request fails when it made no progress (nothing sent, no answer) for this many ms. It restarts
+   * on every progress event, so a large file that is still moving is not cut off. `0` waits forever.
+   * Defaults to 60 seconds.
+   */
+  timeout?: number;
+  /**
+   * FilePond `chunkUploads`: upload in chunks so progress is confirmed by the server. A failed chunk
+   * is retried after `chunkRetryDelays`, resuming from the offset the server reports with `HEAD`.
+   */
   chunkUploads?: boolean;
   /** FilePond `chunkForce`: also chunk files that are smaller than the chunk size. */
   chunkForce?: boolean;
   /** FilePond `chunkSize` in bytes. A function lets the caller size chunks per file. Defaults to 5MB. */
   chunkSize?: number | ((file: File) => number);
-  /** FilePond `maxParallelUploads`. Defaults to 2. */
+  /** FilePond `chunkRetryDelays`: ms to wait before each retry of a failed chunk. Defaults to `[500, 1000, 3000]`, `[]` disables retries. */
+  chunkRetryDelays?: readonly number[];
+  /** FilePond `maxParallelUploads`: how many files of one batch upload at the same time. Defaults to 2. */
   maxParallelUploads?: number;
 }
 

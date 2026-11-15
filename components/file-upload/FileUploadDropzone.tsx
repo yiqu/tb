@@ -94,6 +94,13 @@ export default function FileUploadDropzone({
     }
   };
 
+  // the allowed extensions changed while mounted: update the browse input's filter right away
+  const allowedExtensionsKey: string = (allowedExtensions ?? []).join(',');
+  useEffect(() => {
+    syncAcceptAttribute();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allowedExtensionsKey]);
+
   useEffect(() => {
     // the caller emptied the selection (e.g. the upload started): clear what FilePond still shows
     if (files.length === 0 && (pondRef.current?.getFiles().length ?? 0) > 0) {

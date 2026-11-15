@@ -2,16 +2,15 @@
 
 import { Button } from '@/components/ui/button';
 
-import { isFileUploadActive } from './file-upload.utils';
+import { getInProgressFileUploads } from './file-upload.utils';
 import { useFileUploads, useFileUploadActions } from './file-upload.store';
 
-import type { FileUploadItem } from './file-upload.models';
-
-/** Removes the completed and failed uploads from the status list. Hidden while there is nothing to clear. */
+/** Removes the batches that finished (completed or failed) from the status list. Hidden while there is nothing to clear. */
 export default function FileUploadClearFinishedButton() {
   const uploads = useFileUploads();
   const { clearFinishedUploads } = useFileUploadActions();
-  const hasFinishedUploads: boolean = uploads.some((upload: FileUploadItem) => !isFileUploadActive(upload));
+  // a batch with a file still running is kept whole, so only the uploads outside of those can be cleared
+  const hasFinishedUploads: boolean = getInProgressFileUploads(uploads).length < uploads.length;
 
   if (!hasFinishedUploads) {
     return null;

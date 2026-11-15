@@ -1,15 +1,16 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useRef, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import ColumnStack from '@/shared/components/ColumnStack';
 import { HFInputField } from '@/components/hook-form/HFFieldInput';
 import { useFileUpload } from '@/components/file-upload/useFileUpload';
 import FileUploadButton from '@/components/file-upload/FileUploadButton';
-import FileUploadDropzone from '@/components/file-upload/FileUploadDropzone';
 import FileUploadActionBar from '@/components/file-upload/FileUploadActionBar';
 import FileUploadStatusList from '@/components/file-upload/FileUploadStatusList';
 import { FILE_UPLOAD_PHASE } from '@/components/file-upload/file-upload.constants';
@@ -23,6 +24,12 @@ import { fileUploadPackageSchema, FileUploadPackageFormValues } from '@/validato
 
 import { useFileUploadDemoStore } from './file-upload-demo.store';
 import { FILE_UPLOAD_DEMO_SERVER, FILE_UPLOAD_DEMO_ALLOWED_EXTENSIONS } from './file-upload-demo.constants';
+
+// FilePond is only needed once the dialog shows the drop zone, so it is loaded then and kept out of the page's main bundle
+const FileUploadDropzone = dynamic(() => import('@/components/file-upload/FileUploadDropzone'), {
+  ssr: false,
+  loading: () => <Skeleton className="h-56 w-full" />,
+});
 
 /** Files of one drop or browse are added one after the other, rejections within this window belong to the same selection. */
 const REJECTED_MESSAGE_GRACE_MS = 1000;

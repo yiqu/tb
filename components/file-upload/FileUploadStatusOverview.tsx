@@ -18,7 +18,7 @@ export default function FileUploadStatusOverview({ className }: FileUploadStatus
   const uploads = useFileUploads();
 
   if (uploads.length === 0) {
-    return <FileUploadStatusEmpty />;
+    return <FileUploadStatusEmpty className={ className } />;
   }
   return <FileUploadStatusList uploads={ uploads } className={ cn('max-h-72 overflow-y-auto pr-1', className) } />;
 }

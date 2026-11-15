@@ -85,6 +85,12 @@
   box-shadow: none;
 }
 
+/* FilePond's own focus ring is replaced above, keyboard users still need to see which button has focus */
+.file-upload-dropzone .filepond--file-action-button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
 .file-upload-dropzone .filepond--drip-blob {
   background-color: var(--muted-foreground);
 }

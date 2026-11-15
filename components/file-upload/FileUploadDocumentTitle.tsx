@@ -25,11 +25,19 @@ interface FileUploadDocumentTitleProps {
 export default function FileUploadDocumentTitle({ lingerMs = 5000, separator = ' | ' }: FileUploadDocumentTitleProps) {
   const uploads = useFileUploads();
   const trackedBatchIdsRef = useRef<Set<string>>(new Set<string>());
+  /** Whether a file was running on the previous update, to tell a new run from the current one. */
+  const wasActiveRef = useRef<boolean>(false);
   const [progressLabel, setProgressLabel] = useState<string | null>(null);
 
   useEffect(() => {
     const trackedBatchIds: Set<string> = trackedBatchIdsRef.current;
     const activeUploads: FileUploadItem[] = uploads.filter(isFileUploadActive);
+    const isActive: boolean = activeUploads.length > 0;
+    // a new run started while the last one was still lingering in the title: count from scratch
+    if (isActive && !wasActiveRef.current) {
+      trackedBatchIds.clear();
+    }
+    wasActiveRef.current = isActive;
     activeUploads.forEach((upload: FileUploadItem) => trackedBatchIds.add(upload.batchId));
 
     const trackedUploads: FileUploadItem[] = uploads.filter((upload: FileUploadItem) => trackedBatchIds.has(upload.batchId));
@@ -40,7 +48,7 @@ export default function FileUploadDocumentTitle({ lingerMs = 5000, separator = '
     }
 
     setProgressLabel(formatFileUploadSummary(getFileUploadSummary(trackedUploads)));
-    if (activeUploads.length > 0) {
+    if (isActive) {
       return;
     }
 

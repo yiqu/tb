@@ -3,7 +3,9 @@
 Composable file upload pieces built on [FilePond](https://pqina.nl/filepond/docs/) and
 [react-filepond](https://github.com/pqina/react-filepond). The example that wires them together
 lives on the `/test` page (`app/(base)/test/_components/file-upload-demo/`), and it uploads to a
-slow mock server at `app/api/filepond-mock/route.ts`.
+slow mock server at `app/api/filepond-mock/route.ts`. The mock keeps chunk state in the memory of
+one process, so it only works with a single server process (`next dev`, one `next start`), not
+behind a load balancer or on serverless functions.
 
 ## 1. URLs your backend needs
 
@@ -16,7 +18,7 @@ receive. `<url>` is that base url, for the mock it is `/api/filepond-mock`.
 | | |
 | --- | --- |
 | Request | `POST <url>` |
-| Body | `multipart/form-data`. The field `filepond` appears twice: first a JSON string with the metadata (here `{"packageName":"..."}`), then the file. |
+| Body | `multipart/form-data`. The configured `fieldName` (default `filepond`) contains the file and, when metadata is provided, a JSON metadata part before it (here `{"packageName":"..."}`). |
 | Response | `200`, `text/plain`, the body is a unique id for the stored file (for example `a1b2c3`). |
 
 That single endpoint is enough to make uploads work. Set `chunkUploads: false` in the config and
@@ -29,17 +31,22 @@ confirmed by the server chunk by chunk and an interrupted upload can be resumed.
 
 | Step | Request | Details | Response |
 | --- | --- | --- | --- |
-| Start | `POST <url>` | `multipart/form-data` with only the metadata under `filepond` (no file). Header `Upload-Length: <file size in bytes>`. | `200`, `text/plain`, a transfer id. |
-| Each chunk | `PATCH <url>?patch=<id>` | Body is the raw bytes of the chunk. Headers `Content-Type: application/offset+octet-stream`, `Upload-Offset: <byte offset of this chunk>`, `Upload-Length: <file size>`, `Upload-Name: <file name>`. | `204` (any 2xx). |
-| Resume | `HEAD <url>?patch=<id>` | No body. | `200` with header `Upload-Offset: <next expected byte offset>`. |
+| Start | `POST <url>` | `multipart/form-data` with only the metadata (if any) under `fieldName` (no file). Header `Upload-Length: <file size in bytes>`. | `200`, `text/plain`, a transfer id. |
+| Each chunk | `PATCH <url>?patch=<id>` | Body is the raw bytes of the chunk. Headers `Content-Type: application/offset+octet-stream`, `Upload-Offset: <byte offset of this chunk>`, `Upload-Length: <file size>`, `Upload-Name: <percent-encoded file name>`. | `204` (any 2xx). |
+| Resume | `HEAD <url>?patch=<id>` | No body. Sent after a chunk failed, before it is retried. | `200` with header `Upload-Offset: <next expected byte offset>`. |
 
 The server tells the two `POST` variants apart by the `Upload-Length` header: present means "start
 a chunked transfer", absent means "here is the whole file". When the last chunk arrives the server
 assembles the file, and the transfer id is from then on the id of the file.
 
-`Upload-Name` is the raw file name, like FilePond sends it. If the name has characters that cannot
-go in a header (outside ISO-8859-1) it is percent-encoded instead, so decode it on the server if it
-contains `%`.
+`Upload-Name` is **always** percent-encoded with `encodeURIComponent`, so the server always decodes
+it with `decodeURIComponent` (`notes%20final.txt` -> `notes final.txt`). This differs from FilePond,
+which sends the raw name: a header can only hold ISO-8859-1, and deciding by "contains `%`" cannot
+tell an encoded name from a raw one such as `100%.txt`.
+
+A failed chunk is retried after each delay in `chunkRetryDelays` (default `[500, 1000, 3000]` ms,
+like FilePond). Before each retry the client sends `HEAD` and continues from the `Upload-Offset` the
+server answers with. The upload fails once the delays are used up.
 
 ### Optional: revert
 
@@ -54,10 +61,17 @@ Removes a file that was uploaded. The UI does not call it yet (`revertUploadedFi
 
 ### Changing the paths
 
-If your backend uses separate paths, set `processPath` (default `''`) and `patchPath` (default
-`'?patch='`) in the config. For example `url: '/api/files'`, `processPath: '/process'`,
+If your backend uses separate paths, set `processPath` (default `''`), `patchPath` (default
+`'?patch='`) and `revertPath` (default `''`) in the config. For example `url: '/api/files'`, `processPath: '/process'`,
 `patchPath: '/patch/'` gives `POST /api/files/process` and `PATCH /api/files/patch/<id>`.
 `headers` and `withCredentials` are there for auth.
+
+### Timeouts and parallel uploads
+
+`timeout` (default 60 seconds, `0` waits forever) fails a request that made no progress for that
+long: nothing was sent and no answer came. It restarts on every progress event, so a large file that
+is still moving is not cut off. `maxParallelUploads` (default 2) applies to each batch, so a batch
+started while another is running gets its own slots.
 
 ## 2. URLs FilePond itself defines
 
@@ -92,7 +106,7 @@ their final place. If the form is never submitted the server can clean the tempo
    (`file-upload.store.ts`) so they survive the dialog closing.
 2. **Upload is pressed.** `startUpload` turns the staged files into a batch of upload items
    (`queued`, 0%), empties the staging list and puts them in a queue. At most `maxParallelUploads`
-   run at once.
+   files of the batch run at once.
 3. **Each file is sent** by `file-upload.uploader.ts` with `XMLHttpRequest`, using the requests
    from section 1. Without chunking it is one `POST`, and progress comes from the browser's upload
    progress event (bytes handed to the network). With chunking it is one `POST` to get an id, then
@@ -158,11 +172,11 @@ failed chunk after the delays in `chunkRetryDelays`.
 | `FileUploadInProgressAlert` | Info alert for the uploading phase. Wording is in `file-upload.constants.ts`. |
 | `FileUploadStatusList`, `FileUploadStatusRow`, `FileUploadProgressBar` | Progress per file. Yellow below 70%, dark green from 70%. |
 | `FileUploadInProgressSection` | The uploads still running, for the top of an upload surface that is opened again. Reads the store, renders nothing when idle. |
-| `FileUploadRetryButton` | Sends the failed files again. Reads the store, renders nothing when no file failed. Remove the element to remove the feature. |
+| `FileUploadRetryButton` | Sends failed files in the current session again by default; pass `scope="all"` to retry failures from every batch. Reads the store and renders nothing when no failed file is in scope. Remove the element to remove the feature. |
 | `FileUploadCompletedMessage`, `FileUploadFailedMessage`, `FileUploadRejectedMessage` | Result and validation messages. |
-| `FileUploadStatusOverview`, `FileUploadClearFinishedButton`, `FileUploadActiveIndicator` | Store-connected pieces used in the notifications popover. |
+| `FileUploadStatusOverview`, `FileUploadClearFinishedButton`, `FileUploadActiveIndicator` | Store-connected pieces used in the notifications popover. Clear finished removes every batch with no file still running; if that includes the batch an open dialog follows, the dialog starts over. |
 | `FileUploadDocumentTitle` | Puts `45% (1/3)` in the browser tab while uploading. Mounted once in `BodyParent`. |
-| `useFileUpload` | Hook for an upload surface: phase, staged files, session uploads, `startUpload`, `endSession`. |
+| `useFileUpload` | Hook for an upload surface: phase, staged files, `sessionBatchId`, session uploads, `startUpload`, `endSession`. `sessionBatchId` is the batch the surface follows (null while staging); pass it to `<FileUploadInProgressSection excludeBatchId={ sessionBatchId }>` so the surface's own batch is not listed twice. |
 | `file-upload.store.ts`, `file-upload.uploader.ts` | Global upload state and the code that sends the requests. |
 
 To reuse the feature in another project, copy this folder. It depends on `filepond`,

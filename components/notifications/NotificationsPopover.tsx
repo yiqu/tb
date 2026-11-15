@@ -29,7 +29,7 @@ export default function NotificationsPopover({ children, indicator, title = 'Not
           { indicator }
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" sideOffset={ 16 } className={ cn('w-80 p-0', className) }>
+      <PopoverContent aria-label={ title } align="end" sideOffset={ 16 } className={ cn('w-80 p-0', className) }>
         <Typography variant="h6" as="h2" className="border-b px-4 py-3">
           { title }
         </Typography>

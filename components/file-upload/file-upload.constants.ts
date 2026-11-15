@@ -35,6 +35,12 @@ export const FILE_UPLOAD_DEFAULT_CHUNK_SIZE = 5_000_000;
 /** FilePond's default for `maxParallelUploads`. */
 export const FILE_UPLOAD_DEFAULT_MAX_PARALLEL_UPLOADS = 2;
 
+/** FilePond's default `chunkRetryDelays`: wait this long (ms) before each retry of a failed chunk. */
+export const FILE_UPLOAD_DEFAULT_CHUNK_RETRY_DELAYS: readonly number[] = [500, 1000, 3000];
+
+/** A request fails when it made no progress (nothing sent, no answer) for this long, in ms. */
+export const FILE_UPLOAD_DEFAULT_TIMEOUT_MS = 60_000;
+
 /** Lucide "trash-2" as an SVG string, sized for FilePond's 26x26 icon box (FilePond icons are raw SVG strings). */
 export const FILE_UPLOAD_REMOVE_ICON_SVG =
   '<svg width="26" height="26" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><g transform="translate(5 5) scale(0.6667)" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></g></svg>';
