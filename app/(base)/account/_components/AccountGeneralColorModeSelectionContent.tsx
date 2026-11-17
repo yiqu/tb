@@ -8,14 +8,12 @@ import { useTheme, UseThemeProps } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
-import useSyncMuiThemeWithNextThemes from '@/hooks/useSyncMuiTheme';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 export default function AccountGeneralColorModeSelectionContent() {
   const isClient = useClientOnly();
   const { setTheme, theme }: UseThemeProps = useTheme();
   const clickedRef = useRef<HTMLButtonElement | null>(null);
-  useSyncMuiThemeWithNextThemes();
 
   const selectedTheme = theme;
 

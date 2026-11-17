@@ -109,3 +109,10 @@ export const APP_TITLE_GRADIENT_COLORS = {
 
 export const CONSECUTIVE_ADD_HELPER_TEXT =
   'Add another bill due after this one. The due date will automatically move to the same day next month.';
+
+/**
+ * localStorage key for the light/dark/system choice. next-themes and MUI both read and write it,
+ * so MUI's color scheme always matches the app theme, including on the very first paint.
+ */
+export const APP_THEME_STORAGE_KEY = 'app-theme';
+export const APP_DEFAULT_THEME = 'light';
