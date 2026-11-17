@@ -82,6 +82,12 @@ export default function FileUploadDemoForm() {
     setDraftPackageName('');
   };
 
+  const handleOnNewUpload = () => {
+    // Upload cleared the draft but the field still shows the name, save it back so a reopen keeps it
+    setDraftPackageName(methods.getValues('packageName') ?? '');
+    endSession();
+  };
+
   return (
     <form onSubmit={ methods.handleSubmit(handleOnUpload) } noValidate>
       <ColumnStack className="w-full gap-y-4">
@@ -131,7 +137,7 @@ export default function FileUploadDemoForm() {
             <FileUploadFailedMessage />
             <RowStack className="items-center gap-x-2">
               { /* leaves the failed files in the notifications popover and brings the drop zone back */ }
-              <Button type="button" variant="ghost" size="sm" onClick={ endSession }>
+              <Button type="button" variant="ghost" size="sm" onClick={ handleOnNewUpload }>
                 New upload
               </Button>
               { /* optional: remove this element to take the retry feature out */ }
