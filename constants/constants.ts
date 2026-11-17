@@ -109,3 +109,6 @@ export const APP_TITLE_GRADIENT_COLORS = {
 
 export const CONSECUTIVE_ADD_HELPER_TEXT =
   'Add another bill due after this one. The due date will automatically move to the same day next month.';
+
+/** The years offered in the year dropdown on the yearly bills page. */
+export const YEARLY_BILLS_YEARS = [2024, 2025, 2026, 2027, 2028, 2029, 2030] as const;
