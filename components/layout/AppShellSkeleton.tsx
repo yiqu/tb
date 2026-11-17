@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
  */
 export default function AppShellSkeleton() {
   return (
-    <div className="flex min-h-svh w-full" aria-busy="true" aria-label="Loading">
+    <div className="flex min-h-svh w-full" role="status" aria-busy="true" aria-label="Loading">
       <aside
         className={ `
           hidden w-64 shrink-0 flex-col gap-y-3 border-r border-sidebar-border bg-sidebar p-2
