@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import Typography from '@/components/typography/Typography';
 
 import ErrorCard from '@/components/status-cards/ErrorCard';
 import { getSubscriptionByIdQueryOptions } from '@/server/subscriptions/query/subscription.query';
@@ -54,5 +55,12 @@ export default function AddNewBillDueDialog({ subscriptionId }: { subscriptionId
 }
 
 function Loading() {
-  return <Skeleton className="h-100 w-full" />;
+  return (
+    <div role="status">
+      <Skeleton className="h-100 w-full" />
+      <Typography variant="span1" className="sr-only">
+        Loading subscription details
+      </Typography>
+    </div>
+  );
 }
