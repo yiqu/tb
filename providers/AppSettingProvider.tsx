@@ -70,13 +70,21 @@ export function AppSettingProvider({ children, initialValues }: AppSettingProvid
   const setShowTableHorizontalBorders = useCallback((value: boolean) => {
     setShowTableHorizontalBordersState(value);
     setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.horizontal, value);
-    setSettingsTableHorizontalBorders(value);
+    setSettingsTableHorizontalBorders(value).catch(() => {
+      // the cookie was not saved: put the setting back so it matches what a reload would show
+      setShowTableHorizontalBordersState(!value);
+      setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.horizontal, !value);
+    });
   }, []);
 
   const setShowTableVerticalBorders = useCallback((value: boolean) => {
     setShowTableVerticalBordersState(value);
     setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.vertical, value);
-    setSettingsTableVerticalBorders(value);
+    setSettingsTableVerticalBorders(value).catch(() => {
+      // the cookie was not saved: put the setting back so it matches what a reload would show
+      setShowTableVerticalBordersState(!value);
+      setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.vertical, !value);
+    });
   }, []);
 
   return (

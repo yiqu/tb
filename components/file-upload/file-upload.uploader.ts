@@ -48,15 +48,18 @@ interface SendRequestOptions {
   body: XMLHttpRequestBodyInit;
   headers?: Record<string, string>;
   withCredentials?: boolean;
+  /** Fails the request after this many milliseconds. 0 or unset waits forever. */
+  timeoutMs?: number;
   /** Called with the bytes of the body that were sent so far. */
   onUploadProgress?: (loaded: number) => void;
 }
 
-function sendRequest({ method, url, body, headers, withCredentials, onUploadProgress }: SendRequestOptions): Promise<string> {
+function sendRequest({ method, url, body, headers, withCredentials, timeoutMs, onUploadProgress }: SendRequestOptions): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open(method, url, true);
     xhr.withCredentials = withCredentials ?? false;
+    xhr.timeout = timeoutMs ?? 0;
     Object.entries(headers ?? {}).forEach(([name, value]: [string, string]) => {
       xhr.setRequestHeader(name, value);
     });
@@ -120,6 +123,7 @@ async function uploadFileInOneRequest({ file, config, metadata, onProgress }: Up
     body: formData,
     headers: config.headers,
     withCredentials: config.withCredentials,
+    timeoutMs: config.timeoutMs,
     onUploadProgress: (loaded: number) => {
       // the body carries a little multipart overhead, so cap below 100 until the server has answered
       onProgress?.(file.size === 0 ? 99 : Math.min(99, (loaded / file.size) * 100));
@@ -141,6 +145,7 @@ async function uploadFileInChunks({ file, config, metadata, onProgress }: Upload
     body: formData,
     headers: { ...config.headers, 'Upload-Length': String(file.size) },
     withCredentials: config.withCredentials,
+    timeoutMs: config.timeoutMs,
   });
 
   // same slicing as FilePond: an empty file still sends one (empty) chunk
@@ -160,6 +165,7 @@ async function uploadFileInChunks({ file, config, metadata, onProgress }: Upload
         'Upload-Name': getUploadNameHeader(file.name),
       },
       withCredentials: config.withCredentials,
+      timeoutMs: config.timeoutMs,
     });
     // a chunk only counts once the server has confirmed it
     onProgress?.(file.size === 0 ? 100 : (Math.min(file.size, offset + chunk.size) / file.size) * 100);
@@ -182,5 +188,6 @@ export function revertUploadedFile(serverId: string, config: FileUploadServerCon
     body: serverId,
     headers: config.headers,
     withCredentials: config.withCredentials,
+    timeoutMs: config.timeoutMs,
   });
 }

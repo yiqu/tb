@@ -28,7 +28,7 @@ interface FileUploadState {
     endSession: () => void;
     /** Sends the failed files again, from the start. Pass a batch id to only retry the files of that batch. */
     retryFailedUploads: (batchId?: string) => void;
-    /** Removes the uploads that are completed or failed from the list. */
+    /** Removes the uploads that are completed or failed from the list. Ends the session too when none of its uploads are left. */
     clearFinishedUploads: () => void;
   };
 }

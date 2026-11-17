@@ -44,6 +44,8 @@ export interface FileUploadServerConfig {
   chunkSize?: number | ((file: File) => number);
   /** FilePond `maxParallelUploads`. Defaults to 2. */
   maxParallelUploads?: number;
+  /** FilePond `timeout`: milliseconds before a single request fails, so a stalled upload frees its slot. Defaults to no timeout. */
+  timeoutMs?: number;
 }
 
 /** One file that the user asked to upload. */

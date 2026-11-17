@@ -7,7 +7,10 @@ import { Button } from '@/components/ui/button';
 import RowStack from '@/shared/components/RowStack';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import StyledDialogContent from '@/shared/dialogs/StyledDialogContent';
-import { useFileUploadActions } from '@/components/file-upload/file-upload.store';
+import { FILE_UPLOAD_STATUS } from '@/components/file-upload/file-upload.constants';
+import { useFileUploadActions, useFileUploadStore } from '@/components/file-upload/file-upload.store';
+
+import type { FileUploadItem } from '@/components/file-upload/file-upload.models';
 
 import FileUploadDemoForm from './FileUploadDemoForm';
 
@@ -20,7 +23,14 @@ export default function FileUploadDemoDialog() {
     if (nextOpen) {
       // once Upload was pressed the dialog starts empty the next time, files that were only staged are kept.
       // Done on open and not on close, so the progress stays in place while the dialog fades out.
-      endSession();
+      // a session with failed files stays, so its Retry button is still there after reopening
+      const { uploads, sessionBatchId } = useFileUploadStore.getState();
+      const hasFailedSessionUploads: boolean = uploads.some(
+        (upload: FileUploadItem) => upload.batchId === sessionBatchId && upload.status === FILE_UPLOAD_STATUS.failed,
+      );
+      if (!hasFailedSessionUploads) {
+        endSession();
+      }
     }
     setOpen(nextOpen);
   };
