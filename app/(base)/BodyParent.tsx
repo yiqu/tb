@@ -35,6 +35,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import { TooltipProvider } from '@/components/ui/custom/tooltip';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
+import MuiThemeSync from '@/components/theme/MuiThemeSync';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { ScrollToTop } from '@/components/scroll-up/ScrollToTop';
 import VibeProviderWrapper from '@/providers/VibeProviderWrapper';
@@ -128,6 +129,8 @@ export default async function BodyParent({ children }: { children: React.ReactNo
                 <TanstackQueryClientProvider>
                   <ReactQueryDevtools initialIsOpen={ false } buttonPosition="bottom-right" />
                   <ThemeProvider attribute="class" defaultTheme={ APP_DEFAULT_THEME } enableSystem disableTransitionOnChange storageKey={ APP_THEME_STORAGE_KEY }>
+                    { /* Keeps MUI's color scheme in step with the app theme */ }
+                    <MuiThemeSync />
                     <AppSettingProvider initialValues={ { isCompactMode, isAdminMode, showTableHorizontalBorders, showTableVerticalBorders } }>
                       <TooltipProvider delayDuration={ 0 }>
                         <AppLayout>{ children }</AppLayout>
