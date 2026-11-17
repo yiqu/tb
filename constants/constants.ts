@@ -116,3 +116,6 @@ export const CONSECUTIVE_ADD_HELPER_TEXT =
  */
 export const APP_THEME_STORAGE_KEY = 'app-theme';
 export const APP_DEFAULT_THEME = 'light';
+
+/** The years offered in the year dropdown on the yearly bills page. */
+export const YEARLY_BILLS_YEARS = [2024, 2025, 2026, 2027, 2028, 2029, 2030] as const;
