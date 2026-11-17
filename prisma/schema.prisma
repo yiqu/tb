@@ -72,6 +72,9 @@ model BillDue {
   // bills tables sorted by date added / last updated
   @@index([dateAdded(sort: Desc), id])
   @@index([updatedAt(sort: Desc), id])
+  // bills tables sorted by paid / reimbursed
+  @@index([paid(sort: Desc), id])
+  @@index([reimbursed(sort: Desc), id])
 }
 
 model FavoriteEntity {
