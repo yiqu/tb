@@ -7,8 +7,8 @@
  * 1. **Server-side settings resolution** - Fetches user preferences (vibe theme, font,
  *    compact mode, admin mode, table borders) in parallel on the server before rendering.
  *
- * 2. **Theme flash prevention** - Injects preload hints and stylesheet links into `<head>`
- *    so the active vibe theme and custom font are applied before first paint.
+ * 2. **Rendered inside the root layout's Suspense boundary** - It reads cookies, so it streams
+ *    in after the static shell. Theme flash prevention lives in the root layout's boot scripts.
  *
  * 3. **Provider composition** - Nests all required context providers in the correct order:
  *    Vibe > MUI (AppRouterCache + ThemeProvider) > nuqs > TanStack Query > next-themes >
@@ -21,29 +21,23 @@
  */
 
 import FileUploadDocumentTitle from '@/components/file-upload/FileUploadDocumentTitle';
-import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-import { cn } from '@/lib/utils';
 import theme from '@/components/ui-mui/mui/theme';
 import Preloads from '@/components/preload/Preloads';
 import AppLayout from '@/components/layout/AppLayout';
 import { TooltipProvider } from '@/components/ui/custom/tooltip';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
-import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { ScrollToTop } from '@/components/scroll-up/ScrollToTop';
 import VibeProviderWrapper from '@/providers/VibeProviderWrapper';
 import { AppSettingProvider } from '@/providers/AppSettingProvider';
 import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider';
-import { getFontStylesheetHref, getVibeStylesheetHref } from '@/lib/vibes-css-map';
 import HistoryTrackerWrapper from '@/components/history-tracker/HistoryTrackerWrapper';
-import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server/settings/vibe-select';
-import { TABLE_BORDER_DATA_ATTRIBUTES } from '@/constants/constants';
 import {
   getSettingsApplicationAdminMode,
   getSettingsApplicationCompactMode,
@@ -64,7 +58,7 @@ import {
   3. MuiThemeProvider         – MUI theme + color mode
   4. NuqsAdapter             – URL query-string state management
   5. TanstackQueryClient      – server-state / data-fetching cache
-  6. ThemeProvider (next-themes) – light/dark mode via class attribute
+  6. ThemeProvider (next-themes) – moved to the root layout, outside the Suspense boundary
   7. AppSettingProvider        – app-level settings (compact, admin, table borders)
   8. TooltipProvider           – shared tooltip delay config
         
@@ -72,77 +66,45 @@ import {
  * @param children - Page content rendered by the Next.js App Router.
  */
 export default async function BodyParent({ children }: { children: React.ReactNode }) {
-  // Fetch all user settings concurrently to minimize server-side latency
-  const [vibe, fontOverride, isCompactMode, isAdminMode, showTableHorizontalBorders, showTableVerticalBorders] = await Promise.all([
-    getSettingsApplicationVibe(),
-    getSettingsApplicationFont(),
+  // Fetch the user settings the providers need concurrently to minimize server-side latency.
+  // The vibe, font and table border attributes are applied before first paint by the boot scripts in the root layout.
+  const [isCompactMode, isAdminMode, showTableHorizontalBorders, showTableVerticalBorders] = await Promise.all([
     getSettingsApplicationCompactMode(),
     getSettingsApplicationAdminMode(),
     getSettingsTableHorizontalBorders(),
     getSettingsTableVerticalBorders(),
   ]);
 
-  // Resolve stylesheet URLs for the active vibe theme and optional font override
-  const vibeHref = getVibeStylesheetHref(vibe);
-  const fontHref = getFontStylesheetHref(fontOverride);
-
   return (
     <>
-      { /* --- <head> injections for theme/font flash prevention --- */ }
-      <head>
-        { /* Preload and apply vibe CSS early to prevent theme flash on first paint */ }
-        <link rel="preload" href={ vibeHref } as="style" />
-        <link id="vibe-theme-stylesheet" rel="stylesheet" href={ vibeHref } />
+      <AppTopLoader />
+      { /* Resource preload hints (fonts, critical assets) */ }
+      <Preloads />
+      { /* Tracks route history for back-navigation awareness */ }
+      <HistoryTrackerWrapper />
+      { /* Shows the progress of running file uploads in the browser tab title */ }
+      <FileUploadDocumentTitle />
+      <VibeProviderWrapper>
+        <AppRouterCacheProvider options={ { enableCssLayer: true } }>
+          <MuiThemeProvider theme={ theme } defaultMode="system" modeStorageKey="mui-mode">
+            <NuqsAdapter>
+              <TanstackQueryClientProvider>
+                <ReactQueryDevtools initialIsOpen={ false } buttonPosition="bottom-right" />
+                { /* next-themes ThemeProvider lives in the root layout so dark mode also applies to the static shell */ }
+                <AppSettingProvider initialValues={ { isCompactMode, isAdminMode, showTableHorizontalBorders, showTableVerticalBorders } }>
+                  <TooltipProvider delayDuration={ 0 }>
+                    <AppLayout>{ children }</AppLayout>
+                    { /* Global toast notification container */ }
+                    <CustomToaster />
+                  </TooltipProvider>
+                </AppSettingProvider>
+              </TanstackQueryClientProvider>
+            </NuqsAdapter>
+          </MuiThemeProvider>
+        </AppRouterCacheProvider>
+      </VibeProviderWrapper>
 
-        { /* Preload and apply font CSS early to prevent font flash on first paint */ }
-        { fontOverride ?
-          <>
-            <link rel="preload" href={ fontHref } as="style" />
-            <link id="vibe-font-stylesheet" rel="stylesheet" href={ fontHref } />
-          </>
-        : null }
-      </head>
-
-      <body
-        id="base-root-layout"
-        className={ cn('font-sans antialiased') }
-        { ...{
-          [TABLE_BORDER_DATA_ATTRIBUTES.horizontal]: String(showTableHorizontalBorders),
-          [TABLE_BORDER_DATA_ATTRIBUTES.vertical]: String(showTableVerticalBorders),
-        } }
-      >
-        <AppTopLoader />
-        { /* MUI color scheme script — must execute before React hydration to avoid flash of unstyled content */ }
-        <InitColorSchemeScript defaultMode="system" attribute="data-mui-color-scheme" />
-        { /* Resource preload hints (fonts, critical assets) */ }
-        <Preloads />
-        { /* Tracks route history for back-navigation awareness */ }
-        <HistoryTrackerWrapper />
-        { /* Shows the progress of running file uploads in the browser tab title */ }
-        <FileUploadDocumentTitle />
-        <VibeProviderWrapper>
-          <AppRouterCacheProvider options={ { enableCssLayer: true } }>
-            <MuiThemeProvider theme={ theme } defaultMode="system" modeStorageKey="mui-mode">
-              <NuqsAdapter>
-                <TanstackQueryClientProvider>
-                  <ReactQueryDevtools initialIsOpen={ false } buttonPosition="bottom-right" />
-                  <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange storageKey="app-theme">
-                    <AppSettingProvider initialValues={ { isCompactMode, isAdminMode, showTableHorizontalBorders, showTableVerticalBorders } }>
-                      <TooltipProvider delayDuration={ 0 }>
-                        <AppLayout>{ children }</AppLayout>
-                        { /* Global toast notification container */ }
-                        <CustomToaster />
-                      </TooltipProvider>
-                    </AppSettingProvider>
-                  </ThemeProvider>
-                </TanstackQueryClientProvider>
-              </NuqsAdapter>
-            </MuiThemeProvider>
-          </AppRouterCacheProvider>
-        </VibeProviderWrapper>
-
-        <ScrollToTop onlyShowWhenScrolledUp={ false } />
-      </body>
+      <ScrollToTop onlyShowWhenScrolledUp={ false } />
     </>
   );
 }

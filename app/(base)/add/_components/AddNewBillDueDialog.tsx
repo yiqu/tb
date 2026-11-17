@@ -3,7 +3,6 @@
 import { Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-import { Skeleton } from '@/components/ui/skeleton';
 import ErrorCard from '@/components/status-cards/ErrorCard';
 import { getSubscriptionByIdQueryOptions } from '@/server/subscriptions/query/subscription.query';
 
@@ -18,8 +17,11 @@ export default function AddNewBillDueDialog({ subscriptionId }: { subscriptionId
     enabled: !!subscriptionId,
   });
 
+  // The dialog is closed until the user opens it, so there is nothing to show while the subscription loads.
+  // Rendering a skeleton here put a large placeholder under the page on the server render and caused a
+  // hydration mismatch when the client already had the subscription cached.
   if (isLoading) {
-    return <Skeleton className="h-100 w-full" />;
+    return null;
   }
 
   if (!data) {

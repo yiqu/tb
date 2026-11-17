@@ -1,22 +1,41 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 
 import { AppFont, AppVibe } from '@/models/settings/general-settings.models';
 import { getFontStylesheetHref, getVibeStylesheetHref } from '@/lib/vibes-css-map';
 
-const LINK_ID = 'vibe-theme-stylesheet';
-const FONT_LINK_ID = 'vibe-font-stylesheet';
+import { FONT_STYLESHEET_LINK_ID, VIBE_STYLESHEET_LINK_ID } from '@/lib/settings-boot-script';
+
+const LINK_ID = VIBE_STYLESHEET_LINK_ID;
+const FONT_LINK_ID = FONT_STYLESHEET_LINK_ID;
+
+function splitClassNames(className: string): string[] {
+  return className.split(' ').filter((name: string) => name.length > 0);
+}
 
 export default function VibeProvider({
   vibe = 'amethyst-haze',
   fontOverride,
+  htmlFontClassName,
   children,
 }: {
   vibe: AppVibe;
   fontOverride: AppFont | undefined;
+  htmlFontClassName: string;
   children: ReactNode;
 }) {
+  // The boot script in the root layout put these classes on <html> before the first paint.
+  // When the vibe or font changes later, swap the old classes for the new ones (next-themes also owns classes on <html>).
+  const appliedHtmlFontClassNameRef = useRef<string>(htmlFontClassName);
+
+  useEffect(() => {
+    const root: HTMLElement = document.documentElement;
+    splitClassNames(appliedHtmlFontClassNameRef.current).forEach((name: string) => root.classList.remove(name));
+    splitClassNames(htmlFontClassName).forEach((name: string) => root.classList.add(name));
+    appliedHtmlFontClassNameRef.current = htmlFontClassName;
+  }, [htmlFontClassName]);
+
   const cssHref = getVibeStylesheetHref(vibe);
   const fontOverrideCssHref = getFontStylesheetHref(fontOverride);
 

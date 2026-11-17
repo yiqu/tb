@@ -466,3 +466,15 @@ export function getFontVariableByFont(font: AppFont | undefined): string | undef
 
   return result;
 }
+
+/**
+ * The font CSS variable classes that belong on `<html>` for a vibe and an optional font override.
+ * A font override replaces the vibe's fonts (Cherry Bomb One stays available for the app title).
+ */
+export function getHtmlFontClassName(vibe: AppVibe, fontOverride: AppFont | undefined): string {
+  const fontOverrideClassName: string | undefined = getFontVariableByFont(fontOverride);
+  if (fontOverrideClassName) {
+    return `${fontOverrideClassName} ${cherryBombOne.variable}`;
+  }
+  return getFontVariableByVibe(vibe);
+}
