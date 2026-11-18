@@ -13,6 +13,7 @@ import {
   UserRoundPen,
   CalendarSync,
   CalendarArrowUp,
+  CalendarRange,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -59,6 +60,9 @@ export function BreadcrumbSegmentIcon({ path }: { path: string; params: Params; 
   }
   if (path === 'upcoming') {
     return <CalendarArrowUp size={ 14 } />;
+  }
+  if (path === 'yearly') {
+    return <CalendarRange size={ 14 } />;
   }
   return <Link size={ 14 } />;
 }
@@ -182,6 +186,18 @@ export function BreadcrumbSegmentTitle({ path, isLast, paths }: { path: string; 
         }) }
       >
         <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Upcoming Bills' } />
+      </Typography>
+    );
+  }
+
+  if (path === 'yearly') {
+    return (
+      <Typography
+        className={ cn({
+          'text-muted-foreground': isLast,
+        }) }
+      >
+        <BreadcrumbSegmentDisplay isLast={ isLast } path={ 'Yearly Bills' } />
       </Typography>
     );
   }
