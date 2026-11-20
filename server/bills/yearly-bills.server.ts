@@ -8,7 +8,7 @@ import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
 import prisma from '@/lib/prisma';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
-import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
+import { CACHE_TAG_YEARLY_BILLS, CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { YearlyBillsData, YearlyBillsMonth } from '@/models/bills/yearly-bills.model';
@@ -26,7 +26,7 @@ export const getYearlyDueBillsCached = cache(async (year: number, sortData: Sort
 export async function getYearlyDueBills(year: number, sortData: SortDataModel | null): Promise<YearlyBillsData> {
   'use cache';
   cacheLife('weeks');
-  cacheTag(CACHE_TAG_BILL_DUES_ALL);
+  cacheTag(CACHE_TAG_BILL_DUES_ALL, CACHE_TAG_YEARLY_BILLS);
 
   const startOfYear: DateTime = DateTime.fromObject({ year, month: 1, day: 1 }, { zone: EST_TIME_ZONE });
   const endOfYear: DateTime = startOfYear.endOf('year');

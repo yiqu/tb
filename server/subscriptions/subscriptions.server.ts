@@ -29,6 +29,7 @@ import {
 import {
   DEFAULT_PAGE_SIZE,
   CACHE_TAG_BILL_DUES_ALL,
+  CACHE_TAG_YEARLY_BILLS,
   CACHE_TAG_FAVORITES_ALL,
   CACHE_TAG_SUBSCRIPTIONS_ALL,
   CACHE_TAG_BILL_DUES_BY_YEAR,
@@ -45,6 +46,11 @@ import { transformSubscriptionExtraProps, attachSubscriptionToBillDues } from '.
 
 export async function revalidateBillDue() {
   updateTag(CACHE_TAG_BILL_DUES_ALL);
+}
+
+/** Only the yearly bills page, for changes no other bill list shows (a subscription's approved / signed flags). */
+export async function revalidateYearlyBills() {
+  updateTag(CACHE_TAG_YEARLY_BILLS);
 }
 
 export async function revalidateSubscriptions() {
@@ -542,7 +548,7 @@ export async function updateIsSubscriptionApproved(subscriptionId: string, isApp
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
     // the yearly bills page caches the subscription's approved and signed flags with its bills
-    revalidateBillDue();
+    revalidateYearlyBills();
 
     return subscription;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {
@@ -566,7 +572,7 @@ export async function updateIsSubscriptionSigned(subscriptionId: string, isSigne
     revalidateSubscriptionDetailsBillsDueGroupedByYear(subscriptionId);
     revalidateSubscriptionDetails(subscriptionId);
     // the yearly bills page caches the subscription's approved and signed flags with its bills
-    revalidateBillDue();
+    revalidateYearlyBills();
 
     return subscription;
   } catch (error: Prisma.PrismaClientKnownRequestError | any) {

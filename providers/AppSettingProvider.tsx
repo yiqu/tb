@@ -86,8 +86,8 @@ export function AppSettingProvider({ children, initialValues }: AppSettingProvid
 
   const setShowTableHorizontalBorders = useCallback((value: boolean) => {
     const requestId: number = ++horizontalBordersRequestIdRef.current;
+    // the effect above mirrors the new value onto <body>
     setShowTableHorizontalBordersState(value);
-    setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.horizontal, value);
     setSettingsTableHorizontalBorders(value)
       .then(() => {
         horizontalBordersSavedRef.current = value;
@@ -101,14 +101,13 @@ export function AppSettingProvider({ children, initialValues }: AppSettingProvid
         // the cookie was not saved: go back to the last saved value, which is what a reload would show
         const savedValue: boolean = horizontalBordersSavedRef.current;
         setShowTableHorizontalBordersState(savedValue);
-        setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.horizontal, savedValue);
       });
   }, []);
 
   const setShowTableVerticalBorders = useCallback((value: boolean) => {
     const requestId: number = ++verticalBordersRequestIdRef.current;
+    // the effect above mirrors the new value onto <body>
     setShowTableVerticalBordersState(value);
-    setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.vertical, value);
     setSettingsTableVerticalBorders(value)
       .then(() => {
         verticalBordersSavedRef.current = value;
@@ -122,7 +121,6 @@ export function AppSettingProvider({ children, initialValues }: AppSettingProvid
         // the cookie was not saved: go back to the last saved value, which is what a reload would show
         const savedValue: boolean = verticalBordersSavedRef.current;
         setShowTableVerticalBordersState(savedValue);
-        setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.vertical, savedValue);
       });
   }, []);
 
