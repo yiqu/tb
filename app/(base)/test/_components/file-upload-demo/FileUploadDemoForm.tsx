@@ -90,6 +90,8 @@ export default function FileUploadDemoForm() {
   };
 
   const handleOnNewUpload = () => {
+    // a new selection starts clean, the last selection's rejected names no longer apply
+    setRejectedFileNames([]);
     // Upload cleared the draft but the field still shows the name, save it back so a reopen keeps it
     setDraftPackageName(methods.getValues('packageName') ?? '');
     endSession();

@@ -67,7 +67,9 @@ function changeRunningCount(batchId: string, delta: number): void {
 }
 
 function hasFreeSlot(queued: QueuedUpload): boolean {
-  const maxParallelUploads: number = Math.max(1, queued.config.maxParallelUploads ?? FILE_UPLOAD_DEFAULT_MAX_PARALLEL_UPLOADS);
+  const configured: number = queued.config.maxParallelUploads ?? FILE_UPLOAD_DEFAULT_MAX_PARALLEL_UPLOADS;
+  // NaN or Infinity would make the comparison below always false and leave the batch queued forever
+  const maxParallelUploads: number = Number.isFinite(configured) ? Math.max(1, Math.floor(configured)) : FILE_UPLOAD_DEFAULT_MAX_PARALLEL_UPLOADS;
   return (runningCountByBatchId.get(queued.batchId) ?? 0) < maxParallelUploads;
 }
 

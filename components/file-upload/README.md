@@ -68,8 +68,9 @@ If your backend uses separate paths, set `processPath` (default `''`), `patchPat
 
 ### Timeouts and parallel uploads
 
-`timeout` (default 60 seconds, `0` waits forever) fails a request that made no progress for that
-long: nothing was sent and no answer came. It restarts on every progress event, so a large file that
+`timeout` (default 60 seconds, `0` waits forever) fails a request that made no upload progress and
+got no response for that long. That includes the wait after the body has finished sending, so a
+backend that takes longer than `timeout` to process a file before answering also fails the request. It restarts on every progress event, so a large file that
 is still moving is not cut off. `maxParallelUploads` (default 2) applies to each batch, so a batch
 started while another is running gets its own slots.
 

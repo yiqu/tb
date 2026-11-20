@@ -68,7 +68,8 @@ interface SendRequestResult {
 function sendRequest({ method, url, body, headers, withCredentials, timeout, onUploadProgress }: SendRequestOptions): Promise<SendRequestResult> {
   return new Promise<SendRequestResult>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    const timeoutMs: number = timeout ?? FILE_UPLOAD_DEFAULT_TIMEOUT_MS;
+    // only an explicit 0 turns the stall timer off, anything else invalid falls back to the default
+    const timeoutMs: number = timeout === undefined || !Number.isFinite(timeout) || timeout < 0 ? FILE_UPLOAD_DEFAULT_TIMEOUT_MS : timeout;
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     // `xhr.timeout` limits the whole request, which would also cut off a large file that is still
@@ -184,7 +185,9 @@ async function getServerOffset(config: FileUploadServerConfig, transferId: strin
     withCredentials: config.withCredentials,
     timeout: config.timeout,
   });
-  const offset: number = Number(response.getHeader('Upload-Offset'));
+  // Number(null) and Number('') are 0, which would silently restart the file from the beginning
+  const header: string = response.getHeader('Upload-Offset')?.trim() ?? '';
+  const offset: number = header === '' ? Number.NaN : Number(header);
   if (!Number.isSafeInteger(offset) || offset < 0) {
     throw new Error('The server answered without a valid Upload-Offset');
   }

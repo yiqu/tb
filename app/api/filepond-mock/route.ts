@@ -209,6 +209,10 @@ export async function POST(request: NextRequest) {
   if (!(file instanceof File)) {
     return textResponse(`No file was posted under the "${FIELD_NAME}" field`, 400);
   }
+  // the body limit above includes the multipart envelope, so check the file itself as the chunked path does
+  if (file.size > MAX_FILE_BYTES) {
+    return textResponse(`File is larger than ${MAX_FILE_BYTES} bytes`, 413);
+  }
   await sleep(getSlowUploadDurationMs());
   // nothing is stored and nothing follows a single-request upload, so it gets an id but no transfer record
   return textResponse(crypto.randomUUID(), 200);
