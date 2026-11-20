@@ -145,7 +145,7 @@ export function transformSubscriptionExtraPropsForFavorite(subscriptions: Subscr
 }
 
 /**
- * Counts the bills due on or before the end of today, in the EST time zone, that are not both paid
+ * Counts the bills due on or before the end of today, in the America/New_York time zone, that are not both paid
  * and reimbursed. Bills due later than today are not counted.
  */
 export function getOutstandingBillDuesThroughTodayCount(billDues: BillDueWithSubscription[]): number {
