@@ -24,7 +24,6 @@ export default function SubscriptionDetailsRunningTotalChart({ runningTotal }: {
   const todayMillis: number = DateTime.now().setZone(EST_TIME_ZONE).endOf('day').toMillis();
   const firstDueDate: number = runningTotal[0].dueDate;
   const lastDueDate: number = runningTotal[runningTotal.length - 1].dueDate;
-  const isTodayInRange: boolean = todayMillis > firstDueDate && todayMillis < lastDueDate;
   // a single bill has no width to draw a line across, so give the axis a month on either side
   const isSinglePoint: boolean = firstDueDate === lastDueDate;
   const domain: [number, number] =
@@ -34,6 +33,7 @@ export default function SubscriptionDetailsRunningTotalChart({ runningTotal }: {
         DateTime.fromMillis(firstDueDate, { zone: EST_TIME_ZONE }).plus({ months: 1 }).toMillis(),
       ]
     : [firstDueDate, lastDueDate];
+  const isTodayInRange: boolean = todayMillis > domain[0] && todayMillis < domain[1];
 
   return (
     <SubscriptionDetailsChartCard
@@ -100,7 +100,7 @@ export default function SubscriptionDetailsRunningTotalChart({ runningTotal }: {
               stroke={ CHART_COLOR_SPENT }
               strokeWidth={ 2 }
               strokeDasharray="5 4"
-              dot={ false }
+              dot={ runningTotal.length <= 24 ? { r: 3, fill: CHART_COLOR_SPENT, stroke: 'var(--card)', strokeWidth: 2 } : false }
               activeDot={ { r: 5, stroke: 'var(--card)', strokeWidth: 2 } }
               isAnimationActive={ false }
             />

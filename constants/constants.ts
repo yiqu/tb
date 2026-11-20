@@ -52,6 +52,8 @@ export const TANSTACK_MUTATION_KEY_SUBSCRIPTION_CREATE = 'subscription-create';
 export const CACHE_TAG_BILL_DUES_ALL = 'bill-dues-all';
 export const CACHE_TAG_BILL_DUES_BY_MONTH_AND_YEAR = 'bill-dues-by-month-and-year';
 export const CACHE_TAG_BILL_DUES_BY_YEAR = 'bill-dues-by-year';
+/** The yearly bills page, revalidated on its own when only a subscription's approved / signed flags change. */
+export const CACHE_TAG_YEARLY_BILLS = 'yearly-bills';
 export const CACHE_TAG_BILL_DUES_CURRENT_MONTH_COUNT = 'bill-dues-current-month-count';
 export const CACHE_TAG_BILL_DUES_CURRENT_MONTH = 'bill-dues-current-month';
 export const CACHE_TAG_USER_ACHIEVEMENTS = 'user-achievements';
@@ -109,3 +111,13 @@ export const APP_TITLE_GRADIENT_COLORS = {
 
 export const CONSECUTIVE_ADD_HELPER_TEXT =
   'Add another bill due after this one. The due date will automatically move to the same day next month.';
+
+/**
+ * localStorage key for the light/dark/system choice. next-themes and MUI both read and write it,
+ * so MUI's color scheme always matches the app theme, including on the very first paint.
+ */
+export const APP_THEME_STORAGE_KEY = 'app-theme';
+export const APP_DEFAULT_THEME = 'light';
+
+/** The years offered in the year dropdown on the yearly bills page. */
+export const YEARLY_BILLS_YEARS = [2024, 2025, 2026, 2027, 2028, 2029, 2030] as const;

@@ -32,6 +32,7 @@ export interface SubscriptionDetailsStatsRunningTotalNode {
   upcoming: number | null;
 }
 
+/** Each bill counts in exactly one bucket. `upcoming` here is a future bill that is not paid. */
 export interface SubscriptionDetailsStatsStatusBreakdown {
   completed: number;
   paidNotReimbursed: number;

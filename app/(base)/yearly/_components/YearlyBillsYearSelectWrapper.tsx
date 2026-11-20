@@ -1,6 +1,4 @@
-import { YearlyBillsYearOptions } from '@/models/bills/yearly-bills.model';
-import { getYearlyBillsYearOptionsCached } from '@/server/bills/yearly-bills.server';
-import { YEARLY_BILLS_MAX_YEAR, YEARLY_BILLS_MIN_YEAR } from '@/validators/bills/yearly-bills.schema';
+import { YEARLY_BILLS_YEARS } from '@/constants/constants';
 
 import { getYearlyBillsSelection } from './yearly-bills.utils';
 import YearlyBillsYearSelect from './YearlyBillsYearSelect';
@@ -11,14 +9,11 @@ interface YearlyBillsYearSelectWrapperProps {
 
 export default async function YearlyBillsYearSelectWrapper({ searchParamsPromise }: YearlyBillsYearSelectWrapperProps) {
   const searchParams = await searchParamsPromise;
-  const { selectedYear, currentYear } = await getYearlyBillsSelection(searchParams);
-  const { years }: YearlyBillsYearOptions = await getYearlyBillsYearOptionsCached();
+  const { selectedYear } = await getYearlyBillsSelection(searchParams);
 
-  // always offer the current year (the cached list may predate New Year) and a year typed into the URL,
-  // and only years the validator accepts, so a pick always loads that year
-  const options: number[] = [...new Set([...years, currentYear, selectedYear])]
-    .filter((year: number) => year >= YEARLY_BILLS_MIN_YEAR && year <= YEARLY_BILLS_MAX_YEAR)
-    .toSorted((a, b) => b - a);
+  // the URL year is the source of truth: when it is outside the constant list, it is shown in the
+  // dropdown for this page only, the constant itself does not change. Newest first
+  const options: number[] = [...new Set([...YEARLY_BILLS_YEARS, selectedYear])].toSorted((a, b) => b - a);
 
   return <YearlyBillsYearSelect years={ options } selectedYear={ selectedYear } />;
 }

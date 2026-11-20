@@ -1,6 +1,7 @@
 'use client';
 
-import { use, useState, useCallback, createContext } from 'react';
+import toast from 'react-hot-toast';
+import { use, useRef, useState, useEffect, useCallback, createContext } from 'react';
 
 import { TABLE_BORDER_DATA_ATTRIBUTES } from '@/constants/constants';
 import {
@@ -48,6 +49,22 @@ export function AppSettingProvider({ children, initialValues }: AppSettingProvid
   const [isAdminMode, setIsAdminMode] = useState(initialValues.isAdminMode);
   const [showTableHorizontalBorders, setShowTableHorizontalBordersState] = useState(initialValues.showTableHorizontalBorders);
   const [showTableVerticalBorders, setShowTableVerticalBordersState] = useState(initialValues.showTableVerticalBorders);
+  // counts the border saves, so a failed save only rolls back when no newer toggle came after it
+  const horizontalBordersRequestIdRef = useRef<number>(0);
+  const verticalBordersRequestIdRef = useRef<number>(0);
+  // the last value the server saved in the cookie
+  const horizontalBordersSavedRef = useRef<boolean>(initialValues.showTableHorizontalBorders);
+  const verticalBordersSavedRef = useRef<boolean>(initialValues.showTableVerticalBorders);
+
+  // Keep the <body> attributes in step with the settings. The boot script sets them from the cookies before paint,
+  // but the static <body> markup in the root layout can reset them (for example when React remounts the document in development).
+  useEffect(() => {
+    setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.horizontal, showTableHorizontalBorders);
+  }, [showTableHorizontalBorders]);
+
+  useEffect(() => {
+    setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.vertical, showTableVerticalBorders);
+  }, [showTableVerticalBorders]);
 
   const setCompactMode = useCallback((value: boolean) => {
     setIsCompactMode(value);
@@ -68,15 +85,43 @@ export function AppSettingProvider({ children, initialValues }: AppSettingProvid
   }, [isAdminMode, setAdminMode]);
 
   const setShowTableHorizontalBorders = useCallback((value: boolean) => {
+    const requestId: number = ++horizontalBordersRequestIdRef.current;
+    // the effect above mirrors the new value onto <body>
     setShowTableHorizontalBordersState(value);
-    setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.horizontal, value);
-    setSettingsTableHorizontalBorders(value);
+    setSettingsTableHorizontalBorders(value)
+      .then(() => {
+        horizontalBordersSavedRef.current = value;
+      })
+      .catch(() => {
+        toast.error('Could not save the table border setting.');
+        // a newer toggle owns the setting now, rolling back would undo it
+        if (requestId !== horizontalBordersRequestIdRef.current) {
+          return;
+        }
+        // the cookie was not saved: go back to the last saved value, which is what a reload would show
+        const savedValue: boolean = horizontalBordersSavedRef.current;
+        setShowTableHorizontalBordersState(savedValue);
+      });
   }, []);
 
   const setShowTableVerticalBorders = useCallback((value: boolean) => {
+    const requestId: number = ++verticalBordersRequestIdRef.current;
+    // the effect above mirrors the new value onto <body>
     setShowTableVerticalBordersState(value);
-    setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.vertical, value);
-    setSettingsTableVerticalBorders(value);
+    setSettingsTableVerticalBorders(value)
+      .then(() => {
+        verticalBordersSavedRef.current = value;
+      })
+      .catch(() => {
+        toast.error('Could not save the table border setting.');
+        // a newer toggle owns the setting now, rolling back would undo it
+        if (requestId !== verticalBordersRequestIdRef.current) {
+          return;
+        }
+        // the cookie was not saved: go back to the last saved value, which is what a reload would show
+        const savedValue: boolean = verticalBordersSavedRef.current;
+        setShowTableVerticalBordersState(savedValue);
+      });
   }, []);
 
   return (

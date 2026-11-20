@@ -21,8 +21,3 @@ export interface YearlyBillsData {
   subscriptionsCount: number;
   sortData: SortDataModel | null;
 }
-
-export interface YearlyBillsYearOptions {
-  years: number[];
-  currentYear: number;
-}

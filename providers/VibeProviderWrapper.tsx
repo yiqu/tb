@@ -2,13 +2,15 @@ import { ReactNode } from 'react';
 
 import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server/settings/vibe-select';
 
+import { getHtmlFontClassName } from '@/lib/vibes-css-map';
+
 import VibeProvider from './VibeProvider';
 
 export default async function VibeProviderWrapper({ children }: { children: ReactNode }) {
   const [vibe, fontOverride] = await Promise.all([getSettingsApplicationVibe(), getSettingsApplicationFont()]);
 
   return (
-    <VibeProvider vibe={ vibe } fontOverride={ fontOverride }>
+    <VibeProvider vibe={ vibe } fontOverride={ fontOverride } htmlFontClassName={ getHtmlFontClassName(vibe, fontOverride) }>
       { children }
     </VibeProvider>
   );

@@ -8,17 +8,12 @@ import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
 import prisma from '@/lib/prisma';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
-import { CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
+import { CACHE_TAG_YEARLY_BILLS, CACHE_TAG_BILL_DUES_ALL } from '@/constants/constants';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
-import { YearlyBillsData, YearlyBillsMonth, YearlyBillsYearOptions } from '@/models/bills/yearly-bills.model';
+import { YearlyBillsData, YearlyBillsMonth } from '@/models/bills/yearly-bills.model';
 
 import { getSortedBillDues } from './bills.server.utils';
-
-export const getYearlyBillsYearOptionsCached = cache(async () => {
-  const res = await getYearlyBillsYearOptions();
-  return res;
-});
 
 export const getYearlyDueBillsCached = cache(async (year: number, sortData: SortDataModel | null) => {
   const res = await getYearlyDueBills(year, sortData);
@@ -26,49 +21,12 @@ export const getYearlyDueBillsCached = cache(async (year: number, sortData: Sort
 });
 
 /**
- * Years that have bills, from the earliest to the latest due date, always including the current year.
- * Only reads the first and last due dates instead of every bill.
- */
-export async function getYearlyBillsYearOptions(): Promise<YearlyBillsYearOptions> {
-  'use cache';
-  cacheLife('weeks');
-  cacheTag(CACHE_TAG_BILL_DUES_ALL);
-
-  const currentYear: number = DateTime.now().setZone(EST_TIME_ZONE).year;
-
-  try {
-    const [first, last] = await Promise.all([
-      prisma.billDue.findFirst({ select: { dueDate: true }, orderBy: { dueDate: 'asc' } }),
-      prisma.billDue.findFirst({ select: { dueDate: true }, orderBy: { dueDate: 'desc' } }),
-    ]);
-
-    const toYear = (dueDate: string | undefined): number | null => {
-      const epoch: number = Number.parseInt(dueDate ?? '');
-      return Number.isFinite(epoch) ? DateTime.fromMillis(epoch, { zone: EST_TIME_ZONE }).year : null;
-    };
-
-    const startYear: number = Math.min(toYear(first?.dueDate) ?? currentYear, currentYear);
-    const endYear: number = Math.max(toYear(last?.dueDate) ?? currentYear, currentYear);
-
-    const years: number[] = [];
-    for (let year = endYear; year >= startYear; year--) {
-      years.push(year);
-    }
-
-    return { years, currentYear };
-  } catch (error: unknown) {
-    console.error('Server error at getYearlyBillsYearOptions(): ', error);
-    throw new Error('Error retrieving years for yearly bills.');
-  }
-}
-
-/**
  * All bills due in a year (EST), grouped by month, with per-month and running totals.
  */
 export async function getYearlyDueBills(year: number, sortData: SortDataModel | null): Promise<YearlyBillsData> {
   'use cache';
   cacheLife('weeks');
-  cacheTag(CACHE_TAG_BILL_DUES_ALL);
+  cacheTag(CACHE_TAG_BILL_DUES_ALL, CACHE_TAG_YEARLY_BILLS);
 
   const startOfYear: DateTime = DateTime.fromObject({ year, month: 1, day: 1 }, { zone: EST_TIME_ZONE });
   const endOfYear: DateTime = startOfYear.endOf('year');

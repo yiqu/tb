@@ -25,7 +25,7 @@ export default function SubscriptionDetailsChartCard({ title, description, legen
         <ColumnStack className="h-full gap-y-3">
           <div className="flex flex-row flex-wrap items-start justify-between gap-x-4 gap-y-1">
             <ColumnStack>
-              <Typography variant="h6">{ title }</Typography>
+              <Typography variant="h6" as="h3">{ title }</Typography>
               <Typography variant="caption1">{ description }</Typography>
             </ColumnStack>
             { legend }

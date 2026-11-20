@@ -3,14 +3,19 @@ import { useColorScheme } from '@mui/material/styles';
 import { useEffect } from 'react';
 import { useTheme, UseThemeProps } from 'next-themes';
 
+/**
+ * Keeps MUI's color scheme mode in sync with next-themes.
+ *
+ * Uses the chosen theme (light, dark or system), not the resolved one. MUI and next-themes share
+ * the same storage key, so writing the resolved value would overwrite a "system" choice.
+ */
 export default function useSyncMuiThemeWithNextThemes() {
-  const { resolvedTheme }: UseThemeProps = useTheme();
-  const { setMode } = useColorScheme();
+  const { theme }: UseThemeProps = useTheme();
+  const { mode, setMode } = useColorScheme();
 
-  // Keep MUI color scheme in sync with next-themes resolved value
   useEffect(() => {
-    if (resolvedTheme === 'light' || resolvedTheme === 'dark') {
-      setMode(resolvedTheme);
+    if ((theme === 'light' || theme === 'dark' || theme === 'system') && theme !== mode) {
+      setMode(theme);
     }
-  }, [resolvedTheme, setMode]);
+  }, [theme, mode, setMode]);
 }

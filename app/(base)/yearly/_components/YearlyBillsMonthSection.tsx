@@ -53,7 +53,7 @@ export default function YearlyBillsMonthSection({ year, month, sortData, isCurre
           </RowStack>
           <RowStack className="flex-wrap items-stretch gap-3">
             <YearlyBillsMonthStat label="Total due" value={ usdFormatter.format(month.totalDue) } />
-            <YearlyBillsMonthStat label="Total due to date" value={ usdFormatter.format(month.totalDueToDate) } />
+            <YearlyBillsMonthStat label="Cumulative" value={ usdFormatter.format(month.totalDueToDate) } />
             <YearlyBillsMonthStat
               label="Bills due"
               value={ `${month.billsCount} ${month.billsCount === 1 ? 'bill' : 'bills'}` }
