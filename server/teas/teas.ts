@@ -21,8 +21,6 @@ export async function getTeas(): Promise<Tea[]> {
   cacheTag('tea-list');
   cacheLife('hours');
 
-  // sleep for 2 seconds
-
   const res = await teasAxiosInstance.get<Record<string, Tea>>('/selections/teas.json');
   const teasList: Tea[] = Object.values(res.data);
   return teasList;
