@@ -2,8 +2,34 @@ import { DateTime } from 'luxon';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
 import { EST_TIME_ZONE } from '@/lib/general.utils';
-import { BillDueWithSubscription } from '@/models/bills/bills.model';
-import { SubscriptionFrequency, SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
+import { FavoriteEntity } from '@/models/favorites/favorite.model';
+import { BillDue, BillDueWithSubscription } from '@/models/bills/bills.model';
+import { SubscriptionOriginal, SubscriptionFrequency, SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
+
+interface SubscriptionWithPlainBillDues extends SubscriptionOriginal {
+  billDues?: BillDue[];
+  favorites?: FavoriteEntity[];
+}
+
+/**
+ * Every bill due carries its parent subscription. Asking Prisma for it (`billDues: { include: { subscription: true } }`)
+ * costs an extra database query that only re-reads the subscription we already have, so it is attached here instead.
+ *
+ * @param subscription the subscription, optionally with its bill dues
+ * @param billDues the bill dues to use when they were loaded separately
+ */
+export function attachSubscriptionToBillDues(subscription: SubscriptionWithPlainBillDues, billDues?: BillDue[]): SubscriptionWithBillDues {
+  // the subscription on each bill due is the plain document, without its relations
+  const { billDues: ownBillDues, favorites: _favorites, ...subscriptionOnly } = subscription;
+
+  return {
+    ...subscription,
+    billDues: (billDues ?? ownBillDues ?? []).map((billDue: BillDue) => ({
+      ...billDue,
+      subscription: subscriptionOnly,
+    })),
+  };
+}
 
 export function transformSubscriptionExtraProps(subscriptions: SubscriptionWithBillDues[], startDateEpoch: number, endDateEpoch: number) {
   const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = subscriptions.map((subscription: SubscriptionWithBillDues) => {

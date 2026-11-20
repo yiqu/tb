@@ -12,7 +12,7 @@ import { Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
-import { BillDueWithSubscription, BillDueWithSubscriptionOnly } from '@/models/bills/bills.model';
+import { BillDueWithSubscriptionOnly } from '@/models/bills/bills.model';
 import {
   FavoriteEntity,
   FavoriteActionType,
@@ -26,7 +26,7 @@ import {
   CACHE_TAG_SUBSCRIPTIONS_ALL,
 } from '@/constants/constants';
 
-import { transformSubscriptionExtraProps, transformSubscriptionExtraPropsForFavorite } from '../subscriptions/utils';
+import { transformSubscriptionExtraProps, attachSubscriptionToBillDues, transformSubscriptionExtraPropsForFavorite } from '../subscriptions/utils';
 
 export async function revalidateIsFavoriteByEntityTypeAndId(entityType: FavoriteEntityEntityTypeType, id: string) {
   updateTag(`${CACHE_TAG_FAVORITES_PREFIX}${entityType}-${id}`);
@@ -277,19 +277,18 @@ export async function getEntityByFavoriteTypeId(
 ): Promise<SubscriptionWithBillDues | BillDueWithSubscriptionOnly | null> {
   try {
     if (entity.entityType === 'SUBSCRIPTION' && entity.subscriptionId) {
-      const subscription: SubscriptionWithBillDues | null = await prisma.subscription.findUnique({
+      // the database returns the bills oldest first (indexed), so no extra sorting is needed afterwards
+      const subscriptionWithBills = await prisma.subscription.findUnique({
         where: { id: entity.subscriptionId },
         include: {
           billDues: {
-            include: {
-              subscription: true,
-            },
             orderBy: {
-              dueDate: 'desc',
+              dueDate: 'asc',
             },
           },
         },
       });
+      const subscription: SubscriptionWithBillDues | null = subscriptionWithBills ? attachSubscriptionToBillDues(subscriptionWithBills) : null;
 
       const currentYearDateTime: DateTime = DateTime.now().setZone(EST_TIME_ZONE);
       const currentYear: number = currentYearDateTime.year;
@@ -310,16 +309,6 @@ export async function getEntityByFavoriteTypeId(
       const currentYearEndLuxon = currentYearStartLuxon.endOf('year');
       const startDateEpoch = currentYearStartLuxon.toMillis();
       const endDateEpoch = currentYearEndLuxon.toMillis();
-
-      const sortedSubscriptionBillDues: BillDueWithSubscription[] = (subscription?.billDues ?? []).toSorted(
-        (a: BillDueWithSubscription, b: BillDueWithSubscription) => {
-          return (a.dueDate ?? 0) > (b.dueDate ?? 0) ? 1 : -1;
-        },
-      );
-
-      if (subscription) {
-        subscription.billDues = sortedSubscriptionBillDues;
-      }
 
       const subscriptionsToReturnWithDateInEST: SubscriptionWithBillDues[] = transformSubscriptionExtraProps(
         subscription ? [subscription] : [],

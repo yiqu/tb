@@ -39,6 +39,22 @@ npx prisma generate
 npx prisma db push
 ```
 
+Optional: fill a **local** MongoDB with fake test data (subscriptions, bills, favorites, history, sort / pagination rows, a user).
+The script wipes the database first, so it refuses to run unless `DATABASE_URL` points at localhost.
+
+```bash
+# local MongoDB as a single node replica set (Prisma needs one)
+docker run -d --name tb-mongo -p 127.0.0.1:27017:27017 mongo:7 --replSet rs0
+docker exec tb-mongo mongosh --quiet --eval 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
+
+# .env
+# DATABASE_URL="mongodb://localhost:27017/tb?replicaSet=rs0&directConnection=true"
+
+npx prisma db push
+npm run seed                 # ~30 subscriptions, ~600 bills (needs Node 22.6 or newer)
+npm run seed -- --scale=40   # 40x the volume, for checking query speed and indexes
+```
+
 4) Start the dev server
 
 ```bash

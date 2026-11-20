@@ -1,5 +1,8 @@
 import { DateTime } from 'luxon';
+import type { Prisma } from '@prisma/client';
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 
+import { isNumeric } from '@/lib/number.utils';
 import { EST_TIME_ZONE } from '@/lib/general.utils';
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { BillDueWithSubscription } from '@/models/bills/bills.model';
@@ -268,4 +271,204 @@ export function getSortedBillDues(billDues: BillDueWithSubscription[], sortData:
   });
 
   return result;
+}
+
+/**
+ * Due dates are stored as epoch-millisecond strings (e.g. '1716267600000').
+ * MongoDB compares strings lexicographically, which matches numeric order only while both sides have the same
+ * number of digits. Every epoch between 2001-09-09 and 2286-11-20 has exactly 13 digits, so range bounds in that
+ * window can be pushed down to the database (and use the dueDate indexes).
+ */
+const MIN_13_DIGIT_EPOCH = 1_000_000_000_000;
+const MAX_13_DIGIT_EPOCH = 9_999_999_999_999;
+
+function isDbComparableEpoch(epoch: number): boolean {
+  return Number.isInteger(epoch) && epoch >= MIN_13_DIGIT_EPOCH && epoch <= MAX_13_DIGIT_EPOCH;
+}
+
+/**
+ * Build a Prisma `dueDate` filter for an inclusive epoch range. Pass `null` for an open-ended bound.
+ * Returns `null` when a bound can not be compared safely as a string - the caller must filter in memory then.
+ */
+export function getDueDateRangeWhere(startEpoch: number | null, endEpoch: number | null): Prisma.BillDueWhereInput | null {
+  if ((startEpoch !== null && !isDbComparableEpoch(startEpoch)) || (endEpoch !== null && !isDbComparableEpoch(endEpoch))) {
+    return null;
+  }
+
+  const dueDate: Prisma.StringFilter<'BillDue'> = {};
+  if (startEpoch !== null) {
+    dueDate.gte = startEpoch.toString();
+  }
+  if (endEpoch !== null) {
+    dueDate.lte = endEpoch.toString();
+  }
+
+  return { dueDate };
+}
+
+export interface BillDueDateFilter {
+  // epochs returned to the UI (0 means "open ended", same as before)
+  startDateEpoch: number;
+  endDateEpoch: number;
+  // database filter for the due date. null = no database filter could be built
+  where: Prisma.BillDueWhereInput | null;
+  // true when the database filter alone returns exactly the wanted bills
+  isExactInDb: boolean;
+  // in memory version of the filter - always exact
+  filterInMemory: (billDues: BillDueWithSubscription[]) => [BillDueWithSubscription[], number, number];
+}
+
+const MATCH_NOTHING_WHERE: Prisma.BillDueWhereInput = { id: { in: [] } };
+
+function createBillDueDateFilter(
+  filterInMemory: BillDueDateFilter['filterInMemory'],
+  bounds: { start: number | null; end: number | null } | 'match-nothing',
+  hasExtraInMemoryCondition: boolean = false,
+): BillDueDateFilter {
+  // run the in memory filter on an empty list just to read the epochs it reports
+  const [, startDateEpoch, endDateEpoch] = filterInMemory([]);
+
+  if (bounds === 'match-nothing') {
+    return { startDateEpoch, endDateEpoch, where: MATCH_NOTHING_WHERE, isExactInDb: true, filterInMemory };
+  }
+
+  const where: Prisma.BillDueWhereInput | null = getDueDateRangeWhere(bounds.start, bounds.end);
+
+  return {
+    startDateEpoch,
+    endDateEpoch,
+    where,
+    isExactInDb: where !== null && !hasExtraInMemoryCondition,
+    filterInMemory,
+  };
+}
+
+export function getBillDueDateFilterByMonth(monthParams: string, yearParams: string): BillDueDateFilter {
+  const [, start, end] = getFilteredBillDuesByMonth([], monthParams, yearParams);
+  return createBillDueDateFilter((billDues) => getFilteredBillDuesByMonth(billDues, monthParams, yearParams), { start, end });
+}
+
+export function getBillDueDateFilterByYear(yearParams: string): BillDueDateFilter {
+  const [, start, end] = getFilteredBillDuesByYear([], yearParams);
+  return createBillDueDateFilter((billDues) => getFilteredBillDuesByYear(billDues, yearParams), { start, end });
+}
+
+/**
+ * Translates the year / month search params into a due date filter.
+ * Mirrors the branching the bills table always had, but lets the database do the filtering when possible.
+ * Returns null when there is no due date filter to apply.
+ */
+export function getBillDueDateFilterFromParams(yearParams: string | undefined, monthParams: string | undefined): BillDueDateFilter | null {
+  const doesMonthExist: boolean = !!(monthParams && monthParams.trim() !== '');
+  const doesYearExist: boolean = !!(yearParams && yearParams.trim() !== '');
+
+  if (!doesMonthExist && !doesYearExist) {
+    return null;
+  }
+
+  const isYearInt: boolean = isNumeric(yearParams);
+
+  // both month and year are numbers
+  if (isYearInt && doesMonthExist && doesYearExist && monthParams && yearParams) {
+    return getBillDueDateFilterByMonth(monthParams, yearParams);
+  }
+
+  // only year is a number
+  if (isYearInt && doesYearExist && yearParams) {
+    return getBillDueDateFilterByYear(yearParams);
+  }
+
+  // only month is selected, auto default year to current year
+  if (!doesYearExist && doesMonthExist && monthParams) {
+    const currentYear: string = DateTime.now().setZone(EST_TIME_ZONE).year.toString();
+    return getBillDueDateFilterByMonth(monthParams, currentYear);
+  }
+
+  // if the year is special scenario
+  if (doesYearExist && !isYearInt && !doesMonthExist) {
+    return getBillDueDateFilterBySpecialYear(yearParams ?? '');
+  }
+
+  // if the year is special and month is selected
+  if (doesYearExist && !isYearInt && doesMonthExist) {
+    const year: string = yearParams ?? '';
+    const month: string = monthParams ?? '';
+    const filterInMemory: BillDueDateFilter['filterInMemory'] = (billDues) => getFilteredBillDuesBySpecialYearAndMonth(billDues, year, month);
+    const [, start, end] = filterInMemory([]);
+
+    // the "is in the selected month, for any year" part can only be checked in memory,
+    // the database still narrows the bills down to the future / past part
+    if (year.includes('future') && (year.includes('include-today') || year.includes('include-current-year'))) {
+      return createBillDueDateFilter(filterInMemory, { start, end: null }, true);
+    }
+    if (year.includes('past') && (year.includes('include-today') || year.includes('include-current-year'))) {
+      return createBillDueDateFilter(filterInMemory, { start: null, end }, true);
+    }
+    return createBillDueDateFilter(filterInMemory, 'match-nothing');
+  }
+
+  return null;
+}
+
+export function getBillDueDateFilterBySpecialYear(yearParams: string): BillDueDateFilter {
+  const filterInMemory: BillDueDateFilter['filterInMemory'] = (billDues) => getFilteredBillDuesBySpecialYear(billDues, yearParams);
+  const [, start, end] = filterInMemory([]);
+
+  if (yearParams === 'future-include-today' || yearParams === 'future-include-current-year') {
+    return createBillDueDateFilter(filterInMemory, { start, end: null });
+  }
+  if (yearParams === 'past-include-today' || yearParams === 'past-include-current-year') {
+    return createBillDueDateFilter(filterInMemory, { start: null, end });
+  }
+
+  return createBillDueDateFilter(filterInMemory, 'match-nothing');
+}
+
+const DB_SORTABLE_BILL_DUE_FIELDS = ['dueDate', 'dateAdded', 'updatedAt', 'paid', 'reimbursed'] as const;
+
+/**
+ * Sort fields that live on the bill due document itself can be sorted (and paginated) by the database.
+ * Fields that depend on the subscription (name, frequency, cost fallback) still need the in memory sort.
+ * Returns null when the sort has to happen in memory.
+ */
+export function getBillDueDbOrderBy(sortData: SortDataModel | null): Prisma.BillDueOrderByWithRelationInput[] | null {
+  if (!sortData?.sortField) {
+    return [{ id: 'asc' }];
+  }
+
+  const { sortDirection } = sortData;
+  const sortField = DB_SORTABLE_BILL_DUE_FIELDS.find((field) => field === sortData.sortField);
+
+  if (!sortField || (sortDirection !== 'asc' && sortDirection !== 'desc')) {
+    return null;
+  }
+
+  // id as the tie breaker keeps pagination stable.
+  // Its direction is the opposite of the sort field so both directions can walk the [field desc, id asc] indexes
+  return [{ [sortField]: sortDirection }, { id: sortDirection === 'desc' ? 'asc' : 'desc' }];
+}
+
+/**
+ * Adds the display friendly date strings (EST) to a bill due.
+ */
+export function getBillDueWithDatesInEst<T extends BillDueWithSubscription>(billDue: T): T {
+  const dueDateInEst: string = DateTime.fromMillis(Number.parseInt(billDue.dueDate), {
+    zone: EST_TIME_ZONE,
+  }).toLocaleString(DateTime.DATETIME_SHORT);
+
+  const dateAddedLuxon: DateTime = DateTime.fromJSDate(new Date(`${billDue.dateAdded}`)).setZone(EST_TIME_ZONE);
+  const updatedAtLuxon: DateTime = DateTime.fromJSDate(new Date(`${billDue.updatedAt}`)).setZone(EST_TIME_ZONE);
+
+  return {
+    ...billDue,
+    dueDateInEst: dueDateInEst,
+    dateAddedInEst: dateAddedLuxon.toLocaleString(DateTime.DATETIME_SHORT),
+    dateAddedInEstRelative: formatDistanceToNow(dateAddedLuxon.toJSDate(), { addSuffix: true }),
+    updatedAtInEst: updatedAtLuxon.toLocaleString(DateTime.DATETIME_SHORT),
+    updatedAtInEstRelative: formatDistanceToNow(updatedAtLuxon.toJSDate(), { addSuffix: true }),
+  };
+}
+
+export function getBillDuesTotalCost(billDues: BillDueWithSubscription[]): number {
+  return billDues.reduce((acc, billDue) => acc + Number.parseFloat(`${billDue.cost ?? billDue.subscription.cost ?? 0}`), 0);
 }

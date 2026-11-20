@@ -63,7 +63,15 @@ model BillDue {
 
   @@index([subscriptionId, paid, dueDate(sort: Asc)])
   @@index([paid, dueDate(sort: Asc)])
-  @@index([dueDate(sort: Desc)])
+  // due date range filters, and the bills tables sorted by due date. The id keeps the paging order stable
+  @@index([dueDate(sort: Desc), id])
+  // bills of one subscription, sorted by due date (subscription details, favorites)
+  @@index([subscriptionId, dueDate(sort: Desc)])
+  // outstanding bills: "not paid OR not reimbursed" within a due date range. Pairs with [paid, dueDate]
+  @@index([reimbursed, dueDate(sort: Asc)])
+  // bills tables sorted by date added / last updated
+  @@index([dateAdded(sort: Desc), id])
+  @@index([updatedAt(sort: Desc), id])
 }
 
 model FavoriteEntity {
@@ -82,6 +90,8 @@ model FavoriteEntity {
   @@index([subscriptionId])
   @@index([entityType])
   @@index([dateAdded(sort: Desc)])
+  // "is this search url a favorite" lookup
+  @@index([url])
 }
 
 model HistoryEntity {
@@ -90,6 +100,9 @@ model HistoryEntity {
   url       String
   dateAdded DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+
+  // history list is always read newest first
+  @@index([dateAdded(sort: Desc)])
 }
 
 model SortData {
