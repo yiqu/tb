@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSep
 import { Skeleton } from '../ui/skeleton';
 import Typography from '../typography/Typography';
 import ThemeAndMoreCompactToggleParent from './ThemeAndMoreCompactToggleParent';
+import ThemeAndMoreTableBorderToggle from './ThemeAndMoreTableBorderToggle';
 import ThemeAndMoreSettingsMenuSettingsLink from './ThemeAndMoreSettingsMenuSettingsLink';
 import ThemeAndMoreSettingsMenuThemeSwitcher from './ThemeAndMoreSettingsMenuThemeSwitcher';
 import ThemeAndMoreSettingsMenuVibePickerParent from './ThemeAndMoreSettingsMenuVibePickerParent';
@@ -26,6 +27,9 @@ export default function ThemeAndMoreSettingsMenu() {
         <Suspense fallback={ <CompactToggleSkeleton /> }>
           <ThemeAndMoreCompactToggleParent />
         </Suspense>
+
+        <ThemeAndMoreTableBorderToggle direction="horizontal" />
+        <ThemeAndMoreTableBorderToggle direction="vertical" />
 
         <Suspense fallback={ <VibeSelectionSkeleton /> }>
           <ThemeAndMoreSettingsMenuVibePickerParent />

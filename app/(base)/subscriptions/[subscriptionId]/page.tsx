@@ -4,8 +4,7 @@ import { Metadata, ResolvingMetadata } from 'next';
 
 import { appName } from '@/constants/constants';
 import { getSubscriptionLogoUrl } from '@/shared/table/table.utils';
-import { BillDueWithSubscription } from '@/models/bills/bills.model';
-import { transformSubscriptionExtraPropsForFavorite } from '@/server/subscriptions/utils';
+import { getOutstandingBillDuesThroughTodayCount } from '@/server/subscriptions/utils';
 import { SubscriptionOriginal, SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 import { getAllSubscriptionsBareCached, getSubscriptionWithBillDuesByIdCached } from '@/server/subscriptions/subscriptions.server';
 
@@ -20,37 +19,45 @@ export async function generateMetadata(
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   await connection();
-  // read route params
   const { subscriptionId } = await params;
 
-  // fetch data
-  const subscription: SubscriptionWithBillDues | null = await getSubscriptionWithBillDuesByIdCached(subscriptionId);
-  const subscriptionsWithFavoriteProps: SubscriptionWithBillDues[] = transformSubscriptionExtraPropsForFavorite(
-    subscription ? [subscription] : [],
-  );
-  const subscriptionWithFavoriteProps = subscriptionsWithFavoriteProps[0];
-  const outstandingBillDues: BillDueWithSubscription[] =
-    subscriptionWithFavoriteProps.billDuesWithinTimeRangeThatIsNotPaidOrReimbursed ?? [];
-  const hasOutstandingBillDues: boolean = outstandingBillDues.length > 0;
-  const outstandingBillDuesInfo = `${outstandingBillDues.length}`;
-
-  // optionally access and extend (rather than replace) parent metadata
-  const previousImages = (await parent).openGraph?.images || [];
-  const { light } = getSubscriptionLogoUrl(subscription?.name ?? '');
-
-  // Get the current host from headers to construct absolute URL
-  const headersList = await headers();
-  const host = headersList.get('host') || 'localhost:3000';
-  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-  const absoluteImageUrl = `${protocol}://${host}${light}`;
-
-  return {
-    title: `${hasOutstandingBillDues ? `!(${outstandingBillDuesInfo})` : `(Good)`} - ${subscription?.name ?? 'Subscription'} Details | Subscription | ${appName}`,
-    openGraph: {
-      images: [absoluteImageUrl, ...previousImages],
-    },
-    description: `View the details of the ${subscription?.name ?? 'subscription'} subscription.`,
+  // `absolute` skips the layouts' `%s | appName` templates, so the app name is added here exactly once
+  const fallback: Metadata = {
+    title: { absolute: `Subscription Details | ${appName}` },
+    description: 'View the details of a subscription.',
   };
+
+  try {
+    const subscription: SubscriptionWithBillDues | null = await getSubscriptionWithBillDuesByIdCached(subscriptionId);
+    if (!subscription) {
+      return fallback;
+    }
+
+    // bills due by the end of today (New York) that are not both paid and reimbursed
+    const outstandingCount: number = getOutstandingBillDuesThroughTodayCount(subscription.billDues);
+    const countPrefix: string = outstandingCount > 0 ? `(${outstandingCount}) ` : '';
+
+    // optionally access and extend (rather than replace) parent metadata
+    const previousImages = (await parent).openGraph?.images || [];
+    const { light } = getSubscriptionLogoUrl(subscription.name);
+
+    // Get the current host from headers to construct absolute URL
+    const headersList = await headers();
+    const host = headersList.get('host') || 'localhost:3000';
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    const absoluteImageUrl = `${protocol}://${host}${light}`;
+
+    return {
+      title: { absolute: `${countPrefix}${subscription.name} | ${appName}` },
+      openGraph: {
+        images: [absoluteImageUrl, ...previousImages],
+      },
+      description: `View the details of the ${subscription.name} subscription.`,
+    };
+  } catch (error: unknown) {
+    console.error('Error building subscription details metadata: ', error);
+    return fallback;
+  }
 }
 
 // Return a list of `params` to populate the [subscriptionId] dynamic segment

@@ -3,6 +3,7 @@
 import z from 'zod';
 import { DateTime } from 'luxon';
 import { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { useQueryState } from 'nuqs';
 import confetti from 'canvas-confetti';
@@ -26,6 +27,7 @@ export default function AddNewBillDueDialogContentFormWrapper({
   subscriptionId: string;
   subscription: SubscriptionWithBillDues;
 }) {
+  const router = useRouter();
   const { setSubscriptionIdBeingEdited } = useSubscriptionStoreActions();
   const [, setAddBillDueSubscriptionId] = useQueryState('addBillDueSubscriptionId', {
     scroll: false,
@@ -72,9 +74,14 @@ export default function AddNewBillDueDialogContentFormWrapper({
             consecutiveAdd: data.consecutiveAdd,
           });
         } else {
+          // Closing the dialog changes the URL, which Next.js treats as a navigation and uses to
+          // discard the action's still-pending re-render of the page. Refresh once the URL has
+          // settled so the revalidated bills show up without a hard reload.
           setAddBillDueSubscriptionId(null, {
             history: 'replace',
             scroll: false,
+          }).then(() => {
+            router.refresh();
           });
         }
 

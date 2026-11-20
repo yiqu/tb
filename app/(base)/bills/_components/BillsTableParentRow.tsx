@@ -6,7 +6,7 @@ import useOrderedVisibleTableColumns from '@/hooks/table-columns-adjust/useOrder
 
 import BillsTableParentRowWrapper from './BillsTableParentRowWrapper';
 
-export default function BillsTableParentRow({ billDue }: { billDue: BillDueWithSubscription }) {
+export default function BillsTableParentRow({ billDue, showFilters = true }: { billDue: BillDueWithSubscription; showFilters?: boolean }) {
   const columnsSorted: string[] = useOrderedVisibleTableColumns('bills');
   return (
     <BillsTableParentRowWrapper key={ billDue.id } billDue={ billDue }>
@@ -15,9 +15,8 @@ export default function BillsTableParentRow({ billDue }: { billDue: BillDueWithS
           key={ column }
           colId={ column }
           billDue={ billDue }
-          showHoverFilter
+          showHoverFilter={ showFilters }
           isSticky={ index === 0 }
-          showVerticalBorder
         />
       )) }
     </BillsTableParentRowWrapper>

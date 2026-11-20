@@ -3,6 +3,7 @@
 import z from 'zod';
 import toast from 'react-hot-toast';
 import { useQueryState } from 'nuqs';
+import { useRouter } from 'next/navigation';
 import confetti from 'canvas-confetti';
 import { useForm } from 'react-hook-form';
 import { ReactNode, useEffect } from 'react';
@@ -24,6 +25,7 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
     scroll: false,
   });
   const queryClient = useQueryClient();
+  const router = useRouter();
   const billCost: number = billDue.cost === null ? billDue.subscription.cost : billDue.cost;
 
   const methods = useForm<z.infer<typeof billEditableSchema>>({
@@ -97,9 +99,14 @@ export default function EditBillDialogFormWrapper({ children, billDue }: { child
         });
 
         setBillDueIdBeingEdited(billDue.id, true);
+        // Closing the dialog changes the URL, which Next.js treats as a navigation and uses to
+        // discard the action's still-pending re-render of the page. Refresh once the URL has
+        // settled so the revalidated data shows up without a hard reload.
         setEditBillId(null, {
           history: 'replace',
           scroll: false,
+        }).then(() => {
+          router.refresh();
         });
 
         return `Updated ${res.subscription.name}'s bill.`;

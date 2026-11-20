@@ -1,6 +1,23 @@
 import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 
+// Sort fields that are stored on the subscription document itself.
+// Every other sort field is calculated by transformSubscriptionExtraProps(), mostly from the subscription's bill dues.
+export const SUBSCRIPTION_OWN_SORT_FIELDS: string[] = [
+  'id',
+  'name',
+  'description',
+  'url',
+  'approved',
+  'signed',
+  'dateAdded',
+  'updatedAt',
+  'cost',
+  'billCycleInDays',
+  'billCycleDuration',
+  'billStartDate',
+];
+
 export function getSortedSubscriptions(subscriptions: SubscriptionWithBillDues[], sortData: SortDataModel): SubscriptionWithBillDues[] {
   const result: SubscriptionWithBillDues[] = subscriptions.toSorted((a: SubscriptionWithBillDues, b: SubscriptionWithBillDues) => {
     if (sortData?.sortField) {

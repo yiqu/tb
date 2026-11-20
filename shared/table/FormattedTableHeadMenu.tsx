@@ -18,9 +18,10 @@ type FormattedTableHeadMenuProps = {
   columnId: string;
   tableId: TableId;
   columnIndex: number;
+  showFilters?: boolean;
 };
 
-export default function FormattedTableHeadMenu({ columnId, tableId, columnIndex }: FormattedTableHeadMenuProps) {
+export default function FormattedTableHeadMenu({ columnId, tableId, columnIndex, showFilters = true }: FormattedTableHeadMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { activeCount } = useTableFilterByActive(tableId, columnId as AppColumnId);
 
@@ -44,7 +45,7 @@ export default function FormattedTableHeadMenu({ columnId, tableId, columnIndex 
             <EllipsisVertical className="size-4 text-muted-foreground" />
           </Button>
         </DropdownMenuTrigger>
-        { activeCount > 0 ?
+        { showFilters && activeCount > 0 ?
           <span
             className={ `
               pointer-events-none absolute -top-1.5 -right-1.5 z-10 flex size-4 items-center justify-center rounded-full bg-accent
@@ -69,7 +70,9 @@ export default function FormattedTableHeadMenu({ columnId, tableId, columnIndex 
           columnId={ columnId as AppColumnId }
           columnLabels={ SEARCH_TABLE_COLUMN_TEXT }
         />
-        <TableFilterByMenuSection onAction={ handleMenuAction } tableId={ tableId } columnId={ columnId as AppColumnId } />
+        { showFilters ?
+          <TableFilterByMenuSection onAction={ handleMenuAction } tableId={ tableId } columnId={ columnId as AppColumnId } />
+        : null }
       </DropdownMenuContent>
     </DropdownMenu>
   );

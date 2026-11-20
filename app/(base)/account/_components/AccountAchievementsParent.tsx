@@ -16,13 +16,7 @@ export default async function AccountAchievementsParent() {
     <DisplayCard className="relative w-full overflow-hidden p-4">
       <section className="flex flex-row items-center justify-between">
         <Typography variant="body0" className="font-semibold">
-          <ScrambleHover
-            text={ 'Achievements' }
-            scrambleSpeed={ 50 }
-            maxIterations={ 8 }
-            useOriginalCharsOnly={ true }
-            className=""
-          />
+          <ScrambleHover text={ 'Achievements' } scrambleSpeed={ 50 } maxIterations={ 8 } useOriginalCharsOnly={ true } className="" />
         </Typography>
       </section>
       <section className={ `flex w-full flex-col items-start justify-start` }>
