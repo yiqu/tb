@@ -35,6 +35,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import { TooltipProvider } from '@/components/ui/custom/tooltip';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
+import MuiThemeSync from '@/components/theme/MuiThemeSync';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { ScrollToTop } from '@/components/scroll-up/ScrollToTop';
 import VibeProviderWrapper from '@/providers/VibeProviderWrapper';
@@ -43,7 +44,7 @@ import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider
 import { getFontStylesheetHref, getVibeStylesheetHref } from '@/lib/vibes-css-map';
 import HistoryTrackerWrapper from '@/components/history-tracker/HistoryTrackerWrapper';
 import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server/settings/vibe-select';
-import { TABLE_BORDER_DATA_ATTRIBUTES } from '@/constants/constants';
+import { APP_DEFAULT_THEME, APP_THEME_STORAGE_KEY, TABLE_BORDER_DATA_ATTRIBUTES } from '@/constants/constants';
 import {
   getSettingsApplicationAdminMode,
   getSettingsApplicationCompactMode,
@@ -112,8 +113,9 @@ export default async function BodyParent({ children }: { children: React.ReactNo
         } }
       >
         <AppTopLoader />
-        { /* MUI color scheme script — must execute before React hydration to avoid flash of unstyled content */ }
-        <InitColorSchemeScript defaultMode="system" attribute="data-mui-color-scheme" />
+        { /* MUI color scheme script — must execute before React hydration to avoid flash of unstyled content.
+            It shares next-themes' storage key and default, so MUI never starts in a different mode than the app. */ }
+        <InitColorSchemeScript defaultMode={ APP_DEFAULT_THEME } modeStorageKey={ APP_THEME_STORAGE_KEY } attribute="data-mui-color-scheme" />
         { /* Resource preload hints (fonts, critical assets) */ }
         <Preloads />
         { /* Tracks route history for back-navigation awareness */ }
@@ -122,11 +124,13 @@ export default async function BodyParent({ children }: { children: React.ReactNo
         <FileUploadDocumentTitle />
         <VibeProviderWrapper>
           <AppRouterCacheProvider options={ { enableCssLayer: true } }>
-            <MuiThemeProvider theme={ theme } defaultMode="system" modeStorageKey="mui-mode">
+            <MuiThemeProvider theme={ theme } defaultMode={ APP_DEFAULT_THEME } modeStorageKey={ APP_THEME_STORAGE_KEY }>
               <NuqsAdapter>
                 <TanstackQueryClientProvider>
                   <ReactQueryDevtools initialIsOpen={ false } buttonPosition="bottom-right" />
-                  <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange storageKey="app-theme">
+                  <ThemeProvider attribute="class" defaultTheme={ APP_DEFAULT_THEME } enableSystem disableTransitionOnChange storageKey={ APP_THEME_STORAGE_KEY }>
+                    { /* Keeps MUI's color scheme in step with the app theme */ }
+                    <MuiThemeSync />
                     <AppSettingProvider initialValues={ { isCompactMode, isAdminMode, showTableHorizontalBorders, showTableVerticalBorders } }>
                       <TooltipProvider delayDuration={ 0 }>
                         <AppLayout>{ children }</AppLayout>
