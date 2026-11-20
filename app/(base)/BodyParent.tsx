@@ -33,11 +33,13 @@ import AppLayout from '@/components/layout/AppLayout';
 import { TooltipProvider } from '@/components/ui/custom/tooltip';
 import CustomToaster from '@/components/toaster/CustomToaster';
 import AppTopLoader from '@/components/top-loader/AppTopLoader';
+import MuiThemeSync from '@/components/theme/MuiThemeSync';
 import { ScrollToTop } from '@/components/scroll-up/ScrollToTop';
 import VibeProviderWrapper from '@/providers/VibeProviderWrapper';
 import { AppSettingProvider } from '@/providers/AppSettingProvider';
 import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider';
 import HistoryTrackerWrapper from '@/components/history-tracker/HistoryTrackerWrapper';
+import { APP_DEFAULT_THEME, APP_THEME_STORAGE_KEY } from '@/constants/constants';
 import {
   getSettingsApplicationAdminMode,
   getSettingsApplicationCompactMode,
@@ -86,11 +88,13 @@ export default async function BodyParent({ children }: { children: React.ReactNo
       <FileUploadDocumentTitle />
       <VibeProviderWrapper>
         <AppRouterCacheProvider options={ { enableCssLayer: true } }>
-          <MuiThemeProvider theme={ theme } defaultMode="system" modeStorageKey="mui-mode">
+          <MuiThemeProvider theme={ theme } defaultMode={ APP_DEFAULT_THEME } modeStorageKey={ APP_THEME_STORAGE_KEY }>
             <NuqsAdapter>
               <TanstackQueryClientProvider>
                 <ReactQueryDevtools initialIsOpen={ false } buttonPosition="bottom-right" />
                 { /* next-themes ThemeProvider lives in the root layout so dark mode also applies to the static shell */ }
+                { /* Keeps MUI's color scheme in step with the app theme */ }
+                <MuiThemeSync />
                 <AppSettingProvider initialValues={ { isCompactMode, isAdminMode, showTableHorizontalBorders, showTableVerticalBorders } }>
                   <TooltipProvider delayDuration={ 0 }>
                     <AppLayout>{ children }</AppLayout>

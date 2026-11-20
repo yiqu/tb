@@ -4,7 +4,7 @@ import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 
-import { appName, TABLE_BORDER_DATA_ATTRIBUTES } from '@/constants/constants';
+import { appName, APP_DEFAULT_THEME, APP_THEME_STORAGE_KEY, TABLE_BORDER_DATA_ATTRIBUTES } from '@/constants/constants';
 import InlineScript from '@/components/inline-script/InlineScript';
 import AppShellSkeleton from '@/components/layout/AppShellSkeleton';
 import { getBodyBootScript, getHeadBootScript } from '@/lib/settings-boot-script';
@@ -48,9 +48,10 @@ export default function BaseRootLayout({ children }: LayoutProps<'/'>) {
         } }
       >
         <InlineScript html={ getBodyBootScript() } />
-        { /* MUI color scheme script — must execute before React hydration to avoid flash of unstyled content */ }
-        <InitColorSchemeScript defaultMode="system" attribute="data-mui-color-scheme" />
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange storageKey="app-theme">
+        { /* MUI color scheme script — must execute before React hydration to avoid flash of unstyled content.
+            It shares next-themes' storage key and default, so MUI never starts in a different mode than the app. */ }
+        <InitColorSchemeScript defaultMode={ APP_DEFAULT_THEME } modeStorageKey={ APP_THEME_STORAGE_KEY } attribute="data-mui-color-scheme" />
+        <ThemeProvider attribute="class" defaultTheme={ APP_DEFAULT_THEME } enableSystem disableTransitionOnChange storageKey={ APP_THEME_STORAGE_KEY }>
           <Suspense fallback={ <AppShellSkeleton /> }>
             <BodyParent>{ children }</BodyParent>
           </Suspense>

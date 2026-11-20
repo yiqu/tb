@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useClientOnly } from '@/hooks/useClientOnly';
 import { DropdownMenuItem } from '@/components/ui/custom/dropdown-menu';
-import useSyncMuiThemeWithNextThemes from '@/hooks/useSyncMuiTheme';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 import Typography from '../typography/Typography';
@@ -18,7 +17,6 @@ export default function ThemeAndMoreSettingsMenuThemeSwitcher() {
   const isClient = useClientOnly();
   const { setTheme, theme }: UseThemeProps = useTheme();
   const clickedRef = useRef<HTMLButtonElement | null>(null);
-  useSyncMuiThemeWithNextThemes();
 
   const selectedTheme = theme;
 

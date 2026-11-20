@@ -11,8 +11,9 @@ export default async function YearlyBillsYearSelectWrapper({ searchParamsPromise
   const searchParams = await searchParamsPromise;
   const { selectedYear } = await getYearlyBillsSelection(searchParams);
 
-  // newest first
-  const options: number[] = [...YEARLY_BILLS_YEARS].toSorted((a, b) => b - a);
+  // the URL year is the source of truth: when it is outside the constant list, it is shown in the
+  // dropdown for this page only, the constant itself does not change. Newest first
+  const options: number[] = [...new Set([...YEARLY_BILLS_YEARS, selectedYear])].toSorted((a, b) => b - a);
 
   return <YearlyBillsYearSelect years={ options } selectedYear={ selectedYear } />;
 }
