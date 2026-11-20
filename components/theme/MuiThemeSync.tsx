@@ -7,7 +7,7 @@ import useSyncMuiThemeWithNextThemes from '@/hooks/useSyncMuiTheme';
  * (pagination, inputs) never render with dark mode colors on a light page, or the reverse.
  *
  * Mount it only under both MUI's ThemeProvider and next-themes' ThemeProvider, with both using
- * APP_THEME_STORAGE_KEY (see BodyParent).
+ * APP_THEME_STORAGE_KEY (see the (base) layout and BodyParent).
  */
 export default function MuiThemeSync() {
   useSyncMuiThemeWithNextThemes();

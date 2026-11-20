@@ -4,6 +4,8 @@ import { Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import Typography from '@/components/typography/Typography';
+
 import ErrorCard from '@/components/status-cards/ErrorCard';
 import { getSubscriptionByIdQueryOptions } from '@/server/subscriptions/query/subscription.query';
 
@@ -18,8 +20,14 @@ export default function AddNewBillDueDialog({ subscriptionId }: { subscriptionId
     enabled: !!subscriptionId,
   });
 
+  // Show the loading state inside the dialog. The wrapper renders nothing until the dialog is opened, so a
+  // closed dialog no longer puts a large skeleton under the page (which also caused a hydration mismatch).
   if (isLoading) {
-    return <Skeleton className="h-100 w-full" />;
+    return (
+      <AddNewBillDueDialogWrapper>
+        <Loading />
+      </AddNewBillDueDialogWrapper>
+    );
   }
 
   if (!data) {
@@ -47,5 +55,12 @@ export default function AddNewBillDueDialog({ subscriptionId }: { subscriptionId
 }
 
 function Loading() {
-  return <div>Loading add new bill due dialog...</div>;
+  return (
+    <div role="status">
+      <Skeleton className="h-100 w-full" />
+      <Typography variant="span1" className="sr-only">
+        Loading subscription details
+      </Typography>
+    </div>
+  );
 }
