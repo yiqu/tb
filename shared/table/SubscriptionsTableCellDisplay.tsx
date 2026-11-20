@@ -31,12 +31,10 @@ const useFormatter = getUSDFormatter(2, 2);
 export default function SubscriptionsTableCellDisplay({
   colId,
   subscription,
-  showVerticalBorder,
   isSticky,
 }: {
   colId: string;
   subscription: SubscriptionWithBillDues;
-  showVerticalBorder?: boolean;
   isSticky?: boolean;
 }) {
   if (colId === 'cost') {
@@ -47,7 +45,7 @@ export default function SubscriptionsTableCellDisplay({
     }
 
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <div className={ `flex flex-row items-center justify-start gap-x-1` }>
           <Typography className="truncate tabular-nums">{ useFormatter.format(cost) }</Typography>
         </div>
@@ -57,7 +55,7 @@ export default function SubscriptionsTableCellDisplay({
 
   if (colId === 'id') {
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <Typography className="truncate" title={ subscription.id }>
           { subscription.id }
         </Typography>
@@ -67,7 +65,7 @@ export default function SubscriptionsTableCellDisplay({
 
   if (colId === 'description') {
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <Typography className="text-wrap wrap-break-word" variant={ subscription.description ? 'labelvalue1' : 'nodata1' }>
           { subscription.description ? subscription.description : 'N/A' }
         </Typography>
@@ -78,7 +76,7 @@ export default function SubscriptionsTableCellDisplay({
   if (colId === 'url') {
     if (!subscription.url) {
       return (
-        <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+        <FormattedTableCell isSticky={ isSticky }>
           <Typography className="truncate" variant="nodata1">
             N/A
           </Typography>
@@ -88,7 +86,7 @@ export default function SubscriptionsTableCellDisplay({
 
     // wrap text to next line if it is too long
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <Link href={ (subscription.url ?? '') as any } target="_blank" rel="noopener noreferrer">
           <div className="flex flex-row items-start justify-start gap-x-1 text-wrap">
             <Typography className="break-all" title={ subscription.url ?? 'N/A' }>
@@ -104,7 +102,7 @@ export default function SubscriptionsTableCellDisplay({
   if (colId === 'billCycleDuration') {
     const freq: string = subscription.billCycleDuration;
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <div className={ `
           flex flex-row items-center justify-start gap-x-1
           sec:gap-x-1
@@ -126,7 +124,7 @@ export default function SubscriptionsTableCellDisplay({
 
   if (colId === 'dateAdded') {
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <Popover>
           <PopoverTrigger asChild>
             <div
@@ -159,7 +157,7 @@ export default function SubscriptionsTableCellDisplay({
   if (colId === 'approved') {
     const isApproved = !!subscription.approved;
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <SubscriptionsTableToggleApprovedButton isApproved={ isApproved } subscriptionId={ subscription.id } />
       </FormattedTableCell>
     );
@@ -168,7 +166,7 @@ export default function SubscriptionsTableCellDisplay({
   if (colId === 'signed') {
     const isSigned = !!subscription.signed;
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <SubscriptionsTableToggleSignedButton isSigned={ isSigned } subscriptionId={ subscription.id } />
       </FormattedTableCell>
     );
@@ -179,7 +177,7 @@ export default function SubscriptionsTableCellDisplay({
     const isFavorited: boolean = (subscription.favorites ?? []).length > 0;
 
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <RowStack className="h-full items-center justify-between gap-x-2">
           <Link href={ `/subscriptions/${subscription.id}` } prefetch={ true }>
             <RowStack className="items-center justify-start gap-x-2 text-wrap">
@@ -200,7 +198,7 @@ export default function SubscriptionsTableCellDisplay({
 
   if (colId === 'billDuesCurrentYearCount') {
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <SubscriptionsTableCellDisplayCurrentYearCount subscription={ subscription } />
       </FormattedTableCell>
     );
@@ -208,7 +206,7 @@ export default function SubscriptionsTableCellDisplay({
 
   if (colId === 'billDuesCurrentYearTotalCost') {
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <Typography
           className="truncate"
           variant={ subscription.billDuesCurrentYearTotalCost ? 'labelvalue1' : 'nodata1' }
@@ -222,7 +220,7 @@ export default function SubscriptionsTableCellDisplay({
 
   if (colId === 'totalBillsAllTimeCount') {
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <Typography
           className="truncate"
           variant={ subscription.totalBillsAllTimeCount ? 'labelvalue1' : 'nodata1' }
@@ -236,7 +234,7 @@ export default function SubscriptionsTableCellDisplay({
 
   if (colId === 'totalBillsAllTimeTotalCost') {
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <Typography
           className="truncate"
           variant={ subscription.totalBillsAllTimeTotalCost ? 'labelvalue1' : 'nodata1' }
@@ -250,7 +248,7 @@ export default function SubscriptionsTableCellDisplay({
 
   if (colId === 'updatedAt') {
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <Popover>
           <PopoverTrigger asChild>
             <div
@@ -287,7 +285,7 @@ export default function SubscriptionsTableCellDisplay({
 
   if (colId === 'tableActions') {
     return (
-      <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+      <FormattedTableCell isSticky={ isSticky }>
         <div className="flex w-full flex-row items-center justify-start gap-x-1">
           <SubscriptionsTableAddDueBillButton subscription={ subscription } />
           <SubscriptionsTableEditSubscriptionButton subscription={ subscription } />
@@ -298,7 +296,7 @@ export default function SubscriptionsTableCellDisplay({
   }
 
   return (
-    <FormattedTableCell isSticky={ isSticky } showVerticalBorder={ showVerticalBorder }>
+    <FormattedTableCell isSticky={ isSticky }>
       <span>N/A</span>
     </FormattedTableCell>
   );

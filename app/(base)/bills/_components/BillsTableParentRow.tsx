@@ -17,7 +17,6 @@ export default function BillsTableParentRow({ billDue, showFilters = true }: { b
           billDue={ billDue }
           showHoverFilter={ showFilters }
           isSticky={ index === 0 }
-          showVerticalBorder
         />
       )) }
     </BillsTableParentRowWrapper>

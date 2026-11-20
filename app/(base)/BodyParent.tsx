@@ -5,7 +5,7 @@
  * responsible for:
  *
  * 1. **Server-side settings resolution** - Fetches user preferences (vibe theme, font,
- *    compact mode, admin mode) in parallel on the server before rendering.
+ *    compact mode, admin mode, table borders) in parallel on the server before rendering.
  *
  * 2. **Theme flash prevention** - Injects preload hints and stylesheet links into `<head>`
  *    so the active vibe theme and custom font are applied before first paint.
@@ -42,7 +42,13 @@ import TanstackQueryClientProvider from '@/providers/TanstackQueryClientProvider
 import { getFontStylesheetHref, getVibeStylesheetHref } from '@/lib/vibes-css-map';
 import HistoryTrackerWrapper from '@/components/history-tracker/HistoryTrackerWrapper';
 import { getSettingsApplicationFont, getSettingsApplicationVibe } from '@/server/settings/vibe-select';
-import { getSettingsApplicationAdminMode, getSettingsApplicationCompactMode } from '@/server/settings/app-settings';
+import { TABLE_BORDER_DATA_ATTRIBUTES } from '@/constants/constants';
+import {
+  getSettingsApplicationAdminMode,
+  getSettingsApplicationCompactMode,
+  getSettingsTableVerticalBorders,
+  getSettingsTableHorizontalBorders,
+} from '@/server/settings/app-settings';
 
 /**
  * Async server component that serves as the `<body>` wrapper for the entire app.
@@ -58,7 +64,7 @@ import { getSettingsApplicationAdminMode, getSettingsApplicationCompactMode } fr
   4. NuqsAdapter             – URL query-string state management
   5. TanstackQueryClient      – server-state / data-fetching cache
   6. ThemeProvider (next-themes) – light/dark mode via class attribute
-  7. AppSettingProvider        – app-level settings (compact, admin)
+  7. AppSettingProvider        – app-level settings (compact, admin, table borders)
   8. TooltipProvider           – shared tooltip delay config
         
  *
@@ -66,11 +72,13 @@ import { getSettingsApplicationAdminMode, getSettingsApplicationCompactMode } fr
  */
 export default async function BodyParent({ children }: { children: React.ReactNode }) {
   // Fetch all user settings concurrently to minimize server-side latency
-  const [vibe, fontOverride, isCompactMode, isAdminMode] = await Promise.all([
+  const [vibe, fontOverride, isCompactMode, isAdminMode, showTableHorizontalBorders, showTableVerticalBorders] = await Promise.all([
     getSettingsApplicationVibe(),
     getSettingsApplicationFont(),
     getSettingsApplicationCompactMode(),
     getSettingsApplicationAdminMode(),
+    getSettingsTableHorizontalBorders(),
+    getSettingsTableVerticalBorders(),
   ]);
 
   // Resolve stylesheet URLs for the active vibe theme and optional font override
@@ -94,7 +102,14 @@ export default async function BodyParent({ children }: { children: React.ReactNo
         : null }
       </head>
 
-      <body id="base-root-layout" className={ cn('font-sans antialiased') }>
+      <body
+        id="base-root-layout"
+        className={ cn('font-sans antialiased') }
+        { ...{
+          [TABLE_BORDER_DATA_ATTRIBUTES.horizontal]: String(showTableHorizontalBorders),
+          [TABLE_BORDER_DATA_ATTRIBUTES.vertical]: String(showTableVerticalBorders),
+        } }
+      >
         <AppTopLoader />
         { /* MUI color scheme script — must execute before React hydration to avoid flash of unstyled content */ }
         <InitColorSchemeScript defaultMode="system" attribute="data-mui-color-scheme" />
@@ -109,7 +124,7 @@ export default async function BodyParent({ children }: { children: React.ReactNo
                 <TanstackQueryClientProvider>
                   <ReactQueryDevtools initialIsOpen={ false } buttonPosition="bottom-right" />
                   <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange storageKey="app-theme">
-                    <AppSettingProvider initialValues={ { isCompactMode, isAdminMode } }>
+                    <AppSettingProvider initialValues={ { isCompactMode, isAdminMode, showTableHorizontalBorders, showTableVerticalBorders } }>
                       <TooltipProvider delayDuration={ 0 }>
                         <AppLayout>{ children }</AppLayout>
                         { /* Global toast notification container */ }

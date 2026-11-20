@@ -3,6 +3,8 @@
 import { cn } from '@/lib/utils';
 import { TableHead } from '@/components/ui/table';
 
+import { TABLE_VERTICAL_BORDER_OFF_CLASSES } from './table-border.utils';
+
 import type { DraggableProvidedDraggableProps } from '@hello-pangea/dnd';
 
 type FormattedTableHeadProps = {
@@ -28,13 +30,17 @@ export default function FormattedTableHead({
     <TableHead
       ref={ ref }
       { ...draggableProps }
-      className={ cn('relative truncate', {
+      className={ cn(
+        'relative truncate',
+        {
         'sticky left-0 z-20 rounded-tl-md bg-muted after:pointer-events-none after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-foreground/20':
           index === 0,
         'border-r border-foreground/30': index !== 0,
         'bg-accent': isResizing,
         'bg-accent shadow-md': isDragging,
-      }) }
+        },
+        TABLE_VERTICAL_BORDER_OFF_CLASSES,
+      ) }
       style={ {
         width: `${currentWidth}px`,
         ...draggableProps?.style,
