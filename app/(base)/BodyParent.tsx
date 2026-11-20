@@ -20,7 +20,6 @@
  * Provider nesting order matters — each layer may depend on a parent context.
  */
 
-import FileUploadDocumentTitle from '@/components/file-upload/FileUploadDocumentTitle';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 
@@ -84,8 +83,6 @@ export default async function BodyParent({ children }: { children: React.ReactNo
       <Preloads />
       { /* Tracks route history for back-navigation awareness */ }
       <HistoryTrackerWrapper />
-      { /* Shows the progress of running file uploads in the browser tab title */ }
-      <FileUploadDocumentTitle />
       <VibeProviderWrapper>
         <AppRouterCacheProvider options={ { enableCssLayer: true } }>
           <MuiThemeProvider theme={ theme } defaultMode={ APP_DEFAULT_THEME } modeStorageKey={ APP_THEME_STORAGE_KEY }>
