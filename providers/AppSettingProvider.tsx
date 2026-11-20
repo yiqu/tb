@@ -1,7 +1,7 @@
 'use client';
 
 import toast from 'react-hot-toast';
-import { use, useRef, useState, useCallback, createContext } from 'react';
+import { use, useRef, useState, useEffect, useCallback, createContext } from 'react';
 
 import { TABLE_BORDER_DATA_ATTRIBUTES } from '@/constants/constants';
 import {
@@ -55,6 +55,16 @@ export function AppSettingProvider({ children, initialValues }: AppSettingProvid
   // the last value the server saved in the cookie
   const horizontalBordersSavedRef = useRef<boolean>(initialValues.showTableHorizontalBorders);
   const verticalBordersSavedRef = useRef<boolean>(initialValues.showTableVerticalBorders);
+
+  // Keep the <body> attributes in step with the settings. The boot script sets them from the cookies before paint,
+  // but the static <body> markup in the root layout can reset them (for example when React remounts the document in development).
+  useEffect(() => {
+    setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.horizontal, showTableHorizontalBorders);
+  }, [showTableHorizontalBorders]);
+
+  useEffect(() => {
+    setBodyTableBorderAttribute(TABLE_BORDER_DATA_ATTRIBUTES.vertical, showTableVerticalBorders);
+  }, [showTableVerticalBorders]);
 
   const setCompactMode = useCallback((value: boolean) => {
     setIsCompactMode(value);
