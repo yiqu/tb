@@ -5,6 +5,8 @@ import { useRef, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { Button } from '@/components/ui/button';
+import RowStack from '@/shared/components/RowStack';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import ColumnStack from '@/shared/components/ColumnStack';
@@ -42,10 +44,10 @@ const REJECTED_MESSAGE_GRACE_MS = 1000;
  * - staging: the action bar with the Upload button shows up
  * - uploading: an info alert says the dialog can be closed, the drop zone is replaced by the progress of each file, the Upload button is disabled with a spinner
  * - completed: "Upload completed", the Upload button is gone
- * - failed: a message and the retry button, which sends only the failed files again
+ * - failed: a message, a "New upload" button that goes back to the drop zone, and the retry button, which sends only the failed files again
  */
 export default function FileUploadDemoForm() {
-  const { phase, stagedFiles, sessionBatchId, sessionUploads, hasStarted, isUploading, setStagedFiles, startUpload } = useFileUpload(FILE_UPLOAD_DEMO_SERVER);
+  const { phase, stagedFiles, sessionBatchId, sessionUploads, hasStarted, isUploading, setStagedFiles, startUpload, endSession } = useFileUpload(FILE_UPLOAD_DEMO_SERVER);
   const draftPackageName = useFileUploadDemoStore((state) => state.draftPackageName);
   const setDraftPackageName = useFileUploadDemoStore((state) => state.setDraftPackageName);
   const [rejectedFileNames, setRejectedFileNames] = useState<string[]>([]);
@@ -85,6 +87,12 @@ export default function FileUploadDemoForm() {
     // FilePond posts the metadata next to every file, under the same field name
     startUpload({ packageName: data.packageName });
     setDraftPackageName('');
+  };
+
+  const handleOnNewUpload = () => {
+    // Upload cleared the draft but the field still shows the name, save it back so a reopen keeps it
+    setDraftPackageName(methods.getValues('packageName') ?? '');
+    endSession();
   };
 
   return (
@@ -134,8 +142,14 @@ export default function FileUploadDemoForm() {
         { phase === FILE_UPLOAD_PHASE.failed ?
           <FileUploadActionBar className="justify-between">
             <FileUploadFailedMessage />
-            { /* optional: remove this element to take the retry feature out */ }
-            <FileUploadRetryButton />
+            <RowStack className="items-center gap-x-2">
+              { /* leaves the failed files in the notifications popover and brings the drop zone back */ }
+              <Button type="button" variant="ghost" size="sm" onClick={ handleOnNewUpload }>
+                New upload
+              </Button>
+              { /* optional: remove this element to take the retry feature out */ }
+              <FileUploadRetryButton />
+            </RowStack>
           </FileUploadActionBar>
         : null }
       </ColumnStack>
