@@ -147,9 +147,6 @@ export async function toggleFavoriteBySubscriptionId(
   status: FavoriteActionType,
   favoriteEntityId?: string,
 ): Promise<z.infer<typeof FavoriteEntityResponse> | undefined> {
-  // delay for 1 second
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     if (status === 'CREATE') {
       const res = await prisma.favoriteEntity.create({
