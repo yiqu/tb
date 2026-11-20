@@ -79,3 +79,4 @@ Reference the relevant doc on their website: `https://nextjs.org/docs`. Your tra
 
 - Run a review and fix any issues or problems that does not required the developer or user's input. 
 - If there is a unsure question, then do not fix it until you receive further clarification. 
+- Do not mark code review comments as resolved, so that I can read them on Github easily.
