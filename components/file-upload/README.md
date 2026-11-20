@@ -7,6 +7,74 @@ slow mock server at `app/api/filepond-mock/route.ts`. The mock keeps chunk state
 one process, so it only works with a single server process (`next dev`, one `next start`), not
 behind a load balancer or on serverless functions.
 
+## What was built
+
+- **Upload dialog** (example on `/test`, "Upload Files"): a package name field, a FilePond drop zone
+  that only accepts `.txt`, the list of staged files, and an Upload button. While files are sent the
+  drop zone is replaced by one progress bar per file and an info alert says the dialog can be closed.
+  It ends in "Upload completed", or a failed message with **New upload** and **Retry** buttons.
+- **Uploads keep running after the dialog closes.** Progress is still visible in three places:
+  - the **notifications bell** in the top nav, which gets a pulsing dot while anything is uploading
+    and an "Upload Status" section with every batch and a "Clear finished" button
+  - the **browser tab title**, e.g. `45% (1/3) | Playground`
+  - the dialog itself when it is opened again: still-running batches are listed on top
+- **Staged files and the typed package name survive closing the dialog**, so nothing is lost by
+  clicking outside it before pressing Upload.
+- **Retry** sends only the failed files again. **Chunked uploads** resume from where the server got
+  to, and a request that stalls times out.
+- **A mock FilePond server** (`app/api/filepond-mock/route.ts`) that is slowed down on purpose
+  (10 to 15 seconds per file) so the progress UI can be seen.
+
+Where things live:
+
+| Folder | Contents |
+| --- | --- |
+| `components/file-upload/` | Every upload piece (drop zone, buttons, status rows, store, uploader). See [Components](#components). |
+| `components/notifications/` | The bell popover and its sections. Not upload specific. |
+| `components/top-nav/TopNavNotificationsButton.tsx` | The bell with the "Upload Status" section. |
+| `app/(base)/BodyParent.tsx` | Mounts `FileUploadDocumentTitle` once for the whole app. |
+| `app/(base)/test/_components/file-upload-demo/` | The example dialog and form, and the server config it uses. |
+| `validators/file-upload/` | Zod schema for the package name. |
+| `app/api/filepond-mock/route.ts` | The mock server. |
+
+## How FilePond fits in
+
+FilePond is used for what it is good at, the **picking** of files, and nothing else:
+
+| Done by FilePond (`FileUploadDropzone`) | Done by this project |
+| --- | --- |
+| Drag and drop, the Browse button, multiple selection | Keeping the staged `File` objects in the store (`stagedFiles`) |
+| The list of staged files with name, size and a remove button | Deciding when to upload (the Upload button) |
+| Calling `beforeAddFile`, where the allowed extensions are checked | The "skipped files" message |
+| | Sending the files, progress, retry, resume, timeouts (`file-upload.uploader.ts`) |
+| | The status of every file, the queue, parallel limits (`file-upload.store.ts`) |
+| | Every status view: dialog rows, bell, tab title |
+
+How the drop zone is wired:
+
+- `instantUpload`, `allowProcess`, `allowRevert` are **off** and no `server` option is given, so
+  FilePond never sends anything.
+- FilePond **owns the list** while it is mounted. On every add or remove it calls `reportFiles`,
+  which reads `getFiles()` and hands the `File` objects to the store. The list is not fed back to
+  FilePond as a `files` prop, because doing that let rejected files slip back in.
+- When the dialog opens again, `oninit` adds the files the store kept with `addFiles`, which is how
+  a staged selection survives the dialog closing.
+- When the upload starts the store empties `stagedFiles`, and the drop zone clears FilePond with
+  `removeFiles()`.
+- FilePond has no option for the browse input's `accept` attribute, so it is set by hand
+  (`syncAcceptAttribute`), and again after each selection because FilePond replaces that input.
+- FilePond is loaded with `next/dynamic` (`ssr: false`) in the form, so it is only downloaded once
+  the dialog opens.
+
+### Why FilePond does not do the sending
+
+FilePond can upload by itself: give it a `server` option and it sends the same requests. But it
+cancels every running upload when its component unmounts, and the dialog unmounts when it closes.
+Since uploads have to keep going after the dialog is closed, the sending is done by the store
+instead, outside of React. The uploader speaks **FilePond's own server protocol** (section 1), so
+any backend written for FilePond works unchanged, and the drop zone could later be swapped for
+FilePond's built-in uploading if that limitation ever goes away.
+
 ## 1. URLs your backend needs
 
 Everything is driven by one config object (`FileUploadServerConfig`, see
@@ -99,31 +167,75 @@ their final place. If the form is never submitted the server can clean the tempo
 
 ## 3. What actually happens during an upload
 
-### In this project
+### In this project, step by step
 
-1. **Staging.** `<FileUploadDropzone>` renders FilePond with `instantUpload` and `allowProcess`
-   off. FilePond handles drag and drop, the Browse button, and the list of selected files. Nothing
-   leaves the browser. The selected `File` objects are kept in a Zustand store
-   (`file-upload.store.ts`) so they survive the dialog closing.
-2. **Upload is pressed.** `startUpload` turns the staged files into a batch of upload items
-   (`queued`, 0%), empties the staging list and puts them in a queue. At most `maxParallelUploads`
-   files of the batch run at once.
-3. **Each file is sent** by `file-upload.uploader.ts` with `XMLHttpRequest`, using the requests
-   from section 1. Without chunking it is one `POST`, and progress comes from the browser's upload
-   progress event (bytes handed to the network). With chunking it is one `POST` to get an id, then
-   one `PATCH` per chunk, and progress moves each time the server confirms a chunk.
-4. **Progress is written to the store** on every update. Anything subscribed re-renders: the rows
-   in the dialog, the rows in the notifications popover, the dot on the bell, and the tab title.
-5. **Done.** The server's id is saved on the item as `serverId` and its status becomes `completed`,
-   or `failed` with the error message.
+Using the example dialog (`FILE_UPLOAD_DEMO_SERVER`: chunked, 3 files at a time).
 
-### Why FilePond does not do the sending here
+**Before the upload**
 
-FilePond can upload by itself: give it a `server` option and it does steps 3 to 5 internally with
-the same requests. But it cancels every running upload when its component unmounts, and the dialog
-unmounts when it closes. Since uploads have to keep going after the dialog is closed, the sending
-is done by the store instead, speaking FilePond's protocol so any FilePond-compatible backend
-works unchanged.
+1. **The dialog opens.** If the last Upload finished (or nothing was uploaded yet), `endSession()`
+   resets the dialog to an empty form. A session with failed files is kept, so its Retry button is
+   still there. Files that were only staged are always kept.
+2. **The user types a package name** and drops or browses files. FilePond calls `beforeAddFile` for
+   each file: anything not `.txt` is refused, and its name goes into the "skipped" message.
+3. **FilePond adds the file to its list** and calls `onaddfile`. `reportFiles` copies FilePond's
+   current list into the store as `stagedFiles`. The phase becomes `staging` and the Upload button
+   shows. Nothing has left the browser yet.
+4. **Upload is pressed.** React Hook Form runs the Zod schema on the package name. If it passes,
+   `startUpload({ packageName })` is called.
+
+**Starting the batch** (`file-upload.store.ts`, `startUpload`)
+
+5. Every staged file becomes an upload item: `status: 'queued'`, `progress: 0`, all with one new
+   `batchId`. The items are put at the top of `uploads`, `stagedFiles` is emptied and
+   `sessionBatchId` is set to the new batch, so the dialog switches from the drop zone to the
+   progress rows.
+6. Each file, with the server config and the metadata, is pushed onto a queue that lives outside
+   React state. A copy is also kept in `uploadSources` so a failed file can be sent again later.
+7. `runQueuedUploads` starts files while their batch has a free slot (`maxParallelUploads`, here 3).
+   A started file is marked `uploading`.
+
+**Sending one file** (`file-upload.uploader.ts`, `uploadFile`)
+
+8. **Chunked or not?** Chunked when `chunkUploads` is on and the file is larger than `chunkSize`
+   (or `chunkForce` is on, as in the example). Otherwise it is one request:
+   - **One request:** a `FormData` with the metadata JSON and then the file, both under
+     `filepond`, is sent as `POST <url>`. Progress follows the browser's upload progress event and is
+     held at 99% until the server answers. The answer text is the file's server id.
+9. **Chunked, start the transfer:** `POST <url>` with only the metadata and the header
+   `Upload-Length: <file size>`. The server answers with a transfer id.
+10. **Chunked, send the chunks one after the other:** `file.slice(offset, offset + chunkSize)` is sent
+    as `PATCH <url>?patch=<id>` with `Upload-Offset`, `Upload-Length` and `Upload-Name`. After the
+    server confirms a chunk, the offset moves forward and the progress becomes `offset / size`.
+11. **A chunk failed:** wait (500 ms, then 1 s, then 3 s), ask the server how far it got with
+    `HEAD <url>?patch=<id>`, and continue from the `Upload-Offset` it returns. After the third
+    retry fails, the file fails.
+12. **Stalls:** every request has a watchdog (`timeout`, default 60 s) that restarts on each progress
+    event. If nothing moves and no answer comes for that long, the request is aborted and counts as
+    failed.
+13. **The last chunk is confirmed:** the server puts the file together, and the transfer id is now the
+    file's server id.
+
+**After each file**
+
+14. Every progress update is written to the store. Whatever subscribes re-renders: the dialog rows,
+    the bell's dot and its "Upload Status" section, and the tab title.
+15. **Success:** the item becomes `completed`, `progress: 100`, with `serverId` set, and its copy in
+    `uploadSources` is dropped. **Failure:** it becomes `failed` with the error message.
+16. Either way the slot is freed and `runQueuedUploads` starts the next queued file.
+
+**When the batch ends**
+
+17. The phase comes from the session's items: `completed` when all are done, `failed` when all are
+    done and at least one failed. The dialog shows "Upload completed", or the failed message with:
+    - **Retry**, which puts only the failed files back in the queue (from 0%) and goes to step 7
+    - **New upload**, which clears the session and brings back the drop zone, keeping the package
+      name and leaving the failed files listed under the bell
+18. The tab title shows the final state for a few seconds, then goes back to the page title.
+19. **Clear finished** under the bell removes every batch that has no file still running.
+20. The server ids (`serverId`) are where a real backend takes over. In FilePond's model these ids are
+    submitted with the form so the server can move the files from temporary to final storage (see
+    below). The example only shows them as completed.
 
 ### What FilePond does when it uploads by itself
 
