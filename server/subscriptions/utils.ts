@@ -143,3 +143,16 @@ export function transformSubscriptionExtraPropsForFavorite(subscriptions: Subscr
 
   return result;
 }
+
+/**
+ * Counts the bills due on or before the end of today, in the EST time zone, that are not both paid
+ * and reimbursed. Bills due later than today are not counted.
+ */
+export function getOutstandingBillDuesThroughTodayCount(billDues: BillDueWithSubscription[]): number {
+  const endOfTodayEpoch: number = DateTime.now().setZone(EST_TIME_ZONE).endOf('day').toMillis();
+
+  return billDues.filter((billDue: BillDueWithSubscription) => {
+    const dueDateEpoch: number = Number.parseInt(billDue.dueDate);
+    return dueDateEpoch <= endOfTodayEpoch && !(billDue.paid && billDue.reimbursed);
+  }).length;
+}
