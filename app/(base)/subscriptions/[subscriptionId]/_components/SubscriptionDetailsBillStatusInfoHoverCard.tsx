@@ -27,9 +27,10 @@ export default function SubscriptionDetailsBillStatusInfoHoverCard({ label, rule
           aria-expanded={ isOpen }
           aria-describedby={ isOpen ? rulesId : undefined }
           onClick={ (event: React.MouseEvent<HTMLButtonElement>) => {
-            // Enter / Space fire a click with no pointer (detail 0): toggle so the card can reopen after Escape
+            // Enter / Space fire a click with no pointer (detail 0). Focus already opens the card, so only
+            // open here (never toggle) to reopen it after Escape without closing it on the first press.
             if (event.detail === 0) {
-              setIsOpen((open: boolean) => !open);
+              setIsOpen(true);
             }
           } }
           onPointerDown={ (event: React.PointerEvent<HTMLButtonElement>) => {
