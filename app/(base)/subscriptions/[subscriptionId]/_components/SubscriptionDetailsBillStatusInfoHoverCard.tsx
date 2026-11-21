@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { CircleAlert } from 'lucide-react';
 
 import ColumnStack from '@/shared/components/ColumnStack';
@@ -16,6 +16,7 @@ interface Props {
 export default function SubscriptionDetailsBillStatusInfoHoverCard({ label, rules }: Props) {
   // Hover opens it for a mouse. A tap toggles it too, since touch screens have no hover
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const rulesId: string = useId();
 
   return (
     <HoverCard open={ isOpen } onOpenChange={ setIsOpen } openDelay={ 100 } closeDelay={ 100 }>
@@ -24,6 +25,7 @@ export default function SubscriptionDetailsBillStatusInfoHoverCard({ label, rule
           type="button"
           aria-label={ `How "${label}" is counted` }
           aria-expanded={ isOpen }
+          aria-describedby={ isOpen ? rulesId : undefined }
           onPointerDown={ (event: React.PointerEvent<HTMLButtonElement>) => {
             // a mouse or pen already opened it on hover, so only touch taps toggle it
             if (event.pointerType === 'touch') {
@@ -38,7 +40,7 @@ export default function SubscriptionDetailsBillStatusInfoHoverCard({ label, rule
       <HoverCardContent className="w-80" side="left" align="start">
         <ColumnStack className="gap-y-2">
           <Typography variant="h6">{ label }</Typography>
-          <ul className="flex list-disc flex-col gap-y-1.5 pl-4">
+          <ul id={ rulesId } className="flex list-disc flex-col gap-y-1.5 pl-4">
             { rules.map((rule) => (
               <li key={ rule }>
                 <Typography variant="body0">{ rule }</Typography>
