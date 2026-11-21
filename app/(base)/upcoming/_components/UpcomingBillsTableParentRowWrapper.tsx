@@ -16,8 +16,8 @@ export default function UpcomingBillsTableParentRowWrapper({
 
   return (
     <TableRow
-      className={ cn('hover:bg-muted/20', {
-        'bg-yellow-500/20 hover:bg-yellow-500/20': billDueIdBeingEdited[billDue.id] === true,
+      className={ cn('hover:bg-table-row-hover', {
+        'bg-yellow-500/20 even:bg-yellow-500/20 hover:bg-yellow-500/20': billDueIdBeingEdited[billDue.id] === true,
       }) }
     >
       { children }

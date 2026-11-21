@@ -56,4 +56,6 @@ export interface SubscriptionDetailsStats {
   perYear: SubscriptionDetailsStatsYearNode[];
   runningTotal: SubscriptionDetailsStatsRunningTotalNode[];
   statusBreakdown: SubscriptionDetailsStatsStatusBreakdown;
+  /** Last millisecond of today in EST (11:59:59.999 PM). Bills due after it are upcoming */
+  endOfToday: number;
 }
