@@ -19,7 +19,8 @@
     "push-prisma": "npx prisma db push",
     "update-prisma": "npx prisma generate",
     "postinstall": "npx prisma generate",
-    "seed": "node --env-file-if-exists=.env --experimental-strip-types prisma/seed.ts"
+    "seed": "node --env-file-if-exists=.env --experimental-strip-types prisma/seed.ts",
+    "dedupe-sort-data": "node --env-file-if-exists=.env --experimental-strip-types prisma/dedupe-sort-data.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
