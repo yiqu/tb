@@ -1,5 +1,6 @@
 import NoData from '@/components/no-data/NoData';
 import Typography from '@/components/typography/Typography';
+import { SortDataModel } from '@/models/sort-data/SortData.model';
 import { BillsDueGroupedByYearObject } from '@/models/bills/bills.model';
 import { SubscriptionWithBillDues } from '@/models/subscriptions/subscriptions.model';
 
@@ -9,9 +10,10 @@ import SubscriptionDetailsBillsTableHeader from './SubscriptionDetailsBillsTable
 interface SubscriptionDetailsBillsTableProps {
   billDues: BillsDueGroupedByYearObject[];
   subscription: SubscriptionWithBillDues;
+  sortData: SortDataModel | null;
 }
 
-export default function SubscriptionDetailsBillsTableParent({ billDues, subscription }: SubscriptionDetailsBillsTableProps) {
+export default function SubscriptionDetailsBillsTableParent({ billDues, subscription, sortData }: SubscriptionDetailsBillsTableProps) {
   if (billDues.length === 0) {
     return <NoData type="bills" subscription={ subscription } />;
   }
@@ -23,7 +25,7 @@ export default function SubscriptionDetailsBillsTableParent({ billDues, subscrip
         return (
           <div key={ billDue.year } className="flex w-full flex-col items-start justify-start gap-y-3">
             <SubscriptionDetailsBillsTableHeader billDues={ billDue.bills } year={ billDue.year } />
-            <SubscriptionDetailsBillsTable billDues={ billDue.bills } />
+            <SubscriptionDetailsBillsTable billDues={ billDue.bills } sortData={ sortData } />
           </div>
         );
       }) }
