@@ -4,7 +4,6 @@ import { cache } from 'react';
 import { cacheTag } from 'next/cache';
 import { updateTag } from 'next/cache';
 import { cacheLife } from 'next/cache';
-// eslint-disable-next-line no-unused-vars
 import { Prisma } from '@prisma/client';
 
 import prisma from '@/lib/prisma';
@@ -27,7 +26,7 @@ export async function getSortDataForPageId(pageId: string): Promise<SortDataMode
   cacheTag(`${CACHE_TAG_SORT_DATA_PREFIX}${pageId}`);
 
   try {
-    const sortData = await prisma.sortData.findFirst({
+    const sortData = await prisma.sortData.findUnique({
       where: {
         pageId,
       },
@@ -41,42 +40,38 @@ export async function getSortDataForPageId(pageId: string): Promise<SortDataMode
 }
 
 export async function upsertSortData2(sortData: SortDataUpsertable): Promise<SortDataModel> {
-  if (sortData.id && sortData.id !== '') {
-    try {
-      const updatedSortData = await prisma.sortData.update({
-        where: { id: sortData.id },
-        data: {
-          sortDirection: sortData.sortDirection,
-          sortField: sortData.sortField,
-        },
-      });
+  // pageId is unique, so every write targets the page's one record (any client-sent id is ignored).
+  const { pageId, sortDirection, sortField } = sortData;
 
-      updateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
-      updateTag(CACHE_TAG_BILL_DUES_ALL);
-      updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH);
-      updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
-
-      return updatedSortData;
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-      console.error('Server error at updating sort data(): ', JSON.stringify(error));
-      throw new Error(`Error updating sort data. Code: ${error.code}`);
+  let savedSortData: SortDataModel;
+  try {
+    savedSortData = await prisma.sortData.upsert({
+      where: { pageId },
+      update: { sortDirection, sortField },
+      create: { pageId, sortDirection, sortField },
+    });
+  } catch (error: unknown) {
+    // Two first-time clicks can race to create the record: the loser hits the unique index (P2002), so update the winner's record.
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') {
+      console.error('Server error at upserting sort data(): ', JSON.stringify(error));
+      throw new Error(`Error saving sort data for page id: ${pageId}.`);
     }
-  } else {
-    // create new sort data
+
     try {
-      const newSortData = await prisma.sortData.create({
-        data: sortData,
+      savedSortData = await prisma.sortData.update({
+        where: { pageId },
+        data: { sortDirection, sortField },
       });
-
-      updateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${sortData.pageId}`);
-      updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH);
-      updateTag(CACHE_TAG_BILL_DUES_ALL);
-      updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
-
-      return newSortData;
-    } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-      console.error('Server error at adding sort data(): ', JSON.stringify(error));
-      throw new Error(`Error creating sort data. Code: ${error.code}`);
+    } catch (retryError: unknown) {
+      console.error('Server error at updating sort data(): ', JSON.stringify(retryError));
+      throw new Error(`Error saving sort data for page id: ${pageId}.`);
     }
   }
+
+  updateTag(`${CACHE_TAG_SORT_DATA_PREFIX}${pageId}`);
+  updateTag(CACHE_TAG_BILL_DUES_ALL);
+  updateTag(CACHE_TAG_BILL_DUES_CURRENT_MONTH);
+  updateTag(CACHE_TAG_SUBSCRIPTIONS_ALL);
+
+  return savedSortData;
 }

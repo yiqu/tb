@@ -109,6 +109,8 @@
 }
 
 @theme inline {
+  --color-table-row-stripe: var(--table-row-stripe);
+  --color-table-row-hover: var(--table-row-hover);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -190,6 +192,18 @@
   }
   .dark {
     --color-kq-shadow: rgb(89, 89, 89);
+  }
+}
+
+/* Alternating (striped) table rows. Sits between the card and the muted table header, so the header still reads as a header */
+@layer table-rows {
+  :root {
+    --table-row-stripe: oklch(0.955 0.005 85);
+    --table-row-hover: oklch(0.93 0.007 84);
+  }
+  .dark {
+    --table-row-stripe: oklch(0.36 0.004 59);
+    --table-row-hover: oklch(0.4 0.005 59);
   }
 }
 

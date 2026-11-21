@@ -8,7 +8,8 @@ import { BillDueWithSubscription } from '@/models/bills/bills.model';
 import { upsertSortData2 } from '@/server/sort-data/sort-data.server';
 import FormattedTableHeader from '@/shared/table/FormattedTableHeader';
 import FormattedTableHeadFiller from '@/shared/table/FormattedTableHeadFiller';
-import { SortDataUpsertable } from '@/models/sort-data/SortData.model';
+import { unsortableBillsColumns } from '@/store/subscriptions/table.store';
+import { SortDataModel, SortDataUpsertable } from '@/models/sort-data/SortData.model';
 import useOrderedVisibleTableColumns from '@/hooks/table-columns-adjust/useOrderedVisibleTableColumns';
 import BillsTableParentRow from '@/shared/table/BillsDueTableParentRow';
 import { Table, TableRow, TableBody, TableHeader } from '@/components/ui/table';
@@ -17,9 +18,11 @@ import SubscriptionDetailsBillsTableLoading from './SubscriptionDetailsBillsTabl
 
 interface SubscriptionDetailsBillsTableProps {
   billDues: BillDueWithSubscription[];
+  /** One sort shared by every year table on the page */
+  sortData: SortDataModel | null;
 }
 
-export default function SubscriptionDetailsBillsTable({ billDues }: SubscriptionDetailsBillsTableProps) {
+export default function SubscriptionDetailsBillsTable({ billDues, sortData }: SubscriptionDetailsBillsTableProps) {
   const isClient = useIsClient();
   const columnsSorted: string[] = useOrderedVisibleTableColumns('bills');
 
@@ -47,8 +50,9 @@ export default function SubscriptionDetailsBillsTable({ billDues }: Subscription
                     key={ column }
                     columnId={ column }
                     index={ index }
-                    sortData={ null }
+                    sortData={ sortData }
                     pageId={ SORT_DATA_PAGE_IDS.subscriptionDetailsBillsBillsTable }
+                    sortable={ unsortableBillsColumns[column] ?? true }
                     onSortUpdate={ handleOnSortUpdate }
                   />
                 );

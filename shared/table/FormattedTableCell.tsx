@@ -16,7 +16,7 @@ export default function FormattedTableCell({ isSticky, className, ...props }: Fo
         '[&:has(+[data-table-filler])]:border-r-0 last:border-r-0',
         className,
         {
-          'sticky left-0 z-10 bg-card after:pointer-events-none after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border':
+          'sticky left-0 z-10 bg-card in-[tr:nth-child(even)]:bg-table-row-stripe in-[tr:hover]:bg-table-row-hover after:pointer-events-none after:absolute after:top-0 after:right-0 after:h-full after:w-px after:bg-border':
             isSticky,
           'border-r border-border': !isSticky,
         },

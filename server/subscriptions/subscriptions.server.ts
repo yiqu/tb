@@ -40,7 +40,7 @@ import {
   CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR,
 } from '@/constants/constants';
 
-import { getBillDueWithDatesInEst } from '../bills/bills.server.utils';
+import { getSortedBillDues, getBillDueWithDatesInEst } from '../bills/bills.server.utils';
 import { getSortedSubscriptions, SUBSCRIPTION_OWN_SORT_FIELDS } from './subscriptions.utils';
 import { transformSubscriptionExtraProps, attachSubscriptionToBillDues } from './utils';
 
@@ -101,8 +101,8 @@ export const getSubscriptionWithBillDuesByIdCached = cache(async (subscriptionId
   return res;
 });
 
-export const getSubscriptionBillsGroupedByYearByIdCached = cache(async (subscriptionId: string) => {
-  const res = await getSubscriptionBillsGroupedByYearById(subscriptionId);
+export const getSubscriptionBillsGroupedByYearByIdCached = cache(async (subscriptionId: string, sortData: SortDataModel | null) => {
+  const res = await getSubscriptionBillsGroupedByYearById(subscriptionId, sortData);
   return res;
 });
 
@@ -441,13 +441,24 @@ export async function getAllSubscriptionsWithBillDuesByIdsUncached(subscriptionI
   }
 }
 
-export async function getSubscriptionBillsGroupedByYearById(subscriptionId: string): Promise<BillsDueGroupedByYearObject[]> {
+/**
+ * Bill dues of one subscription, one group per year (newest year first).
+ * The same sort data is applied to the bills inside every year group, so all the per year tables share one sort.
+ *
+ * @param subscriptionId
+ * @param sortData the subscription details bill dues tables sort (one Mongo SortData record for all the year tables)
+ */
+export async function getSubscriptionBillsGroupedByYearById(
+  subscriptionId: string,
+  sortData: SortDataModel | null,
+): Promise<BillsDueGroupedByYearObject[]> {
   'use cache';
   cacheLife('weeks');
   cacheTag(`${CACHE_TAG_SUBSCRIPTION_BILLS_GROUPED_BY_YEAR}${subscriptionId}`);
 
   try {
-    // the database returns the bills newest first (indexed), so no extra sorting is needed afterwards
+    // the database returns the bills newest first (indexed). That order groups the years newest first,
+    // and stays the order inside a year when no sort is set
     const subscription = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
       include: {
@@ -474,9 +485,10 @@ export async function getSubscriptionBillsGroupedByYearById(subscriptionId: stri
       }
     }
 
+    const hasSort: boolean = !!sortData?.sortField && !!sortData.sortDirection;
     const sortedBillsDueGroupedByYear: BillsDueGroupedByYearObject[] = [...billDuesGroupedByYear.entries()].map(([year, bills]) => ({
       year: year.toString(),
-      bills,
+      bills: hasSort && sortData ? getSortedBillDues(bills, sortData) : bills,
     }));
 
     return sortedBillsDueGroupedByYear;

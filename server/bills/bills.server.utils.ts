@@ -198,79 +198,94 @@ export function getFilteredBillDuesBySpecialYearAndMonth(
 }
 
 export function getSortedBillDues(billDues: BillDueWithSubscription[], sortData: SortDataModel): BillDueWithSubscription[] {
+  // The field comparisons below never return 0, so equal values (e.g. the same cost, or the same subscription on a
+  // subscription's own bills) compare the same way in both directions. Those ties fall back to due date, newest first,
+  // so the order stays stable instead of depending on the sort algorithm.
   const result: BillDueWithSubscription[] = billDues.toSorted((a: BillDueWithSubscription, b: BillDueWithSubscription) => {
-    if (sortData?.sortField) {
-      if (sortData.sortField === 'dueDate') {
-        if (sortData.sortDirection === 'asc') {
-          return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
-        } else if (sortData.sortDirection === 'desc') {
-          return Number.parseInt(a.dueDate) < Number.parseInt(b.dueDate) ? 1 : -1;
-        }
-        return 0;
-      }
-      if (sortData.sortField === 'dateAdded') {
-        if (sortData.sortDirection === 'asc') {
-          return a.dateAdded.getTime() > b.dateAdded.getTime() ? 1 : -1;
-        } else if (sortData.sortDirection === 'desc') {
-          return a.dateAdded.getTime() < b.dateAdded.getTime() ? 1 : -1;
-        }
-      }
-      if (sortData.sortField === 'updatedAt') {
-        if (sortData.sortDirection === 'asc') {
-          return (a.updatedAt ? a.updatedAt.getTime() : 0) > (b.updatedAt ? b.updatedAt.getTime() : 0) ? 1 : -1;
-        } else if (sortData.sortDirection === 'desc') {
-          return (a.updatedAt ? a.updatedAt.getTime() : 0) < (b.updatedAt ? b.updatedAt.getTime() : 0) ? 1 : -1;
-        }
-      }
-      if (sortData.sortField === 'subscription') {
-        if (sortData.sortDirection === 'asc') {
-          return a.subscription.name.toLowerCase() > b.subscription.name.toLowerCase() ? 1 : -1;
-        } else if (sortData.sortDirection === 'desc') {
-          return a.subscription.name.toLowerCase() < b.subscription.name.toLowerCase() ? 1 : -1;
-        }
-      }
-
-      if (sortData.sortField === 'cost') {
-        const aCost = a.cost ?? a.subscription.cost;
-        const bCost = b.cost ?? b.subscription.cost;
-        if (sortData.sortDirection === 'asc') {
-          return aCost > bCost ? 1 : -1;
-        } else if (sortData.sortDirection === 'desc') {
-          return aCost < bCost ? 1 : -1;
-        }
-      }
-
-      if (sortData.sortField === 'paid') {
-        if (sortData.sortDirection === 'asc') {
-          return a.paid > b.paid ? 1 : -1;
-        } else if (sortData.sortDirection === 'desc') {
-          return a.paid < b.paid ? 1 : -1;
-        }
-      }
-
-      if (sortData.sortField === 'reimbursed') {
-        if (sortData.sortDirection === 'asc') {
-          return a.reimbursed > b.reimbursed ? 1 : -1;
-        } else if (sortData.sortDirection === 'desc') {
-          return a.reimbursed < b.reimbursed ? 1 : -1;
-        }
-      }
-
-      if (sortData.sortField === 'frequency') {
-        if (sortData.sortDirection === 'asc') {
-          return a.subscription.billCycleDuration.toLowerCase() > b.subscription.billCycleDuration.toLowerCase() ? 1 : -1;
-        } else if (sortData.sortDirection === 'desc') {
-          return a.subscription.billCycleDuration.toLowerCase() < b.subscription.billCycleDuration.toLowerCase() ? 1 : -1;
-        }
-      }
-
-      return a[sortData.sortField] > b[sortData.sortField] ? 1 : -1;
+    if (!sortData?.sortField) {
+      return 0;
     }
-
-    return 0;
+    const fieldOrder: number = compareBillDuesByField(a, b, sortData);
+    const isTie: boolean = fieldOrder === compareBillDuesByField(b, a, sortData);
+    if (isTie) {
+      return Number.parseInt(b.dueDate) - Number.parseInt(a.dueDate);
+    }
+    return fieldOrder;
   });
 
   return result;
+}
+
+function compareBillDuesByField(a: BillDueWithSubscription, b: BillDueWithSubscription, sortData: SortDataModel): number {
+  if (sortData?.sortField) {
+    if (sortData.sortField === 'dueDate') {
+      if (sortData.sortDirection === 'asc') {
+        return Number.parseInt(a.dueDate) > Number.parseInt(b.dueDate) ? 1 : -1;
+      } else if (sortData.sortDirection === 'desc') {
+        return Number.parseInt(a.dueDate) < Number.parseInt(b.dueDate) ? 1 : -1;
+      }
+      return 0;
+    }
+    if (sortData.sortField === 'dateAdded') {
+      if (sortData.sortDirection === 'asc') {
+        return a.dateAdded.getTime() > b.dateAdded.getTime() ? 1 : -1;
+      } else if (sortData.sortDirection === 'desc') {
+        return a.dateAdded.getTime() < b.dateAdded.getTime() ? 1 : -1;
+      }
+    }
+    if (sortData.sortField === 'updatedAt') {
+      if (sortData.sortDirection === 'asc') {
+        return (a.updatedAt ? a.updatedAt.getTime() : 0) > (b.updatedAt ? b.updatedAt.getTime() : 0) ? 1 : -1;
+      } else if (sortData.sortDirection === 'desc') {
+        return (a.updatedAt ? a.updatedAt.getTime() : 0) < (b.updatedAt ? b.updatedAt.getTime() : 0) ? 1 : -1;
+      }
+    }
+    if (sortData.sortField === 'subscription') {
+      if (sortData.sortDirection === 'asc') {
+        return a.subscription.name.toLowerCase() > b.subscription.name.toLowerCase() ? 1 : -1;
+      } else if (sortData.sortDirection === 'desc') {
+        return a.subscription.name.toLowerCase() < b.subscription.name.toLowerCase() ? 1 : -1;
+      }
+    }
+
+    if (sortData.sortField === 'cost') {
+      const aCost = a.cost ?? a.subscription.cost;
+      const bCost = b.cost ?? b.subscription.cost;
+      if (sortData.sortDirection === 'asc') {
+        return aCost > bCost ? 1 : -1;
+      } else if (sortData.sortDirection === 'desc') {
+        return aCost < bCost ? 1 : -1;
+      }
+    }
+
+    if (sortData.sortField === 'paid') {
+      if (sortData.sortDirection === 'asc') {
+        return a.paid > b.paid ? 1 : -1;
+      } else if (sortData.sortDirection === 'desc') {
+        return a.paid < b.paid ? 1 : -1;
+      }
+    }
+
+    if (sortData.sortField === 'reimbursed') {
+      if (sortData.sortDirection === 'asc') {
+        return a.reimbursed > b.reimbursed ? 1 : -1;
+      } else if (sortData.sortDirection === 'desc') {
+        return a.reimbursed < b.reimbursed ? 1 : -1;
+      }
+    }
+
+    if (sortData.sortField === 'frequency') {
+      if (sortData.sortDirection === 'asc') {
+        return a.subscription.billCycleDuration.toLowerCase() > b.subscription.billCycleDuration.toLowerCase() ? 1 : -1;
+      } else if (sortData.sortDirection === 'desc') {
+        return a.subscription.billCycleDuration.toLowerCase() < b.subscription.billCycleDuration.toLowerCase() ? 1 : -1;
+      }
+    }
+
+    return a[sortData.sortField] > b[sortData.sortField] ? 1 : -1;
+  }
+
+  return 0;
 }
 
 /**

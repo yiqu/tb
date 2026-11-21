@@ -102,6 +102,7 @@ export function getSubscriptionDetailsStats(bills: SubscriptionDetailsStatsBill[
     perYear,
     runningTotal,
     statusBreakdown,
+    endOfToday,
   };
 }
 

@@ -95,7 +95,7 @@ export default function SubscriptionDetailsStats({ bills }: { bills: Subscriptio
         <div className={ CHARTS_GRID_CLASS_NAME }>
           <SubscriptionDetailsSpendPerYearChart perYear={ stats.perYear } currentYear={ stats.currentYear } />
           <SubscriptionDetailsRunningTotalChart runningTotal={ stats.runningTotal } />
-          <SubscriptionDetailsBillStatusBreakdown statusBreakdown={ stats.statusBreakdown } totalCount={ stats.allTime.count } />
+          <SubscriptionDetailsBillStatusBreakdown statusBreakdown={ stats.statusBreakdown } totalCount={ stats.allTime.count } endOfToday={ stats.endOfToday } />
         </div>
       : null }
     </>
