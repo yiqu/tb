@@ -26,13 +26,18 @@ const describe = (row: SortDataRow): string =>
 
 const lastWrittenAt = (row: SortDataRow): number => (row.updatedAt ?? row.dateAdded).getTime();
 
-async function main(): Promise<void> {
-  // Only the pageIds that occur more than once, so a clean collection reads almost nothing.
-  const duplicatedPageIds = await prisma.sortData.groupBy({
+// Only the pageIds that occur more than once, so a clean collection reads almost nothing.
+async function findDuplicatedPageIds(): Promise<{ pageId: string }[]> {
+  const groups = await prisma.sortData.groupBy({
     by: ['pageId'],
     _count: { _all: true },
     having: { pageId: { _count: { gt: 1 } } },
   });
+  return groups.map(({ pageId }) => ({ pageId }));
+}
+
+async function main(): Promise<void> {
+  const duplicatedPageIds: { pageId: string }[] = await findDuplicatedPageIds();
 
   if (duplicatedPageIds.length === 0) {
     console.log('No duplicate SortData records. Nothing to do.');
@@ -80,6 +85,15 @@ async function main(): Promise<void> {
     console.log(`Skipped ${changedRows.length} record(s) that changed since the scan: ${changedRows.map((row: SortDataRow) => row.id).join(', ')}.`);
     console.log('Run the script again to re-check them.');
     process.exitCode = 1;
+  }
+
+  // A record written after the scan is not in rowsToDelete, so confirm nothing is still duplicated before the index is pushed.
+  const stillDuplicated: { pageId: string }[] = await findDuplicatedPageIds();
+  if (stillDuplicated.length > 0) {
+    console.log(`Still duplicated after apply: ${stillDuplicated.map(({ pageId }: { pageId: string }) => pageId).join(', ')}. Run the script again.`);
+    process.exitCode = 1;
+  } else {
+    console.log('No duplicates remain. The unique index on pageId can be pushed.');
   }
 }
 
