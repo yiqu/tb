@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 
 import { AI_MODEL_UPLOAD_STATUS } from './ai-model-upload.constants';
 import { useAiModelUploadMutation } from './useAiModelUploadMutation';
+import { useAiModelUploadCancelMutation } from './useAiModelUploadCancelMutation';
 import { useAiModelUploads, useAiModelUploadActions, useAiModelUploadSessionBatchId } from './ai-model-upload.store';
 
 import type { AiModelUploadItem, AiModelUploadVariables } from './ai-model-upload.models';
@@ -20,8 +21,8 @@ interface AiModelUploadRetryButtonProps extends Omit<ComponentProps<typeof Butto
 }
 
 /**
- * Sends the failed files again. Each one resumes from where the server got to (a new upload only if
- * the server no longer has it). Self contained: it reads the upload store and starts the upload
+ * Sends the failed files again, from the start: a new `POST`, then every chunk. The failed attempt is
+ * `DELETE`d on the server first (best effort). Self contained: it reads the upload store and starts the upload
  * mutations itself, and renders nothing while there is no failed file in its scope.
  * Remove the element to take the feature away.
  */
@@ -30,6 +31,7 @@ export default function AiModelUploadRetryButton({ scope = 'session', children, 
   const sessionBatchId = useAiModelUploadSessionBatchId();
   const { prepareRetry } = useAiModelUploadActions();
   const { mutate } = useAiModelUploadMutation();
+  const { mutate: cancelUpload } = useAiModelUploadCancelMutation();
 
   const batchId: string | undefined = scope === 'session' ? (sessionBatchId ?? undefined) : undefined;
   const failedCount: number = uploads.filter(
@@ -41,7 +43,13 @@ export default function AiModelUploadRetryButton({ scope = 'session', children, 
   }
 
   const handleOnRetry = () => {
-    prepareRetry(batchId).forEach((variables: AiModelUploadVariables) => mutate(variables));
+    const { uploads: retriedUploads, abandonedUploads } = prepareRetry(batchId);
+    abandonedUploads.forEach((upload: AiModelUploadItem) => {
+      if (upload.artifactId !== null) {
+        cancelUpload({ artifactId: upload.artifactId, uploadLength: upload.size });
+      }
+    });
+    retriedUploads.forEach((variables: AiModelUploadVariables) => mutate(variables));
   };
 
   return (

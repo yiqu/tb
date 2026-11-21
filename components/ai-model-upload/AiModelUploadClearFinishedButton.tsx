@@ -11,7 +11,7 @@ import type { AiModelUploadItem } from './ai-model-upload.models';
 
 /**
  * Removes the batches that finished (completed or failed) from the status list, and stops the cleared
- * failed uploads on the server (they could only have been resumed from here). Hidden while there is
+ * failed uploads on the server (nothing will finish them any more). Hidden while there is
  * nothing to clear.
  */
 export default function AiModelUploadClearFinishedButton() {

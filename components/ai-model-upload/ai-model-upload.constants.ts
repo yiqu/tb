@@ -53,6 +53,15 @@ export const AI_MODEL_UPLOAD_CHUNK_RETRY_DELAYS: readonly number[] = [500, 1000,
 /** A request that has not answered after this long (ms) fails. It must be longer than sending one chunk takes. `0` waits forever. */
 export const AI_MODEL_UPLOAD_REQUEST_TIMEOUT_MS = 60_000;
 
+/**
+ * How much the newest speed sample counts in the smoothed upload speed (0 to 1). Lower is steadier,
+ * higher follows a changing connection faster.
+ */
+export const AI_MODEL_UPLOAD_SPEED_SMOOTHING = 0.3;
+
+/** Below this many seconds the time left reads "A few seconds left" instead of a number. */
+export const AI_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS = 5;
+
 /** Progress (in percent) at which a progress bar switches from the "in progress" to the "almost done" color. */
 export const AI_MODEL_UPLOAD_PROGRESS_COLOR_THRESHOLD = 70;
 
@@ -75,6 +84,10 @@ export const AI_MODEL_UPLOAD_FAILED_MESSAGE = 'The upload failed';
 export const AI_MODEL_UPLOAD_EMPTY_STATUS_MESSAGE = 'No uploads yet.';
 export const AI_MODEL_UPLOAD_CLEAR_FINISHED_LABEL = 'Clear finished';
 export const AI_MODEL_UPLOAD_ACTIVE_INDICATOR_LABEL = 'Uploads in progress';
+/** Time-left line under a running upload's progress bar. */
+export const AI_MODEL_UPLOAD_TIME_REMAINING_CALCULATING = 'Calculating time left…';
+export const AI_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS_LABEL = 'A few seconds left';
+export const getAiModelUploadTimeRemainingLabel = (duration: string): string => `About ${duration} left`;
 /** Label of the section that lists the uploads still running when the dialog is opened again. */
 export const AI_MODEL_UPLOAD_IN_PROGRESS_SECTION_TITLE = 'Currently uploading';
 /** Info alert shown in the dialog while its upload is running. */

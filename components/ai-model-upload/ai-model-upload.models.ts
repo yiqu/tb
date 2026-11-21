@@ -18,6 +18,12 @@ export interface AiModelUploadItem {
   status: AiModelUploadStatus;
   /** 0 to 100. */
   progress: number;
+  /** Bytes the server has confirmed. */
+  uploadedBytes: number;
+  /** Smoothed upload speed, null until two progress updates were seen. Drives the time-left estimate. */
+  bytesPerSecond: number | null;
+  /** When `uploadedBytes` was last reported (ms since epoch), null before the first report. */
+  progressUpdatedAt: number | null;
   /** The model artifact id (`AMAR-<uuid>`) the start request answered with, null until then. */
   artifactId: string | null;
   error: string | null;
@@ -30,6 +36,10 @@ export interface AiModelUploadVariables {
   file: File;
   name: string;
   modelKey: string;
-  /** Set on a retry: the model artifact id of the failed attempt, so the upload continues from where the server got to. */
-  resumeArtifactId: string | null;
+}
+
+/** What the Retry button needs: the uploads to start again, and the failed attempts to stop on the server. */
+export interface AiModelUploadRetryPlan {
+  uploads: AiModelUploadVariables[];
+  abandonedUploads: AiModelUploadItem[];
 }

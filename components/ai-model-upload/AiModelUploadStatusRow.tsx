@@ -4,6 +4,7 @@ import ColumnStack from '@/shared/components/ColumnStack';
 import Typography from '@/components/typography/Typography';
 
 import AiModelUploadProgressBar from './AiModelUploadProgressBar';
+import AiModelUploadTimeRemaining from './AiModelUploadTimeRemaining';
 import { AI_MODEL_UPLOAD_STATUS } from './ai-model-upload.constants';
 
 import type { AiModelUploadItem } from './ai-model-upload.models';
@@ -13,9 +14,10 @@ interface AiModelUploadStatusRowProps {
   className?: string;
 }
 
-/** One upload: the name it is saved under, its model key and file, a progress bar and the percentage. Display only. */
+/** One upload: the name it is saved under, its model key and file, a progress bar, the percentage and, while it runs, the time left. Display only. */
 export default function AiModelUploadStatusRow({ upload, className }: AiModelUploadStatusRowProps) {
   const isFailed: boolean = upload.status === AI_MODEL_UPLOAD_STATUS.failed;
+  const isUploading: boolean = upload.status === AI_MODEL_UPLOAD_STATUS.uploading;
 
   return (
     <ColumnStack className={ cn('w-full gap-y-1', className) }>
@@ -31,6 +33,9 @@ export default function AiModelUploadStatusRow({ upload, className }: AiModelUpl
           { isFailed ? 'Failed' : `${upload.progress}%` }
         </Typography>
       </RowStack>
+      { isUploading ?
+        <AiModelUploadTimeRemaining upload={ upload } />
+      : null }
       { isFailed && upload.error ?
         <Typography variant="caption0" className="truncate text-destructive dark:text-destructive" title={ upload.error }>
           { upload.error }

@@ -4,7 +4,8 @@ A drop-in "Upload Model" feature. Put `<UploadModelButton />` anywhere: it opens
 **Name** and a **Model Key** field and a [FilePond](https://pqina.nl/filepond/docs/) drop zone, and
 uploads the model file in chunks to the AI model multipart API. Uploads keep running after the dialog
 closes, the dialog can be opened again to start another upload while earlier ones are still going,
-and every upload is listed with its progress in the notifications popover and the browser tab title.
+and every upload is listed with its progress and an estimate of the time left in the notifications
+popover (and its progress in the browser tab title).
 
 In this project the demo is on the `/test` page, against a slow mock of the API at
 `app/api/ai-models/multipart-upload/`.
@@ -54,11 +55,11 @@ From the backend's Swagger. The URLs are `AI_MODEL_UPLOAD_START_URL` and
 | 1. Start | `POST /api/ai-models/multipart-upload/` | `application/json` body `{ "name": "...", "modelKey": "..." }`. Header `Upload-Length: <file size>` (required, max 5497558138880). | `200`, plain text: the model artifact id, `AMAR-<uuid>`. |
 | 2. Chunk | `PATCH /api/ai-models/multipart-upload/{artifactId}` | The chunk's raw bytes. Headers `Upload-Offset: <byte offset of the chunk>`, `Upload-Length: <file size>`. | 2xx |
 | 3. Resume | `HEAD /api/ai-models/multipart-upload/{artifactId}` | Header `Upload-Length`. | Header `Upload-Offset: <next expected offset>`. |
-| 4. Cancel | `DELETE /api/ai-models/multipart-upload/{artifactId}` | Header `Upload-Length`. Sent when a failed upload is cleared away. | 2xx |
+| 4. Cancel | `DELETE /api/ai-models/multipart-upload/{artifactId}` | Header `Upload-Length`. Sent for a failed upload when Retry starts it over or it is cleared away. | 2xx |
 
 Step 1 runs once, step 2 once per chunk until the whole file is sent; the last chunk completes the
-upload, there is no "complete" request. Step 3 runs after a chunk failed and when Retry resumes an
-upload, step 4 only when a failed upload is cleared away (it can no longer be resumed then). An upload
+upload, there is no "complete" request. Step 3 runs after a chunk failed, to continue from where the
+server got to. Step 4 runs for a failed upload when Retry starts it over or it is cleared away. An upload
 that is abandoned another way (the tab is closed) stays unfinished on the server, which should expire it.
 `useAiModelUploadCancelMutation` sends step 4. This is FilePond's own chunked protocol, with the metadata sent as JSON and the
 id in the path instead of `?patch=<id>`.
@@ -120,22 +121,28 @@ gets no `server` option. It owns its list while mounted and reports every change
 7. **A chunk failed:** wait 500 ms, then 1 s, then 3 s (`AI_MODEL_UPLOAD_CHUNK_RETRY_DELAYS`); before
    each retry `HEAD .../{artifactId}` asks where to continue. A request that does not answer within
    `AI_MODEL_UPLOAD_REQUEST_TIMEOUT_MS` (60 s) counts as failed.
-8. **Out of retries:** the mutation fails. The upload stays on the server, so it can be resumed.
+8. **Out of retries:** the mutation fails.
 9. **The last chunk is confirmed:** `onSuccess` marks the item `completed` at 100%. Or `onError`
-   marks it `failed` with the server's message, keeping its progress and artifact id.
+   marks it `failed` with the server's message.
 
 **Meanwhile**
 
 10. Every progress update goes to the store, so the dialog, the rows under the bell, the bell's dot
     and the tab title (`45% (1/2) | Page`) all move together.
-11. The dialog can be closed at any time; the mutation keeps going. Opened again, it is an empty form
+11. **Time left:** each confirmed chunk also records the bytes on the server and the time
+    (`recordProgress`). The upload speed is a moving average of those samples
+    (`AI_MODEL_UPLOAD_SPEED_SMOOTHING`), so one slow chunk does not make the estimate jump. Under each
+    running upload's bar, `AiModelUploadTimeRemaining` shows the bytes still to send divided by that
+    speed, counting down every second between chunks: "Calculating time left…" until the second chunk,
+    then e.g. "About 3 min 20 sec left", and "A few seconds left" at the end.
+12. The dialog can be closed at any time; the mutation keeps going. Opened again, it is an empty form
     for the next model, with the running uploads listed on top. Each Upload press is its own
     mutation, so any number of uploads run in parallel.
-12. **When an upload ends** the dialog shows "Upload completed" or "The upload failed", with
-    **New upload** (back to the form) and, after a failure, **Retry**. Retry **resumes**: it asks
-    `HEAD .../{artifactId}` where the failed attempt got to and continues from there with the same
-    artifact id, no new `POST`. Only if the server no longer knows the upload (404 or 410) does it start
-    over with a new `POST`. If the network is still down, the retry fails again and Retry stays.
+13. **When an upload ends** the dialog shows "Upload completed" or "The upload failed", with
+    **New upload** (back to the form) and, after a failure, **Retry**. Retry **starts over**: it
+    `DELETE`s the failed attempt on the server (best effort) and runs the mutation again (steps 4 to 9),
+    with a new `POST` and a new artifact id, from 0%. If the network is still down, the retry fails
+    again and Retry stays.
     **Clear finished** under the bell removes uploads that are done, and `DELETE`s the failed ones on
     the server.
 
@@ -150,14 +157,14 @@ gets no `server` option. It owns its list while mounted and reports every change
 | `AiModelUploadActionBar`, `AiModelUploadSubmitButton`, `AiModelUploadNewUploadButton`, `AiModelUploadRetryButton` | The row under the drop zone and its buttons. The Retry button reads the store and starts the mutations itself, remove it to remove retry. |
 | `AiModelUploadInProgressAlert`, `AiModelUploadInProgressSection` | "You can close this dialog" alert, and the still-running uploads at the top of a reopened dialog. |
 | `AiModelUploadCompletedMessage`, `AiModelUploadFailedMessage`, `AiModelUploadRejectedMessage` | Result and validation messages. |
-| `AiModelUploadStatusList`, `AiModelUploadStatusRow`, `AiModelUploadProgressBar`, `AiModelUploadStatusEmpty` | Progress rows: name, model key and file, bar (yellow below 70%, green from 70%, red when failed). |
+| `AiModelUploadStatusList`, `AiModelUploadStatusRow`, `AiModelUploadProgressBar`, `AiModelUploadTimeRemaining`, `AiModelUploadStatusEmpty` | Progress rows: name, model key and file, bar (yellow below 70%, green from 70%, red when failed), and the time left while it runs. |
 | `AiModelUploadStatusOverview`, `AiModelUploadClearFinishedButton`, `AiModelUploadActiveIndicator` | Store-connected pieces for a notifications popover. Clearing also cancels the cleared failed uploads on the server. |
 | `AiModelUploadDocumentTitle` | Progress in the browser tab title. Mount once. |
 | `useAiModelUpload` | What the form needs: phase, staged files, session, `startUpload`, `endSession`. |
-| `useAiModelUploadMutation`, `useAiModelUploadCancelMutation` | The TanStack Query mutations that upload one file (or resume it) and cancel one on the server. |
+| `useAiModelUploadMutation`, `useAiModelUploadCancelMutation` | The TanStack Query mutations that upload one file and cancel one on the server. |
 | `ai-model-upload-urls.constants.ts` | The API URLs. The file to change per project. |
-| `ai-model-upload.constants.ts` | Statuses, phases, chunk size, retries, timeout, wording. |
-| `ai-model-upload.api.ts`, `ai-model-upload.uploader.ts` | The four requests, and the start/resume and chunk loop that uses them. |
+| `ai-model-upload.constants.ts` | Statuses, phases, chunk size, retries, timeout, speed smoothing, wording. |
+| `ai-model-upload.api.ts`, `ai-model-upload.uploader.ts` | The four requests, and the start and chunk loop that uses them. |
 | `ai-model-upload.store.ts`, `ai-model-upload.models.ts`, `ai-model-upload.schema.ts`, `ai-model-upload.utils.ts` | State, types, Zod schema, helpers. |
 
 ## The mock

@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 
-import { isAiModelUploadActive } from './ai-model-upload.utils';
+import { isAiModelUploadActive, getNextBytesPerSecond } from './ai-model-upload.utils';
 import { AI_MODEL_UPLOAD_STATUS } from './ai-model-upload.constants';
 
 import type { AiModelUploadFormValues } from './ai-model-upload.schema';
-import type { AiModelUploadItem, AiModelUploadVariables } from './ai-model-upload.models';
+import type { AiModelUploadItem, AiModelUploadVariables, AiModelUploadRetryPlan } from './ai-model-upload.models';
 
 /**
  * Global upload state. It lives outside of React on purpose: the dialog can be closed and unmounted
@@ -34,11 +34,14 @@ interface AiModelUploadState {
     /** Forgets the batch the dialog was following so it starts empty again. Running uploads are NOT cancelled. */
     endSession: () => void;
     patchUpload: (id: string, patch: Partial<AiModelUploadItem>) => void;
+    /** The upload started or a chunk was confirmed: updates the progress and the smoothed speed. */
+    recordProgress: (id: string, uploadedBytes: number, progress: number) => void;
     /**
-     * Marks the failed files as queued again. Pass a batch id to only take that batch. Returns what the
-     * upload mutation needs for each, including the artifact id to resume from.
+     * Puts the failed files back to queued at 0%, to be uploaded again from the start. Pass a batch id to
+     * only take that batch. Returns what the upload mutation needs for each, and the failed attempts
+     * that exist on the server, so they can be cancelled there.
      */
-    prepareRetry: (batchId?: string) => AiModelUploadVariables[];
+    prepareRetry: (batchId?: string) => AiModelUploadRetryPlan;
     /** The file of an upload is no longer needed once it reached the server. */
     releaseUploadFile: (id: string) => void;
     /**
@@ -89,6 +92,9 @@ export const useAiModelUploadStore = create<AiModelUploadState>()((set, get) => 
         size: file.size,
         status: AI_MODEL_UPLOAD_STATUS.queued,
         progress: 0,
+        uploadedBytes: 0,
+        bytesPerSecond: null,
+        progressUpdatedAt: null,
         artifactId: null,
         error: null,
         startedAt: startedAt,
@@ -105,7 +111,6 @@ export const useAiModelUploadStore = create<AiModelUploadState>()((set, get) => 
         file: files[index],
         name: item.name,
         modelKey: item.modelKey,
-        resumeArtifactId: null,
       }));
     },
 
@@ -119,8 +124,27 @@ export const useAiModelUploadStore = create<AiModelUploadState>()((set, get) => 
       }));
     },
 
+    recordProgress: (id: string, uploadedBytes: number, progress: number) => {
+      const now: number = Date.now();
+      set((state: AiModelUploadState) => ({
+        uploads: state.uploads.map((upload: AiModelUploadItem) => {
+          if (upload.id !== id) {
+            return upload;
+          }
+          // the first report of a run only sets the starting point; a report with no new bytes (after a
+          // failed chunk) restarts the clock, so the wait before a retry does not count as slow upload speed
+          const bytesPerSecond: number | null =
+            upload.progressUpdatedAt === null ?
+              upload.bytesPerSecond
+            : getNextBytesPerSecond(upload.bytesPerSecond, uploadedBytes - upload.uploadedBytes, now - upload.progressUpdatedAt);
+          return { ...upload, progress, uploadedBytes, bytesPerSecond, progressUpdatedAt: now };
+        }),
+      }));
+    },
+
     prepareRetry: (batchId?: string) => {
       const retried: AiModelUploadVariables[] = [];
+      const abandoned: AiModelUploadItem[] = [];
       set((state: AiModelUploadState) => ({
         uploads: state.uploads.map((upload: AiModelUploadItem) => {
           const file: File | undefined = uploadFiles.get(upload.id);
@@ -128,12 +152,24 @@ export const useAiModelUploadStore = create<AiModelUploadState>()((set, get) => 
           if (upload.status !== AI_MODEL_UPLOAD_STATUS.failed || !isInScope || !file) {
             return upload;
           }
-          // the failed attempt is still on the server: the retry continues it, the progress stays until the server says where
-          retried.push({ uploadId: upload.id, file: file, name: upload.name, modelKey: upload.modelKey, resumeArtifactId: upload.artifactId });
-          return { ...upload, status: AI_MODEL_UPLOAD_STATUS.queued, error: null };
+          // the retry starts over with a new POST, so the failed attempt is of no use on the server
+          if (upload.artifactId !== null) {
+            abandoned.push(upload);
+          }
+          retried.push({ uploadId: upload.id, file: file, name: upload.name, modelKey: upload.modelKey });
+          return {
+            ...upload,
+            status: AI_MODEL_UPLOAD_STATUS.queued,
+            error: null,
+            progress: 0,
+            uploadedBytes: 0,
+            bytesPerSecond: null,
+            progressUpdatedAt: null,
+            artifactId: null,
+          };
         }),
       }));
-      return retried;
+      return { uploads: retried, abandonedUploads: abandoned };
     },
 
     releaseUploadFile: (id: string) => {
