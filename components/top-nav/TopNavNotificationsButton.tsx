@@ -1,14 +1,14 @@
 import NotificationsSection from '@/components/notifications/NotificationsSection';
 import NotificationsPopover from '@/components/notifications/NotificationsPopover';
-import FileUploadStatusOverview from '@/components/file-upload/FileUploadStatusOverview';
-import FileUploadActiveIndicator from '@/components/file-upload/FileUploadActiveIndicator';
-import FileUploadClearFinishedButton from '@/components/file-upload/FileUploadClearFinishedButton';
+import AiModelUploadStatusOverview from '@/components/ai-model-upload/AiModelUploadStatusOverview';
+import AiModelUploadActiveIndicator from '@/components/ai-model-upload/AiModelUploadActiveIndicator';
+import AiModelUploadClearFinishedButton from '@/components/ai-model-upload/AiModelUploadClearFinishedButton';
 
 export default function TopNavNotificationsButton() {
   return (
-    <NotificationsPopover indicator={ <FileUploadActiveIndicator /> }>
-      <NotificationsSection title="Upload Status" action={ <FileUploadClearFinishedButton /> }>
-        <FileUploadStatusOverview />
+    <NotificationsPopover indicator={ <AiModelUploadActiveIndicator /> }>
+      <NotificationsSection title="Upload Status" action={ <AiModelUploadClearFinishedButton /> }>
+        <AiModelUploadStatusOverview />
       </NotificationsSection>
     </NotificationsPopover>
   );
