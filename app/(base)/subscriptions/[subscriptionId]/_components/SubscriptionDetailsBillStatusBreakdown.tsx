@@ -57,7 +57,7 @@ const STATUS_SEGMENTS: StatusSegment[] = [
     getRules: (endOfToday) => [
       `Paid is not checked, and the due date is on or before the end of today: ${endOfToday}.`,
       'A bill due later today counts here, not under Upcoming.',
-      'A bill marked reimbursed but not paid also counts here when it is due today or earlier. Due later, it is Upcoming.',
+      'A bill marked reimbursed but not paid also counts here when it is due today or earlier. Due after today, it is Upcoming.',
       ALL_BILLS_RULE,
       ONE_STATUS_RULE,
     ],

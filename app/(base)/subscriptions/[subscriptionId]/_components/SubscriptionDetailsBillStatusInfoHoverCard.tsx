@@ -24,7 +24,7 @@ export default function SubscriptionDetailsBillStatusInfoHoverCard({ label, rule
           type="button"
           aria-label={ `How "${label}" is counted` }
           aria-expanded={ isOpen }
-          onPointerUp={ (event: React.PointerEvent<HTMLButtonElement>) => {
+          onPointerDown={ (event: React.PointerEvent<HTMLButtonElement>) => {
             // a mouse already opened it on hover, so only taps and pens toggle it
             if (event.pointerType !== 'mouse') {
               setIsOpen((open: boolean) => !open);
