@@ -1,5 +1,6 @@
 import ApiStatusButton from './ApiStatusButton';
 import TopNavWelcomeButton from './TopNavWelcomeButton';
+import TopNavNotificationsButton from './TopNavNotificationsButton';
 import ThemeAndMoreSettingsMenu from './ThemeAndMoreSettingsMenu';
 import ResourcesDropdownMenuButton from './ResourcesDropdownMenuButton';
 
@@ -9,6 +10,7 @@ export default function TopNavRightActionButtons() {
       <ApiStatusButton />
       <TopNavWelcomeButton />
       <ResourcesDropdownMenuButton />
+      <TopNavNotificationsButton />
       <ThemeAndMoreSettingsMenu />
     </div>
   );
