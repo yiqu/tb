@@ -21,7 +21,12 @@ export default function SubscriptionDetailsBillStatusBar({ segments, statusBreak
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="flex h-3 w-full cursor-help flex-row gap-x-0.5 overflow-hidden rounded-full" aria-label="Bill status bar">
+        <div
+          role="img"
+          tabIndex={ 0 }
+          aria-label="Bill status bar"
+          className="flex h-3 w-full cursor-help flex-row gap-x-0.5 overflow-hidden rounded-full"
+        >
           { segments
             .filter((segment) => statusBreakdown[segment.id] > 0)
             .map((segment) => (
@@ -39,8 +44,8 @@ export default function SubscriptionDetailsBillStatusBar({ segments, statusBreak
             { `How all ${totalCount} ${totalCount === 1 ? 'bill is' : 'bills are'} split by status` }
           </Typography>
           <Typography variant="body0">
-            Each colored part is one status, and its width is that status&apos;s share of the bill count (not the cost). Every bill is in exactly one
-            status, so the parts add up to 100%.
+            Each colored part is one status, and its width is about that status&apos;s share of the bill count (not the cost). Every bill is in
+            exactly one status, so the counts below add up to all bills.
           </Typography>
           <ColumnStack className="gap-y-0.5">
             { segments.map((segment) => (
