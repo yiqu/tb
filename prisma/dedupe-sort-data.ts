@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Removes duplicate SortData records so `pageId` can carry a unique index.
  * For each pageId it keeps the most recently written record (updatedAt, falling back to dateAdded) and deletes the rest.
@@ -20,6 +21,9 @@ interface SortDataRow {
 const prisma = new PrismaClient();
 const shouldApply: boolean = process.argv.includes('--apply');
 
+const describe = (row: SortDataRow): string =>
+  `${row.id} (${row.sortField} ${row.sortDirection}, last written ${(row.updatedAt ?? row.dateAdded).toISOString()})`;
+
 const lastWrittenAt = (row: SortDataRow): number => (row.updatedAt ?? row.dateAdded).getTime();
 
 async function main(): Promise<void> {
@@ -35,7 +39,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const idsToDelete: string[] = [];
+  const rowsToDelete: SortDataRow[] = [];
   for (const { pageId } of duplicatedPageIds) {
     const rows: SortDataRow[] = await prisma.sortData.findMany({
       where: { pageId },
@@ -43,17 +47,40 @@ async function main(): Promise<void> {
     });
     const [kept, ...duplicates] = [...rows].sort((a: SortDataRow, b: SortDataRow) => lastWrittenAt(b) - lastWrittenAt(a));
 
-    console.log(`${pageId}: keeping ${kept.id} (${kept.sortField} ${kept.sortDirection}), removing ${duplicates.length}`);
-    idsToDelete.push(...duplicates.map((row: SortDataRow) => row.id));
+    console.log(`${pageId}: keeping ${describe(kept)}, removing ${duplicates.length}`);
+    duplicates.forEach((row: SortDataRow) => console.log(`  - remove ${describe(row)}`));
+    rowsToDelete.push(...duplicates);
   }
 
   if (!shouldApply) {
-    console.log(`Dry run: ${idsToDelete.length} record(s) would be deleted. Re-run with --apply to delete them.`);
+    console.log(`Dry run: ${rowsToDelete.length} record(s) would be deleted. Re-run with --apply to delete them.`);
     return;
   }
 
-  const { count } = await prisma.sortData.deleteMany({ where: { id: { in: idsToDelete } } });
-  console.log(`Deleted ${count} duplicate SortData record(s).`);
+  // Delete each record only if it is unchanged since the scan, so a sort saved by the app meanwhile is never lost.
+  let deletedCount = 0;
+  const changedRows: SortDataRow[] = [];
+  for (const row of rowsToDelete) {
+    const { count } = await prisma.sortData.deleteMany({
+      where: {
+        id: row.id,
+        sortField: row.sortField,
+        sortDirection: row.sortDirection,
+        ...(row.updatedAt ? { updatedAt: row.updatedAt } : { OR: [{ updatedAt: null }, { updatedAt: { isSet: false } }] }),
+      },
+    });
+    if (count === 0) {
+      changedRows.push(row);
+    }
+    deletedCount += count;
+  }
+
+  console.log(`Deleted ${deletedCount} duplicate SortData record(s).`);
+  if (changedRows.length > 0) {
+    console.log(`Skipped ${changedRows.length} record(s) that changed since the scan: ${changedRows.map((row: SortDataRow) => row.id).join(', ')}.`);
+    console.log('Run the script again to re-check them.');
+    process.exitCode = 1;
+  }
 }
 
 main()
