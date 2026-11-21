@@ -1,28 +1,29 @@
 # File upload
 
 Composable file upload pieces built on [FilePond](https://pqina.nl/filepond/docs/) and
-[react-filepond](https://github.com/pqina/react-filepond). The example that wires them together
-lives on the `/test` page (`app/(base)/test/_components/file-upload-demo/`), and it uploads to a
-slow mock server at `app/api/filepond-mock/route.ts`. The mock keeps chunk state in the memory of
+[react-filepond](https://github.com/pqina/react-filepond). The AI model upload form that wires them together
+lives on the `/test` page (`app/(base)/test/_components/ai-model-upload/`), and it uploads to a
+slow mock of the AI model API at `app/api/ai-models-mock/multipart-upload/`. The mock keeps chunk state in the memory of
 one process, so it only works with a single server process (`next dev`, one `next start`), not
 behind a load balancer or on serverless functions.
 
 ## What was built
 
-- **Upload dialog** (example on `/test`, "Upload Files"): a package name field, a FilePond drop zone
-  that only accepts `.txt`, the list of staged files, and an Upload button. While files are sent the
-  drop zone is replaced by one progress bar per file and an info alert says the dialog can be closed.
+- **AI model upload dialog** (on `/test`, "Upload AI Model"): required **Name** and **Model Key**
+  fields, a FilePond drop zone for one model file, and an Upload button that stays disabled until
+  both fields are filled in. While the file is sent the
+  drop zone is replaced by its progress bar and an info alert says the dialog can be closed.
   It ends in "Upload completed", or a failed message with **New upload** and **Retry** buttons.
 - **Uploads keep running after the dialog closes.** Progress is still visible in three places:
   - the **notifications bell** in the top nav, which gets a pulsing dot while anything is uploading
     and an "Upload Status" section with every batch and a "Clear finished" button
   - the **browser tab title**, e.g. `45% (1/3) | Playground`
   - the dialog itself when it is opened again: still-running batches are listed on top
-- **Staged files and the typed package name survive closing the dialog**, so nothing is lost by
+- **The staged file and the typed name and model key survive closing the dialog**, so nothing is lost by
   clicking outside it before pressing Upload.
 - **Retry** sends only the failed files again. **Chunked uploads** resume from where the server got
   to, and a request that stalls times out.
-- **A mock FilePond server** (`app/api/filepond-mock/route.ts`) that is slowed down on purpose
+- **A mock of the AI model API** (`app/api/ai-models-mock/multipart-upload/`) that is slowed down on purpose
   (10 to 15 seconds per file) so the progress UI can be seen.
 
 Where things live:
@@ -33,9 +34,9 @@ Where things live:
 | `components/notifications/` | The bell popover and its sections. Not upload specific. |
 | `components/top-nav/TopNavNotificationsButton.tsx` | The bell with the "Upload Status" section. |
 | `app/(base)/BodyParent.tsx` | Mounts `FileUploadDocumentTitle` once for the whole app. |
-| `app/(base)/test/_components/file-upload-demo/` | The example dialog and form, and the server config it uses. |
-| `validators/file-upload/` | Zod schema for the package name. |
-| `app/api/filepond-mock/route.ts` | The mock server. |
+| `app/(base)/test/_components/ai-model-upload/` | The AI model upload dialog and form, and the server config it uses (`ai-model-upload.constants.ts`). |
+| `validators/ai-model-upload/` | Zod schema for name and model key, shared by the form and the mock. |
+| `app/api/ai-models-mock/multipart-upload/` | The mock server: `route.ts` (start), `[artifactId]/route.ts` (chunk, resume, cancel). |
 
 ## How FilePond fits in
 
@@ -78,15 +79,16 @@ FilePond's built-in uploading if that limitation ever goes away.
 ## 1. URLs your backend needs
 
 Everything is driven by one config object (`FileUploadServerConfig`, see
-`file-upload-demo.constants.ts`). Point `url` at your backend and these are the requests it will
-receive. `<url>` is that base url, for the mock it is `/api/filepond-mock`.
+`ai-model-upload.constants.ts`). Point `url` at your backend and these are the requests it will
+receive. `<url>` is that base url. Sections 1 and 2 describe the plain FilePond protocol; the AI model
+API is a variant of its chunked part, see [The AI model API](#the-ai-model-api).
 
 ### Required: process (the upload itself)
 
 | | |
 | --- | --- |
 | Request | `POST <url>` |
-| Body | `multipart/form-data`. The configured `fieldName` (default `filepond`) contains the file and, when metadata is provided, a JSON metadata part before it (here `{"packageName":"..."}`). |
+| Body | `multipart/form-data`. The configured `fieldName` (default `filepond`) contains the file and, when metadata is provided, a JSON metadata part before it (e.g. `{"name":"..."}`). |
 | Response | `200`, `text/plain`, the body is a unique id for the stored file (for example `a1b2c3`). |
 
 That single endpoint is enough to make uploads work. Set `chunkUploads: false` in the config and
@@ -126,6 +128,32 @@ server answers with. The upload fails once the delays are used up.
 
 Removes a file that was uploaded. The UI does not call it yet (`revertUploadedFile` in
 `file-upload.uploader.ts` is ready for it), but FilePond clients expect it to exist.
+
+### The AI model API
+
+The backend for AI models follows the chunked flow above with a few differences. Config in
+`ai-model-upload.constants.ts` (`AI_MODEL_UPLOAD_SERVER`):
+
+| Step | Request | Details | Response |
+| --- | --- | --- | --- |
+| Start | `POST /api/ai-models/multipart-upload/` | `application/json` body `{ "name": "...", "modelKey": "..." }`. Header `Upload-Length: <file size>` (required, max 5497558138880). | `200`, `text/plain`, the model artifact id `AMAR-<uuid>`. |
+| Each chunk | `PATCH /api/ai-models/multipart-upload/<id>` | Raw chunk bytes. Headers `Upload-Offset`, `Upload-Length`. | 2xx |
+| Resume | `HEAD /api/ai-models/multipart-upload/<id>` | Header `Upload-Length`. Sent after a chunk failed. | Header `Upload-Offset`. |
+| Cancel | `DELETE /api/ai-models/multipart-upload/<id>` | Header `Upload-Length`. Sent once an upload has failed for good. | 2xx |
+
+What the config sets to get there:
+
+- `processBodyFormat: 'json'`: the start body is the metadata as JSON instead of FilePond's
+  multipart. A JSON body cannot carry a file, so every file goes through the chunked flow.
+- `processPath: '/'` and `patchPath: '/'`: the id goes in the path (`<url>/<id>`), not in `?patch=`.
+- `cancelPath: '/'`: when the retries run out, `DELETE <url>/<id>` stops the transfer on the server.
+- `HEAD` always carries `Upload-Length` (FilePond does not send it, FilePond servers ignore it).
+- `name` is the name the backend saves the file under. It replaces the original file name, which
+  is still sent as `Upload-Name` on each chunk like FilePond does.
+- The chunk size is the smaller of 5MB (FilePond's default) and 1/25 of the file, so small files
+  still move in steps. The backend's real limit is not confirmed yet.
+- Not confirmed yet either: whether `PATCH` expects `Content-Type: application/offset+octet-stream`.
+  That is what FilePond and the tus resumable upload protocol send for raw offset chunks.
 
 ### Changing the paths
 
@@ -169,20 +197,21 @@ their final place. If the form is never submitted the server can clean the tempo
 
 ### In this project, step by step
 
-Using the example dialog (`FILE_UPLOAD_DEMO_SERVER`: chunked, 3 files at a time).
+Using the AI model upload dialog (`AI_MODEL_UPLOAD_SERVER`: always chunked, JSON start body).
 
 **Before the upload**
 
 1. **The dialog opens.** If the last Upload finished (or nothing was uploaded yet), `endSession()`
    resets the dialog to an empty form. A session with failed files is kept, so its Retry button is
    still there. Files that were only staged are always kept.
-2. **The user types a package name** and drops or browses files. FilePond calls `beforeAddFile` for
-   each file: anything not `.txt` is refused, and its name goes into the "skipped" message.
+2. **The user types a name and a model key** and drops or browses the model file. FilePond calls
+   `beforeAddFile` for each file: anything not in `AI_MODEL_UPLOAD_ALLOWED_EXTENSIONS` (empty, so
+   any type for now) is refused, and its name goes into the "skipped" message.
 3. **FilePond adds the file to its list** and calls `onaddfile`. `reportFiles` copies FilePond's
    current list into the store as `stagedFiles`. The phase becomes `staging` and the Upload button
    shows. Nothing has left the browser yet.
-4. **Upload is pressed.** React Hook Form runs the Zod schema on the package name. If it passes,
-   `startUpload({ packageName })` is called.
+4. **Upload is pressed.** It is only enabled once both fields pass the Zod schema
+   (`aiModelUploadSchema`). `startUpload({ name, modelKey })` is called.
 
 **Starting the batch** (`file-upload.store.ts`, `startUpload`)
 
@@ -198,18 +227,20 @@ Using the example dialog (`FILE_UPLOAD_DEMO_SERVER`: chunked, 3 files at a time)
 **Sending one file** (`file-upload.uploader.ts`, `uploadFile`)
 
 8. **Chunked or not?** Chunked when `chunkUploads` is on and the file is larger than `chunkSize`
-   (or `chunkForce` is on, as in the example). Otherwise it is one request:
+   (or `chunkForce` is on), and always with `processBodyFormat: 'json'`. Otherwise it is one request:
    - **One request:** a `FormData` with the metadata JSON and then the file, both under
      `filepond`, is sent as `POST <url>`. Progress follows the browser's upload progress event and is
      held at 99% until the server answers. The answer text is the file's server id.
-9. **Chunked, start the transfer:** `POST <url>` with only the metadata and the header
-   `Upload-Length: <file size>`. The server answers with a transfer id.
+9. **Chunked, start the transfer:** `POST <url>` with only the metadata (here the JSON
+   `{ name, modelKey }`) and the header `Upload-Length: <file size>`. The server answers with a
+   transfer id (here the model artifact id `AMAR-<uuid>`).
 10. **Chunked, send the chunks one after the other:** `file.slice(offset, offset + chunkSize)` is sent
-    as `PATCH <url>?patch=<id>` with `Upload-Offset`, `Upload-Length` and `Upload-Name`. After the
+    as `PATCH <url>/<id>` with `Upload-Offset`, `Upload-Length` and `Upload-Name`. After the
     server confirms a chunk, the offset moves forward and the progress becomes `offset / size`.
 11. **A chunk failed:** wait (500 ms, then 1 s, then 3 s), ask the server how far it got with
-    `HEAD <url>?patch=<id>`, and continue from the `Upload-Offset` it returns. After the third
-    retry fails, the file fails.
+    `HEAD <url>/<id>` (with `Upload-Length`), and continue from the `Upload-Offset` it returns.
+    After the third retry fails, `DELETE <url>/<id>` cancels the transfer on the server and the
+    file fails.
 12. **Stalls:** every request has a watchdog (`timeout`, default 60 s) that restarts on each progress
     event. If nothing moves and no answer comes for that long, the request is aborted and counts as
     failed.
@@ -229,7 +260,7 @@ Using the example dialog (`FILE_UPLOAD_DEMO_SERVER`: chunked, 3 files at a time)
 17. The phase comes from the session's items: `completed` when all are done, `failed` when all are
     done and at least one failed. The dialog shows "Upload completed", or the failed message with:
     - **Retry**, which puts only the failed files back in the queue (from 0%) and goes to step 7
-    - **New upload**, which clears the session and brings back the drop zone, keeping the package
+    - **New upload**, which clears the session and brings back the drop zone, keeping the name and
       name and leaving the failed files listed under the bell
 18. The tab title shows the final state for a few seconds, then goes back to the page title.
 19. **Clear finished** under the bell removes every batch that has no file still running.

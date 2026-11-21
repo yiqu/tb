@@ -30,6 +30,16 @@ export const FILE_UPLOAD_PROGRESS_COLOR_THRESHOLD = 70;
 export const FILE_UPLOAD_DEFAULT_FIELD_NAME = 'filepond';
 
 /** FilePond's default chunk size (5MB). */
+/**
+ * How the metadata of a chunked upload's first `POST` is sent:
+ * - `multipart`: FilePond's way, `multipart/form-data` with the metadata JSON under the field name
+ * - `json`: the metadata object itself as an `application/json` body
+ */
+export const FILE_UPLOAD_PROCESS_BODY_FORMAT = {
+  multipart: 'multipart',
+  json: 'json',
+} as const;
+
 export const FILE_UPLOAD_DEFAULT_CHUNK_SIZE = 5_000_000;
 
 /** FilePond's default for `maxParallelUploads`. */

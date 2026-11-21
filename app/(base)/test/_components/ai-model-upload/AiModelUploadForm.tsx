@@ -22,10 +22,19 @@ import FileUploadInProgressSection from '@/components/file-upload/FileUploadInPr
 import FileUploadFailedMessage from '@/components/file-upload/FileUploadFailedMessage';
 import FileUploadRejectedMessage from '@/components/file-upload/FileUploadRejectedMessage';
 import FileUploadCompletedMessage from '@/components/file-upload/FileUploadCompletedMessage';
-import { fileUploadPackageSchema, FileUploadPackageFormValues } from '@/validators/file-upload/file-upload-package.schema';
+import { aiModelUploadSchema, AiModelUploadFormValues } from '@/validators/ai-model-upload/ai-model-upload.schema';
 
-import { useFileUploadDemoStore } from './file-upload-demo.store';
-import { FILE_UPLOAD_DEMO_SERVER, FILE_UPLOAD_DEMO_ALLOWED_EXTENSIONS } from './file-upload-demo.constants';
+import { useAiModelUploadStore, AI_MODEL_UPLOAD_EMPTY_DRAFT } from './ai-model-upload.store';
+import {
+  AI_MODEL_UPLOAD_SERVER,
+  AI_MODEL_UPLOAD_NAME_LABEL,
+  AI_MODEL_UPLOAD_ALLOW_MULTIPLE,
+  AI_MODEL_UPLOAD_NEW_UPLOAD_LABEL,
+  AI_MODEL_UPLOAD_MODEL_KEY_LABEL,
+  AI_MODEL_UPLOAD_NAME_PLACEHOLDER,
+  AI_MODEL_UPLOAD_ALLOWED_EXTENSIONS,
+  AI_MODEL_UPLOAD_MODEL_KEY_PLACEHOLDER,
+} from './ai-model-upload.constants';
 
 // FilePond is only needed once the dialog shows the drop zone, so it is loaded then and kept out of the page's main bundle
 const FileUploadDropzone = dynamic(() => import('@/components/file-upload/FileUploadDropzone'), {
@@ -40,31 +49,33 @@ const REJECTED_MESSAGE_GRACE_MS = 1000;
  * The body of the upload dialog, one block per phase:
  *
  * - reopened while earlier uploads are still running: their progress on top, then a divider, then the form below
- * - empty / staging: package name, divider, drop zone (FilePond lists the staged files itself)
- * - staging: the action bar with the Upload button shows up
+ * - empty / staging: name, model key, divider, drop zone (FilePond lists the staged file itself)
+ * - staging: the action bar with the Upload button shows up, enabled once name and model key are valid
  * - uploading: an info alert says the dialog can be closed, the drop zone is replaced by the progress of each file, the Upload button is disabled with a spinner
  * - completed: "Upload completed", the Upload button is gone
  * - failed: a message, a "New upload" button that goes back to the drop zone, and the retry button, which sends only the failed files again
  */
-export default function FileUploadDemoForm() {
-  const { phase, stagedFiles, sessionBatchId, sessionUploads, hasStarted, isUploading, setStagedFiles, startUpload, endSession } = useFileUpload(FILE_UPLOAD_DEMO_SERVER);
-  const draftPackageName = useFileUploadDemoStore((state) => state.draftPackageName);
-  const setDraftPackageName = useFileUploadDemoStore((state) => state.setDraftPackageName);
+export default function AiModelUploadForm() {
+  const { phase, stagedFiles, sessionBatchId, sessionUploads, hasStarted, isUploading, setStagedFiles, startUpload, endSession } = useFileUpload(AI_MODEL_UPLOAD_SERVER);
+  const draft = useAiModelUploadStore((state) => state.draft);
+  const setDraft = useAiModelUploadStore((state) => state.setDraft);
   const [rejectedFileNames, setRejectedFileNames] = useState<string[]>([]);
   const lastRejectedAtRef = useRef<number>(0);
 
-  const methods = useForm<FileUploadPackageFormValues>({
-    defaultValues: { packageName: draftPackageName },
-    resolver: zodResolver(fileUploadPackageSchema),
+  const methods = useForm<AiModelUploadFormValues>({
+    defaultValues: draft,
+    resolver: zodResolver(aiModelUploadSchema),
     mode: 'onChange',
   });
 
   const { watch } = methods;
   useEffect(() => {
-    // keep the typed package name while the dialog is closed, like the staged files
-    const subscription = watch((values) => setDraftPackageName(values.packageName ?? ''));
+    // keep what was typed while the dialog is closed, like the staged files
+    const subscription = watch((values) => setDraft({ name: values.name ?? '', modelKey: values.modelKey ?? '' }));
     return () => subscription.unsubscribe();
-  }, [watch, setDraftPackageName]);
+  }, [watch, setDraft]);
+  // the Upload button stays disabled until both fields pass the schema
+  const isFormValid: boolean = methods.formState.isValid;
 
   const handleOnFilesChange = (files: File[]) => {
     // a later selection clears the "skipped" message, the selection that caused it does not
@@ -79,21 +90,21 @@ export default function FileUploadDemoForm() {
     setRejectedFileNames((current: string[]) => (current.includes(fileName) ? current : [...current, fileName]));
   };
 
-  const handleOnUpload = (data: FileUploadPackageFormValues) => {
-    // pressing Enter in the package name submits the form too, there may be nothing to upload yet
+  const handleOnUpload = (data: AiModelUploadFormValues) => {
+    // pressing Enter in a field submits the form too, there may be nothing to upload yet
     if (stagedFiles.length === 0) {
       return;
     }
-    // FilePond posts the metadata next to every file, under the same field name
-    startUpload({ packageName: data.packageName });
-    setDraftPackageName('');
+    // sent as the JSON body of the start request: `name` replaces the file's own name on the backend
+    startUpload({ name: data.name, modelKey: data.modelKey });
+    setDraft(AI_MODEL_UPLOAD_EMPTY_DRAFT);
   };
 
   const handleOnNewUpload = () => {
     // a new selection starts clean, the last selection's rejected names no longer apply
     setRejectedFileNames([]);
-    // Upload cleared the draft but the field still shows the name, save it back so a reopen keeps it
-    setDraftPackageName(methods.getValues('packageName') ?? '');
+    // Upload cleared the draft but the fields still show the values, save them back so a reopen keeps them
+    setDraft({ name: methods.getValues('name') ?? '', modelKey: methods.getValues('modelKey') ?? '' });
     endSession();
   };
 
@@ -105,9 +116,17 @@ export default function FileUploadDemoForm() {
 
         <HFInputField
           control={ methods.control }
-          name="packageName"
-          label="Package Name"
-          placeholder="Enter a package name"
+          name="name"
+          label={ AI_MODEL_UPLOAD_NAME_LABEL }
+          placeholder={ AI_MODEL_UPLOAD_NAME_PLACEHOLDER }
+          autoComplete="off"
+          disabled={ hasStarted }
+        />
+        <HFInputField
+          control={ methods.control }
+          name="modelKey"
+          label={ AI_MODEL_UPLOAD_MODEL_KEY_LABEL }
+          placeholder={ AI_MODEL_UPLOAD_MODEL_KEY_PLACEHOLDER }
           autoComplete="off"
           disabled={ hasStarted }
         />
@@ -124,17 +143,18 @@ export default function FileUploadDemoForm() {
           <FileUploadDropzone
             files={ stagedFiles }
             onFilesChange={ handleOnFilesChange }
-            allowedExtensions={ FILE_UPLOAD_DEMO_ALLOWED_EXTENSIONS }
+            allowedExtensions={ AI_MODEL_UPLOAD_ALLOWED_EXTENSIONS }
+            allowMultiple={ AI_MODEL_UPLOAD_ALLOW_MULTIPLE }
             onFileRejected={ handleOnFileRejected }
             className="h-56"
           />
-          <FileUploadRejectedMessage fileNames={ rejectedFileNames } allowedExtensions={ FILE_UPLOAD_DEMO_ALLOWED_EXTENSIONS } />
+          <FileUploadRejectedMessage fileNames={ rejectedFileNames } allowedExtensions={ AI_MODEL_UPLOAD_ALLOWED_EXTENSIONS } />
         </ColumnStack>
         }
 
         { phase === FILE_UPLOAD_PHASE.staging || phase === FILE_UPLOAD_PHASE.uploading ?
           <FileUploadActionBar>
-            <FileUploadButton type="submit" isUploading={ isUploading } />
+            <FileUploadButton type="submit" isUploading={ isUploading } disabled={ !isFormValid } />
           </FileUploadActionBar>
         : null }
 
@@ -147,7 +167,7 @@ export default function FileUploadDemoForm() {
             <RowStack className="items-center gap-x-2">
               { /* leaves the failed files in the notifications popover and brings the drop zone back */ }
               <Button type="button" variant="ghost" size="sm" onClick={ handleOnNewUpload }>
-                New upload
+                { AI_MODEL_UPLOAD_NEW_UPLOAD_LABEL }
               </Button>
               { /* optional: remove this element to take the retry feature out */ }
               <FileUploadRetryButton />

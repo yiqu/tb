@@ -12,10 +12,11 @@ import { useFileUploadActions, useFileUploadStore } from '@/components/file-uplo
 
 import type { FileUploadItem } from '@/components/file-upload/file-upload.models';
 
-import FileUploadDemoForm from './FileUploadDemoForm';
+import AiModelUploadForm from './AiModelUploadForm';
+import { AI_MODEL_UPLOAD_DIALOG_TITLE, AI_MODEL_UPLOAD_DIALOG_TRIGGER_LABEL } from './ai-model-upload.constants';
 
-/** The "Upload Files" button and its dialog. Clicking the backdrop closes the dialog, uploads keep running. */
-export default function FileUploadDemoDialog() {
+/** The "Upload AI Model" button and its dialog. Clicking the backdrop closes the dialog, uploads keep running. */
+export default function AiModelUploadDialog() {
   const [open, setOpen] = useState<boolean>(false);
   const { endSession } = useFileUploadActions();
 
@@ -41,11 +42,11 @@ export default function FileUploadDemoDialog() {
         <DialogTrigger asChild>
           <Button type="button" size="sm">
             <Upload />
-            Upload Files
+            { AI_MODEL_UPLOAD_DIALOG_TRIGGER_LABEL }
           </Button>
         </DialogTrigger>
         <StyledDialogContent
-          headerTitle="Upload Files"
+          headerTitle={ AI_MODEL_UPLOAD_DIALOG_TITLE }
           className="
             max-w-[min(600px,calc(100%-2rem))]
             sm:max-w-[600px]
@@ -54,7 +55,7 @@ export default function FileUploadDemoDialog() {
           "
           contentWrapperClassName="pb-4"
         >
-          <FileUploadDemoForm />
+          <AiModelUploadForm />
         </StyledDialogContent>
       </Dialog>
     </RowStack>

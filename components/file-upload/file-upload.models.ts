@@ -1,8 +1,10 @@
-import { FILE_UPLOAD_PHASE, FILE_UPLOAD_STATUS } from './file-upload.constants';
+import { FILE_UPLOAD_PHASE, FILE_UPLOAD_STATUS, FILE_UPLOAD_PROCESS_BODY_FORMAT } from './file-upload.constants';
 
 export type FileUploadStatus = (typeof FILE_UPLOAD_STATUS)[keyof typeof FILE_UPLOAD_STATUS];
 
 export type FileUploadPhase = (typeof FILE_UPLOAD_PHASE)[keyof typeof FILE_UPLOAD_PHASE];
+
+export type FileUploadProcessBodyFormat = (typeof FILE_UPLOAD_PROCESS_BODY_FORMAT)[keyof typeof FILE_UPLOAD_PROCESS_BODY_FORMAT];
 
 /** A value that survives `JSON.stringify` unchanged. */
 export type FileUploadMetadataValue = string | number | boolean | null | FileUploadMetadataValue[] | FileUploadMetadata;
@@ -16,20 +18,20 @@ export interface FileUploadMetadata {
  * Where and how files are uploaded. Mirrors FilePond's own `server` + chunk options
  * (https://pqina.nl/filepond/docs/api/server/), so a real FilePond backend drops in by changing `url`.
  *
- * With `url: '/api/filepond-mock'` the requests are:
+ * With FilePond's defaults and `url: '/api/files'` the requests are (see the README for the AI model API variant):
  *
  * | stage              | request                                                                            |
  * | ------------------ | ---------------------------------------------------------------------------------- |
- * | process            | `POST   /api/filepond-mock`  multipart: `filepond`=metadata JSON, `filepond`=file   |
- * | process (chunked)  | `POST   /api/filepond-mock`  multipart: metadata only, header `Upload-Length`       |
- * | send chunk         | `PATCH  /api/filepond-mock?patch=<id>`  headers `Upload-Offset/Length/Name`         |
- * | resume chunks      | `HEAD   /api/filepond-mock?patch=<id>`  responds with header `Upload-Offset`        |
- * | revert             | `DELETE /api/filepond-mock`  body: `<id>`                                           |
+ * | process            | `POST   /api/files`  multipart: `filepond`=metadata JSON, `filepond`=file   |
+ * | process (chunked)  | `POST   /api/files`  multipart: metadata only, header `Upload-Length`       |
+ * | send chunk         | `PATCH  /api/files?patch=<id>`  headers `Upload-Offset/Length/Name`         |
+ * | resume chunks      | `HEAD   /api/files?patch=<id>`  responds with header `Upload-Offset`        |
+ * | revert             | `DELETE /api/files`  body: `<id>`                                           |
  *
  * `process` responds with the unique server id of the file as `text/plain`.
  */
 export interface FileUploadServerConfig {
-  /** Base url of the FilePond endpoint, e.g. `/api/filepond-mock`. */
+  /** Base url of the upload endpoint, e.g. `/api/ai-models/multipart-upload`. */
   url: string;
   /** Path appended to `url` for the process (upload) request. Defaults to `''` like FilePond's string config. */
   processPath?: string;
@@ -37,6 +39,18 @@ export interface FileUploadServerConfig {
   patchPath?: string;
   /** Path appended to `url` for the revert (DELETE) request. Defaults to `''` like FilePond's string config. */
   revertPath?: string;
+  /**
+   * Not part of FilePond. When set, a chunked upload that fails for good is cancelled on the server with
+   * `DELETE <url><cancelPath><transfer id>` and the header `Upload-Length`, so it does not linger half done.
+   * E.g. `'/'` for `DELETE /api/ai-models/multipart-upload/<id>`.
+   */
+  cancelPath?: string;
+  /**
+   * How the metadata is sent in the first `POST` of a chunked upload. `multipart` (default) is FilePond's
+   * way, `json` sends the metadata object as an `application/json` body. `json` cannot carry a file, so
+   * with it every file is chunked, whatever `chunkUploads` and `chunkForce` say.
+   */
+  processBodyFormat?: FileUploadProcessBodyFormat;
   /** Form field name. Defaults to `filepond`. */
   fieldName?: string;
   /** Extra request headers, e.g. an auth token. */
