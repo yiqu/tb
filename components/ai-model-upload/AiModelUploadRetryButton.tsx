@@ -20,8 +20,9 @@ interface AiModelUploadRetryButtonProps extends Omit<ComponentProps<typeof Butto
 }
 
 /**
- * Sends the failed files again, each as a new upload. Self contained: it reads the upload store and
- * starts the upload mutations itself, and renders nothing while there is no failed file in its scope.
+ * Sends the failed files again. Each one resumes from where the server got to (a new upload only if
+ * the server no longer has it). Self contained: it reads the upload store and starts the upload
+ * mutations itself, and renders nothing while there is no failed file in its scope.
  * Remove the element to take the feature away.
  */
 export default function AiModelUploadRetryButton({ scope = 'session', children, ...props }: AiModelUploadRetryButtonProps) {

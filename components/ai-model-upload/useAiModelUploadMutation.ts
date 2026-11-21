@@ -24,11 +24,12 @@ function patchUpload(id: string, patch: Partial<AiModelUploadItem>): void {
 export function useAiModelUploadMutation() {
   return useMutation<string, Error, AiModelUploadVariables>({
     mutationKey: AI_MODEL_UPLOAD_MUTATION_KEY,
-    mutationFn: ({ uploadId, file, name, modelKey }: AiModelUploadVariables) =>
+    mutationFn: ({ uploadId, file, name, modelKey, resumeArtifactId }: AiModelUploadVariables) =>
       uploadAiModelFile({
         file,
         name,
         modelKey,
+        resumeArtifactId,
         onArtifactId: (artifactId: string) => patchUpload(uploadId, { artifactId }),
         onProgress: (progress: number) => patchUpload(uploadId, { progress: clampProgress(progress) }),
       }),

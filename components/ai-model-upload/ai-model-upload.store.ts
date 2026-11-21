@@ -34,12 +34,18 @@ interface AiModelUploadState {
     /** Forgets the batch the dialog was following so it starts empty again. Running uploads are NOT cancelled. */
     endSession: () => void;
     patchUpload: (id: string, patch: Partial<AiModelUploadItem>) => void;
-    /** Marks the failed files as queued again. Pass a batch id to only take that batch. Returns what the upload mutation needs for each. */
+    /**
+     * Marks the failed files as queued again. Pass a batch id to only take that batch. Returns what the
+     * upload mutation needs for each, including the artifact id to resume from.
+     */
     prepareRetry: (batchId?: string) => AiModelUploadVariables[];
     /** The file of an upload is no longer needed once it reached the server. */
     releaseUploadFile: (id: string) => void;
-    /** Removes every batch whose files are all completed or failed. A cleared session starts over. */
-    clearFinishedUploads: () => void;
+    /**
+     * Removes every batch whose files are all completed or failed. A cleared session starts over.
+     * Returns the failed uploads that were removed and exist on the server, so they can be cancelled there.
+     */
+    clearFinishedUploads: () => AiModelUploadItem[];
   };
 }
 
@@ -94,7 +100,13 @@ export const useAiModelUploadStore = create<AiModelUploadState>()((set, get) => 
         sessionBatchId: batchId,
         uploads: [...items, ...state.uploads],
       }));
-      return items.map((item: AiModelUploadItem, index: number) => ({ uploadId: item.id, file: files[index], name: item.name, modelKey: item.modelKey }));
+      return items.map((item: AiModelUploadItem, index: number) => ({
+        uploadId: item.id,
+        file: files[index],
+        name: item.name,
+        modelKey: item.modelKey,
+        resumeArtifactId: null,
+      }));
     },
 
     endSession: () => {
@@ -116,9 +128,9 @@ export const useAiModelUploadStore = create<AiModelUploadState>()((set, get) => 
           if (upload.status !== AI_MODEL_UPLOAD_STATUS.failed || !isInScope || !file) {
             return upload;
           }
-          retried.push({ uploadId: upload.id, file: file, name: upload.name, modelKey: upload.modelKey });
-          // a retry starts a new upload on the server, the failed one was cancelled
-          return { ...upload, status: AI_MODEL_UPLOAD_STATUS.queued, progress: 0, error: null, artifactId: null };
+          // the failed attempt is still on the server: the retry continues it, the progress stays until the server says where
+          retried.push({ uploadId: upload.id, file: file, name: upload.name, modelKey: upload.modelKey, resumeArtifactId: upload.artifactId });
+          return { ...upload, status: AI_MODEL_UPLOAD_STATUS.queued, error: null };
         }),
       }));
       return retried;
@@ -129,20 +141,18 @@ export const useAiModelUploadStore = create<AiModelUploadState>()((set, get) => 
     },
 
     clearFinishedUploads: () => {
-      set((state: AiModelUploadState) => {
-        // a batch is cleared as a whole once none of its files is running. A batch that is still going
-        // keeps its finished files, so its outcome (e.g. a failed file) is not lost before it ends.
-        const activeBatchIds = new Set<string>(state.uploads.filter(isAiModelUploadActive).map((upload: AiModelUploadItem) => upload.batchId));
-        const keptUploads: AiModelUploadItem[] = state.uploads.filter((upload: AiModelUploadItem) => activeBatchIds.has(upload.batchId));
-        state.uploads.forEach((upload: AiModelUploadItem) => {
-          if (!activeBatchIds.has(upload.batchId)) {
-            uploadFiles.delete(upload.id);
-          }
-        });
-        // the dialog's session was cleared away: start it over, instead of showing an empty batch as completed
-        const isSessionCleared: boolean = state.sessionBatchId !== null && !activeBatchIds.has(state.sessionBatchId);
-        return { uploads: keptUploads, sessionBatchId: isSessionCleared ? null : state.sessionBatchId };
-      });
+      const { uploads, sessionBatchId } = get();
+      // a batch is cleared as a whole once none of its files is running. A batch that is still going
+      // keeps its finished files, so its outcome (e.g. a failed file) is not lost before it ends.
+      const activeBatchIds = new Set<string>(uploads.filter(isAiModelUploadActive).map((upload: AiModelUploadItem) => upload.batchId));
+      const keptUploads: AiModelUploadItem[] = uploads.filter((upload: AiModelUploadItem) => activeBatchIds.has(upload.batchId));
+      const removedUploads: AiModelUploadItem[] = uploads.filter((upload: AiModelUploadItem) => !activeBatchIds.has(upload.batchId));
+      removedUploads.forEach((upload: AiModelUploadItem) => uploadFiles.delete(upload.id));
+      // the dialog's session was cleared away: start it over, instead of showing an empty batch as completed
+      const isSessionCleared: boolean = sessionBatchId !== null && !activeBatchIds.has(sessionBatchId);
+      set({ uploads: keptUploads, sessionBatchId: isSessionCleared ? null : sessionBatchId });
+      // a failed upload can no longer be retried once it is cleared, so it is no use on the server either
+      return removedUploads.filter((upload: AiModelUploadItem) => upload.status === AI_MODEL_UPLOAD_STATUS.failed && upload.artifactId !== null);
     },
   },
 }));

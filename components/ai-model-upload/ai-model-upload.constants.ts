@@ -29,6 +29,9 @@ export const AI_MODEL_UPLOAD_DEFAULT_ALLOWED_EXTENSIONS: readonly string[] = [];
 /** TanStack Query mutation key of one file upload, e.g. for `useMutationState` or `useIsMutating`. */
 export const AI_MODEL_UPLOAD_MUTATION_KEY = ['ai-model-upload'] as const;
 
+/** TanStack Query mutation key of the request that stops an upload on the server. */
+export const AI_MODEL_UPLOAD_CANCEL_MUTATION_KEY = ['ai-model-upload', 'cancel'] as const;
+
 /**
  * Largest chunk sent in one PATCH, in bytes. 5MB is FilePond's default chunk size; the backend's own
  * limit is not confirmed yet.

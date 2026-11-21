@@ -30,4 +30,6 @@ export interface AiModelUploadVariables {
   file: File;
   name: string;
   modelKey: string;
+  /** Set on a retry: the model artifact id of the failed attempt, so the upload continues from where the server got to. */
+  resumeArtifactId: string | null;
 }

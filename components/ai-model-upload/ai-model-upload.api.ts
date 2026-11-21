@@ -34,11 +34,22 @@ interface SendAiModelUploadChunkRequest extends AiModelUploadArtifactRequest {
   offset: number;
 }
 
+/** A request that got an answer, but not a 2xx one. `status` tells e.g. a 404 (the server no longer knows the upload) apart. */
+export class AiModelUploadRequestError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'AiModelUploadRequestError';
+    this.status = status;
+  }
+}
+
 function getArtifactUrl(artifactId: string): string {
   return AI_MODEL_UPLOAD_ARTIFACT_URL.replace(AI_MODEL_UPLOAD_ARTIFACT_ID_PLACEHOLDER, encodeURIComponent(artifactId));
 }
 
-/** `fetch` with the configured headers, credentials and timeout. Rejects with a readable message unless the answer is 2xx. */
+/** `fetch` with the configured headers, credentials and timeout. Rejects with a readable message unless the answer is 2xx (`AiModelUploadRequestError` when there was an answer). */
 async function request(url: string, init: RequestInit): Promise<Response> {
   let response: Response;
   try {
@@ -56,7 +67,7 @@ async function request(url: string, init: RequestInit): Promise<Response> {
   }
   if (!response.ok) {
     const text: string = await response.text().catch(() => '');
-    throw new Error(text.trim() || response.statusText || `Request failed with status ${response.status}`);
+    throw new AiModelUploadRequestError(text.trim() || response.statusText || `Request failed with status ${response.status}`, response.status);
   }
   return response;
 }
