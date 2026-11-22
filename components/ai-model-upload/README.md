@@ -43,7 +43,7 @@ What the folder needs from the project: a TanStack Query `QueryClientProvider` a
 | --- | --- | --- |
 | `allowMultiple` | `false` | Let the drop zone take more than one file. Every file then becomes its own upload with the same name and model key. |
 | `allowedExtensions` | `[]` (every type) | File types the drop zone accepts, e.g. `['.onnx']`. |
-| any `Button` prop | `size="sm"` | Passed to the trigger button. `children` replaces the "Upload Model" label. |
+| any `Button` prop except `onClick`, `type` and `asChild` | `size="sm"` | Passed to the trigger button. `children` replaces the "Upload Model" label. The button opens the dialog itself, so it takes no `onClick`. |
 
 ## The API
 
@@ -71,8 +71,15 @@ Still to confirm with the backend team, both are constants in `ai-model-upload.c
 - **Chunk `Content-Type`.** `AI_MODEL_UPLOAD_CHUNK_CONTENT_TYPE` is `application/offset+octet-stream`,
   what FilePond and the tus resumable upload protocol send.
 
-A backend on another origin must allow the `Upload-Length` and `Upload-Offset` request headers in
-CORS and expose `Upload-Offset` (`Access-Control-Expose-Headers`), or the browser hides it from `HEAD`.
+A backend on another origin must answer the CORS preflight:
+
+- `Access-Control-Allow-Methods`: `POST, PATCH, HEAD, DELETE`.
+- `Access-Control-Allow-Headers`: `Content-Type` (the start and chunk requests send `application/json`
+  and `application/offset+octet-stream`, which are not CORS-safelisted), `Upload-Length`,
+  `Upload-Offset`, and any header added in `AI_MODEL_UPLOAD_REQUEST_HEADERS` (e.g. `Authorization`).
+- `Access-Control-Expose-Headers: Upload-Offset`, or the browser hides it from `HEAD`.
+- With `AI_MODEL_UPLOAD_REQUEST_CREDENTIALS = 'include'` (cookies on another origin):
+  `Access-Control-Allow-Credentials: true` and an exact `Access-Control-Allow-Origin`, not `*`.
 
 ## How it is built
 
@@ -123,7 +130,8 @@ gets no `server` option. It owns its list while mounted and reports every change
    `AI_MODEL_UPLOAD_REQUEST_TIMEOUT_MS` (60 s) counts as failed.
 8. **Out of retries:** the mutation fails.
 9. **The last chunk is confirmed:** `onSuccess` marks the item `completed` at 100%. Or `onError`
-   marks it `failed` with the server's message.
+   marks it `failed` with the error: the server's response text, or `Request timed out` /
+   `Network error` when no response came back.
 
 **Meanwhile**
 
@@ -133,7 +141,7 @@ gets no `server` option. It owns its list while mounted and reports every change
     (`recordProgress`). The upload speed is a moving average of those samples
     (`AI_MODEL_UPLOAD_SPEED_SMOOTHING`), so one slow chunk does not make the estimate jump. Under each
     running upload's bar, `AiModelUploadTimeRemaining` shows the bytes still to send divided by that
-    speed, counting down every second between chunks: "Calculating time left…" until the second chunk,
+    speed, counting down every second between chunks: "Calculating time left…" until the first confirmed chunk,
     then e.g. "About 3 min 20 sec left", and "A few seconds left" at the end.
 12. The dialog can be closed at any time; the mutation keeps going. Opened again, it is an empty form
     for the next model, with the running uploads listed on top. Each Upload press is its own

@@ -23,6 +23,8 @@ import AiModelUploadRejectedMessage from './AiModelUploadRejectedMessage';
 import AiModelUploadCompletedMessage from './AiModelUploadCompletedMessage';
 import AiModelUploadInProgressSection from './AiModelUploadInProgressSection';
 import { aiModelUploadSchema, AiModelUploadFormValues } from './ai-model-upload.schema';
+
+import type { AiModelUploadItem } from './ai-model-upload.models';
 import { useAiModelUploadDraft, useAiModelUploadActions, AI_MODEL_UPLOAD_EMPTY_DRAFT } from './ai-model-upload.store';
 import {
   AI_MODEL_UPLOAD_PHASE,
@@ -65,8 +67,10 @@ export default function AiModelUploadForm({ allowMultiple, allowedExtensions }: 
   const [rejectedFileNames, setRejectedFileNames] = useState<string[]>([]);
   const lastRejectedAtRef = useRef<number>(0);
 
+  // reopened on a failed upload: Upload already cleared the draft, so the fields show what that upload was sent with
+  const sessionUpload: AiModelUploadItem | undefined = sessionUploads[0];
   const methods = useForm<AiModelUploadFormValues>({
-    defaultValues: draft,
+    defaultValues: sessionUpload ? { name: sessionUpload.name, modelKey: sessionUpload.modelKey } : draft,
     resolver: zodResolver(aiModelUploadSchema),
     mode: 'onChange',
   });

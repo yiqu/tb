@@ -12,7 +12,8 @@ import { AI_MODEL_UPLOAD_STATUS, AI_MODEL_UPLOAD_BUTTON_LABEL, AI_MODEL_UPLOAD_D
 
 import type { AiModelUploadItem } from './ai-model-upload.models';
 
-interface UploadModelButtonProps extends Omit<ComponentProps<typeof Button>, 'onClick' | 'type'> {
+// `asChild` is left out: the trigger always renders an icon and a label, and Radix `Slot` takes a single child
+interface UploadModelButtonProps extends Omit<ComponentProps<typeof Button>, 'onClick' | 'type' | 'asChild'> {
   /** Let the drop zone take more than one file, each becomes its own upload with the same name and model key. Defaults to one file. */
   allowMultiple?: boolean;
   /** File types the drop zone accepts, e.g. `['.onnx', '.pt']`. Defaults to every type. */
