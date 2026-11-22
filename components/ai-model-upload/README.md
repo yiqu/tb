@@ -79,13 +79,15 @@ Still to confirm with the backend team, both are constants in `constants/ai-mode
 
 A backend on another origin must answer the CORS preflight:
 
+- `Access-Control-Allow-Origin` on the preflight and on every actual response: the app's origin, or
+  `*` when no credentials are sent.
 - `Access-Control-Allow-Methods`: `POST, PATCH, HEAD, DELETE`.
 - `Access-Control-Allow-Headers`: `Content-Type` (the start and chunk requests send `application/json`
   and `application/offset+octet-stream`, which are not CORS-safelisted), `Upload-Length`,
   `Upload-Offset`, and any header added in `AI_MODEL_UPLOAD_REQUEST_HEADERS` (e.g. `Authorization`).
 - `Access-Control-Expose-Headers: Upload-Offset`, or the browser hides it from `HEAD`.
 - With `AI_MODEL_UPLOAD_REQUEST_CREDENTIALS = 'include'` (cookies on another origin):
-  `Access-Control-Allow-Credentials: true` and an exact `Access-Control-Allow-Origin`, not `*`.
+  `Access-Control-Allow-Credentials: true`, and `Access-Control-Allow-Origin` must be the exact origin, not `*`.
 
 ## How it is built
 
