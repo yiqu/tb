@@ -35,7 +35,9 @@ export default function AiModelUploadRetryButton({ scope = 'session', children, 
 
   const batchId: string | undefined = scope === 'session' ? (sessionBatchId ?? undefined) : undefined;
   const failedCount: number = uploads.filter(
-    (upload: AiModelUploadItem) => upload.status === AI_MODEL_UPLOAD_STATUS.failed && (batchId === undefined || upload.batchId === batchId),
+    (upload: AiModelUploadItem) => {
+      return upload.status === AI_MODEL_UPLOAD_STATUS.failed && (batchId === undefined || upload.batchId === batchId);
+    },
   ).length;
 
   if (failedCount === 0 || (scope === 'session' && sessionBatchId === null)) {
@@ -49,7 +51,9 @@ export default function AiModelUploadRetryButton({ scope = 'session', children, 
         cancelUpload({ artifactId: upload.artifactId, uploadLength: upload.size });
       }
     });
-    retriedUploads.forEach((variables: AiModelUploadVariables) => mutate(variables));
+    retriedUploads.forEach((variables: AiModelUploadVariables) => {
+      mutate(variables);
+    });
   };
 
   return (

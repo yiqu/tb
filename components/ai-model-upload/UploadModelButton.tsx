@@ -41,7 +41,9 @@ export default function UploadModelButton({
       // A session with a failed file stays, so its Retry button is still there after reopening.
       const { uploads, sessionBatchId, actions } = useAiModelUploadStore.getState();
       const hasFailedSessionUploads: boolean = uploads.some(
-        (upload: AiModelUploadItem) => upload.batchId === sessionBatchId && upload.status === AI_MODEL_UPLOAD_STATUS.failed,
+        (upload: AiModelUploadItem) => {
+          return upload.batchId === sessionBatchId && upload.status === AI_MODEL_UPLOAD_STATUS.failed;
+        },
       );
       if (!hasFailedSessionUploads) {
         actions.endSession();

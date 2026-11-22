@@ -38,9 +38,13 @@ export default function AiModelUploadDocumentTitle({ lingerMs = 5000, separator 
       trackedBatchIds.clear();
     }
     wasActiveRef.current = isActive;
-    activeUploads.forEach((upload: AiModelUploadItem) => trackedBatchIds.add(upload.batchId));
+    activeUploads.forEach((upload: AiModelUploadItem) => {
+      trackedBatchIds.add(upload.batchId);
+    });
 
-    const trackedUploads: AiModelUploadItem[] = uploads.filter((upload: AiModelUploadItem) => trackedBatchIds.has(upload.batchId));
+    const trackedUploads: AiModelUploadItem[] = uploads.filter((upload: AiModelUploadItem) => {
+      return trackedBatchIds.has(upload.batchId);
+    });
     if (trackedUploads.length === 0) {
       trackedBatchIds.clear();
       setProgressLabel(null);
@@ -57,7 +61,9 @@ export default function AiModelUploadDocumentTitle({ lingerMs = 5000, separator 
       trackedBatchIds.clear();
       setProgressLabel(null);
     }, lingerMs);
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [uploads, lingerMs]);
 
   useEffect(() => {

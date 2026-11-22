@@ -23,23 +23,25 @@ export default function AiModelUploadTextField<T extends FieldValues>({ control,
     <Controller
       name={ name }
       control={ control }
-      render={ ({ field, fieldState }) => (
-        <Field data-invalid={ fieldState.invalid }>
-          <FieldLabel htmlFor={ inputId }>{ label }</FieldLabel>
-          <Input
-            { ...field }
-            id={ inputId }
-            type="text"
-            autoComplete="off"
-            placeholder={ placeholder }
-            disabled={ disabled }
-            aria-invalid={ fieldState.invalid }
-          />
-          { fieldState.invalid ?
-            <FieldError errors={ [fieldState.error] } />
-          : null }
-        </Field>
-      ) }
+      render={ ({ field, fieldState }) => {
+        return (
+          <Field data-invalid={ fieldState.invalid }>
+            <FieldLabel htmlFor={ inputId }>{ label }</FieldLabel>
+            <Input
+              { ...field }
+              id={ inputId }
+              type="text"
+              autoComplete="off"
+              placeholder={ placeholder }
+              disabled={ disabled }
+              aria-invalid={ fieldState.invalid }
+            />
+            { fieldState.invalid ?
+              <FieldError errors={ [fieldState.error] } />
+            : null }
+          </Field>
+        );
+      } }
     />
   );
 }

@@ -87,7 +87,9 @@ export const AI_MODEL_UPLOAD_ACTIVE_INDICATOR_LABEL = 'Uploads in progress';
 /** Time-left line under a running upload's progress bar. */
 export const AI_MODEL_UPLOAD_TIME_REMAINING_CALCULATING = 'Calculating time left…';
 export const AI_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS_LABEL = 'A few seconds left';
-export const getAiModelUploadTimeRemainingLabel = (duration: string): string => `About ${duration} left`;
+export const getAiModelUploadTimeRemainingLabel = (duration: string): string => {
+  return `About ${duration} left`;
+};
 /** Label of the section that lists the uploads still running when the dialog is opened again. */
 export const AI_MODEL_UPLOAD_IN_PROGRESS_SECTION_TITLE = 'Currently uploading';
 /** Info alert shown in the dialog while its upload is running. */

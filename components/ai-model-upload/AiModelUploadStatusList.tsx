@@ -14,9 +14,9 @@ interface AiModelUploadStatusListProps {
 export default function AiModelUploadStatusList({ uploads, className }: AiModelUploadStatusListProps) {
   return (
     <ColumnStack className={ cn('w-full gap-y-3', className) }>
-      { uploads.map((upload: AiModelUploadItem) => (
-        <AiModelUploadStatusRow key={ upload.id } upload={ upload } />
-      )) }
+      { uploads.map((upload: AiModelUploadItem) => {
+        return <AiModelUploadStatusRow key={ upload.id } upload={ upload } />;
+      }) }
     </ColumnStack>
   );
 }

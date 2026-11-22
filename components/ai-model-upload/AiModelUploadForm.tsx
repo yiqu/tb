@@ -35,9 +35,13 @@ import {
 } from './ai-model-upload.constants';
 
 // FilePond is only needed once the dialog shows the drop zone, so it is loaded then and kept out of the page's main bundle
-const AiModelUploadDropzone = dynamic(() => import('./AiModelUploadDropzone'), {
+const AiModelUploadDropzone = dynamic(() => {
+  return import('./AiModelUploadDropzone');
+}, {
   ssr: false,
-  loading: () => <Skeleton className="h-56 w-full" />,
+  loading: () => {
+    return <Skeleton className="h-56 w-full" />;
+  },
 });
 
 /** Files of one drop or browse are added one after the other, rejections within this window belong to the same selection. */
@@ -78,8 +82,12 @@ export default function AiModelUploadForm({ allowMultiple, allowedExtensions }: 
   const { watch } = methods;
   useEffect(() => {
     // keep what was typed while the dialog is closed, like the staged file
-    const subscription = watch((values) => setDraft({ name: values.name ?? '', modelKey: values.modelKey ?? '' }));
-    return () => subscription.unsubscribe();
+    const subscription = watch((values) => {
+      setDraft({ name: values.name ?? '', modelKey: values.modelKey ?? '' });
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [watch, setDraft]);
   // the Upload button stays disabled until both fields pass the schema
   const isFormValid: boolean = methods.formState.isValid;
@@ -94,7 +102,9 @@ export default function AiModelUploadForm({ allowMultiple, allowedExtensions }: 
 
   const handleOnFileRejected = (fileName: string) => {
     lastRejectedAtRef.current = Date.now();
-    setRejectedFileNames((current: string[]) => (current.includes(fileName) ? current : [...current, fileName]));
+    setRejectedFileNames((current: string[]) => {
+      return current.includes(fileName) ? current : [...current, fileName];
+    });
   };
 
   const handleOnUpload = (values: AiModelUploadFormValues) => {

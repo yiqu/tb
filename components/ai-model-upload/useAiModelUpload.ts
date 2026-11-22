@@ -39,7 +39,11 @@ export function useAiModelUpload(): UseAiModelUploadResult {
   const { mutate } = useAiModelUploadMutation();
 
   const sessionUploads: AiModelUploadItem[] = useMemo(
-    () => (sessionBatchId === null ? [] : uploads.filter((upload: AiModelUploadItem) => upload.batchId === sessionBatchId)),
+    () => {
+      return sessionBatchId === null ? [] : uploads.filter((upload: AiModelUploadItem) => {
+        return upload.batchId === sessionBatchId;
+      });
+    },
     [uploads, sessionBatchId],
   );
   const phase: AiModelUploadPhase = getAiModelUploadPhase(stagedFiles.length, sessionBatchId !== null, sessionUploads);
@@ -53,7 +57,9 @@ export function useAiModelUpload(): UseAiModelUploadResult {
     isUploading: phase === AI_MODEL_UPLOAD_PHASE.uploading,
     setStagedFiles,
     startUpload: (values: AiModelUploadFormValues) => {
-      startSession(values).forEach((variables: AiModelUploadVariables) => mutate(variables));
+      startSession(values).forEach((variables: AiModelUploadVariables) => {
+        mutate(variables);
+      });
     },
     endSession,
   };

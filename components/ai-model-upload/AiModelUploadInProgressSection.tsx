@@ -33,7 +33,9 @@ export default function AiModelUploadInProgressSection({
   className,
 }: AiModelUploadInProgressSectionProps) {
   const uploads = useAiModelUploads();
-  const inProgressUploads = useMemo(() => getInProgressAiModelUploads(uploads, excludeBatchId), [uploads, excludeBatchId]);
+  const inProgressUploads = useMemo(() => {
+    return getInProgressAiModelUploads(uploads, excludeBatchId);
+  }, [uploads, excludeBatchId]);
 
   if (inProgressUploads.length === 0) {
     return null;

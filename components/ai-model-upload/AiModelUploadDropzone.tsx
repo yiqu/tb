@@ -75,10 +75,18 @@ export default function AiModelUploadDropzone({
   const reportFiles = () => {
     const current: File[] = latestRef.current.files;
     const nextFiles: File[] = (pondRef.current?.getFiles() ?? [])
-      .filter((item: FilePondFile) => isFileExtensionAllowed(item.filename, latestRef.current.allowedExtensions))
-      .map((item: FilePondFile) => item.file)
-      .filter((file): file is File => file instanceof File);
-    const isSameSelection: boolean = nextFiles.length === current.length && nextFiles.every((file: File, index: number) => file === current[index]);
+      .filter((item: FilePondFile) => {
+        return isFileExtensionAllowed(item.filename, latestRef.current.allowedExtensions);
+      })
+      .map((item: FilePondFile) => {
+        return item.file;
+      })
+      .filter((file): file is File => {
+        return file instanceof File;
+      });
+    const isSameSelection: boolean = nextFiles.length === current.length && nextFiles.every((file: File, index: number) => {
+      return file === current[index];
+    });
     if (!isSameSelection) {
       latestRef.current.onFilesChange(nextFiles);
     }

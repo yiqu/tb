@@ -38,7 +38,9 @@ export function isFileExtensionAllowed(fileName: string, allowedExtensions?: rea
     return true;
   }
   const extension: string = getFileExtension(fileName);
-  return allowedExtensions.map(normalizeFileExtension).some((allowed: string) => allowed !== '' && allowed === extension);
+  return allowedExtensions.map(normalizeFileExtension).some((allowed: string) => {
+    return allowed !== '' && allowed === extension;
+  });
 }
 
 export function isAiModelUploadActive(upload: AiModelUploadItem): boolean {
@@ -53,7 +55,9 @@ export function getAiModelUploadPhase(stagedFileCount: number, hasSession: boole
   if (sessionUploads.some(isAiModelUploadActive)) {
     return AI_MODEL_UPLOAD_PHASE.uploading;
   }
-  if (sessionUploads.some((upload: AiModelUploadItem) => upload.status === AI_MODEL_UPLOAD_STATUS.failed)) {
+  if (sessionUploads.some((upload: AiModelUploadItem) => {
+    return upload.status === AI_MODEL_UPLOAD_STATUS.failed;
+  })) {
     return AI_MODEL_UPLOAD_PHASE.failed;
   }
   return AI_MODEL_UPLOAD_PHASE.completed;
@@ -64,8 +68,12 @@ export function getAiModelUploadPhase(stagedFileCount: number, hasSession: boole
  * uploading. Files of such a batch that are already done are included, so the batch reads as a whole.
  */
 export function getInProgressAiModelUploads(uploads: AiModelUploadItem[], excludeBatchId?: string | null): AiModelUploadItem[] {
-  const activeBatchIds = new Set<string>(uploads.filter(isAiModelUploadActive).map((upload: AiModelUploadItem) => upload.batchId));
-  return uploads.filter((upload: AiModelUploadItem) => activeBatchIds.has(upload.batchId) && upload.batchId !== excludeBatchId);
+  const activeBatchIds = new Set<string>(uploads.filter(isAiModelUploadActive).map((upload: AiModelUploadItem) => {
+    return upload.batchId;
+  }));
+  return uploads.filter((upload: AiModelUploadItem) => {
+    return activeBatchIds.has(upload.batchId) && upload.batchId !== excludeBatchId;
+  });
 }
 
 export function clampProgress(progress: number): number {
@@ -87,8 +95,12 @@ export interface AiModelUploadSummary {
 /** Overall progress by number of files: every file weighs the same, whatever its size. */
 export function getAiModelUploadSummary(uploads: AiModelUploadItem[]): AiModelUploadSummary {
   const total: number = uploads.length;
-  const completed: number = uploads.filter((upload: AiModelUploadItem) => upload.status === AI_MODEL_UPLOAD_STATUS.completed).length;
-  const progressSum: number = uploads.reduce((sum: number, upload: AiModelUploadItem) => sum + upload.progress, 0);
+  const completed: number = uploads.filter((upload: AiModelUploadItem) => {
+    return upload.status === AI_MODEL_UPLOAD_STATUS.completed;
+  }).length;
+  const progressSum: number = uploads.reduce((sum: number, upload: AiModelUploadItem) => {
+    return sum + upload.progress;
+  }, 0);
   return { total, completed, percent: total === 0 ? 0 : clampProgress(progressSum / total) };
 }
 

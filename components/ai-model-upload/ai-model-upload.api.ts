@@ -66,7 +66,9 @@ async function request(url: string, init: RequestInit): Promise<Response> {
     throw new Error('Network error');
   }
   if (!response.ok) {
-    const text: string = await response.text().catch(() => '');
+    const text: string = await response.text().catch(() => {
+      return '';
+    });
     throw new AiModelUploadRequestError(text.trim() || response.statusText || `Request failed with status ${response.status}`, response.status);
   }
   return response;

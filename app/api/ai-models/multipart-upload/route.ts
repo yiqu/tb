@@ -25,7 +25,9 @@ export async function POST(request: NextRequest) {
   }
   const parsed = aiModelUploadSchema.safeParse(json);
   if (!parsed.success) {
-    return textResponse(parsed.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join('\n'), 400);
+    return textResponse(parsed.error.issues.map((issue) => {
+      return `${issue.path.join('.')}: ${issue.message}`;
+    }).join('\n'), 400);
   }
 
   return textResponse(createTransfer(length, parsed.data.name, parsed.data.modelKey), 200);

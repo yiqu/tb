@@ -18,7 +18,9 @@ interface AiModelUploadCancelVariables {
 export function useAiModelUploadCancelMutation() {
   return useMutation<void, Error, AiModelUploadCancelVariables>({
     mutationKey: AI_MODEL_UPLOAD_CANCEL_MUTATION_KEY,
-    mutationFn: (variables: AiModelUploadCancelVariables) => cancelAiModelUpload(variables),
+    mutationFn: (variables: AiModelUploadCancelVariables) => {
+      return cancelAiModelUpload(variables);
+    },
     retry: false,
   });
 }

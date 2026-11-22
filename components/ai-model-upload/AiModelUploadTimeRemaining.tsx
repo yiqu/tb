@@ -22,11 +22,17 @@ const TICK_MS = 1000;
  * upload speed, counting down every second between chunk confirmations. Display only.
  */
 export default function AiModelUploadTimeRemaining({ upload, className }: AiModelUploadTimeRemainingProps) {
-  const [now, setNow] = useState<number>(() => Date.now());
+  const [now, setNow] = useState<number>(() => {
+    return Date.now();
+  });
 
   useEffect(() => {
-    const intervalId = setInterval(() => setNow(Date.now()), TICK_MS);
-    return () => clearInterval(intervalId);
+    const intervalId = setInterval(() => {
+      setNow(Date.now());
+    }, TICK_MS);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   // a new progress report is newer than the last tick, count from whichever is later

@@ -61,141 +61,193 @@ function createId(): string {
   return typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-export const useAiModelUploadStore = create<AiModelUploadState>()((set, get) => ({
-  stagedFiles: [],
-  draft: AI_MODEL_UPLOAD_EMPTY_DRAFT,
-  sessionBatchId: null,
-  uploads: [],
+export const useAiModelUploadStore = create<AiModelUploadState>()((set, get) => {
+  return {
+    stagedFiles: [],
+    draft: AI_MODEL_UPLOAD_EMPTY_DRAFT,
+    sessionBatchId: null,
+    uploads: [],
 
-  actions: {
-    setStagedFiles: (files: File[]) => {
-      set({ stagedFiles: files });
-    },
+    actions: {
+      setStagedFiles: (files: File[]) => {
+        set({ stagedFiles: files });
+      },
 
-    setDraft: (draft: AiModelUploadFormValues) => {
-      set({ draft: draft });
-    },
+      setDraft: (draft: AiModelUploadFormValues) => {
+        set({ draft: draft });
+      },
 
-    startSession: (values: AiModelUploadFormValues) => {
-      const files: File[] = get().stagedFiles;
-      if (files.length === 0) {
-        return [];
-      }
-      const batchId: string = createId();
-      const startedAt: number = Date.now();
-      const items: AiModelUploadItem[] = files.map((file: File) => ({
-        id: createId(),
-        batchId: batchId,
-        name: values.name,
-        modelKey: values.modelKey,
-        fileName: file.name,
-        size: file.size,
-        status: AI_MODEL_UPLOAD_STATUS.queued,
-        progress: 0,
-        uploadedBytes: 0,
-        bytesPerSecond: null,
-        progressUpdatedAt: null,
-        artifactId: null,
-        error: null,
-        startedAt: startedAt,
-      }));
-      items.forEach((item: AiModelUploadItem, index: number) => uploadFiles.set(item.id, files[index]));
-
-      set((state: AiModelUploadState) => ({
-        stagedFiles: [],
-        sessionBatchId: batchId,
-        uploads: [...items, ...state.uploads],
-      }));
-      return items.map((item: AiModelUploadItem, index: number) => ({
-        uploadId: item.id,
-        file: files[index],
-        name: item.name,
-        modelKey: item.modelKey,
-      }));
-    },
-
-    endSession: () => {
-      set({ sessionBatchId: null });
-    },
-
-    patchUpload: (id: string, patch: Partial<AiModelUploadItem>) => {
-      set((state: AiModelUploadState) => ({
-        uploads: state.uploads.map((upload: AiModelUploadItem) => (upload.id === id ? { ...upload, ...patch } : upload)),
-      }));
-    },
-
-    recordProgress: (id: string, uploadedBytes: number, progress: number) => {
-      const now: number = Date.now();
-      set((state: AiModelUploadState) => ({
-        uploads: state.uploads.map((upload: AiModelUploadItem) => {
-          if (upload.id !== id) {
-            return upload;
-          }
-          // the first report of a run only sets the starting point; a report with no new bytes (after a
-          // failed chunk) restarts the clock, so the wait before a retry does not count as slow upload speed
-          const bytesPerSecond: number | null =
-            upload.progressUpdatedAt === null ?
-              upload.bytesPerSecond
-            : getNextBytesPerSecond(upload.bytesPerSecond, uploadedBytes - upload.uploadedBytes, now - upload.progressUpdatedAt);
-          return { ...upload, progress, uploadedBytes, bytesPerSecond, progressUpdatedAt: now };
-        }),
-      }));
-    },
-
-    prepareRetry: (batchId?: string) => {
-      const retried: AiModelUploadVariables[] = [];
-      const abandoned: AiModelUploadItem[] = [];
-      set((state: AiModelUploadState) => ({
-        uploads: state.uploads.map((upload: AiModelUploadItem) => {
-          const file: File | undefined = uploadFiles.get(upload.id);
-          const isInScope: boolean = batchId === undefined || upload.batchId === batchId;
-          if (upload.status !== AI_MODEL_UPLOAD_STATUS.failed || !isInScope || !file) {
-            return upload;
-          }
-          // the retry starts over with a new POST, so the failed attempt is of no use on the server
-          if (upload.artifactId !== null) {
-            abandoned.push(upload);
-          }
-          retried.push({ uploadId: upload.id, file: file, name: upload.name, modelKey: upload.modelKey });
+      startSession: (values: AiModelUploadFormValues) => {
+        const files: File[] = get().stagedFiles;
+        if (files.length === 0) {
+          return [];
+        }
+        const batchId: string = createId();
+        const startedAt: number = Date.now();
+        const items: AiModelUploadItem[] = files.map((file: File) => {
           return {
-            ...upload,
+            id: createId(),
+            batchId: batchId,
+            name: values.name,
+            modelKey: values.modelKey,
+            fileName: file.name,
+            size: file.size,
             status: AI_MODEL_UPLOAD_STATUS.queued,
-            error: null,
             progress: 0,
             uploadedBytes: 0,
             bytesPerSecond: null,
             progressUpdatedAt: null,
             artifactId: null,
+            error: null,
+            startedAt: startedAt,
           };
-        }),
-      }));
-      return { uploads: retried, abandonedUploads: abandoned };
-    },
+        });
+        items.forEach((item: AiModelUploadItem, index: number) => {
+          uploadFiles.set(item.id, files[index]);
+        });
 
-    releaseUploadFile: (id: string) => {
-      uploadFiles.delete(id);
-    },
+        set((state: AiModelUploadState) => {
+          return {
+            stagedFiles: [],
+            sessionBatchId: batchId,
+            uploads: [...items, ...state.uploads],
+          };
+        });
+        return items.map((item: AiModelUploadItem, index: number) => {
+          return {
+            uploadId: item.id,
+            file: files[index],
+            name: item.name,
+            modelKey: item.modelKey,
+          };
+        });
+      },
 
-    clearFinishedUploads: () => {
-      const { uploads, sessionBatchId } = get();
-      // a batch is cleared as a whole once none of its files is running. A batch that is still going
-      // keeps its finished files, so its outcome (e.g. a failed file) is not lost before it ends.
-      const activeBatchIds = new Set<string>(uploads.filter(isAiModelUploadActive).map((upload: AiModelUploadItem) => upload.batchId));
-      const keptUploads: AiModelUploadItem[] = uploads.filter((upload: AiModelUploadItem) => activeBatchIds.has(upload.batchId));
-      const removedUploads: AiModelUploadItem[] = uploads.filter((upload: AiModelUploadItem) => !activeBatchIds.has(upload.batchId));
-      removedUploads.forEach((upload: AiModelUploadItem) => uploadFiles.delete(upload.id));
-      // the dialog's session was cleared away: start it over, instead of showing an empty batch as completed
-      const isSessionCleared: boolean = sessionBatchId !== null && !activeBatchIds.has(sessionBatchId);
-      set({ uploads: keptUploads, sessionBatchId: isSessionCleared ? null : sessionBatchId });
-      // a failed upload can no longer be retried once it is cleared, so it is no use on the server either
-      return removedUploads.filter((upload: AiModelUploadItem) => upload.status === AI_MODEL_UPLOAD_STATUS.failed && upload.artifactId !== null);
-    },
-  },
-}));
+      endSession: () => {
+        set({ sessionBatchId: null });
+      },
 
-export const useAiModelUploadActions = () => useAiModelUploadStore((state: AiModelUploadState) => state.actions);
-export const useAiModelUploadStagedFiles = () => useAiModelUploadStore((state: AiModelUploadState) => state.stagedFiles);
-export const useAiModelUploadDraft = () => useAiModelUploadStore((state: AiModelUploadState) => state.draft);
-export const useAiModelUploads = () => useAiModelUploadStore((state: AiModelUploadState) => state.uploads);
-export const useAiModelUploadSessionBatchId = () => useAiModelUploadStore((state: AiModelUploadState) => state.sessionBatchId);
-export const useHasActiveAiModelUploads = () => useAiModelUploadStore((state: AiModelUploadState) => state.uploads.some(isAiModelUploadActive));
+      patchUpload: (id: string, patch: Partial<AiModelUploadItem>) => {
+        set((state: AiModelUploadState) => {
+          return {
+            uploads: state.uploads.map((upload: AiModelUploadItem) => {
+              return upload.id === id ? { ...upload, ...patch } : upload;
+            }),
+          };
+        });
+      },
+
+      recordProgress: (id: string, uploadedBytes: number, progress: number) => {
+        const now: number = Date.now();
+        set((state: AiModelUploadState) => {
+          return {
+            uploads: state.uploads.map((upload: AiModelUploadItem) => {
+              if (upload.id !== id) {
+                return upload;
+              }
+              // the first report of a run only sets the starting point; a report with no new bytes (after a
+              // failed chunk) restarts the clock, so the wait before a retry does not count as slow upload speed
+              const bytesPerSecond: number | null =
+                upload.progressUpdatedAt === null ?
+                  upload.bytesPerSecond
+                : getNextBytesPerSecond(upload.bytesPerSecond, uploadedBytes - upload.uploadedBytes, now - upload.progressUpdatedAt);
+              return { ...upload, progress, uploadedBytes, bytesPerSecond, progressUpdatedAt: now };
+            }),
+          };
+        });
+      },
+
+      prepareRetry: (batchId?: string) => {
+        const retried: AiModelUploadVariables[] = [];
+        const abandoned: AiModelUploadItem[] = [];
+        set((state: AiModelUploadState) => {
+          return {
+            uploads: state.uploads.map((upload: AiModelUploadItem) => {
+              const file: File | undefined = uploadFiles.get(upload.id);
+              const isInScope: boolean = batchId === undefined || upload.batchId === batchId;
+              if (upload.status !== AI_MODEL_UPLOAD_STATUS.failed || !isInScope || !file) {
+                return upload;
+              }
+              // the retry starts over with a new POST, so the failed attempt is of no use on the server
+              if (upload.artifactId !== null) {
+                abandoned.push(upload);
+              }
+              retried.push({ uploadId: upload.id, file: file, name: upload.name, modelKey: upload.modelKey });
+              return {
+                ...upload,
+                status: AI_MODEL_UPLOAD_STATUS.queued,
+                error: null,
+                progress: 0,
+                uploadedBytes: 0,
+                bytesPerSecond: null,
+                progressUpdatedAt: null,
+                artifactId: null,
+              };
+            }),
+          };
+        });
+        return { uploads: retried, abandonedUploads: abandoned };
+      },
+
+      releaseUploadFile: (id: string) => {
+        uploadFiles.delete(id);
+      },
+
+      clearFinishedUploads: () => {
+        const { uploads, sessionBatchId } = get();
+        // a batch is cleared as a whole once none of its files is running. A batch that is still going
+        // keeps its finished files, so its outcome (e.g. a failed file) is not lost before it ends.
+        const activeBatchIds = new Set<string>(uploads.filter(isAiModelUploadActive).map((upload: AiModelUploadItem) => {
+          return upload.batchId;
+        }));
+        const keptUploads: AiModelUploadItem[] = uploads.filter((upload: AiModelUploadItem) => {
+          return activeBatchIds.has(upload.batchId);
+        });
+        const removedUploads: AiModelUploadItem[] = uploads.filter((upload: AiModelUploadItem) => {
+          return !activeBatchIds.has(upload.batchId);
+        });
+        removedUploads.forEach((upload: AiModelUploadItem) => {
+          uploadFiles.delete(upload.id);
+        });
+        // the dialog's session was cleared away: start it over, instead of showing an empty batch as completed
+        const isSessionCleared: boolean = sessionBatchId !== null && !activeBatchIds.has(sessionBatchId);
+        set({ uploads: keptUploads, sessionBatchId: isSessionCleared ? null : sessionBatchId });
+        // a failed upload can no longer be retried once it is cleared, so it is no use on the server either
+        return removedUploads.filter((upload: AiModelUploadItem) => {
+          return upload.status === AI_MODEL_UPLOAD_STATUS.failed && upload.artifactId !== null;
+        });
+      },
+    },
+  };
+});
+
+export const useAiModelUploadActions = () => {
+  return useAiModelUploadStore((state: AiModelUploadState) => {
+    return state.actions;
+  });
+};
+export const useAiModelUploadStagedFiles = () => {
+  return useAiModelUploadStore((state: AiModelUploadState) => {
+    return state.stagedFiles;
+  });
+};
+export const useAiModelUploadDraft = () => {
+  return useAiModelUploadStore((state: AiModelUploadState) => {
+    return state.draft;
+  });
+};
+export const useAiModelUploads = () => {
+  return useAiModelUploadStore((state: AiModelUploadState) => {
+    return state.uploads;
+  });
+};
+export const useAiModelUploadSessionBatchId = () => {
+  return useAiModelUploadStore((state: AiModelUploadState) => {
+    return state.sessionBatchId;
+  });
+};
+export const useHasActiveAiModelUploads = () => {
+  return useAiModelUploadStore((state: AiModelUploadState) => {
+    return state.uploads.some(isAiModelUploadActive);
+  });
+};
