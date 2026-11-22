@@ -5,12 +5,12 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import Typography from '@/components/typography/Typography';
 
-import { formatAiModelUploadTimeRemaining, getAiModelUploadSecondsRemaining } from '../utils/ai-model-upload.utils';
+import { formatPwsModelUploadTimeRemaining, getPwsModelUploadSecondsRemaining } from '../utils/pws-model-upload.utils';
 
-import type { AiModelUploadItem } from '../models/ai-model-upload.models';
+import type { PwsModelUploadItem } from '../models/pws-model-upload.models';
 
-interface AiModelUploadTimeRemainingProps {
-  upload: AiModelUploadItem;
+interface PwsModelUploadTimeRemainingProps {
+  upload: PwsModelUploadItem;
   className?: string;
 }
 
@@ -21,7 +21,7 @@ const TICK_MS = 1000;
  * "About 3 min 20 sec left" for a running upload: the bytes still to send divided by the smoothed
  * upload speed, counting down every second between chunk confirmations. Display only.
  */
-export default function AiModelUploadTimeRemaining({ upload, className }: AiModelUploadTimeRemainingProps) {
+export default function PwsModelUploadTimeRemaining({ upload, className }: PwsModelUploadTimeRemainingProps) {
   const [now, setNow] = useState<number>(() => {
     return Date.now();
   });
@@ -36,11 +36,11 @@ export default function AiModelUploadTimeRemaining({ upload, className }: AiMode
   }, []);
 
   // a new progress report is newer than the last tick, count from whichever is later
-  const secondsRemaining: number | null = getAiModelUploadSecondsRemaining(upload, Math.max(now, upload.progressUpdatedAt ?? 0));
+  const secondsRemaining: number | null = getPwsModelUploadSecondsRemaining(upload, Math.max(now, upload.progressUpdatedAt ?? 0));
 
   return (
     <Typography variant="caption0" role="status" aria-live="off" className={ cn('tabular-nums', className) }>
-      { formatAiModelUploadTimeRemaining(secondsRemaining) }
+      { formatPwsModelUploadTimeRemaining(secondsRemaining) }
     </Typography>
   );
 }

@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
 
-import { aiModelUploadSchema } from '@/components/ai-model-upload/schemas/ai-model-upload.schema';
+import { pwsModelUploadSchema } from '@/components/pws-model-upload/schemas/pws-model-upload.schema';
 
 import { textResponse, createTransfer, tooLargeResponse, readIntegerHeader, readBodyWithLimit, MAX_UPLOAD_LENGTH, MAX_START_BODY_BYTES } from './mock-transfers';
 
-/** MOCK of `POST /api/ai-models/multipart-upload/` (multipart model upload start), see `mock-transfers.ts`. */
+/** MOCK of `POST /api/pws-models/multipart-upload/` (multipart model upload start), see `mock-transfers.ts`. */
 export async function POST(request: NextRequest) {
   const length: number | null = readIntegerHeader(request, 'Upload-Length');
   if (length === null) {
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     return tooLargeResponse(error) ?? textResponse('Expected a JSON body', 400);
   }
-  const parsed = aiModelUploadSchema.safeParse(json);
+  const parsed = pwsModelUploadSchema.safeParse(json);
   if (!parsed.success) {
     return textResponse(parsed.error.issues.map((issue) => {
       return `${issue.path.join('.')}: ${issue.message}`;

@@ -1,21 +1,21 @@
 import { cn } from '@/lib/utils';
 import ColumnStack from '@/shared/components/ColumnStack';
 
-import AiModelUploadStatusRow from './AiModelUploadStatusRow';
+import PwsModelUploadStatusRow from './PwsModelUploadStatusRow';
 
-import type { AiModelUploadItem } from '../models/ai-model-upload.models';
+import type { PwsModelUploadItem } from '../models/pws-model-upload.models';
 
-interface AiModelUploadStatusListProps {
-  uploads: AiModelUploadItem[];
+interface PwsModelUploadStatusListProps {
+  uploads: PwsModelUploadItem[];
   className?: string;
 }
 
 /** One progress row per file. Display only, pass it whichever uploads should be shown. */
-export default function AiModelUploadStatusList({ uploads, className }: AiModelUploadStatusListProps) {
+export default function PwsModelUploadStatusList({ uploads, className }: PwsModelUploadStatusListProps) {
   return (
     <ColumnStack className={ cn('w-full gap-y-3', className) }>
-      { uploads.map((upload: AiModelUploadItem) => {
-        return <AiModelUploadStatusRow key={ upload.id } upload={ upload } />;
+      { uploads.map((upload: PwsModelUploadItem) => {
+        return <PwsModelUploadStatusRow key={ upload.id } upload={ upload } />;
       }) }
     </ColumnStack>
   );

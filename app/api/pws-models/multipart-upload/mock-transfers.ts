@@ -1,20 +1,20 @@
 import { NextRequest } from 'next/server';
 
 /**
- * Shared state and helpers of the MOCK AI model multipart upload API (`route.ts` next to this file and
+ * Shared state and helpers of the MOCK PWS model multipart upload API (`route.ts` next to this file and
  * `[artifactId]/route.ts`), used by the "Upload Model" demo on the /test page. It sits at the same paths
- * as the real API, so `components/ai-model-upload/constants/ai-model-upload-urls.constants.ts` holds the real paths. Nothing is stored: the
+ * as the real API, so `components/pws-model-upload/constants/pws-model-upload-urls.constants.ts` holds the real paths. Nothing is stored: the
  * bytes are counted and thrown away, and every chunk is slowed down on purpose so an upload takes
  * 10 to 15 seconds and its progress can be watched.
  *
- * It mirrors the real API's Swagger (see `components/ai-model-upload/README.md`):
+ * It mirrors the real API's Swagger (see `components/pws-model-upload/README.md`):
  *
  * | step   | request                                                   | details                                                                  |
  * | ------ | --------------------------------------------------------- | ------------------------------------------------------------------------ |
- * | start  | `POST   /api/ai-models/multipart-upload`                  | JSON `{ name, modelKey }`, header `Upload-Length`. -> `AMAR-<uuid>` as text |
- * | chunk  | `PATCH  /api/ai-models/multipart-upload/<id>`             | raw chunk, headers `Upload-Offset`, `Upload-Length`. -> 204               |
- * | resume | `HEAD   /api/ai-models/multipart-upload/<id>`             | header `Upload-Length`. -> header `Upload-Offset`                         |
- * | cancel | `DELETE /api/ai-models/multipart-upload/<id>`             | header `Upload-Length`. -> 204                                            |
+ * | start  | `POST   /api/pws-models/multipart-upload`                  | JSON `{ name, modelKey }`, header `Upload-Length`. -> `AMAR-<uuid>` as text |
+ * | chunk  | `PATCH  /api/pws-models/multipart-upload/<id>`             | raw chunk, headers `Upload-Offset`, `Upload-Length`. -> 204               |
+ * | resume | `HEAD   /api/pws-models/multipart-upload/<id>`             | header `Upload-Length`. -> header `Upload-Offset`                         |
+ * | cancel | `DELETE /api/pws-models/multipart-upload/<id>`             | header `Upload-Length`. -> 204                                            |
  *
  * Limits of a mock, which a real backend must not copy:
  * - The transfers live in the memory of one server process. It only works with a single process
@@ -56,9 +56,9 @@ export interface MockTransfer {
 }
 
 // kept on globalThis: both route files share it, and it survives hot reloads in dev
-const globalForMock = globalThis as typeof globalThis & { aiModelUploadMockTransfers?: Map<string, MockTransfer> };
-const transfers: Map<string, MockTransfer> = globalForMock.aiModelUploadMockTransfers ?? new Map<string, MockTransfer>();
-globalForMock.aiModelUploadMockTransfers = transfers;
+const globalForMock = globalThis as typeof globalThis & { pwsModelUploadMockTransfers?: Map<string, MockTransfer> };
+const transfers: Map<string, MockTransfer> = globalForMock.pwsModelUploadMockTransfers ?? new Map<string, MockTransfer>();
+globalForMock.pwsModelUploadMockTransfers = transfers;
 
 export class BodyTooLargeError extends Error {
   constructor(limit: number) {

@@ -5,14 +5,14 @@ import { ComponentProps } from 'react';
 
 import { Button } from '@/components/ui/button';
 
-import { AI_MODEL_UPLOAD_STATUS } from '../constants/ai-model-upload.constants';
-import { useAiModelUploadMutation } from '../hooks/useAiModelUploadMutation';
-import { useAiModelUploadCancelMutation } from '../hooks/useAiModelUploadCancelMutation';
-import { useAiModelUploads, useAiModelUploadActions, useAiModelUploadSessionBatchId } from '../store/ai-model-upload.store';
+import { PWS_MODEL_UPLOAD_STATUS } from '../constants/pws-model-upload.constants';
+import { usePwsModelUploadMutation } from '../hooks/usePwsModelUploadMutation';
+import { usePwsModelUploadCancelMutation } from '../hooks/usePwsModelUploadCancelMutation';
+import { usePwsModelUploads, usePwsModelUploadActions, usePwsModelUploadSessionBatchId } from '../store/pws-model-upload.store';
 
-import type { AiModelUploadItem, AiModelUploadVariables } from '../models/ai-model-upload.models';
+import type { PwsModelUploadItem, PwsModelUploadVariables } from '../models/pws-model-upload.models';
 
-interface AiModelUploadRetryButtonProps extends Omit<ComponentProps<typeof Button>, 'onClick'> {
+interface PwsModelUploadRetryButtonProps extends Omit<ComponentProps<typeof Button>, 'onClick'> {
   /**
    * Which failed files to send again: `session` (default) is the batch the dialog is following, `all`
    * is every failed file in the app (e.g. for a button in the notifications popover).
@@ -26,17 +26,17 @@ interface AiModelUploadRetryButtonProps extends Omit<ComponentProps<typeof Butto
  * mutations itself, and renders nothing while there is no failed file in its scope.
  * Remove the element to take the feature away.
  */
-export default function AiModelUploadRetryButton({ scope = 'session', children, ...props }: AiModelUploadRetryButtonProps) {
-  const uploads = useAiModelUploads();
-  const sessionBatchId = useAiModelUploadSessionBatchId();
-  const { prepareRetry } = useAiModelUploadActions();
-  const { mutate } = useAiModelUploadMutation();
-  const { mutate: cancelUpload } = useAiModelUploadCancelMutation();
+export default function PwsModelUploadRetryButton({ scope = 'session', children, ...props }: PwsModelUploadRetryButtonProps) {
+  const uploads = usePwsModelUploads();
+  const sessionBatchId = usePwsModelUploadSessionBatchId();
+  const { prepareRetry } = usePwsModelUploadActions();
+  const { mutate } = usePwsModelUploadMutation();
+  const { mutate: cancelUpload } = usePwsModelUploadCancelMutation();
 
   const batchId: string | undefined = scope === 'session' ? (sessionBatchId ?? undefined) : undefined;
   const failedCount: number = uploads.filter(
-    (upload: AiModelUploadItem) => {
-      return upload.status === AI_MODEL_UPLOAD_STATUS.failed && (batchId === undefined || upload.batchId === batchId);
+    (upload: PwsModelUploadItem) => {
+      return upload.status === PWS_MODEL_UPLOAD_STATUS.failed && (batchId === undefined || upload.batchId === batchId);
     },
   ).length;
 
@@ -46,12 +46,12 @@ export default function AiModelUploadRetryButton({ scope = 'session', children, 
 
   const handleOnRetry = () => {
     const { uploads: retriedUploads, abandonedUploads } = prepareRetry(batchId);
-    abandonedUploads.forEach((upload: AiModelUploadItem) => {
+    abandonedUploads.forEach((upload: PwsModelUploadItem) => {
       if (upload.artifactId !== null) {
         cancelUpload({ artifactId: upload.artifactId, uploadLength: upload.size });
       }
     });
-    retriedUploads.forEach((variables: AiModelUploadVariables) => {
+    retriedUploads.forEach((variables: PwsModelUploadVariables) => {
       mutate(variables);
     });
   };

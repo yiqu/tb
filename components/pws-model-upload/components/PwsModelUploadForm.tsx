@@ -10,33 +10,33 @@ import { Separator } from '@/components/ui/separator';
 import RowStack from '@/shared/components/RowStack';
 import ColumnStack from '@/shared/components/ColumnStack';
 
-import { useAiModelUpload } from '../hooks/useAiModelUpload';
-import AiModelUploadTextField from './AiModelUploadTextField';
-import AiModelUploadActionBar from './AiModelUploadActionBar';
-import AiModelUploadRetryButton from './AiModelUploadRetryButton';
-import AiModelUploadStatusList from './AiModelUploadStatusList';
-import AiModelUploadSubmitButton from './AiModelUploadSubmitButton';
-import AiModelUploadFailedMessage from './AiModelUploadFailedMessage';
-import AiModelUploadNewUploadButton from './AiModelUploadNewUploadButton';
-import AiModelUploadInProgressAlert from './AiModelUploadInProgressAlert';
-import AiModelUploadRejectedMessage from './AiModelUploadRejectedMessage';
-import AiModelUploadCompletedMessage from './AiModelUploadCompletedMessage';
-import AiModelUploadInProgressSection from './AiModelUploadInProgressSection';
-import { aiModelUploadSchema, AiModelUploadFormValues } from '../schemas/ai-model-upload.schema';
+import { usePwsModelUpload } from '../hooks/usePwsModelUpload';
+import PwsModelUploadTextField from './PwsModelUploadTextField';
+import PwsModelUploadActionBar from './PwsModelUploadActionBar';
+import PwsModelUploadRetryButton from './PwsModelUploadRetryButton';
+import PwsModelUploadStatusList from './PwsModelUploadStatusList';
+import PwsModelUploadSubmitButton from './PwsModelUploadSubmitButton';
+import PwsModelUploadFailedMessage from './PwsModelUploadFailedMessage';
+import PwsModelUploadNewUploadButton from './PwsModelUploadNewUploadButton';
+import PwsModelUploadInProgressAlert from './PwsModelUploadInProgressAlert';
+import PwsModelUploadRejectedMessage from './PwsModelUploadRejectedMessage';
+import PwsModelUploadCompletedMessage from './PwsModelUploadCompletedMessage';
+import PwsModelUploadInProgressSection from './PwsModelUploadInProgressSection';
+import { pwsModelUploadSchema, PwsModelUploadFormValues } from '../schemas/pws-model-upload.schema';
 
-import type { AiModelUploadItem } from '../models/ai-model-upload.models';
-import { useAiModelUploadDraft, useAiModelUploadActions, AI_MODEL_UPLOAD_EMPTY_DRAFT } from '../store/ai-model-upload.store';
+import type { PwsModelUploadItem } from '../models/pws-model-upload.models';
+import { usePwsModelUploadDraft, usePwsModelUploadActions, PWS_MODEL_UPLOAD_EMPTY_DRAFT } from '../store/pws-model-upload.store';
 import {
-  AI_MODEL_UPLOAD_PHASE,
-  AI_MODEL_UPLOAD_NAME_LABEL,
-  AI_MODEL_UPLOAD_MODEL_KEY_LABEL,
-  AI_MODEL_UPLOAD_NAME_PLACEHOLDER,
-  AI_MODEL_UPLOAD_MODEL_KEY_PLACEHOLDER,
-} from '../constants/ai-model-upload.constants';
+  PWS_MODEL_UPLOAD_PHASE,
+  PWS_MODEL_UPLOAD_NAME_LABEL,
+  PWS_MODEL_UPLOAD_MODEL_KEY_LABEL,
+  PWS_MODEL_UPLOAD_NAME_PLACEHOLDER,
+  PWS_MODEL_UPLOAD_MODEL_KEY_PLACEHOLDER,
+} from '../constants/pws-model-upload.constants';
 
 // FilePond is only needed once the dialog shows the drop zone, so it is loaded then and kept out of the page's main bundle
-const AiModelUploadDropzone = dynamic(() => {
-  return import('./AiModelUploadDropzone');
+const PwsModelUploadDropzone = dynamic(() => {
+  return import('./PwsModelUploadDropzone');
 }, {
   ssr: false,
   loading: () => {
@@ -47,7 +47,7 @@ const AiModelUploadDropzone = dynamic(() => {
 /** Files of one drop or browse are added one after the other, rejections within this window belong to the same selection. */
 const REJECTED_MESSAGE_GRACE_MS = 1000;
 
-interface AiModelUploadFormProps {
+interface PwsModelUploadFormProps {
   /** Let the drop zone take more than one file. Every file then becomes its own upload with the same name and model key. */
   allowMultiple: boolean;
   /** File types the drop zone accepts, e.g. `['.onnx']`. Empty allows every type. */
@@ -64,18 +64,18 @@ interface AiModelUploadFormProps {
  * - completed: "Upload completed" and a "New upload" button that goes back to an empty form
  * - failed: a message, a "New upload" button that goes back to the drop zone, and the Retry button
  */
-export default function AiModelUploadForm({ allowMultiple, allowedExtensions }: AiModelUploadFormProps) {
-  const { phase, stagedFiles, sessionBatchId, sessionUploads, hasStarted, isUploading, setStagedFiles, startUpload, endSession } = useAiModelUpload();
-  const draft = useAiModelUploadDraft();
-  const { setDraft } = useAiModelUploadActions();
+export default function PwsModelUploadForm({ allowMultiple, allowedExtensions }: PwsModelUploadFormProps) {
+  const { phase, stagedFiles, sessionBatchId, sessionUploads, hasStarted, isUploading, setStagedFiles, startUpload, endSession } = usePwsModelUpload();
+  const draft = usePwsModelUploadDraft();
+  const { setDraft } = usePwsModelUploadActions();
   const [rejectedFileNames, setRejectedFileNames] = useState<string[]>([]);
   const lastRejectedAtRef = useRef<number>(0);
 
   // reopened on a failed upload: Upload already cleared the draft, so the fields show what that upload was sent with
-  const sessionUpload: AiModelUploadItem | undefined = sessionUploads[0];
-  const methods = useForm<AiModelUploadFormValues>({
+  const sessionUpload: PwsModelUploadItem | undefined = sessionUploads[0];
+  const methods = useForm<PwsModelUploadFormValues>({
     defaultValues: sessionUpload ? { name: sessionUpload.name, modelKey: sessionUpload.modelKey } : draft,
-    resolver: zodResolver(aiModelUploadSchema),
+    resolver: zodResolver(pwsModelUploadSchema),
     mode: 'onChange',
   });
 
@@ -107,7 +107,7 @@ export default function AiModelUploadForm({ allowMultiple, allowedExtensions }: 
     });
   };
 
-  const handleOnUpload = (values: AiModelUploadFormValues) => {
+  const handleOnUpload = (values: PwsModelUploadFormValues) => {
     // pressing Enter in a field submits the form too, there may be nothing to upload yet
     if (stagedFiles.length === 0) {
       return;
@@ -115,7 +115,7 @@ export default function AiModelUploadForm({ allowMultiple, allowedExtensions }: 
     // the JSON body of the start request: `name` replaces the file's own name on the backend
     startUpload(values);
     // the next upload starts with empty fields
-    setDraft(AI_MODEL_UPLOAD_EMPTY_DRAFT);
+    setDraft(PWS_MODEL_UPLOAD_EMPTY_DRAFT);
   };
 
   /** After a failure: back to the drop zone, the name and model key stay for the next try. */
@@ -130,7 +130,7 @@ export default function AiModelUploadForm({ allowMultiple, allowedExtensions }: 
   /** After a success: back to an empty form, for the next model. */
   const handleOnNewUploadAfterSuccess = () => {
     setRejectedFileNames([]);
-    methods.reset(AI_MODEL_UPLOAD_EMPTY_DRAFT);
+    methods.reset(PWS_MODEL_UPLOAD_EMPTY_DRAFT);
     endSession();
   };
 
@@ -138,33 +138,33 @@ export default function AiModelUploadForm({ allowMultiple, allowedExtensions }: 
     <form onSubmit={ methods.handleSubmit(handleOnUpload) } noValidate>
       <ColumnStack className="w-full gap-y-4">
         { /* uploads from an earlier press of Upload that are still running, same rows as the notifications popover */ }
-        <AiModelUploadInProgressSection excludeBatchId={ sessionBatchId } withDivider />
+        <PwsModelUploadInProgressSection excludeBatchId={ sessionBatchId } withDivider />
 
-        <AiModelUploadTextField
+        <PwsModelUploadTextField
           control={ methods.control }
           name="name"
-          label={ AI_MODEL_UPLOAD_NAME_LABEL }
-          placeholder={ AI_MODEL_UPLOAD_NAME_PLACEHOLDER }
+          label={ PWS_MODEL_UPLOAD_NAME_LABEL }
+          placeholder={ PWS_MODEL_UPLOAD_NAME_PLACEHOLDER }
           disabled={ hasStarted }
         />
-        <AiModelUploadTextField
+        <PwsModelUploadTextField
           control={ methods.control }
           name="modelKey"
-          label={ AI_MODEL_UPLOAD_MODEL_KEY_LABEL }
-          placeholder={ AI_MODEL_UPLOAD_MODEL_KEY_PLACEHOLDER }
+          label={ PWS_MODEL_UPLOAD_MODEL_KEY_LABEL }
+          placeholder={ PWS_MODEL_UPLOAD_MODEL_KEY_PLACEHOLDER }
           disabled={ hasStarted }
         />
 
         <Separator />
 
         { isUploading ?
-          <AiModelUploadInProgressAlert />
+          <PwsModelUploadInProgressAlert />
         : null }
 
         { hasStarted ?
-          <AiModelUploadStatusList uploads={ sessionUploads } />
+          <PwsModelUploadStatusList uploads={ sessionUploads } />
         : <ColumnStack className="gap-y-2">
-          <AiModelUploadDropzone
+          <PwsModelUploadDropzone
             files={ stagedFiles }
             onFilesChange={ handleOnFilesChange }
             allowedExtensions={ allowedExtensions }
@@ -172,31 +172,31 @@ export default function AiModelUploadForm({ allowMultiple, allowedExtensions }: 
             onFileRejected={ handleOnFileRejected }
             className={ allowMultiple ? 'h-56' : 'h-36' }
           />
-          <AiModelUploadRejectedMessage fileNames={ rejectedFileNames } allowedExtensions={ allowedExtensions } />
+          <PwsModelUploadRejectedMessage fileNames={ rejectedFileNames } allowedExtensions={ allowedExtensions } />
         </ColumnStack>
         }
 
-        { phase === AI_MODEL_UPLOAD_PHASE.staging || phase === AI_MODEL_UPLOAD_PHASE.uploading ?
-          <AiModelUploadActionBar>
-            <AiModelUploadSubmitButton type="submit" isUploading={ isUploading } disabled={ !isFormValid } />
-          </AiModelUploadActionBar>
+        { phase === PWS_MODEL_UPLOAD_PHASE.staging || phase === PWS_MODEL_UPLOAD_PHASE.uploading ?
+          <PwsModelUploadActionBar>
+            <PwsModelUploadSubmitButton type="submit" isUploading={ isUploading } disabled={ !isFormValid } />
+          </PwsModelUploadActionBar>
         : null }
 
-        { phase === AI_MODEL_UPLOAD_PHASE.completed ?
-          <AiModelUploadActionBar className="justify-between">
-            <AiModelUploadCompletedMessage />
-            <AiModelUploadNewUploadButton onClick={ handleOnNewUploadAfterSuccess } />
-          </AiModelUploadActionBar>
+        { phase === PWS_MODEL_UPLOAD_PHASE.completed ?
+          <PwsModelUploadActionBar className="justify-between">
+            <PwsModelUploadCompletedMessage />
+            <PwsModelUploadNewUploadButton onClick={ handleOnNewUploadAfterSuccess } />
+          </PwsModelUploadActionBar>
         : null }
-        { phase === AI_MODEL_UPLOAD_PHASE.failed ?
-          <AiModelUploadActionBar className="justify-between">
-            <AiModelUploadFailedMessage />
+        { phase === PWS_MODEL_UPLOAD_PHASE.failed ?
+          <PwsModelUploadActionBar className="justify-between">
+            <PwsModelUploadFailedMessage />
             <RowStack className="items-center gap-x-2">
-              <AiModelUploadNewUploadButton onClick={ handleOnNewUploadAfterFailure } />
+              <PwsModelUploadNewUploadButton onClick={ handleOnNewUploadAfterFailure } />
               { /* optional: remove this element to take the retry feature out */ }
-              <AiModelUploadRetryButton />
+              <PwsModelUploadRetryButton />
             </RowStack>
-          </AiModelUploadActionBar>
+          </PwsModelUploadActionBar>
         : null }
       </ColumnStack>
     </form>

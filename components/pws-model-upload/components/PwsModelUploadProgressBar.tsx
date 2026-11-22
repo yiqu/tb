@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
-import { clampProgress } from '../utils/ai-model-upload.utils';
-import { AI_MODEL_UPLOAD_PROGRESS_COLOR_THRESHOLD } from '../constants/ai-model-upload.constants';
+import { clampProgress } from '../utils/pws-model-upload.utils';
+import { PWS_MODEL_UPLOAD_PROGRESS_COLOR_THRESHOLD } from '../constants/pws-model-upload.constants';
 
-interface AiModelUploadProgressBarProps {
+interface PwsModelUploadProgressBarProps {
   /** 0 to 100. */
   progress: number;
   isFailed?: boolean;
@@ -14,9 +14,9 @@ interface AiModelUploadProgressBarProps {
 }
 
 /** Horizontal progress bar: yellow below 70%, dark green from 70% on, red when the upload failed. */
-export default function AiModelUploadProgressBar({ progress, isFailed = false, label, className }: AiModelUploadProgressBarProps) {
+export default function PwsModelUploadProgressBar({ progress, isFailed = false, label, className }: PwsModelUploadProgressBarProps) {
   const value: number = clampProgress(progress);
-  const isAlmostDone: boolean = value >= AI_MODEL_UPLOAD_PROGRESS_COLOR_THRESHOLD;
+  const isAlmostDone: boolean = value >= PWS_MODEL_UPLOAD_PROGRESS_COLOR_THRESHOLD;
 
   return (
     <Progress

@@ -4,20 +4,20 @@ import { cn } from '@/lib/utils';
 import Typography from '@/components/typography/Typography';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
-import { AI_MODEL_UPLOAD_IN_PROGRESS_ALERT_TITLE, AI_MODEL_UPLOAD_IN_PROGRESS_ALERT_MESSAGE } from '../constants/ai-model-upload.constants';
+import { PWS_MODEL_UPLOAD_IN_PROGRESS_ALERT_TITLE, PWS_MODEL_UPLOAD_IN_PROGRESS_ALERT_MESSAGE } from '../constants/pws-model-upload.constants';
 
-interface AiModelUploadInProgressAlertProps {
+interface PwsModelUploadInProgressAlertProps {
   title?: string;
   message?: string;
   className?: string;
 }
 
 /** Info alert for the uploading phase: tells the user the upload keeps running if they leave. */
-export default function AiModelUploadInProgressAlert({
-  title = AI_MODEL_UPLOAD_IN_PROGRESS_ALERT_TITLE,
-  message = AI_MODEL_UPLOAD_IN_PROGRESS_ALERT_MESSAGE,
+export default function PwsModelUploadInProgressAlert({
+  title = PWS_MODEL_UPLOAD_IN_PROGRESS_ALERT_TITLE,
+  message = PWS_MODEL_UPLOAD_IN_PROGRESS_ALERT_MESSAGE,
   className,
-}: AiModelUploadInProgressAlertProps) {
+}: PwsModelUploadInProgressAlertProps) {
   return (
     <Alert
       role="status"

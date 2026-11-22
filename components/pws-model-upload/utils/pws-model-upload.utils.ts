@@ -1,18 +1,18 @@
 import { Duration } from 'luxon';
 
 import {
-  AI_MODEL_UPLOAD_PHASE,
-  AI_MODEL_UPLOAD_STATUS,
-  AI_MODEL_UPLOAD_MAX_CHUNK_BYTES,
-  AI_MODEL_UPLOAD_MIN_CHUNK_COUNT,
-  AI_MODEL_UPLOAD_SPEED_SMOOTHING,
-  AI_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS,
-  AI_MODEL_UPLOAD_TIME_REMAINING_CALCULATING,
-  AI_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS_LABEL,
-  getAiModelUploadTimeRemainingLabel,
-} from '../constants/ai-model-upload.constants';
+  PWS_MODEL_UPLOAD_PHASE,
+  PWS_MODEL_UPLOAD_STATUS,
+  PWS_MODEL_UPLOAD_MAX_CHUNK_BYTES,
+  PWS_MODEL_UPLOAD_MIN_CHUNK_COUNT,
+  PWS_MODEL_UPLOAD_SPEED_SMOOTHING,
+  PWS_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS,
+  PWS_MODEL_UPLOAD_TIME_REMAINING_CALCULATING,
+  PWS_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS_LABEL,
+  getPwsModelUploadTimeRemainingLabel,
+} from '../constants/pws-model-upload.constants';
 
-import type { AiModelUploadItem, AiModelUploadPhase } from '../models/ai-model-upload.models';
+import type { PwsModelUploadItem, PwsModelUploadPhase } from '../models/pws-model-upload.models';
 
 /** `'.TXT'`, `'txt'` and `' .txt '` all become `'.txt'`. */
 export function normalizeFileExtension(extension: string): string {
@@ -43,35 +43,35 @@ export function isFileExtensionAllowed(fileName: string, allowedExtensions?: rea
   });
 }
 
-export function isAiModelUploadActive(upload: AiModelUploadItem): boolean {
-  return upload.status === AI_MODEL_UPLOAD_STATUS.queued || upload.status === AI_MODEL_UPLOAD_STATUS.uploading;
+export function isPwsModelUploadActive(upload: PwsModelUploadItem): boolean {
+  return upload.status === PWS_MODEL_UPLOAD_STATUS.queued || upload.status === PWS_MODEL_UPLOAD_STATUS.uploading;
 }
 
 /** Derives what an upload surface should show from its staged files and the uploads of its current session. */
-export function getAiModelUploadPhase(stagedFileCount: number, hasSession: boolean, sessionUploads: AiModelUploadItem[]): AiModelUploadPhase {
+export function getPwsModelUploadPhase(stagedFileCount: number, hasSession: boolean, sessionUploads: PwsModelUploadItem[]): PwsModelUploadPhase {
   if (!hasSession) {
-    return stagedFileCount > 0 ? AI_MODEL_UPLOAD_PHASE.staging : AI_MODEL_UPLOAD_PHASE.empty;
+    return stagedFileCount > 0 ? PWS_MODEL_UPLOAD_PHASE.staging : PWS_MODEL_UPLOAD_PHASE.empty;
   }
-  if (sessionUploads.some(isAiModelUploadActive)) {
-    return AI_MODEL_UPLOAD_PHASE.uploading;
+  if (sessionUploads.some(isPwsModelUploadActive)) {
+    return PWS_MODEL_UPLOAD_PHASE.uploading;
   }
-  if (sessionUploads.some((upload: AiModelUploadItem) => {
-    return upload.status === AI_MODEL_UPLOAD_STATUS.failed;
+  if (sessionUploads.some((upload: PwsModelUploadItem) => {
+    return upload.status === PWS_MODEL_UPLOAD_STATUS.failed;
   })) {
-    return AI_MODEL_UPLOAD_PHASE.failed;
+    return PWS_MODEL_UPLOAD_PHASE.failed;
   }
-  return AI_MODEL_UPLOAD_PHASE.completed;
+  return PWS_MODEL_UPLOAD_PHASE.completed;
 }
 
 /**
  * The uploads that are still going: every file of a batch that has at least one file queued or
  * uploading. Files of such a batch that are already done are included, so the batch reads as a whole.
  */
-export function getInProgressAiModelUploads(uploads: AiModelUploadItem[], excludeBatchId?: string | null): AiModelUploadItem[] {
-  const activeBatchIds = new Set<string>(uploads.filter(isAiModelUploadActive).map((upload: AiModelUploadItem) => {
+export function getInProgressPwsModelUploads(uploads: PwsModelUploadItem[], excludeBatchId?: string | null): PwsModelUploadItem[] {
+  const activeBatchIds = new Set<string>(uploads.filter(isPwsModelUploadActive).map((upload: PwsModelUploadItem) => {
     return upload.batchId;
   }));
-  return uploads.filter((upload: AiModelUploadItem) => {
+  return uploads.filter((upload: PwsModelUploadItem) => {
     return activeBatchIds.has(upload.batchId) && upload.batchId !== excludeBatchId;
   });
 }
@@ -83,7 +83,7 @@ export function clampProgress(progress: number): number {
   return Math.min(100, Math.max(0, Math.round(progress)));
 }
 
-export interface AiModelUploadSummary {
+export interface PwsModelUploadSummary {
   /** Number of files. */
   total: number;
   /** Number of files that reached the server. */
@@ -93,25 +93,25 @@ export interface AiModelUploadSummary {
 }
 
 /** Overall progress by number of files: every file weighs the same, whatever its size. */
-export function getAiModelUploadSummary(uploads: AiModelUploadItem[]): AiModelUploadSummary {
+export function getPwsModelUploadSummary(uploads: PwsModelUploadItem[]): PwsModelUploadSummary {
   const total: number = uploads.length;
-  const completed: number = uploads.filter((upload: AiModelUploadItem) => {
-    return upload.status === AI_MODEL_UPLOAD_STATUS.completed;
+  const completed: number = uploads.filter((upload: PwsModelUploadItem) => {
+    return upload.status === PWS_MODEL_UPLOAD_STATUS.completed;
   }).length;
-  const progressSum: number = uploads.reduce((sum: number, upload: AiModelUploadItem) => {
+  const progressSum: number = uploads.reduce((sum: number, upload: PwsModelUploadItem) => {
     return sum + upload.progress;
   }, 0);
   return { total, completed, percent: total === 0 ? 0 : clampProgress(progressSum / total) };
 }
 
 /** `45% (1/3)` */
-export function formatAiModelUploadSummary(summary: AiModelUploadSummary): string {
+export function formatPwsModelUploadSummary(summary: PwsModelUploadSummary): string {
   return `${summary.percent}% (${summary.completed}/${summary.total})`;
 }
 
-/** Chunks of at most `AI_MODEL_UPLOAD_MAX_CHUNK_BYTES`, and small enough that a small file still takes about `AI_MODEL_UPLOAD_MIN_CHUNK_COUNT` steps. */
-export function getAiModelUploadChunkSize(fileSize: number): number {
-  return Math.max(1, Math.min(AI_MODEL_UPLOAD_MAX_CHUNK_BYTES, Math.ceil(fileSize / AI_MODEL_UPLOAD_MIN_CHUNK_COUNT)));
+/** Chunks of at most `PWS_MODEL_UPLOAD_MAX_CHUNK_BYTES`, and small enough that a small file still takes about `PWS_MODEL_UPLOAD_MIN_CHUNK_COUNT` steps. */
+export function getPwsModelUploadChunkSize(fileSize: number): number {
+  return Math.max(1, Math.min(PWS_MODEL_UPLOAD_MAX_CHUNK_BYTES, Math.ceil(fileSize / PWS_MODEL_UPLOAD_MIN_CHUNK_COUNT)));
 }
 
 /**
@@ -123,14 +123,14 @@ export function getNextBytesPerSecond(previous: number | null, deltaBytes: numbe
     return previous;
   }
   const sample: number = deltaBytes / (deltaMs / 1000);
-  return previous === null ? sample : AI_MODEL_UPLOAD_SPEED_SMOOTHING * sample + (1 - AI_MODEL_UPLOAD_SPEED_SMOOTHING) * previous;
+  return previous === null ? sample : PWS_MODEL_UPLOAD_SPEED_SMOOTHING * sample + (1 - PWS_MODEL_UPLOAD_SPEED_SMOOTHING) * previous;
 }
 
 /**
  * Seconds until the upload is done at its current speed, counted down from its last progress report,
  * or null while the speed is not known yet.
  */
-export function getAiModelUploadSecondsRemaining(upload: AiModelUploadItem, now: number): number | null {
+export function getPwsModelUploadSecondsRemaining(upload: PwsModelUploadItem, now: number): number | null {
   if (upload.bytesPerSecond === null || upload.bytesPerSecond <= 0 || upload.progressUpdatedAt === null) {
     return null;
   }
@@ -139,12 +139,12 @@ export function getAiModelUploadSecondsRemaining(upload: AiModelUploadItem, now:
 }
 
 /** `Calculating time left…`, `A few seconds left`, `About 25 sec left`, `About 3 min 20 sec left`, `About 12 min left`, `About 1 hr 5 min left`. */
-export function formatAiModelUploadTimeRemaining(seconds: number | null): string {
+export function formatPwsModelUploadTimeRemaining(seconds: number | null): string {
   if (seconds === null) {
-    return AI_MODEL_UPLOAD_TIME_REMAINING_CALCULATING;
+    return PWS_MODEL_UPLOAD_TIME_REMAINING_CALCULATING;
   }
-  if (seconds < AI_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS) {
-    return AI_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS_LABEL;
+  if (seconds < PWS_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS) {
+    return PWS_MODEL_UPLOAD_TIME_REMAINING_FEW_SECONDS_LABEL;
   }
   // rounded up to 5 seconds under a minute, to 10 seconds above, so the label does not flicker every second
   const step: number = seconds < 60 ? 5 : 10;
@@ -161,5 +161,5 @@ export function formatAiModelUploadTimeRemaining(seconds: number | null): string
   } else {
     duration = `${restSeconds} sec`;
   }
-  return getAiModelUploadTimeRemainingLabel(duration);
+  return getPwsModelUploadTimeRemainingLabel(duration);
 }

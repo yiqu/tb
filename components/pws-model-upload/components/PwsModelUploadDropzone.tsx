@@ -8,11 +8,11 @@ import { cn } from '@/lib/utils';
 import type { FilePondFile } from 'filepond';
 
 import 'filepond/dist/filepond.min.css';
-import '../styles/ai-model-upload.css';
-import { AI_MODEL_UPLOAD_REMOVE_ICON_SVG } from '../constants/ai-model-upload.constants';
-import { isFileExtensionAllowed, normalizeFileExtension } from '../utils/ai-model-upload.utils';
+import '../styles/pws-model-upload.css';
+import { PWS_MODEL_UPLOAD_REMOVE_ICON_SVG } from '../constants/pws-model-upload.constants';
+import { isFileExtensionAllowed, normalizeFileExtension } from '../utils/pws-model-upload.utils';
 
-interface AiModelUploadDropzoneProps {
+interface PwsModelUploadDropzoneProps {
   /**
    * The staged files, kept by the caller so the selection can outlive this component (e.g. a dialog
    * closing). They are handed to FilePond when it mounts, after that FilePond owns the list and
@@ -37,9 +37,9 @@ interface AiModelUploadDropzoneProps {
  * files), then one row per selected file with its name, its size and a remove button.
  *
  * FilePond only stages here. `instantUpload` and `allowProcess` are off, uploading is started by
- * the caller (see `useAiModelUpload`).
+ * the caller (see `usePwsModelUpload`).
  */
-export default function AiModelUploadDropzone({
+export default function PwsModelUploadDropzone({
   files,
   onFilesChange,
   allowedExtensions,
@@ -48,7 +48,7 @@ export default function AiModelUploadDropzone({
   disabled = false,
   label,
   className,
-}: AiModelUploadDropzoneProps) {
+}: PwsModelUploadDropzoneProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const pondRef = useRef<FilePond>(null);
   // FilePond calls back outside of React's render cycle, the callbacks read the current props through this ref
@@ -125,7 +125,7 @@ export default function AiModelUploadDropzone({
   };
 
   return (
-    <div ref={ wrapperRef } className={ cn('ai-model-upload-dropzone h-56 w-full', className) }>
+    <div ref={ wrapperRef } className={ cn('pws-model-upload-dropzone h-56 w-full', className) }>
     <FilePond
       ref={ pondRef }
       oninit={ handleOnInit }
@@ -141,7 +141,7 @@ export default function AiModelUploadDropzone({
       allowReorder={ false }
       credits={ false }
       styleButtonRemoveItemPosition="right"
-      iconRemove={ AI_MODEL_UPLOAD_REMOVE_ICON_SVG }
+      iconRemove={ PWS_MODEL_UPLOAD_REMOVE_ICON_SVG }
       { ...(label ? { labelIdle: label } : {}) }
     />
     </div>

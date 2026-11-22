@@ -2,11 +2,11 @@
 
 import { cn } from '@/lib/utils';
 
-import { useAiModelUploads } from '../store/ai-model-upload.store';
-import AiModelUploadStatusList from './AiModelUploadStatusList';
-import AiModelUploadStatusEmpty from './AiModelUploadStatusEmpty';
+import { usePwsModelUploads } from '../store/pws-model-upload.store';
+import PwsModelUploadStatusList from './PwsModelUploadStatusList';
+import PwsModelUploadStatusEmpty from './PwsModelUploadStatusEmpty';
 
-interface AiModelUploadStatusOverviewProps {
+interface PwsModelUploadStatusOverviewProps {
   className?: string;
 }
 
@@ -14,11 +14,11 @@ interface AiModelUploadStatusOverviewProps {
  * The progress of every upload in the app, whichever surface started it. Reads the upload store,
  * so it can be dropped anywhere (e.g. the notifications popover) with no props.
  */
-export default function AiModelUploadStatusOverview({ className }: AiModelUploadStatusOverviewProps) {
-  const uploads = useAiModelUploads();
+export default function PwsModelUploadStatusOverview({ className }: PwsModelUploadStatusOverviewProps) {
+  const uploads = usePwsModelUploads();
 
   if (uploads.length === 0) {
-    return <AiModelUploadStatusEmpty className={ className } />;
+    return <PwsModelUploadStatusEmpty className={ className } />;
   }
-  return <AiModelUploadStatusList uploads={ uploads } className={ cn('max-h-72 overflow-y-auto pr-1', className) } />;
+  return <PwsModelUploadStatusList uploads={ uploads } className={ cn('max-h-72 overflow-y-auto pr-1', className) } />;
 }

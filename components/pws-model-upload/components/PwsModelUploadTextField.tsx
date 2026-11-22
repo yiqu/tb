@@ -6,7 +6,7 @@ import { Path, Control, Controller, FieldValues } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 
-interface AiModelUploadTextFieldProps<T extends FieldValues> {
+interface PwsModelUploadTextFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
   label: string;
@@ -15,7 +15,7 @@ interface AiModelUploadTextFieldProps<T extends FieldValues> {
 }
 
 /** A labelled text input bound to React Hook Form, with the Zod error under it. Built on the shadcn `field` and `input`. */
-export default function AiModelUploadTextField<T extends FieldValues>({ control, name, label, placeholder, disabled }: AiModelUploadTextFieldProps<T>) {
+export default function PwsModelUploadTextField<T extends FieldValues>({ control, name, label, placeholder, disabled }: PwsModelUploadTextFieldProps<T>) {
   // unique per instance, so two upload dialogs (or another form with a `name` field) never share an id
   const inputId: string = useId();
 

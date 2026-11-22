@@ -1,9 +1,9 @@
-import { getAiModelUploadChunkSize } from '../utils/ai-model-upload.utils';
-import { AI_MODEL_UPLOAD_CHUNK_RETRY_DELAYS } from '../constants/ai-model-upload.constants';
-import { startAiModelUpload, sendAiModelUploadChunk, getAiModelUploadOffset } from './ai-model-upload.api';
+import { getPwsModelUploadChunkSize } from '../utils/pws-model-upload.utils';
+import { PWS_MODEL_UPLOAD_CHUNK_RETRY_DELAYS } from '../constants/pws-model-upload.constants';
+import { startPwsModelUpload, sendPwsModelUploadChunk, getPwsModelUploadOffset } from './pws-model-upload.api';
 
 /**
- * Uploads one file through the AI model multipart API, the same flow FilePond uses for chunked uploads:
+ * Uploads one file through the PWS model multipart API, the same flow FilePond uses for chunked uploads:
  *
  * 1. `POST` the name, model key and size, get the model artifact id back
  * 2. `PATCH` the file one chunk after the other, each at its `Upload-Offset`
@@ -14,7 +14,7 @@ import { startAiModelUpload, sendAiModelUploadChunk, getAiModelUploadOffset } fr
  * failed attempt. The last confirmed chunk completes the upload, there is no separate "complete" request.
  */
 
-interface UploadAiModelFileOptions {
+interface UploadPwsModelFileOptions {
   file: File;
   name: string;
   modelKey: string;
@@ -41,34 +41,34 @@ function getProgress(offset: number, uploadLength: number, isLastChunkSent: bool
 }
 
 /** Resolves with the model artifact id once the whole file is on the server. */
-export async function uploadAiModelFile({ file, name, modelKey, onArtifactId, onProgress }: UploadAiModelFileOptions): Promise<string> {
+export async function uploadPwsModelFile({ file, name, modelKey, onArtifactId, onProgress }: UploadPwsModelFileOptions): Promise<string> {
   const uploadLength: number = file.size;
 
-  const artifactId: string = await startAiModelUpload({ name, modelKey, uploadLength });
+  const artifactId: string = await startPwsModelUpload({ name, modelKey, uploadLength });
   onArtifactId?.(artifactId);
   let offset = 0;
   // an empty file cannot tell from the offset whether its one chunk arrived, so it is always sent
   let isLastChunkSent = false;
   onProgress?.(0, offset);
 
-  const chunkSize: number = getAiModelUploadChunkSize(uploadLength);
+  const chunkSize: number = getPwsModelUploadChunkSize(uploadLength);
   let retryCount = 0;
   while (!isLastChunkSent) {
     const chunk: Blob = file.slice(offset, offset + chunkSize);
     try {
-      await sendAiModelUploadChunk({ artifactId, uploadLength, chunk, offset });
+      await sendPwsModelUploadChunk({ artifactId, uploadLength, chunk, offset });
       offset += chunk.size;
       retryCount = 0;
       isLastChunkSent = offset >= uploadLength;
     } catch (error: unknown) {
       // like FilePond: wait, ask the server how far it got, and continue from there
-      if (retryCount >= AI_MODEL_UPLOAD_CHUNK_RETRY_DELAYS.length) {
+      if (retryCount >= PWS_MODEL_UPLOAD_CHUNK_RETRY_DELAYS.length) {
         throw error;
       }
-      await sleep(AI_MODEL_UPLOAD_CHUNK_RETRY_DELAYS[retryCount]);
+      await sleep(PWS_MODEL_UPLOAD_CHUNK_RETRY_DELAYS[retryCount]);
       retryCount++;
       try {
-        offset = Math.min(uploadLength, await getAiModelUploadOffset({ artifactId, uploadLength }));
+        offset = Math.min(uploadLength, await getPwsModelUploadOffset({ artifactId, uploadLength }));
         isLastChunkSent = uploadLength > 0 && offset >= uploadLength;
       } catch {
         // the server could not be asked, send the same chunk again on the next round

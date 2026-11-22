@@ -3,21 +3,21 @@ import RowStack from '@/shared/components/RowStack';
 import ColumnStack from '@/shared/components/ColumnStack';
 import Typography from '@/components/typography/Typography';
 
-import AiModelUploadProgressBar from './AiModelUploadProgressBar';
-import AiModelUploadTimeRemaining from './AiModelUploadTimeRemaining';
-import { AI_MODEL_UPLOAD_STATUS } from '../constants/ai-model-upload.constants';
+import PwsModelUploadProgressBar from './PwsModelUploadProgressBar';
+import PwsModelUploadTimeRemaining from './PwsModelUploadTimeRemaining';
+import { PWS_MODEL_UPLOAD_STATUS } from '../constants/pws-model-upload.constants';
 
-import type { AiModelUploadItem } from '../models/ai-model-upload.models';
+import type { PwsModelUploadItem } from '../models/pws-model-upload.models';
 
-interface AiModelUploadStatusRowProps {
-  upload: AiModelUploadItem;
+interface PwsModelUploadStatusRowProps {
+  upload: PwsModelUploadItem;
   className?: string;
 }
 
 /** One upload: the name it is saved under, its model key and file, a progress bar, the percentage and, while it runs, the time left. Display only. */
-export default function AiModelUploadStatusRow({ upload, className }: AiModelUploadStatusRowProps) {
-  const isFailed: boolean = upload.status === AI_MODEL_UPLOAD_STATUS.failed;
-  const isUploading: boolean = upload.status === AI_MODEL_UPLOAD_STATUS.uploading;
+export default function PwsModelUploadStatusRow({ upload, className }: PwsModelUploadStatusRowProps) {
+  const isFailed: boolean = upload.status === PWS_MODEL_UPLOAD_STATUS.failed;
+  const isUploading: boolean = upload.status === PWS_MODEL_UPLOAD_STATUS.uploading;
 
   return (
     <ColumnStack className={ cn('w-full gap-y-1', className) }>
@@ -28,13 +28,13 @@ export default function AiModelUploadStatusRow({ upload, className }: AiModelUpl
         { upload.modelKey } · { upload.fileName }
       </Typography>
       <RowStack className="items-center gap-x-2">
-        <AiModelUploadProgressBar progress={ upload.progress } isFailed={ isFailed } label={ `${upload.name} upload progress` } />
+        <PwsModelUploadProgressBar progress={ upload.progress } isFailed={ isFailed } label={ `${upload.name} upload progress` } />
         <Typography variant="body0" className={ cn('w-10 shrink-0 text-right tabular-nums', { 'text-destructive': isFailed }) }>
           { isFailed ? 'Failed' : `${upload.progress}%` }
         </Typography>
       </RowStack>
       { isUploading ?
-        <AiModelUploadTimeRemaining upload={ upload } />
+        <PwsModelUploadTimeRemaining upload={ upload } />
       : null }
       { isFailed && upload.error ?
         <Typography variant="caption0" className="truncate text-destructive dark:text-destructive" title={ upload.error }>

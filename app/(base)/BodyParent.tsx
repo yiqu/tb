@@ -20,7 +20,7 @@
  * Provider nesting order matters — each layer may depend on a parent context.
  */
 
-import AiModelUploadDocumentTitle from '@/components/ai-model-upload/components/AiModelUploadDocumentTitle';
+import PwsModelUploadDocumentTitle from '@/components/pws-model-upload/components/PwsModelUploadDocumentTitle';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 
@@ -85,7 +85,7 @@ export default async function BodyParent({ children }: { children: React.ReactNo
       { /* Tracks route history for back-navigation awareness */ }
       <HistoryTrackerWrapper />
       { /* Shows the progress of running model uploads in the browser tab title */ }
-      <AiModelUploadDocumentTitle />
+      <PwsModelUploadDocumentTitle />
       <VibeProviderWrapper>
         <AppRouterCacheProvider options={ { enableCssLayer: true } }>
           <MuiThemeProvider theme={ theme } defaultMode={ APP_DEFAULT_THEME } modeStorageKey={ APP_THEME_STORAGE_KEY }>

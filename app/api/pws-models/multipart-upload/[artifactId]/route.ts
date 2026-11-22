@@ -34,7 +34,7 @@ async function getCheckedTransfer(request: NextRequest, context: ArtifactRouteCo
   return { id: artifactId, transfer };
 }
 
-/** MOCK of `PATCH /api/ai-models/multipart-upload/{artifactId}`: one chunk at `Upload-Offset`. */
+/** MOCK of `PATCH /api/pws-models/multipart-upload/{artifactId}`: one chunk at `Upload-Offset`. */
 export async function PATCH(request: NextRequest, context: ArtifactRouteContext) {
   const checked = await getCheckedTransfer(request, context);
   if (checked instanceof Response) {
@@ -68,7 +68,7 @@ export async function PATCH(request: NextRequest, context: ArtifactRouteContext)
   return textResponse(null, 204);
 }
 
-/** MOCK of `HEAD /api/ai-models/multipart-upload/{artifactId}`: the offset of an upload in progress. */
+/** MOCK of `HEAD /api/pws-models/multipart-upload/{artifactId}`: the offset of an upload in progress. */
 export async function HEAD(request: NextRequest, context: ArtifactRouteContext) {
   const checked = await getCheckedTransfer(request, context);
   if (checked instanceof Response) {
@@ -78,7 +78,7 @@ export async function HEAD(request: NextRequest, context: ArtifactRouteContext) 
   return textResponse(null, 200, { 'Upload-Offset': String(checked.transfer.offset) });
 }
 
-/** MOCK of `DELETE /api/ai-models/multipart-upload/{artifactId}`: stops a multipart upload. */
+/** MOCK of `DELETE /api/pws-models/multipart-upload/{artifactId}`: stops a multipart upload. */
 export async function DELETE(request: NextRequest, context: ArtifactRouteContext) {
   const checked = await getCheckedTransfer(request, context);
   if (checked instanceof Response) {

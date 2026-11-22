@@ -2,12 +2,12 @@
 
 import { useRef, useState, useEffect } from 'react';
 
-import { useAiModelUploads } from '../store/ai-model-upload.store';
-import { isAiModelUploadActive, getAiModelUploadSummary, formatAiModelUploadSummary } from '../utils/ai-model-upload.utils';
+import { usePwsModelUploads } from '../store/pws-model-upload.store';
+import { isPwsModelUploadActive, getPwsModelUploadSummary, formatPwsModelUploadSummary } from '../utils/pws-model-upload.utils';
 
-import type { AiModelUploadItem } from '../models/ai-model-upload.models';
+import type { PwsModelUploadItem } from '../models/pws-model-upload.models';
 
-interface AiModelUploadDocumentTitleProps {
+interface PwsModelUploadDocumentTitleProps {
   /** How long the finished state, e.g. `100% (3/3)`, stays in the title before it is restored. */
   lingerMs?: number;
   /** Placed between the progress and the page's own title. */
@@ -22,8 +22,8 @@ interface AiModelUploadDocumentTitleProps {
  * The files counted are the ones of every batch that was uploading during the current run, so a
  * second batch started while the first is still going joins the same count.
  */
-export default function AiModelUploadDocumentTitle({ lingerMs = 5000, separator = ' | ' }: AiModelUploadDocumentTitleProps) {
-  const uploads = useAiModelUploads();
+export default function PwsModelUploadDocumentTitle({ lingerMs = 5000, separator = ' | ' }: PwsModelUploadDocumentTitleProps) {
+  const uploads = usePwsModelUploads();
   const trackedBatchIdsRef = useRef<Set<string>>(new Set<string>());
   /** Whether a file was running on the previous update, to tell a new run from the current one. */
   const wasActiveRef = useRef<boolean>(false);
@@ -31,18 +31,18 @@ export default function AiModelUploadDocumentTitle({ lingerMs = 5000, separator 
 
   useEffect(() => {
     const trackedBatchIds: Set<string> = trackedBatchIdsRef.current;
-    const activeUploads: AiModelUploadItem[] = uploads.filter(isAiModelUploadActive);
+    const activeUploads: PwsModelUploadItem[] = uploads.filter(isPwsModelUploadActive);
     const isActive: boolean = activeUploads.length > 0;
     // a new run started while the last one was still lingering in the title: count from scratch
     if (isActive && !wasActiveRef.current) {
       trackedBatchIds.clear();
     }
     wasActiveRef.current = isActive;
-    activeUploads.forEach((upload: AiModelUploadItem) => {
+    activeUploads.forEach((upload: PwsModelUploadItem) => {
       trackedBatchIds.add(upload.batchId);
     });
 
-    const trackedUploads: AiModelUploadItem[] = uploads.filter((upload: AiModelUploadItem) => {
+    const trackedUploads: PwsModelUploadItem[] = uploads.filter((upload: PwsModelUploadItem) => {
       return trackedBatchIds.has(upload.batchId);
     });
     if (trackedUploads.length === 0) {
@@ -51,7 +51,7 @@ export default function AiModelUploadDocumentTitle({ lingerMs = 5000, separator 
       return;
     }
 
-    setProgressLabel(formatAiModelUploadSummary(getAiModelUploadSummary(trackedUploads)));
+    setProgressLabel(formatPwsModelUploadSummary(getPwsModelUploadSummary(trackedUploads)));
     if (isActive) {
       return;
     }

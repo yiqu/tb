@@ -1,11 +1,11 @@
-import { AI_MODEL_UPLOAD_PHASE, AI_MODEL_UPLOAD_STATUS } from '../constants/ai-model-upload.constants';
+import { PWS_MODEL_UPLOAD_PHASE, PWS_MODEL_UPLOAD_STATUS } from '../constants/pws-model-upload.constants';
 
-export type AiModelUploadStatus = (typeof AI_MODEL_UPLOAD_STATUS)[keyof typeof AI_MODEL_UPLOAD_STATUS];
+export type PwsModelUploadStatus = (typeof PWS_MODEL_UPLOAD_STATUS)[keyof typeof PWS_MODEL_UPLOAD_STATUS];
 
-export type AiModelUploadPhase = (typeof AI_MODEL_UPLOAD_PHASE)[keyof typeof AI_MODEL_UPLOAD_PHASE];
+export type PwsModelUploadPhase = (typeof PWS_MODEL_UPLOAD_PHASE)[keyof typeof PWS_MODEL_UPLOAD_PHASE];
 
 /** One file that the user asked to upload. */
-export interface AiModelUploadItem {
+export interface PwsModelUploadItem {
   id: string;
   /** Files started with the same press of Upload share a batch id. */
   batchId: string;
@@ -15,7 +15,7 @@ export interface AiModelUploadItem {
   /** The selected file's own name, for display. */
   fileName: string;
   size: number;
-  status: AiModelUploadStatus;
+  status: PwsModelUploadStatus;
   /** 0 to 100. */
   progress: number;
   /** Bytes the server has confirmed. */
@@ -31,7 +31,7 @@ export interface AiModelUploadItem {
 }
 
 /** What one upload mutation needs: the store item it reports to and what the start request sends. */
-export interface AiModelUploadVariables {
+export interface PwsModelUploadVariables {
   uploadId: string;
   file: File;
   name: string;
@@ -39,7 +39,7 @@ export interface AiModelUploadVariables {
 }
 
 /** What the Retry button needs: the uploads to start again, and the failed attempts to stop on the server. */
-export interface AiModelUploadRetryPlan {
-  uploads: AiModelUploadVariables[];
-  abandonedUploads: AiModelUploadItem[];
+export interface PwsModelUploadRetryPlan {
+  uploads: PwsModelUploadVariables[];
+  abandonedUploads: PwsModelUploadItem[];
 }

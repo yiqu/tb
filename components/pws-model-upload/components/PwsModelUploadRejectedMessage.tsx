@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import Typography from '@/components/typography/Typography';
 
-interface AiModelUploadRejectedMessageProps {
+interface PwsModelUploadRejectedMessageProps {
   /** Names of the files that were not accepted. Renders nothing when empty. */
   fileNames: string[];
   allowedExtensions?: readonly string[];
@@ -9,7 +9,7 @@ interface AiModelUploadRejectedMessageProps {
 }
 
 /** Tells the user which dropped or browsed files were skipped because their extension is not allowed. */
-export default function AiModelUploadRejectedMessage({ fileNames, allowedExtensions, className }: AiModelUploadRejectedMessageProps) {
+export default function PwsModelUploadRejectedMessage({ fileNames, allowedExtensions, className }: PwsModelUploadRejectedMessageProps) {
   if (fileNames.length === 0) {
     return null;
   }

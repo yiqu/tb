@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
 import { DialogTitle, DialogHeader, DialogContent } from '@/components/ui/dialog';
 
-import AiModelUploadForm from './AiModelUploadForm';
-import { AI_MODEL_UPLOAD_DIALOG_TITLE } from '../constants/ai-model-upload.constants';
+import PwsModelUploadForm from './PwsModelUploadForm';
+import { PWS_MODEL_UPLOAD_DIALOG_TITLE } from '../constants/pws-model-upload.constants';
 
-interface AiModelUploadDialogContentProps {
+interface PwsModelUploadDialogContentProps {
   allowMultiple: boolean;
   allowedExtensions: readonly string[];
   title?: string;
@@ -12,12 +12,12 @@ interface AiModelUploadDialogContentProps {
 }
 
 /** The upload dialog's panel: title and form. Goes inside a shadcn `<Dialog>`, see `UploadModelButton`. */
-export default function AiModelUploadDialogContent({
+export default function PwsModelUploadDialogContent({
   allowMultiple,
   allowedExtensions,
-  title = AI_MODEL_UPLOAD_DIALOG_TITLE,
+  title = PWS_MODEL_UPLOAD_DIALOG_TITLE,
   className,
-}: AiModelUploadDialogContentProps) {
+}: PwsModelUploadDialogContentProps) {
   return (
     <DialogContent
       showCloseButton
@@ -28,7 +28,7 @@ export default function AiModelUploadDialogContent({
       <DialogHeader>
         <DialogTitle>{ title }</DialogTitle>
       </DialogHeader>
-      <AiModelUploadForm allowMultiple={ allowMultiple } allowedExtensions={ allowedExtensions } />
+      <PwsModelUploadForm allowMultiple={ allowMultiple } allowedExtensions={ allowedExtensions } />
     </DialogContent>
   );
 }
