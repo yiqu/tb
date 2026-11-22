@@ -13,11 +13,17 @@ In this project the demo is on the `/test` page, against a slow mock of the API 
 ## Using it in another project
 
 1. Copy this folder.
-2. Point the URLs in **`ai-model-upload-urls.constants.ts`** at that project's API. That is the only
+2. Point the URLs in **`constants/ai-model-upload-urls.constants.ts`** at that project's API. That is the only
    file that knows the backend (optional request headers and credentials are there too).
 3. Drop in the pieces:
 
 ```tsx
+import UploadModelButton from '@/components/ai-model-upload/components/UploadModelButton';
+import AiModelUploadDocumentTitle from '@/components/ai-model-upload/components/AiModelUploadDocumentTitle';
+import AiModelUploadStatusOverview from '@/components/ai-model-upload/components/AiModelUploadStatusOverview';
+import AiModelUploadActiveIndicator from '@/components/ai-model-upload/components/AiModelUploadActiveIndicator';
+import AiModelUploadClearFinishedButton from '@/components/ai-model-upload/components/AiModelUploadClearFinishedButton';
+
 // anywhere: the button and its dialog
 <UploadModelButton />
 <UploadModelButton allowMultiple allowedExtensions={ ['.onnx', '.pt'] } />
@@ -48,7 +54,7 @@ What the folder needs from the project: a TanStack Query `QueryClientProvider` a
 ## The API
 
 From the backend's Swagger. The URLs are `AI_MODEL_UPLOAD_START_URL` and
-`AI_MODEL_UPLOAD_ARTIFACT_URL` (with `{artifactId}` replaced) in `ai-model-upload-urls.constants.ts`.
+`AI_MODEL_UPLOAD_ARTIFACT_URL` (with `{artifactId}` replaced) in `constants/ai-model-upload-urls.constants.ts`.
 
 | Step | Request | Details | Response |
 | --- | --- | --- | --- |
@@ -64,7 +70,7 @@ that is abandoned another way (the tab is closed) stays unfinished on the server
 `useAiModelUploadCancelMutation` sends step 4. This is FilePond's own chunked protocol, with the metadata sent as JSON and the
 id in the path instead of `?patch=<id>`.
 
-Still to confirm with the backend team, both are constants in `ai-model-upload.constants.ts`:
+Still to confirm with the backend team, both are constants in `constants/ai-model-upload.constants.ts`:
 
 - **Chunk size.** `AI_MODEL_UPLOAD_MAX_CHUNK_BYTES` is 5MB, FilePond's default. Small files are cut
   into about 25 chunks (`AI_MODEL_UPLOAD_MIN_CHUNK_COUNT`) so their progress moves in steps.
@@ -86,10 +92,10 @@ A backend on another origin must answer the CORS preflight:
 | Piece | Job |
 | --- | --- |
 | **FilePond** (`AiModelUploadDropzone`) | Only picks files: drag and drop, Browse, the staged file with its remove button. It never sends anything. |
-| **React Hook Form + Zod** (`ai-model-upload.schema.ts`) | Name and model key are required; the Upload button stays disabled until both pass. |
-| **TanStack Query** (`useAiModelUploadMutation`) | One mutation per file. It runs the upload and owns its lifecycle (pending, success, error); uploads show up in the React Query devtools under `['ai-model-upload']`. |
-| **`fetch`** (`ai-model-upload.api.ts`) | One function per endpoint, called from inside the mutation. |
-| **Zustand** (`ai-model-upload.store.ts`) | What the UI shows: the staged file, the typed name and model key, and every upload with its status and progress. |
+| **React Hook Form + Zod** (`schemas/ai-model-upload.schema.ts`) | Name and model key are required; the Upload button stays disabled until both pass. |
+| **TanStack Query** (`hooks/useAiModelUploadMutation.ts`) | One mutation per file. It runs the upload and owns its lifecycle (pending, success, error); uploads show up in the React Query devtools under `['ai-model-upload']`. |
+| **`fetch`** (`api/ai-model-upload.api.ts`) | One function per endpoint, called from inside the mutation. |
+| **Zustand** (`store/ai-model-upload.store.ts`) | What the UI shows: the staged file, the typed name and model key, and every upload with its status and progress. |
 
 Why FilePond does not upload by itself: it cancels every running upload when its component
 unmounts, and the dialog unmounts when it closes. So the sending is done by TanStack Query mutations,
@@ -156,24 +162,42 @@ gets no `server` option. It owns its list while mounted and reports every change
 
 ## Files
 
-| File | What it is |
-| --- | --- |
-| `UploadModelButton` | The entry point: the button and its dialog. |
-| `AiModelUploadDialogContent`, `AiModelUploadForm` | The dialog's panel and its form, one block per phase. |
-| `AiModelUploadTextField` | A labelled input bound to React Hook Form, with its Zod error. |
-| `AiModelUploadDropzone` (+ `ai-model-upload.css`) | The FilePond drop zone, themed with the shadcn CSS variables. |
-| `AiModelUploadActionBar`, `AiModelUploadSubmitButton`, `AiModelUploadNewUploadButton`, `AiModelUploadRetryButton` | The row under the drop zone and its buttons. The Retry button reads the store and starts the mutations itself, remove it to remove retry. |
-| `AiModelUploadInProgressAlert`, `AiModelUploadInProgressSection` | "You can close this dialog" alert, and the still-running uploads at the top of a reopened dialog. |
-| `AiModelUploadCompletedMessage`, `AiModelUploadFailedMessage`, `AiModelUploadRejectedMessage` | Result and validation messages. |
-| `AiModelUploadStatusList`, `AiModelUploadStatusRow`, `AiModelUploadProgressBar`, `AiModelUploadTimeRemaining`, `AiModelUploadStatusEmpty` | Progress rows: name, model key and file, bar (yellow below 70%, green from 70%, red when failed), and the time left while it runs. |
-| `AiModelUploadStatusOverview`, `AiModelUploadClearFinishedButton`, `AiModelUploadActiveIndicator` | Store-connected pieces for a notifications popover. Clearing also cancels the cleared failed uploads on the server. |
-| `AiModelUploadDocumentTitle` | Progress in the browser tab title. Mount once. |
-| `useAiModelUpload` | What the form needs: phase, staged files, session, `startUpload`, `endSession`. |
-| `useAiModelUploadMutation`, `useAiModelUploadCancelMutation` | The TanStack Query mutations that upload one file and cancel one on the server. |
-| `ai-model-upload-urls.constants.ts` | The API URLs. The file to change per project. |
-| `ai-model-upload.constants.ts` | Statuses, phases, chunk size, retries, timeout, speed smoothing, wording. |
-| `ai-model-upload.api.ts`, `ai-model-upload.uploader.ts` | The four requests, and the start and chunk loop that uses them. |
-| `ai-model-upload.store.ts`, `ai-model-upload.models.ts`, `ai-model-upload.schema.ts`, `ai-model-upload.utils.ts` | State, types, Zod schema, helpers. |
+```
+ai-model-upload/
+├── README.md
+├── api/          the requests: one fetch per endpoint, and the start + chunk loop
+├── components/   every display component, one per file, `export default`
+├── constants/    API URLs (the file to change per project), and statuses, sizes, wording
+├── hooks/        the form's hook and the TanStack Query mutations
+├── models/       TypeScript types
+├── schemas/      the Zod schema of the form
+├── store/        the Zustand store
+├── styles/       the FilePond theme
+└── utils/        pure helpers
+```
+
+| Folder | File | What it is |
+| --- | --- | --- |
+| `components/` | `UploadModelButton.tsx` | The entry point: the button and its dialog. |
+| | `AiModelUploadDialogContent.tsx`, `AiModelUploadForm.tsx` | The dialog's panel and its form, one block per phase. |
+| | `AiModelUploadTextField.tsx` | A labelled input bound to React Hook Form, with its Zod error. |
+| | `AiModelUploadDropzone.tsx` | The FilePond drop zone, themed by `styles/ai-model-upload.css`. |
+| | `AiModelUploadActionBar.tsx`, `AiModelUploadSubmitButton.tsx`, `AiModelUploadNewUploadButton.tsx`, `AiModelUploadRetryButton.tsx` | The row under the drop zone and its buttons. The Retry button reads the store and starts the mutations itself, remove it to remove retry. |
+| | `AiModelUploadInProgressAlert.tsx`, `AiModelUploadInProgressSection.tsx` | "You can close this dialog" alert, and the still-running uploads at the top of a reopened dialog. |
+| | `AiModelUploadCompletedMessage.tsx`, `AiModelUploadFailedMessage.tsx`, `AiModelUploadRejectedMessage.tsx` | Result and validation messages. |
+| | `AiModelUploadStatusList.tsx`, `AiModelUploadStatusRow.tsx`, `AiModelUploadProgressBar.tsx`, `AiModelUploadTimeRemaining.tsx`, `AiModelUploadStatusEmpty.tsx` | Progress rows: name, model key and file, bar (yellow below 70%, green from 70%, red when failed), and the time left while it runs. |
+| | `AiModelUploadStatusOverview.tsx`, `AiModelUploadClearFinishedButton.tsx`, `AiModelUploadActiveIndicator.tsx` | Store-connected pieces for a notifications popover. Clearing also cancels the cleared failed uploads on the server. |
+| | `AiModelUploadDocumentTitle.tsx` | Progress in the browser tab title. Mount once. |
+| `hooks/` | `useAiModelUpload.ts` | What the form needs: phase, staged files, session, `startUpload`, `endSession`. |
+| | `useAiModelUploadMutation.ts`, `useAiModelUploadCancelMutation.ts` | The TanStack Query mutations that upload one file and cancel one on the server. |
+| `constants/` | `ai-model-upload-urls.constants.ts` | The API URLs, request headers and credentials. The file to change per project. |
+| | `ai-model-upload.constants.ts` | Statuses, phases, chunk size, retries, timeout, speed smoothing, wording. |
+| `api/` | `ai-model-upload.api.ts`, `ai-model-upload.uploader.ts` | The four requests, and the start and chunk loop that uses them. |
+| `store/` | `ai-model-upload.store.ts` | The Zustand store and its selector hooks. |
+| `models/` | `ai-model-upload.models.ts` | Types. |
+| `schemas/` | `ai-model-upload.schema.ts` | The Zod schema (also used by the mock to validate the start request). |
+| `utils/` | `ai-model-upload.utils.ts` | Phase, progress, chunk size and time-left helpers. |
+| `styles/` | `ai-model-upload.css` | FilePond themed with the shadcn CSS variables. |
 
 ## The mock
 

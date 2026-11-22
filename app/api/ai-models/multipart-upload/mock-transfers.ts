@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 /**
  * Shared state and helpers of the MOCK AI model multipart upload API (`route.ts` next to this file and
  * `[artifactId]/route.ts`), used by the "Upload Model" demo on the /test page. It sits at the same paths
- * as the real API, so `components/ai-model-upload/ai-model-upload-urls.constants.ts` holds the real paths. Nothing is stored: the
+ * as the real API, so `components/ai-model-upload/constants/ai-model-upload-urls.constants.ts` holds the real paths. Nothing is stored: the
  * bytes are counted and thrown away, and every chunk is slowed down on purpose so an upload takes
  * 10 to 15 seconds and its progress can be watched.
  *

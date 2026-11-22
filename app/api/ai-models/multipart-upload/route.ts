@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { aiModelUploadSchema } from '@/components/ai-model-upload/ai-model-upload.schema';
+import { aiModelUploadSchema } from '@/components/ai-model-upload/schemas/ai-model-upload.schema';
 
 import { textResponse, createTransfer, tooLargeResponse, readIntegerHeader, readBodyWithLimit, MAX_UPLOAD_LENGTH, MAX_START_BODY_BYTES } from './mock-transfers';
 

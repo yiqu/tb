@@ -20,7 +20,7 @@
  * Provider nesting order matters — each layer may depend on a parent context.
  */
 
-import AiModelUploadDocumentTitle from '@/components/ai-model-upload/AiModelUploadDocumentTitle';
+import AiModelUploadDocumentTitle from '@/components/ai-model-upload/components/AiModelUploadDocumentTitle';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 

@@ -1,7 +1,7 @@
 import RowStack from '@/shared/components/RowStack';
 import ColumnStack from '@/shared/components/ColumnStack';
 import Typography from '@/components/typography/Typography';
-import UploadModelButton from '@/components/ai-model-upload/UploadModelButton';
+import UploadModelButton from '@/components/ai-model-upload/components/UploadModelButton';
 
 /** Demo of the drop-in AI model upload feature, against the slow mock API in `app/api/ai-models/multipart-upload/`. */
 export default function AiModelUploadDemo() {
