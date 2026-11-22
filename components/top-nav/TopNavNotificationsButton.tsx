@@ -1,14 +1,14 @@
 import NotificationsSection from '@/components/notifications/NotificationsSection';
 import NotificationsPopover from '@/components/notifications/NotificationsPopover';
-import AiModelUploadStatusOverview from '@/components/ai-model-upload/components/AiModelUploadStatusOverview';
-import AiModelUploadActiveIndicator from '@/components/ai-model-upload/components/AiModelUploadActiveIndicator';
-import AiModelUploadClearFinishedButton from '@/components/ai-model-upload/components/AiModelUploadClearFinishedButton';
+import PwsModelUploadStatusOverview from '@/components/pws-model-upload/components/PwsModelUploadStatusOverview';
+import PwsModelUploadActiveIndicator from '@/components/pws-model-upload/components/PwsModelUploadActiveIndicator';
+import PwsModelUploadClearFinishedButton from '@/components/pws-model-upload/components/PwsModelUploadClearFinishedButton';
 
 export default function TopNavNotificationsButton() {
   return (
-    <NotificationsPopover indicator={ <AiModelUploadActiveIndicator /> }>
-      <NotificationsSection title="Upload Status" action={ <AiModelUploadClearFinishedButton /> }>
-        <AiModelUploadStatusOverview />
+    <NotificationsPopover indicator={ <PwsModelUploadActiveIndicator /> }>
+      <NotificationsSection title="Upload Status" action={ <PwsModelUploadClearFinishedButton /> }>
+        <PwsModelUploadStatusOverview />
       </NotificationsSection>
     </NotificationsPopover>
   );

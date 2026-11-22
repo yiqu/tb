@@ -1,4 +1,4 @@
-import AiModelUploadDemo from './_components/ai-model-upload/AiModelUploadDemo';
+import PwsModelUploadDemo from './_components/pws-model-upload/PwsModelUploadDemo';
 import MultiSortDemo from './_components/MultiSortDemo';
 import NestedRequest from './_components/NestedRequest';
 import AutoCompleteReadOnlyDemo from './_components/AutoCompleteReadOnlyDemo';
@@ -19,7 +19,7 @@ interface PlaygroundPageProps {
 export default function PlaygroundPage({}: PlaygroundPageProps) {
   return (
     <div className="flex w-full flex-col items-start justify-start gap-y-3">
-      <AiModelUploadDemo />
+      <PwsModelUploadDemo />
       <InputWithMultiSelectDemos />
       <ColumnAdjustDemoTable />
       <AutoCompleteReadOnlyDemo />
