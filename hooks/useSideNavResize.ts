@@ -18,6 +18,8 @@ const SIDEBAR_WRAPPER_SELECTOR = '[data-slot="sidebar-wrapper"]';
 const SIDEBAR_CONTAINER_SELECTOR = '[data-slot="sidebar-container"]';
 
 interface DragState {
+  /** The pointer that started the drag. Only it moves and ends the drag, another finger or a pen is ignored. */
+  pointerId: number;
   wrapper: HTMLElement;
   /** Where on the handle it was grabbed, relative to the nav's right edge, so the edge does not jump to the pointer. */
   grabOffset: number;
@@ -92,6 +94,9 @@ export function useSideNavResize(): SideNavResize {
   };
 
   const endDrag = (event: PointerEvent<HTMLElement>) => {
+    if (dragRef.current?.pointerId !== event.pointerId) {
+      return;
+    }
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
@@ -122,6 +127,7 @@ export function useSideNavResize(): SideNavResize {
         const isCollapsed: boolean = state === 'collapsed';
         const startWidth: number = isCollapsed ? width : getDrawnSideNavWidth(event.currentTarget, width);
         dragRef.current = {
+          pointerId: event.pointerId,
           wrapper,
           grabOffset: isCollapsed ? 0 : startWidth - event.clientX,
           width: clampSideNavWidth(startWidth),
@@ -141,7 +147,7 @@ export function useSideNavResize(): SideNavResize {
       },
       onPointerMove: (event: PointerEvent<HTMLElement>) => {
         const drag: DragState | null = dragRef.current;
-        if (!drag) {
+        if (!drag || event.pointerId !== drag.pointerId) {
           return;
         }
         // the nav starts at the left edge of the window, so its width is where the pointer is
