@@ -61,6 +61,12 @@ export function getPetZooMaxClimbY(bounds: PetZooWorldBounds): number {
   return Math.max(0, bounds.height - bounds.floor - PET_ZOO_SPRITE_SIZE_PX - 4);
 }
 
+/** A jump's starting speed, lowered when the zoo is too short for the full jump, so the pet never leaves the top. */
+export function getPetZooJumpVelocity(velocity: number, bounds: PetZooWorldBounds): number {
+  // a jump peaks at v² / 2g
+  return Math.min(velocity, Math.sqrt(2 * PET_ZOO_GRAVITY * getPetZooMaxClimbY(bounds)));
+}
+
 export function isPetZooPetFree(runtime: PetZooPetRuntime): boolean {
   return FREE_BEHAVIORS.includes(runtime.behavior);
 }
@@ -219,9 +225,14 @@ function applyGroundGravity(runtime: PetZooPetRuntime, seconds: number): void {
   }
 }
 
-function maybeHop(runtime: PetZooPetRuntime, seconds: number, chancePerSecond: number = PET_ZOO_HOP_CHANCE_PER_SECOND): void {
+function maybeHop(
+  runtime: PetZooPetRuntime,
+  seconds: number,
+  bounds: PetZooWorldBounds,
+  chancePerSecond: number = PET_ZOO_HOP_CHANCE_PER_SECOND,
+): void {
   if (runtime.y === 0 && runtime.vy === 0 && randomChance(chancePerSecond * seconds)) {
-    runtime.vy = PET_ZOO_HOP_VELOCITY;
+    runtime.vy = getPetZooJumpVelocity(PET_ZOO_HOP_VELOCITY, bounds);
   }
 }
 
@@ -242,7 +253,7 @@ function updateBubbles(runtime: PetZooPetRuntime, seconds: number): void {
 
 function stepWalking(runtime: PetZooPetRuntime, seconds: number, context: PetZooSimulationContext, speedMultiplier: number): void {
   applyGroundGravity(runtime, seconds);
-  maybeHop(runtime, seconds);
+  maybeHop(runtime, seconds, context.bounds);
   const hitWall: PetZooWallSide | null = moveAlongGround(runtime, runtime.speed * speedMultiplier, seconds, context.bounds);
   if (hitWall) {
     if (runtime.y === 0 && canClimbIn(runtime, context.bounds) && randomChance(PET_ZOO_CLIMB_CHANCE)) {
@@ -263,7 +274,7 @@ function stepWalking(runtime: PetZooPetRuntime, seconds: number, context: PetZoo
 
 function stepZoomies(runtime: PetZooPetRuntime, seconds: number, context: PetZooSimulationContext): void {
   applyGroundGravity(runtime, seconds);
-  maybeHop(runtime, seconds, PET_ZOO_HOP_CHANCE_PER_SECOND * 4);
+  maybeHop(runtime, seconds, context.bounds, PET_ZOO_HOP_CHANCE_PER_SECOND * 4);
   const hitWall: PetZooWallSide | null = moveAlongGround(runtime, runtime.speed * PET_ZOO_ZOOMIES_SPEED_MULTIPLIER, seconds, context.bounds);
   if (hitWall) {
     runtime.direction = hitWall === 'left' ? 1 : -1;

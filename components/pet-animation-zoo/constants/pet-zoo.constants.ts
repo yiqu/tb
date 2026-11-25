@@ -28,6 +28,8 @@ export const PET_ZOO_PET_NAME_MAX_LENGTH = 20;
 
 /** Every sprite is drawn in a square of this size, like the "nano" size of VS Code Pets. */
 export const PET_ZOO_SPRITE_SIZE_PX = 30;
+/** The speech bubble font, as in `.pet-zoo-bubble` in `styles/pet-zoo.css`. */
+export const PET_ZOO_BUBBLE_FONT = "8px 'PetZooSilkscreen'";
 
 export const PET_ZOO_BALL_RADIUS_PX = 3;
 export const PET_ZOO_BALL_COLOR = '#2ed851';

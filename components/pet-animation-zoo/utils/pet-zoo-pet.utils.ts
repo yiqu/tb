@@ -43,7 +43,8 @@ export function getRandomPetZooName(takenNames: readonly string[] = []): string 
   const freeNames: string[] = PET_ZOO_PET_NAMES.filter((name: string) => {
     return !takenNames.includes(name);
   });
-  return randomItem(freeNames.length > 0 ? freeNames : PET_ZOO_PET_NAMES);
+  // an empty name only happens with an empty name list, the name field then starts blank
+  return randomItem(freeNames.length > 0 ? freeNames : PET_ZOO_PET_NAMES) ?? '';
 }
 
 /** Fills `{name}` in a message. */

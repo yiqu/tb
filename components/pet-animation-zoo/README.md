@@ -7,8 +7,13 @@ other for a chat, and chase a ball. In this app it sits at the bottom of the lef
 ## Using it in another project
 
 1. Copy this folder and `public/pet-animation-zoo/` (the art).
-2. Needs: React 19, Zustand, Zod, React Hook Form, `@hookform/resolvers`, lucide-react, Tailwind 4, and the shadcn
-   `button`, `dialog`, `field`, `input`, `select`, `tooltip` components plus `RowStack`, `ColumnStack` and `Typography`.
+2. Needs: React 19, Zustand, Zod, React Hook Form, `@hookform/resolvers`, lucide-react and Tailwind 4, plus these
+   modules of the host app, imported through the `@/` path alias. Point the imports elsewhere if your app keeps them
+   in other places:
+   - `cn` from `@/lib/utils` (the shadcn helper, clsx + tailwind-merge)
+   - the shadcn `button`, `dialog`, `field`, `input`, `select` and `tooltip` components from `@/components/ui/`
+   - `RowStack` and `ColumnStack` from `@/shared/components/`
+   - `Typography` from `@/components/typography/Typography`
 3. Render it. It fills the width of its parent:
 
 ```tsx
@@ -34,7 +39,8 @@ Dark mode follows the `dark` class on `<html>`. If the art is served from somewh
 - **Spawn pet**: kind, color and name. The new pet hops in and says hi. Capped at `PET_ZOO_MAX_PETS`.
 - **Throw ball**: a green ball drops in and bounces. Every pet on the ground runs after it, the first to reach it
   holds it for a few seconds, then it is gone. Pets on a wall join in once they are down.
-- **Click a pet**: a paw swipe and a bubble. Three quick clicks: a big jump. Five: zoomies. A pet on a wall lets go.
+- **Click a pet** (or focus it and press Enter or Space): a paw swipe and a bubble. Three quick clicks: a big jump.
+  Five: zoomies. A pet on a wall lets go.
 - **Conversations**: every 9 to 22 seconds two free pets meet, one walks over, they swap lines in speech bubbles.
 - **Climbing**: a pet that walks into the left or right wall sometimes climbs it, hangs on, then drops down.
 - **Resize**: drag the top edge (double-click resets, arrow keys nudge) between `PET_ZOO_MIN_HEIGHT_PX` and
@@ -51,13 +57,15 @@ Every pet draws its own speed factor and its own durations, so no two move in sy
 
 The store uses `skipHydration`: the server cannot see local storage, so `usePetZooStoreHydration` loads it after mount
 and the world renders then. Saved data is checked with Zod on load; unknown pets are dropped, an unknown theme
-falls back to the default. Positions and behaviors are not saved.
+falls back to the default, a repeated pet id keeps its first pet, and a value that is not JSON at all reads as nothing
+saved (`utils/pet-zoo-storage.utils.ts`). Positions and behaviors are not saved.
 
 ## How it is built
 
 `PetZooEngine` (in `engine/`) runs one `requestAnimationFrame` loop. Each frame it steps the ball and every pet,
 then writes transforms, sprite URLs and bubble text straight to DOM nodes that the pet components registered.
-React renders only when a pet is added or removed or the theme changes, never per frame.
+React renders only when a pet is added or removed or the theme changes, never per frame. The loop pauses while
+the zoo is hidden or off screen (an `IntersectionObserver` in `usePetZooEngine`).
 
 ```
 components/   PetAnimationZoo (entry), PetZooWorld, PetZooPetSprite, PetZooBall, PetZooToolbar, the dialogs and forms
@@ -68,7 +76,7 @@ models/       saved types (pet-zoo.models) and runtime types (pet-zoo-runtime.mo
 schemas/      Zod schemas for the dialogs and for what is loaded from local storage
 store/        Zustand store with persist
 styles/       pixel font, speech bubble, crisp pixel art
-utils/        behavior (the state machine), ball physics, clicks, rendering, sprites, themes, height
+utils/        behavior (the state machine), ball physics, clicks, rendering, sprites, themes, height, storage
 ```
 
 ### Adding a pet or a theme

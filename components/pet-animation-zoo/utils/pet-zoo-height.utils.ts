@@ -8,11 +8,13 @@ export function clampPetZooHeight(height: number): number {
   return Math.round(Math.min(PET_ZOO_MAX_HEIGHT_PX, Math.max(PET_ZOO_MIN_HEIGHT_PX, height)));
 }
 
-/** Reads the height cookie's value. A missing or broken value gives the default height. Safe to use on the server. */
+/**
+ * Reads the height cookie's value. A missing or broken value (anything but whole pixels, e.g. `150px`) gives the
+ * default height. Safe to use on the server.
+ */
 export function parsePetZooHeight(value: string | undefined | null): number {
-  if (!value) {
+  if (!value || !/^\d+$/.test(value)) {
     return PET_ZOO_DEFAULT_HEIGHT_PX;
   }
-  const parsed: number = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? PET_ZOO_DEFAULT_HEIGHT_PX : clampPetZooHeight(parsed);
+  return clampPetZooHeight(Number(value));
 }

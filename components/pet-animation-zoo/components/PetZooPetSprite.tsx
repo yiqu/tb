@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, KeyboardEvent } from 'react';
 
 import { PET_ZOO_ANIMATION } from '../models/pet-zoo.models';
 import PetZooSpeechBubble from './PetZooSpeechBubble';
@@ -19,7 +19,7 @@ interface PetZooPetSpriteProps {
 /**
  * One pet: its speech bubble and its sprite. The engine moves it and swaps its sprite every frame through
  * the registered DOM nodes, so the inline styles below are only the starting point (off screen until the
- * first frame places it). Clicking it makes it react.
+ * first frame places it). Clicking it, or Enter or Space while it has focus, makes it react.
  */
 export default function PetZooPetSprite({ pet, engine }: PetZooPetSpriteProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -43,13 +43,27 @@ export default function PetZooPetSprite({ pet, engine }: PetZooPetSpriteProps) {
     engine.clickPet(pet.id);
   };
 
+  const handleOnKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      engine.clickPet(pet.id);
+    }
+  };
+
   return (
     <div
       ref={ rootRef }
-      className="absolute bottom-0 left-0 z-10 cursor-pointer will-change-transform"
+      role="button"
+      tabIndex={ 0 }
+      aria-label={ getPetZooPetDescription(pet) }
+      className="
+        absolute bottom-0 left-0 z-10 cursor-pointer rounded-sm outline-none will-change-transform
+        focus-visible:ring-2 focus-visible:ring-ring
+      "
       style={ { width: PET_ZOO_SPRITE_SIZE_PX, height: PET_ZOO_SPRITE_SIZE_PX, transform: 'translate3d(-9999px, 0, 0)' } }
       title={ getPetZooPetDescription(pet) }
       onClick={ handleOnClick }
+      onKeyDown={ handleOnKeyDown }
       data-pet-id={ pet.id }
     >
       <PetZooSpeechBubble ref={ bubbleRef } />

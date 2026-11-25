@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, KeyboardEvent, PointerEvent } from 'react';
+import { useRef, useState, useEffect, KeyboardEvent, PointerEvent } from 'react';
 
 import { useSidebar } from '@/components/ui/sidebar';
 import { clampSideNavWidth } from '@/lib/side-nav-width.utils';
@@ -49,7 +49,7 @@ export interface SideNavResize {
  * - double-click resets the width, arrow keys nudge it
  */
 export function useSideNavResize(): SideNavResize {
-  const { width: savedWidth, setWidth, state, setOpen } = useSidebar();
+  const { width: savedWidth, setWidth, state, setOpen, isMobile } = useSidebar();
   const width: number = savedWidth ?? SIDE_NAV_DEFAULT_WIDTH_PX;
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const dragRef = useRef<DragState | null>(null);
@@ -60,7 +60,8 @@ export function useSideNavResize(): SideNavResize {
     writeSideNavWidthCookie(clamped);
   };
 
-  const endDrag = (event: PointerEvent<HTMLElement>) => {
+  /** Ends a drag: clears the drag styles and keeps the width it reached. Does nothing when no drag is going on. */
+  const finishDrag = () => {
     const drag: DragState | null = dragRef.current;
     if (!drag) {
       return;
@@ -70,11 +71,24 @@ export function useSideNavResize(): SideNavResize {
     delete drag.wrapper.dataset.resizing;
     document.body.style.removeProperty('cursor');
     document.body.style.removeProperty('user-select');
+    commitWidth(drag.width);
+  };
+
+  const endDrag = (event: PointerEvent<HTMLElement>) => {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
-    commitWidth(drag.width);
+    finishDrag();
   };
+
+  // The handle goes away at mobile widths and when it unmounts, and with it the pointer up that ends a drag.
+  // This cleanup runs on both, so a drag in progress ends there instead of leaving the page stuck in resize mode.
+  // (`finishDrag` only uses refs and stable setters, so an older render's copy works the same.)
+  useEffect(() => {
+    return () => {
+      finishDrag();
+    };
+  }, [isMobile]);
 
   return {
     width,
@@ -119,6 +133,8 @@ export function useSideNavResize(): SideNavResize {
         }
         drag.width = clampSideNavWidth(pointerWidth);
         drag.wrapper.style.setProperty('--sidebar-width', `${drag.width}px`);
+        // React only renders the width on release, keep the separator's value current for assistive tech meanwhile
+        event.currentTarget.setAttribute('aria-valuenow', String(drag.width));
       },
       onPointerUp: endDrag,
       onPointerCancel: endDrag,

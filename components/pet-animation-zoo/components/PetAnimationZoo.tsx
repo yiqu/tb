@@ -1,5 +1,7 @@
 'use client';
 
+import { useRef } from 'react';
+
 import { cn } from '@/lib/utils';
 
 import PetZooWorld from './PetZooWorld';
@@ -34,10 +36,12 @@ interface PetAnimationZooProps {
 export default function PetAnimationZoo({ initialHeight = PET_ZOO_DEFAULT_HEIGHT_PX, className }: PetAnimationZooProps) {
   const { height, isResizing, handleProps } = usePetZooHeightResize(initialHeight);
   const isHydrated: boolean = usePetZooStoreHydration();
-  const engine = usePetZooEngine();
+  const zooRef = useRef<HTMLElement>(null);
+  const engine = usePetZooEngine(zooRef);
 
   return (
     <section
+      ref={ zooRef }
       aria-label={ PET_ZOO_LABELS.zooAriaLabel }
       data-slot="pet-animation-zoo"
       className={ cn('group/pet-zoo relative w-full shrink-0 overflow-hidden rounded-md border border-sidebar-border bg-muted/40', className) }

@@ -44,7 +44,13 @@ export default function PetZooSelectField<T extends FieldValues>({
           <Field data-invalid={ fieldState.invalid }>
             <FieldLabel htmlFor={ triggerId }>{ label }</FieldLabel>
             <Select name={ field.name } value={ field.value ?? '' } onValueChange={ field.onChange } disabled={ disabled }>
-              <SelectTrigger id={ triggerId } className="w-full" aria-invalid={ fieldState.invalid } onBlur={ field.onBlur }>
+              <SelectTrigger
+                ref={ field.ref }
+                id={ triggerId }
+                className="w-full"
+                aria-invalid={ fieldState.invalid }
+                onBlur={ field.onBlur }
+              >
                 <SelectValue placeholder={ placeholder } />
               </SelectTrigger>
               <SelectContent>

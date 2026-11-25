@@ -1,7 +1,7 @@
 import { randomItem } from './pet-zoo-random.utils';
 import { formatPetZooMessage } from './pet-zoo-pet.utils';
 import { PET_ZOO_BEHAVIOR } from '../models/pet-zoo-runtime.models';
-import { startPetZooFall, setPetZooBehavior, showPetZooBubble, canPetZooPetMove } from './pet-zoo-behavior.utils';
+import { startPetZooFall, setPetZooBehavior, showPetZooBubble, canPetZooPetMove, getPetZooJumpVelocity } from './pet-zoo-behavior.utils';
 import {
   PET_ZOO_CLICKS_FOR_ZOOMIES,
   PET_ZOO_BIG_JUMP_VELOCITY,
@@ -16,7 +16,7 @@ import {
   PET_ZOO_HOLDING_BALL_MESSAGE,
 } from '../constants/pet-zoo-messages.constants';
 
-import type { PetZooBehavior, PetZooPetRuntime } from '../models/pet-zoo-runtime.models';
+import type { PetZooBehavior, PetZooPetRuntime, PetZooWorldBounds } from '../models/pet-zoo-runtime.models';
 
 /** Behaviors that a click only adds a bubble to, so a conversation or a chase is not broken off. */
 const BUBBLE_ONLY_BEHAVIORS: readonly PetZooBehavior[] = [
@@ -34,7 +34,7 @@ const BUBBLE_ONLY_BEHAVIORS: readonly PetZooBehavior[] = [
  * - the 5th quick click: zoomies, running back and forth for a few seconds
  * A pet on a wall lets go and falls.
  */
-export function reactToPetZooClick(runtime: PetZooPetRuntime, nowSeconds: number): void {
+export function reactToPetZooClick(runtime: PetZooPetRuntime, nowSeconds: number, bounds: PetZooWorldBounds): void {
   runtime.clickStreak = nowSeconds - runtime.lastClickAt <= PET_ZOO_CLICK_STREAK_SECONDS ? runtime.clickStreak + 1 : 1;
   runtime.lastClickAt = nowSeconds;
 
@@ -59,12 +59,15 @@ export function reactToPetZooClick(runtime: PetZooPetRuntime, nowSeconds: number
     return;
   }
   if (runtime.clickStreak === PET_ZOO_CLICKS_FOR_BIG_JUMP && runtime.y === 0) {
-    runtime.vy = PET_ZOO_BIG_JUMP_VELOCITY;
+    runtime.vy = getPetZooJumpVelocity(PET_ZOO_BIG_JUMP_VELOCITY, bounds);
     showPetZooBubble(runtime, PET_ZOO_BIG_JUMP_MESSAGE);
     return;
   }
 
-  showPetZooBubble(runtime, formatPetZooMessage(randomItem(PET_ZOO_CLICK_REACTIONS), runtime.pet.name));
+  const reaction: string | undefined = randomItem(PET_ZOO_CLICK_REACTIONS);
+  if (reaction) {
+    showPetZooBubble(runtime, formatPetZooMessage(reaction, runtime.pet.name));
+  }
   if (!BUBBLE_ONLY_BEHAVIORS.includes(runtime.behavior)) {
     setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.swipe);
   }

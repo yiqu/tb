@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 import { createPetZooId } from '../utils/pet-zoo-random.utils';
+import { petZooLocalStorage } from '../utils/pet-zoo-storage.utils';
 import { PET_ZOO_DEFAULT_THEME_ID } from '../constants/pet-zoo-themes.constants';
 import { petZooPetSchema, petZooPersistedStateSchema } from '../schemas/pet-zoo-persisted-state.schema';
 import { PET_ZOO_MAX_PETS, PET_ZOO_STORAGE_KEY, PET_ZOO_STORAGE_VERSION } from '../constants/pet-zoo.constants';
@@ -34,8 +35,12 @@ type PetZooPersistedState = Pick<PetZooState, 'pets' | 'themeId'>;
 
 export const PET_ZOO_DEFAULT_PETS: PetZooPet[] = [{ id: 'pet-zoo-default-dog', type: 'dog', color: 'brown', name: 'Bella' }];
 
-/** Keeps only the saved pets that still exist in the catalog, up to the cap. */
+/**
+ * Keeps only the saved pets that still exist in the catalog, once per id, up to the cap. The engine and React
+ * key each pet by its id, so a repeated id (from a hand-edited value) keeps only its first pet.
+ */
 function toValidPets(values: unknown[]): PetZooPet[] {
+  const seenIds = new Set<string>();
   return values
     .map((value: unknown) => {
       return petZooPetSchema.safeParse(value);
@@ -45,6 +50,13 @@ function toValidPets(values: unknown[]): PetZooPet[] {
     })
     .map((result) => {
       return result.data as PetZooPet;
+    })
+    .filter((pet: PetZooPet) => {
+      if (seenIds.has(pet.id)) {
+        return false;
+      }
+      seenIds.add(pet.id);
+      return true;
     })
     .slice(0, PET_ZOO_MAX_PETS);
 }
@@ -88,7 +100,7 @@ export const usePetZooStore = create<PetZooState>()(
       name: PET_ZOO_STORAGE_KEY,
       version: PET_ZOO_STORAGE_VERSION,
       storage: createJSONStorage(() => {
-        return localStorage;
+        return petZooLocalStorage;
       }),
       skipHydration: true,
       partialize: (state: PetZooState): PetZooPersistedState => {

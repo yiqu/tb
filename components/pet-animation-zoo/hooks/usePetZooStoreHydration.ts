@@ -15,7 +15,10 @@ export function usePetZooStoreHydration(): boolean {
     if (usePetZooStore.persist.hasHydrated()) {
       setIsHydrated(true);
     } else {
-      void usePetZooStore.persist.rehydrate();
+      // Zustand skips the finish listeners when loading fails, so show the zoo (with the defaults) either way
+      void Promise.resolve(usePetZooStore.persist.rehydrate()).then(() => {
+        setIsHydrated(true);
+      });
     }
     return () => {
       unsubscribe();

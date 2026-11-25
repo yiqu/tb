@@ -1,8 +1,9 @@
 # Pet animation zoo art credits
 
-All art in this folder comes from [VS Code Pets](https://github.com/tonybaloney/vscode-pets) by Anthony Shaw,
-released under the MIT License (`LICENSE-vscode-pets.txt`). Only the "nano" backgrounds and the 8 fps sprites
-are copied. Credits as given by VS Code Pets:
+All art in this folder comes from [VS Code Pets](https://github.com/tonybaloney/vscode-pets) by Anthony Shaw. The
+VS Code Pets project is released under the MIT License (`LICENSE-vscode-pets.txt`), but some of its art carries its
+own license, noted below, which applies to those files instead: the dog sprites are CC BY-ND 4.0, and Finley has its
+own MIT license. Only the "nano" backgrounds and the 8 fps sprites are copied. Credits as given by VS Code Pets:
 
 - Dog: [NVPH Studio](https://nvph-studio.itch.io/dog-animation-4-different-dogs), licensed CC BY-ND 4.0 (`pets/dog/LICENSE.txt`). Akita: [Kevin Huang](https://github.com/kevin2huang).
 - Fox: [Elthen](https://twitter.com/pixelthen).

@@ -8,11 +8,13 @@ export function clampSideNavWidth(width: number): number {
   return Math.round(Math.min(SIDE_NAV_MAX_WIDTH_PX, Math.max(SIDE_NAV_MIN_WIDTH_PX, width)));
 }
 
-/** Reads the width cookie's value. A missing or broken value gives the default width. */
+/**
+ * Reads the width cookie's value. A missing or broken value (anything but whole pixels, e.g. `999px`) gives the
+ * default width. The head boot script in `lib/settings-boot-script.ts` reads it the same way.
+ */
 export function parseSideNavWidth(value: string | undefined | null): number {
-  if (!value) {
+  if (!value || !/^\d+$/.test(value)) {
     return SIDE_NAV_DEFAULT_WIDTH_PX;
   }
-  const parsed: number = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? SIDE_NAV_DEFAULT_WIDTH_PX : clampSideNavWidth(parsed);
+  return clampSideNavWidth(Number(value));
 }

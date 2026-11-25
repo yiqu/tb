@@ -24,7 +24,7 @@ export default function PetZooBall({ engine }: PetZooBallProps) {
   return (
     <div
       ref={ ballRef }
-      className="absolute bottom-0 left-0 z-10 hidden rounded-full will-change-transform"
+      className="pointer-events-none absolute bottom-0 left-0 z-10 hidden rounded-full will-change-transform"
       style={ {
         width: PET_ZOO_BALL_RADIUS_PX * 2,
         height: PET_ZOO_BALL_RADIUS_PX * 2,

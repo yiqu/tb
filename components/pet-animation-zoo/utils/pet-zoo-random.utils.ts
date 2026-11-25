@@ -5,7 +5,11 @@ export function randomBetween(range: PetZooRange): number {
   return min + Math.random() * (max - min);
 }
 
-export function randomItem<T>(items: readonly T[]): T {
+/** A random item, or undefined when the list is empty. */
+export function randomItem<T>(items: readonly T[]): T | undefined {
+  if (items.length === 0) {
+    return undefined;
+  }
   return items[Math.floor(Math.random() * items.length)];
 }
 
@@ -20,11 +24,13 @@ export function randomSign(): 1 | -1 {
 
 /** Picks a key by weight. Keys with a weight of 0 are never picked. */
 export function randomWeightedKey<K extends string>(weights: Partial<Record<K, number>>): K | null {
-  const entries = Object.entries(weights) as [K, number][];
+  const entries: [K, number][] = (Object.entries(weights) as [K, number][]).filter(([, weight]: [K, number]) => {
+    return weight > 0;
+  });
   const total: number = entries.reduce((sum: number, [, weight]: [K, number]) => {
     return sum + weight;
   }, 0);
-  if (total <= 0) {
+  if (entries.length === 0) {
     return null;
   }
   let roll: number = Math.random() * total;
@@ -34,6 +40,7 @@ export function randomWeightedKey<K extends string>(weights: Partial<Record<K, n
       return key;
     }
   }
+  // rounding can leave a sliver over
   return entries[entries.length - 1][0];
 }
 
