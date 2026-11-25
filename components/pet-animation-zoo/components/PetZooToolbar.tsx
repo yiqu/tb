@@ -2,6 +2,7 @@ import RowStack from '@/shared/components/RowStack';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 import PetZooSpawnPetButton from './PetZooSpawnPetButton';
+import PetZooFeedButton from './PetZooFeedButton';
 import PetZooThrowBallButton from './PetZooThrowBallButton';
 import PetZooDeletePetButton from './PetZooDeletePetButton';
 import PetZooChangeThemeButton from './PetZooChangeThemeButton';
@@ -12,7 +13,7 @@ interface PetZooToolbarProps {
   engine: PetZooEngine;
 }
 
-/** Spawn pet, Throw ball, Delete pet and Change theme, in the top right corner while the zoo is hovered or one of them has keyboard focus. */
+/** Spawn pet, Throw ball, Feed, Delete pet and Change theme, in the top right corner while the zoo is hovered or one of them has keyboard focus. */
 export default function PetZooToolbar({ engine }: PetZooToolbarProps) {
   return (
     // its own provider, so the tooltips work in an app that has none
@@ -26,6 +27,7 @@ export default function PetZooToolbar({ engine }: PetZooToolbarProps) {
       >
         <PetZooSpawnPetButton />
         <PetZooThrowBallButton engine={ engine } />
+        <PetZooFeedButton engine={ engine } />
         <PetZooDeletePetButton />
         <PetZooChangeThemeButton />
       </RowStack>

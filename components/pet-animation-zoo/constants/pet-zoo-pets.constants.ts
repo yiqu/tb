@@ -4,7 +4,7 @@ import type { PetZooAnimation, PetZooPetDefinition, PetZooPetColorDefinition } f
  * Every kind of pet, and everything about each kind, in one object per pet: its name in the dialogs, the name a new
  * one starts with, whether it is unlocked, its sprites and size, how it moves, its colors and how it talks.
  *
- * Sprites come from VS Code Pets (MIT) except the deer, see `public/pet-animation-zoo/CREDITS.md`. Sprite files are
+ * Sprites come from VS Code Pets (MIT) except the deer and the two flying dinosaurs, see `public/pet-animation-zoo/CREDITS.md`. Sprite files are
  * `public/pet-animation-zoo/pets/<spriteFolder>/<color>_<animation>_8fps.gif`.
  */
 export const PET_ZOO_PET_TYPES = [
@@ -14,6 +14,8 @@ export const PET_ZOO_PET_TYPES = [
   'big-panda',
   'little-panda',
   'deer',
+  'pteranodon',
+  'pterodactyl',
   'raccoon',
   'turtle',
   'chicken',
@@ -51,6 +53,7 @@ const BASIC_ANIMATIONS: readonly PetZooAnimation[] = ['idle', 'walk', 'walk_fast
 const ANIMATIONS_WITH_LIE: readonly PetZooAnimation[] = [...BASIC_ANIMATIONS, 'lie'];
 const ANIMATIONS_WITH_STAND: readonly PetZooAnimation[] = [...BASIC_ANIMATIONS, 'stand'];
 const DEER_ANIMATIONS: readonly PetZooAnimation[] = ANIMATIONS_WITH_LIE;
+const FLYER_ANIMATIONS: readonly PetZooAnimation[] = [...ANIMATIONS_WITH_LIE, 'fly'];
 
 /** Display names of the colors as spelled in the file names. */
 export const PET_ZOO_COLOR_LABELS: Record<string, string> = {
@@ -72,9 +75,11 @@ export const PET_ZOO_COLOR_LABELS: Record<string, string> = {
   purple: 'Purple',
   red: 'Red',
   reindeer: 'Red-nosed',
+  sunset: 'Sunset',
   socks_beige: 'Socks beige',
   socks_black: 'Socks black',
   socks_brown: 'Socks brown',
+  teal: 'Teal',
   warrior: 'Warrior',
   white: 'White',
   whiteface: 'White face',
@@ -98,6 +103,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('brown', 'black', 'white', 'red', 'akita'),
     animations: ANIMATIONS_WITH_LIE,
     voice: {
@@ -116,6 +122,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.fast,
     canClimb: true,
+    canFly: false,
     colors: colors('red', 'white'),
     animations: ANIMATIONS_WITH_LIE,
     voice: {
@@ -134,6 +141,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.slow,
     canClimb: true,
+    canFly: false,
     colors: colors('black', 'brown'),
     animations: ANIMATIONS_WITH_LIE,
     voice: {
@@ -152,6 +160,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1.45,
     speed: PET_ZOO_SPEED.verySlow,
     canClimb: false,
+    canFly: false,
     colors: colors('black', 'brown'),
     animations: ANIMATIONS_WITH_LIE,
     voice: {
@@ -170,6 +179,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 0.7,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('black', 'brown'),
     animations: ANIMATIONS_WITH_LIE,
     voice: {
@@ -188,12 +198,51 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.fast,
     canClimb: false,
+    canFly: false,
     colors: colors('brown', 'fawn', 'reindeer'),
     animations: DEER_ANIMATIONS,
     voice: {
       sound: 'Bleat',
       greeting: "Oh deer, I'm {name}!",
       lines: ['Oh deer! 🦌', 'Nice leaves 🍂', 'Tiptoe, tiptoe'],
+    },
+  },
+  pteranodon: {
+    type: 'pteranodon',
+    label: 'Pteranodon',
+    defaultName: 'Skye',
+    emoji: '🦖',
+    unlocked: true,
+    spriteFolder: 'pteranodon',
+    sizeScale: 1.2,
+    speed: PET_ZOO_SPEED.slow,
+    canClimb: false,
+    canFly: true,
+    colors: colors('teal', 'sunset'),
+    animations: FLYER_ANIMATIONS,
+    voice: {
+      sound: 'Skreee',
+      greeting: 'Skreee! {name} has landed!',
+      lines: ['Skreee! 🪽', 'Nice view up here', 'Flap flap'],
+    },
+  },
+  pterodactyl: {
+    type: 'pterodactyl',
+    label: 'Pterodactyl',
+    defaultName: 'Pip',
+    emoji: '🦕',
+    unlocked: true,
+    spriteFolder: 'pterodactyl',
+    sizeScale: 1,
+    speed: PET_ZOO_SPEED.slow,
+    canClimb: false,
+    canFly: true,
+    colors: colors('green', 'pink'),
+    animations: FLYER_ANIMATIONS,
+    voice: {
+      sound: 'Squawk',
+      greeting: 'Squawk! {name} flew in!',
+      lines: ['Squawk! 🪽', 'Wheee!', 'Look, no hands'],
     },
   },
   raccoon: {
@@ -206,6 +255,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('gray', 'gray_jimothy'),
     animations: ANIMATIONS_WITH_LIE,
     voice: {
@@ -224,6 +274,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.verySlow,
     canClimb: false,
+    canFly: false,
     colors: colors('green', 'orange'),
     animations: ANIMATIONS_WITH_LIE,
     voice: {
@@ -242,6 +293,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('white', 'brown', 'gray'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -260,6 +312,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('gray', 'brown', 'piedpearl', 'whiteface'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -278,6 +331,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('gray', 'brown', 'white'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -296,6 +350,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.verySlow,
     canClimb: true,
+    canFly: false,
     colors: colors('brown'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -314,6 +369,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.verySlow,
     canClimb: false,
+    canFly: false,
     colors: colors('green'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -332,6 +388,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.slow,
     canClimb: true,
+    canFly: false,
     colors: colors('red'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -350,6 +407,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.slow,
     canClimb: true,
+    canFly: false,
     colors: colors('green'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -368,6 +426,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.fast,
     canClimb: false,
+    canFly: false,
     colors: colors('yellow'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -386,6 +445,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('gray'),
     animations: ['idle', 'walk', 'run', 'swipe', 'with_ball'],
     voice: {
@@ -404,6 +464,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: false,
+    canFly: false,
     colors: colors('brown', 'black', 'white', 'magical', 'warrior', 'paint_beige', 'paint_black', 'paint_brown', 'socks_beige', 'socks_black', 'socks_brown'),
     animations: ANIMATIONS_WITH_STAND,
     voice: {
@@ -422,6 +483,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('white', 'blue', 'brown', 'green', 'orange', 'pink', 'purple', 'red', 'yellow', 'warrior'),
     animations: ['idle', 'walk', 'run', 'swipe', 'with_ball', 'stand'],
     voice: {
@@ -440,6 +502,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.slow,
     canClimb: true,
+    canFly: false,
     colors: colors('black', 'brown', 'green', 'yellow'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -458,6 +521,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: false,
+    canFly: false,
     colors: colors('blue'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -476,6 +540,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('purple'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -494,6 +559,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.normal,
     canClimb: true,
+    canFly: false,
     colors: colors('purple'),
     animations: BASIC_ANIMATIONS,
     voice: {
@@ -512,6 +578,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.still,
     canClimb: false,
+    canFly: false,
     colors: colors('gray'),
     animations: ['idle', 'walk', 'walk_fast', 'run', 'swipe'],
     voice: {
@@ -530,6 +597,7 @@ export const PET_ZOO_PETS: Record<PetZooPetType, PetZooPetDefinition> = {
     sizeScale: 1,
     speed: PET_ZOO_SPEED.veryFast,
     canClimb: true,
+    canFly: false,
     colors: colors('yellow'),
     animations: BASIC_ANIMATIONS,
     voice: {

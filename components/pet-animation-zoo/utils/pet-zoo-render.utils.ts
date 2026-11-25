@@ -1,10 +1,18 @@
 import { PET_ZOO_ANIMATION } from '../models/pet-zoo.models';
 import { getPetZooSpriteUrl } from './pet-zoo-sprite.utils';
 import { PET_ZOO_BEHAVIOR } from '../models/pet-zoo-runtime.models';
-import { PET_ZOO_BALL_RADIUS_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_ASSET_BASE_URL, PET_ZOO_BALL_RADIUS_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_FOODS, PET_ZOO_FOOD_SIZE_PX } from '../constants/pet-zoo-foods.constants';
 
 import type { PetZooAnimation } from '../models/pet-zoo.models';
-import type { PetZooBallRuntime, PetZooPetRuntime, PetZooWorldBounds, PetZooRenderedPet, PetZooPetElements } from '../models/pet-zoo-runtime.models';
+import type {
+  PetZooBallRuntime,
+  PetZooFoodRuntime,
+  PetZooPetRuntime,
+  PetZooWorldBounds,
+  PetZooRenderedPet,
+  PetZooPetElements,
+} from '../models/pet-zoo-runtime.models';
 
 /** The height of a name tag, as in `.pet-zoo-name-tag` in `styles/pet-zoo.css`. */
 const NAME_TAG_HEIGHT_PX = 12;
@@ -26,6 +34,10 @@ export const PET_ZOO_EMPTY_RENDERED_PET: PetZooRenderedPet = {
 };
 
 export function getPetZooPetAnimation(runtime: PetZooPetRuntime): PetZooAnimation {
+  // in the air, whatever it is up to
+  if (runtime.flight) {
+    return PET_ZOO_ANIMATION.fly;
+  }
   // a hop from one stone to the next
   if (runtime.skip) {
     return PET_ZOO_ANIMATION.run;
@@ -148,4 +160,28 @@ export function renderPetZooBall(ball: PetZooBallRuntime | null, element: HTMLEl
   const radius: number = PET_ZOO_BALL_RADIUS_PX;
   element.style.display = 'block';
   element.style.transform = `translate3d(${Math.round(ball.x - radius)}px, ${-Math.round(bounds.floor + ball.y - radius)}px, 0)`;
+}
+
+export function getPetZooFoodUrl(food: Pick<PetZooFoodRuntime, 'kind'>): string {
+  return `${PET_ZOO_ASSET_BASE_URL}/foods/${PET_ZOO_FOODS[food.kind].fileName}`;
+}
+
+/** Writes the food to its pool of image slots, in order: slot `i` shows the `i`th piece, the rest are hidden. */
+export function renderPetZooFoods(foods: readonly PetZooFoodRuntime[], elements: readonly HTMLImageElement[], bounds: PetZooWorldBounds): void {
+  const half: number = PET_ZOO_FOOD_SIZE_PX / 2;
+  elements.forEach((element: HTMLImageElement, index: number) => {
+    const food: PetZooFoodRuntime | undefined = foods[index];
+    if (!food) {
+      element.style.display = 'none';
+      return;
+    }
+    const src: string = getPetZooFoodUrl(food);
+    // `src` reads back as an absolute URL, so compare what was set
+    if (element.dataset.src !== src) {
+      element.dataset.src = src;
+      element.src = src;
+    }
+    element.style.display = 'block';
+    element.style.transform = `translate3d(${Math.round(food.x - half)}px, ${-Math.round(bounds.floor + food.y)}px, 0)`;
+  });
 }

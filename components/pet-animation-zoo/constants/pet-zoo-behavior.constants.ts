@@ -18,6 +18,8 @@ export const PET_ZOO_BEHAVIOR_DURATION = {
   zoomies: [3, 3],
   approachFriend: [8, 8],
   talk: [5.2, 5.2],
+  fly: [3, 7],
+  eat: [1.6, 1.6],
 } as const satisfies Record<string, PetZooRange>;
 
 /** How likely each next behavior is once a pet finishes what it was doing. Lie and stand only apply when the pet has that sprite. */
@@ -27,6 +29,8 @@ export const PET_ZOO_NEXT_BEHAVIOR_WEIGHTS = {
   idle: 0.26,
   lie: 0.1,
   stand: 0.1,
+  /** Only pets that can fly, and only when the zoo is tall enough. */
+  fly: 0.3,
 } as const;
 
 /** Each pet moves at its speed times a random factor in this range. */
@@ -41,6 +45,11 @@ export const PET_ZOO_HOP_CHANCE_PER_SECOND = 0.18;
 export const PET_ZOO_HOP_VELOCITY = 120;
 /** The jump on the third quick click. */
 export const PET_ZOO_BIG_JUMP_VELOCITY = 240;
+
+/** A pet flies at its walking speed times this. */
+export const PET_ZOO_FLY_SPEED_MULTIPLIER = 2.5;
+/** No flying around when the free height above the ground is less than this many sprite sizes. */
+export const PET_ZOO_MIN_FLY_HEIGHT_IN_SPRITES = 1;
 
 /** Chance that a pet walking into a wall climbs it instead of turning around. */
 export const PET_ZOO_CLIMB_CHANCE = 0.4;

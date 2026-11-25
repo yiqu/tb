@@ -25,6 +25,9 @@ const BUBBLE_ONLY_BEHAVIORS: readonly PetZooBehavior[] = [
   PET_ZOO_BEHAVIOR.waitForFriend,
   PET_ZOO_BEHAVIOR.chase,
   PET_ZOO_BEHAVIOR.zoomies,
+  PET_ZOO_BEHAVIOR.fly,
+  PET_ZOO_BEHAVIOR.forage,
+  PET_ZOO_BEHAVIOR.eat,
 ];
 
 /**

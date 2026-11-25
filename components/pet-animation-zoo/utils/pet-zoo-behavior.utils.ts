@@ -1,5 +1,6 @@
 import { PET_ZOO_BEHAVIOR } from '../models/pet-zoo-runtime.models';
 import { PET_ZOO_SPRITE_SIZE_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_FOOD_SIZE_PX } from '../constants/pet-zoo-foods.constants';
 import { getPetZooPetDefinition } from './pet-zoo-pet.utils';
 import { PET_ZOO_MESSAGES } from '../constants/pet-zoo-messages.constants';
 import { randomItem, randomSign, randomChance, randomBetween, randomWeightedKey } from './pet-zoo-random.utils';
@@ -22,17 +23,21 @@ import {
   PET_ZOO_SKIP_LANDING_INSET_PX,
   PET_ZOO_CHASE_SPEED_MULTIPLIER,
   PET_ZOO_ZOOMIES_SPEED_MULTIPLIER,
+  PET_ZOO_FLY_SPEED_MULTIPLIER,
   PET_ZOO_CLIMB_HEIGHT_FACTOR_RANGE,
+  PET_ZOO_MIN_FLY_HEIGHT_IN_SPRITES,
   PET_ZOO_MIN_CLIMB_HEIGHT_IN_SPRITES,
   PET_ZOO_CONVERSATION_DISTANCE_IN_SPRITES,
 } from '../constants/pet-zoo-behavior.constants';
 
 import type { PetZooPet } from '../models/pet-zoo.models';
 import type {
+  PetZooFlight,
   PetZooBehavior,
   PetZooWallSide,
   PetZooIslandSpan,
   PetZooBallRuntime,
+  PetZooFoodRuntime,
   PetZooPetRuntime,
   PetZooWorldBounds,
 } from '../models/pet-zoo-runtime.models';
@@ -41,8 +46,11 @@ import type {
 export interface PetZooSimulationContext {
   bounds: PetZooWorldBounds;
   ball: PetZooBallRuntime | null;
+  /** The food on the ground or falling, oldest first. */
+  foods: readonly PetZooFoodRuntime[];
   findPet: (id: string) => PetZooPetRuntime | undefined;
   catchBall: (runtime: PetZooPetRuntime) => void;
+  eatFood: (runtime: PetZooPetRuntime, food: PetZooFoodRuntime) => void;
   startConversation: (initiator: PetZooPetRuntime, partner: PetZooPetRuntime) => void;
 }
 
@@ -65,14 +73,27 @@ interface PetZooGroundRange {
 
 type TimedBehavior = keyof typeof PET_ZOO_BEHAVIOR_DURATION;
 
-/** Behaviors a pet can be pulled out of to chase a ball or to talk. */
+/** A point a pet goes to: `x` from the left, `y` up from the ground. */
+interface PetZooPoint {
+  x: number;
+  y: number;
+}
+
+/** Behaviors a pet can be pulled out of to chase a ball, to go for food or to talk. */
 const FREE_BEHAVIORS: readonly PetZooBehavior[] = [
   PET_ZOO_BEHAVIOR.idle,
   PET_ZOO_BEHAVIOR.lie,
   PET_ZOO_BEHAVIOR.stand,
   PET_ZOO_BEHAVIOR.walk,
   PET_ZOO_BEHAVIOR.run,
+  PET_ZOO_BEHAVIOR.fly,
 ];
+
+/** Behaviors that steer a flight. In any other, a pet in the air flies down and lands first. */
+const FLIGHT_BEHAVIORS: readonly PetZooBehavior[] = [PET_ZOO_BEHAVIOR.fly, PET_ZOO_BEHAVIOR.chase, PET_ZOO_BEHAVIOR.forage];
+
+/** How close a flying pet's middle gets to a ball or a piece of food to catch it, in sprite sizes. */
+const FLY_CATCH_REACH_IN_SPRITES = 0.6;
 
 const ON_WALL_BEHAVIORS: readonly PetZooBehavior[] = [PET_ZOO_BEHAVIOR.climb, PET_ZOO_BEHAVIOR.wallHang, PET_ZOO_BEHAVIOR.fall];
 
@@ -113,9 +134,9 @@ export function isPetZooPetOnWall(runtime: PetZooPetRuntime): boolean {
   return ON_WALL_BEHAVIORS.includes(runtime.behavior);
 }
 
-/** On the ground, not in a hop, a jump or a hop between stones. */
+/** On the ground, not in a hop, a jump, a hop between stones or a flight. */
 export function isPetZooPetOnGround(runtime: PetZooPetRuntime): boolean {
-  return runtime.y === 0 && runtime.skip === null;
+  return runtime.y === 0 && runtime.skip === null && runtime.flight === null;
 }
 
 export function canPetZooPetMove(runtime: PetZooPetRuntime): boolean {
@@ -160,6 +181,7 @@ export function createPetZooPetRuntime(pet: PetZooPet, bounds: PetZooWorldBounds
     wall: null,
     climbTargetY: 0,
     skip: null,
+    flight: null,
     friendId: null,
     bubbleText: null,
     bubbleSecondsLeft: 0,
@@ -207,6 +229,10 @@ export function pickNextPetZooBehavior(runtime: PetZooPetRuntime, context: PetZo
     setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.chase);
     return;
   }
+  if (context.foods.length > 0) {
+    setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.forage);
+    return;
+  }
 
   const animations = runtime.definition.animations;
   const next = randomWeightedKey({
@@ -215,6 +241,7 @@ export function pickNextPetZooBehavior(runtime: PetZooPetRuntime, context: PetZo
     idle: PET_ZOO_NEXT_BEHAVIOR_WEIGHTS.idle,
     lie: animations.includes('lie') ? PET_ZOO_NEXT_BEHAVIOR_WEIGHTS.lie : 0,
     stand: animations.includes('stand') ? PET_ZOO_NEXT_BEHAVIOR_WEIGHTS.stand : 0,
+    fly: canFlyAroundIn(runtime, context.bounds) ? PET_ZOO_NEXT_BEHAVIOR_WEIGHTS.fly : 0,
   });
   setPetZooBehavior(runtime, next ?? PET_ZOO_BEHAVIOR.idle);
 
@@ -300,6 +327,116 @@ export function startPetZooConversation(initiator: PetZooPetRuntime, partner: Pe
   showPetZooBubble(initiator, lines[0], lineSeconds);
   // the answer comes once the first line is gone
   partner.pendingBubble = { text: lines[1], delaySeconds: lineSeconds + 0.2, durationSeconds: lineSeconds };
+}
+
+function getFlySpeed(runtime: PetZooPetRuntime): number {
+  return runtime.speed * PET_ZOO_FLY_SPEED_MULTIPLIER;
+}
+
+/** Whether a pet takes off to fly around: it can fly, and the zoo is tall enough. */
+function canFlyAroundIn(runtime: PetZooPetRuntime, bounds: PetZooWorldBounds): boolean {
+  return runtime.definition.canFly && getPetZooMaxClimbY(bounds, runtime.size) >= runtime.size * PET_ZOO_MIN_FLY_HEIGHT_IN_SPRITES;
+}
+
+/** A point moved to where a pet's middle can be: inside the walls, and its feet between the ground and the top. */
+function clampFlightTarget(runtime: PetZooPetRuntime, point: PetZooPoint, bounds: PetZooWorldBounds): PetZooPoint {
+  const half: number = runtime.size / 2;
+  return {
+    x: Math.min(Math.max(half, bounds.width - half), Math.max(half, point.x)),
+    y: Math.min(getPetZooMaxClimbY(bounds, runtime.size), Math.max(0, point.y)),
+  };
+}
+
+/** A random point in the air for a pet flying around. */
+function pickFlightTarget(runtime: PetZooPetRuntime, bounds: PetZooWorldBounds): PetZooPoint {
+  const maxY: number = getPetZooMaxClimbY(bounds, runtime.size);
+  const minY: number = Math.min(maxY, runtime.size * 0.3);
+  return clampFlightTarget(runtime, { x: Math.random() * bounds.width, y: randomBetween([minY, maxY]) }, bounds);
+}
+
+/** Takes off toward a point, or turns toward it while already in the air. */
+function setFlightTarget(runtime: PetZooPetRuntime, point: PetZooPoint, bounds: PetZooWorldBounds): PetZooFlight {
+  const target: PetZooPoint = clampFlightTarget(runtime, point, bounds);
+  if (!runtime.flight) {
+    runtime.skip = null;
+    runtime.vy = 0;
+  }
+  runtime.flight = { targetX: target.x, targetY: target.y, isLanding: false };
+  return runtime.flight;
+}
+
+/** Flies in a straight line toward the flight's target. Returns true once it is there. */
+function moveAlongFlight(runtime: PetZooPetRuntime, flight: PetZooFlight, speed: number, seconds: number): boolean {
+  const dx: number = flight.targetX - getPetZooCenterX(runtime);
+  const dy: number = flight.targetY - runtime.y;
+  const distance: number = Math.hypot(dx, dy);
+  const stepLength: number = speed * seconds;
+  if (distance <= stepLength) {
+    runtime.x = flight.targetX - runtime.size / 2;
+    runtime.y = flight.targetY;
+    return true;
+  }
+  facePetZooTarget(runtime, flight.targetX);
+  runtime.x += (dx / distance) * stepLength;
+  runtime.y += (dy / distance) * stepLength;
+  return false;
+}
+
+/** Where a pet in the air touches down: a little way ahead of it, or on the lake, the nearest spot on a stone. */
+function getLandingX(runtime: PetZooPetRuntime, bounds: PetZooWorldBounds): number {
+  const ahead: number = getPetZooCenterX(runtime) + runtime.direction * runtime.size * 0.5;
+  const span: PetZooIslandSpan | undefined = bounds.islands[findPetZooIslandIndex(bounds, ahead)];
+  return span ? clampToPetZooIsland(span, ahead) : ahead;
+}
+
+/** Flies down to the ground, whatever else the pet is up to, and ends the flight there. */
+function stepLanding(runtime: PetZooPetRuntime, seconds: number, bounds: PetZooWorldBounds): void {
+  if (!runtime.flight) {
+    return;
+  }
+  if (!runtime.flight.isLanding) {
+    setFlightTarget(runtime, { x: getLandingX(runtime, bounds), y: 0 }, bounds).isLanding = true;
+  }
+  if (runtime.flight && moveAlongFlight(runtime, runtime.flight, getFlySpeed(runtime), seconds)) {
+    runtime.flight = null;
+    runtime.y = 0;
+    runtime.vy = 0;
+  }
+}
+
+/** Keeps a pet in the air inside the zoo after a resize, its target too. A landing spot is picked again. */
+export function keepPetZooFlightInside(runtime: PetZooPetRuntime, bounds: PetZooWorldBounds): void {
+  if (!runtime.flight) {
+    return;
+  }
+  runtime.x = Math.min(getPetZooMaxX(bounds, runtime.size), Math.max(0, runtime.x));
+  if (runtime.flight.isLanding) {
+    runtime.flight.isLanding = false;
+    return;
+  }
+  const target: PetZooPoint = clampFlightTarget(runtime, { x: runtime.flight.targetX, y: runtime.flight.targetY }, bounds);
+  runtime.flight.targetX = target.x;
+  runtime.flight.targetY = target.y;
+}
+
+/** Flies to a point (a ball, a piece of food), lined up so the pet's middle meets it. Returns true once it is in reach. */
+function flyToCatch(runtime: PetZooPetRuntime, point: PetZooPoint, seconds: number, bounds: PetZooWorldBounds): boolean {
+  const flight: PetZooFlight = setFlightTarget(runtime, { x: point.x, y: point.y - runtime.size / 2 }, bounds);
+  moveAlongFlight(runtime, flight, getFlySpeed(runtime) * PET_ZOO_CHASE_SPEED_MULTIPLIER, seconds);
+  const middleY: number = runtime.y + runtime.size / 2;
+  return Math.hypot(getPetZooCenterX(runtime) - point.x, middleY - point.y) <= runtime.size * FLY_CATCH_REACH_IN_SPRITES;
+}
+
+function stepFly(runtime: PetZooPetRuntime, seconds: number, context: PetZooSimulationContext): void {
+  const flight: PetZooFlight =
+    runtime.flight && !runtime.flight.isLanding ? runtime.flight : setFlightTarget(runtime, pickFlightTarget(runtime, context.bounds), context.bounds);
+  if (moveAlongFlight(runtime, flight, getFlySpeed(runtime), seconds)) {
+    // there: on to another point until the time is up
+    setFlightTarget(runtime, pickFlightTarget(runtime, context.bounds), context.bounds);
+  }
+  if (runtime.behaviorSecondsLeft <= 0) {
+    pickNextPetZooBehavior(runtime, context);
+  }
 }
 
 function canClimbIn(runtime: PetZooPetRuntime, bounds: PetZooWorldBounds): boolean {
@@ -466,12 +603,19 @@ function stepApproachFriend(runtime: PetZooPetRuntime, seconds: number, context:
 }
 
 function stepChase(runtime: PetZooPetRuntime, seconds: number, context: PetZooSimulationContext): void {
-  applyGroundGravity(runtime, seconds);
   const ball: PetZooBallRuntime | null = context.ball;
   if (!ball || ball.heldByPetId !== null) {
     pickNextPetZooBehavior(runtime, context);
     return;
   }
+  // a pet that can fly flies straight at it, and can catch it in the air
+  if (runtime.definition.canFly) {
+    if (flyToCatch(runtime, ball, seconds, context.bounds)) {
+      context.catchBall(runtime);
+    }
+    return;
+  }
+  applyGroundGravity(runtime, seconds);
   // line the middle of the pet up with the ball, or get as close as the stones allow
   moveTowardX(runtime, ball.x, runtime.speed * PET_ZOO_CHASE_SPEED_MULTIPLIER, seconds, context.bounds);
   const reach: number = runtime.size * 0.45 + (hasPetZooIslands(context.bounds) ? PET_ZOO_ISLAND_CATCH_REACH_PX : 0);
@@ -479,6 +623,44 @@ function stepChase(runtime: PetZooPetRuntime, seconds: number, context: PetZooSi
   const isBallUnderPet: boolean = Math.abs(getPetZooCenterX(runtime) - ball.x) <= reach;
   if (isBallLowEnough && isBallUnderPet && runtime.skip === null) {
     context.catchBall(runtime);
+  }
+}
+
+/** The food nearest to a pet's middle. */
+function findNearestFood(runtime: PetZooPetRuntime, foods: readonly PetZooFoodRuntime[]): PetZooFoodRuntime | undefined {
+  const middleY: number = runtime.y + runtime.size / 2;
+  let nearest: PetZooFoodRuntime | undefined;
+  let nearestDistance: number = Number.POSITIVE_INFINITY;
+  foods.forEach((food: PetZooFoodRuntime) => {
+    const distance: number = Math.hypot(food.x - getPetZooCenterX(runtime), food.y - middleY);
+    if (distance < nearestDistance) {
+      nearest = food;
+      nearestDistance = distance;
+    }
+  });
+  return nearest;
+}
+
+/** Goes for the nearest food, another one when that one is eaten first, until there is none left. */
+function stepForage(runtime: PetZooPetRuntime, seconds: number, context: PetZooSimulationContext): void {
+  const food: PetZooFoodRuntime | undefined = findNearestFood(runtime, context.foods);
+  if (!food) {
+    pickNextPetZooBehavior(runtime, context);
+    return;
+  }
+  if (runtime.definition.canFly) {
+    if (flyToCatch(runtime, { x: food.x, y: food.y + PET_ZOO_FOOD_SIZE_PX / 2 }, seconds, context.bounds)) {
+      context.eatFood(runtime, food);
+    }
+    return;
+  }
+  applyGroundGravity(runtime, seconds);
+  moveTowardX(runtime, food.x, runtime.speed * PET_ZOO_CHASE_SPEED_MULTIPLIER, seconds, context.bounds);
+  const reach: number = runtime.size * 0.45 + (hasPetZooIslands(context.bounds) ? PET_ZOO_ISLAND_CATCH_REACH_PX : 0);
+  const isFoodLowEnough: boolean = food.y <= runtime.size * 0.7;
+  const isFoodUnderPet: boolean = Math.abs(getPetZooCenterX(runtime) - food.x) <= reach;
+  if (isFoodLowEnough && isFoodUnderPet && runtime.skip === null) {
+    context.eatFood(runtime, food);
   }
 }
 
@@ -520,6 +702,11 @@ export function stepPetZooPet(runtime: PetZooPetRuntime, seconds: number, contex
     stepPetZooSkip(runtime, seconds);
     return;
   }
+  // and a pet in the air lands first, unless it is flying somewhere; a behavior that ran out meanwhile ends once it lands
+  if (runtime.flight && !FLIGHT_BEHAVIORS.includes(runtime.behavior)) {
+    stepLanding(runtime, seconds, context.bounds);
+    return;
+  }
 
   switch (runtime.behavior) {
     case PET_ZOO_BEHAVIOR.walk:
@@ -537,6 +724,12 @@ export function stepPetZooPet(runtime: PetZooPetRuntime, seconds: number, contex
     case PET_ZOO_BEHAVIOR.chase:
       stepChase(runtime, seconds, context);
       return;
+    case PET_ZOO_BEHAVIOR.forage:
+      stepForage(runtime, seconds, context);
+      return;
+    case PET_ZOO_BEHAVIOR.fly:
+      stepFly(runtime, seconds, context);
+      return;
     case PET_ZOO_BEHAVIOR.waitForFriend:
       applyGroundGravity(runtime, seconds);
       stepWaitForFriend(runtime, context);
@@ -553,7 +746,7 @@ export function stepPetZooPet(runtime: PetZooPetRuntime, seconds: number, contex
       stepFall(runtime, seconds);
       return;
     default:
-      // idle, lie, stand, swipe, land, talk, withBall: stay put, finish a jump
+      // idle, lie, stand, swipe, land, talk, withBall, eat: stay put, finish a jump
       applyGroundGravity(runtime, seconds);
       break;
   }

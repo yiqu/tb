@@ -13,6 +13,7 @@ const ANIMATION_FALLBACKS: Record<PetZooAnimation, readonly PetZooAnimation[]> =
   with_ball: [],
   lie: [],
   stand: [],
+  fly: ['run', 'walk_fast', 'walk'],
 };
 
 /** The animation that has a sprite file for this pet: the one asked for, a close one, or idle. */

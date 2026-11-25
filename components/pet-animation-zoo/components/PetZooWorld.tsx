@@ -3,6 +3,7 @@
 import { useRef, useEffect } from 'react';
 
 import PetZooBall from './PetZooBall';
+import PetZooFood from './PetZooFood';
 import PetZooPetSprite from './PetZooPetSprite';
 import PetZooIslandLayer from './PetZooIslandLayer';
 import PetZooBackgroundLayer from './PetZooBackgroundLayer';
@@ -18,8 +19,8 @@ interface PetZooWorldProps {
 }
 
 /**
- * The scene, back to front: the theme's fill color, its background art, its stepping stones if it has any, the pets
- * and the ball, then the foreground art. Feeds the engine the saved pets, the theme's ground and the world size.
+ * The scene, back to front: the theme's fill color, its background art, its stepping stones if it has any, the food,
+ * the pets and the ball, then the foreground art. Feeds the engine the saved pets, the theme's ground and the world size.
  */
 export default function PetZooWorld({ engine }: PetZooWorldProps) {
   const worldRef = useRef<HTMLDivElement>(null);
@@ -62,6 +63,7 @@ export default function PetZooWorld({ engine }: PetZooWorldProps) {
       { theme.islands ?
         <PetZooIslandLayer themeId={ themeId } islands={ theme.islands } floorPx={ theme.floorPx } colorMode={ colorMode } />
       : null }
+      <PetZooFood engine={ engine } />
       { pets.map((pet: PetZooPet) => {
         return <PetZooPetSprite key={ pet.id } pet={ pet } engine={ engine } />;
       }) }

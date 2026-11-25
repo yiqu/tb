@@ -7,6 +7,7 @@ export const PET_ZOO_LABELS = {
 
   spawnPet: 'Spawn pet',
   throwBall: 'Throw ball',
+  feed: 'Feed',
   deletePet: 'Delete pet',
   changeTheme: 'Change theme',
   maxPetsReached: 'The zoo is full',

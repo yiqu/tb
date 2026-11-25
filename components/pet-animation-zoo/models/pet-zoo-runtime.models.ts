@@ -1,3 +1,4 @@
+import type { PetZooFoodKind } from '../constants/pet-zoo-foods.constants';
 import type { PetZooPet, PetZooPetDefinition } from './pet-zoo.models';
 
 /**
@@ -30,6 +31,11 @@ export const PET_ZOO_BEHAVIOR = {
   talk: 'talk',
   /** Running back and forth after five quick clicks. */
   zoomies: 'zoomies',
+  /** Flying around, only pets that can fly. */
+  fly: 'fly',
+  /** Going to the nearest food. */
+  forage: 'forage',
+  eat: 'eat',
 } as const;
 
 export type PetZooBehavior = (typeof PET_ZOO_BEHAVIOR)[keyof typeof PET_ZOO_BEHAVIOR];
@@ -43,6 +49,19 @@ export type PetZooDirection = 1 | -1;
 export interface PetZooSkip {
   targetX: number;
   vx: number;
+}
+
+/**
+ * A pet that can fly, in the air. It flies to `targetX`, `targetY` in a straight line, no gravity, until it lands.
+ * Behaviors that do not steer the flight (anything but `fly`, `chase` and `forage`) make it fly down to the ground first.
+ */
+export interface PetZooFlight {
+  /** Where its middle goes, px from the left. */
+  targetX: number;
+  /** How high its feet go above the ground. */
+  targetY: number;
+  /** Flying down to land: `targetY` is the ground, and the flight ends there. */
+  isLanding: boolean;
 }
 
 export interface PetZooPendingBubble {
@@ -70,6 +89,8 @@ export interface PetZooPetRuntime {
   climbTargetY: number;
   /** Set while it hops to another stepping stone. */
   skip: PetZooSkip | null;
+  /** Set while it flies. */
+  flight: PetZooFlight | null;
   friendId: string | null;
   bubbleText: string | null;
   bubbleSecondsLeft: number;
@@ -85,6 +106,18 @@ export interface PetZooBallRuntime {
   vx: number;
   vy: number;
   heldByPetId: string | null;
+  secondsLeft: number;
+}
+
+/** A piece of food dropped by the Feed button. It falls to the ground, on the lake onto a stone, and waits to be eaten. */
+export interface PetZooFoodRuntime {
+  id: number;
+  kind: PetZooFoodKind;
+  /** Its middle, px from the left. */
+  x: number;
+  /** Height of its bottom above the ground. */
+  y: number;
+  vy: number;
   secondsLeft: number;
 }
 

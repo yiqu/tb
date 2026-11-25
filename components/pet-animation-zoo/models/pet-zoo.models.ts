@@ -13,6 +13,8 @@ export const PET_ZOO_ANIMATION = {
   withBall: 'with_ball',
   lie: 'lie',
   stand: 'stand',
+  /** In the air, only pets that can fly have it. */
+  fly: 'fly',
 } as const;
 
 export type PetZooAnimation = (typeof PET_ZOO_ANIMATION)[keyof typeof PET_ZOO_ANIMATION];
@@ -71,6 +73,8 @@ export interface PetZooPetDefinition {
   speed: number;
   /** Whether it climbs up the left and right walls. */
   canClimb: boolean;
+  /** Whether it flies: it takes off now and then, and flies to a ball or to food instead of walking. Needs a `fly` sprite. */
+  canFly: boolean;
   colors: readonly PetZooPetColorDefinition[];
   /** The animations that have a sprite file, the others fall back (see `getPetZooSpriteAnimation`). */
   animations: readonly PetZooAnimation[];
@@ -119,6 +123,15 @@ export interface PetZooThemeDefinition {
   islands?: readonly PetZooThemeIsland[];
   /** With islands: how far below the floor a ball floats on the water, in px. */
   waterDepthPx?: number;
+}
+
+/** One kind of food the Feed button drops. The catalog is `PET_ZOO_FOODS`. */
+export interface PetZooFoodDefinition {
+  label: string;
+  /** `public/pet-animation-zoo/foods/<fileName>`. */
+  fileName: string;
+  /** What the pet that eats it says. */
+  line: string;
 }
 
 /** A pet the person added. This is what is saved to local storage. */

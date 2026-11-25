@@ -4,10 +4,12 @@ import { PET_ZOO_BEHAVIOR } from '../models/pet-zoo-runtime.models';
 import { PET_ZOO_BUBBLE_FONT, PET_ZOO_BALL_RADIUS_PX } from '../constants/pet-zoo.constants';
 import { PET_ZOO_MESSAGES } from '../constants/pet-zoo-messages.constants';
 import { createPetZooBall, stepPetZooBall } from '../utils/pet-zoo-ball.utils';
+import { PET_ZOO_FOODS, PET_ZOO_MAX_FOODS } from '../constants/pet-zoo-foods.constants';
+import { createPetZooFood, stepPetZooFood, keepPetZooFoodInside } from '../utils/pet-zoo-food.utils';
 import { randomItem, randomChance, randomBetween } from '../utils/pet-zoo-random.utils';
 import { isOverPetZooStone, getPetZooIslandSpans } from '../utils/pet-zoo-island.utils';
 import { getPetZooGreeting, pickPetZooConversation, pickPetZooMissedBallLine } from '../utils/pet-zoo-speech.utils';
-import { renderPetZooPet, renderPetZooBall, PET_ZOO_EMPTY_RENDERED_PET } from '../utils/pet-zoo-render.utils';
+import { renderPetZooPet, renderPetZooBall, renderPetZooFoods, PET_ZOO_EMPTY_RENDERED_PET } from '../utils/pet-zoo-render.utils';
 import {
   PET_ZOO_HOP_VELOCITY,
   PET_ZOO_MAX_FRAME_SECONDS,
@@ -30,15 +32,23 @@ import {
   pickNextPetZooBehavior,
   createPetZooPetRuntime,
   keepPetZooPetOnGround,
+  keepPetZooFlightInside,
   startPetZooConversation,
   PetZooSimulationContext,
 } from '../utils/pet-zoo-behavior.utils';
 
 import type { PetZooPet, PetZooThemeIsland, PetZooThemeDefinition } from '../models/pet-zoo.models';
-import type { PetZooBallRuntime, PetZooPetRuntime, PetZooWorldBounds, PetZooRenderedPet, PetZooPetElements } from '../models/pet-zoo-runtime.models';
+import type {
+  PetZooBallRuntime,
+  PetZooFoodRuntime,
+  PetZooPetRuntime,
+  PetZooWorldBounds,
+  PetZooRenderedPet,
+  PetZooPetElements,
+} from '../models/pet-zoo-runtime.models';
 
 /**
- * Runs the zoo: one `requestAnimationFrame` loop moves every pet and the ball, then writes the result
+ * Runs the zoo: one `requestAnimationFrame` loop moves every pet, the ball and the food, then writes the result
  * straight to the DOM nodes the React components registered. React only renders when a pet is added
  * or removed, never per frame.
  *
@@ -52,6 +62,10 @@ export class PetZooEngine {
   private readonly preloadedSprites = new Set<string>();
   private ball: PetZooBallRuntime | null = null;
   private ballElement: HTMLElement | null = null;
+  /** Oldest first. The same array is the context's `foods`, so it is only ever changed in place. */
+  private readonly foods: PetZooFoodRuntime[] = [];
+  private foodElements: readonly HTMLImageElement[] = [];
+  private nextFoodId = 1;
   private bounds: PetZooWorldBounds = { width: 0, height: 0, floor: 0, islands: [], waterDepth: 0 };
   private islandDefinitions: readonly PetZooThemeIsland[] | undefined = undefined;
   private frameId: number | null = null;
@@ -64,11 +78,15 @@ export class PetZooEngine {
   private readonly context: PetZooSimulationContext = {
     bounds: this.bounds,
     ball: null,
+    foods: this.foods,
     findPet: (id: string) => {
       return this.pets.get(id);
     },
     catchBall: (runtime: PetZooPetRuntime) => {
       this.catchBall(runtime);
+    },
+    eatFood: (runtime: PetZooPetRuntime, food: PetZooFoodRuntime) => {
+      this.eatFood(runtime, food);
     },
     startConversation: (initiator: PetZooPetRuntime, partner: PetZooPetRuntime) => {
       const lines: readonly [string, string] | undefined = pickPetZooConversation(initiator, partner);
@@ -164,6 +182,30 @@ export class PetZooEngine {
     this.ballElement = element;
   }
 
+  /** The image slots the food is drawn in, one per piece up to `PET_ZOO_MAX_FOODS`. */
+  attachFoodElements(elements: readonly HTMLImageElement[]): void {
+    this.foodElements = elements;
+  }
+
+  /**
+   * Drops a random piece of food in. Every pet that is free (not playing, talking or eating) goes for the nearest
+   * piece; the others join once they are done. Past `PET_ZOO_MAX_FOODS` the oldest piece goes.
+   */
+  feed(): void {
+    this.foods.push(createPetZooFood(this.nextFoodId, this.bounds));
+    this.nextFoodId += 1;
+    if (this.foods.length > PET_ZOO_MAX_FOODS) {
+      this.foods.shift();
+    }
+    this.pets.forEach((runtime: PetZooPetRuntime) => {
+      if (!canPetZooPetMove(runtime) || !isPetZooPetFree(runtime)) {
+        return;
+      }
+      runtime.friendId = null;
+      setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.forage);
+    });
+  }
+
   /** Drops a ball in. Every pet that can, stops what it is doing and runs after it. */
   throwBall(): void {
     this.ball = createPetZooBall(this.bounds);
@@ -211,6 +253,13 @@ export class PetZooEngine {
       this.tryStartConversation();
     }
 
+    this.foods.forEach((food: PetZooFoodRuntime) => {
+      stepPetZooFood(food, seconds);
+    });
+    this.removeFoods((food: PetZooFoodRuntime) => {
+      return food.secondsLeft <= 0;
+    });
+
     this.context.ball = this.ball;
     this.pets.forEach((runtime: PetZooPetRuntime) => {
       stepPetZooPet(runtime, seconds, this.context);
@@ -237,6 +286,25 @@ export class PetZooEngine {
     if (this.ballElement) {
       renderPetZooBall(this.ball, this.ballElement, this.bounds);
     }
+    renderPetZooFoods(this.foods, this.foodElements, this.bounds);
+  }
+
+  /** Removes the food that matches, in place (see `foods`). */
+  private removeFoods(shouldRemove: (food: PetZooFoodRuntime) => boolean): void {
+    for (let index = this.foods.length - 1; index >= 0; index -= 1) {
+      if (shouldRemove(this.foods[index])) {
+        this.foods.splice(index, 1);
+      }
+    }
+  }
+
+  /** A pet got to a piece of food first: it eats it and says so. The others go for another piece, if there is one. */
+  private eatFood(runtime: PetZooPetRuntime, food: PetZooFoodRuntime): void {
+    this.removeFoods((candidate: PetZooFoodRuntime) => {
+      return candidate === food;
+    });
+    setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.eat);
+    showPetZooBubble(runtime, PET_ZOO_FOODS[food.kind].line);
   }
 
   private catchBall(runtime: PetZooPetRuntime): void {
@@ -317,6 +385,9 @@ export class PetZooEngine {
       }
       if (runtime.wall) {
         runtime.x = runtime.wall === 'right' ? Math.max(0, this.bounds.width - runtime.size) : 0;
+      } else if (runtime.flight) {
+        // in the air it can be over the water
+        keepPetZooFlightInside(runtime, this.bounds);
       } else {
         keepPetZooPetOnGround(runtime, this.bounds);
       }
@@ -328,6 +399,9 @@ export class PetZooEngine {
       }
       // a pet still climbing stops at the new top, even when it is below it right now
       runtime.climbTargetY = Math.min(runtime.climbTargetY, maxClimbY);
+    });
+    this.foods.forEach((food: PetZooFoodRuntime) => {
+      keepPetZooFoodInside(food, this.bounds);
     });
     if (this.ball) {
       this.ball.x = Math.min(this.bounds.width, Math.max(0, this.ball.x));

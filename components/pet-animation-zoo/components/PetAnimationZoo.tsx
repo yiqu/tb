@@ -28,7 +28,7 @@ interface PetAnimationZooProps {
  * The pet animation zoo: little 8-bit pets that walk, run, hop, climb the walls, chat with each other and
  * chase a ball, in front of a background of your choice. Drop it anywhere, it fills the width of its parent.
  *
- * - hover it for the toolbar: Spawn pet, Throw ball, Delete pet, Change theme
+ * - hover it for the toolbar: Spawn pet, Throw ball, Feed, Delete pet, Change theme
  * - click a pet to make it react, click it fast for more
  * - drag its top edge to change its height (saved to a cookie)
  * - the pets and the theme are saved to local storage
