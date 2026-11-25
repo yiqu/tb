@@ -103,7 +103,8 @@ and a new one starts from its master value. A saved theme that is locked falls b
 ## How it is built
 
 `PetZooEngine` (in `engine/`) runs one `requestAnimationFrame` loop. Each frame it steps the ball, the food and every pet,
-then writes transforms, sprite URLs and bubble text straight to DOM nodes that the pet components registered.
+then writes transforms, sprite URLs and bubble text straight to DOM nodes that the pet and food components registered
+(`PetZooPetSprite` registers a pet's nodes, `PetZooFood` the image slots that `renderPetZooFoods` fills).
 React renders only when a pet is added or removed or the theme changes, never per frame. The loop pauses while
 the zoo is hidden or off screen (an `IntersectionObserver` in `usePetZooEngine`).
 

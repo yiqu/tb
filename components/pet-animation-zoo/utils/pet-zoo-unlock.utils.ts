@@ -24,8 +24,9 @@ export function isPetZooUnlockReached(unlock: PetZooUnlock, now: DateTime): bool
   return now.toMillis() >= unlock;
 }
 
+/** A boolean, or a time Luxon can show (a hand-edited huge number would read "Invalid DateTime" on the lock). */
 export function isPetZooUnlockValue(value: unknown): value is PetZooUnlock {
-  return typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value));
+  return typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value) && DateTime.fromMillis(value).isValid);
 }
 
 /** The master lists' defaults, the start of the saved unlocks. */

@@ -428,6 +428,11 @@ function flyToCatch(runtime: PetZooPetRuntime, point: PetZooPoint, seconds: numb
 }
 
 function stepFly(runtime: PetZooPetRuntime, seconds: number, context: PetZooSimulationContext): void {
+  // the zoo got too short to fly around in (a resize, or a theme with a taller floor): do something else, which lands it
+  if (!canFlyAroundIn(runtime, context.bounds)) {
+    pickNextPetZooBehavior(runtime, context);
+    return;
+  }
   const flight: PetZooFlight =
     runtime.flight && !runtime.flight.isLanding ? runtime.flight : setFlightTarget(runtime, pickFlightTarget(runtime, context.bounds), context.bounds);
   if (moveAlongFlight(runtime, flight, getFlySpeed(runtime), seconds)) {
