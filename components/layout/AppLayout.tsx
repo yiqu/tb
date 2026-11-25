@@ -3,6 +3,8 @@ import { ReactNode } from 'react';
 import { isTrue } from '@/lib/utils';
 import { getCookieByName } from '@/lib/cookies';
 import { SIDE_NAV_STATE_COOKIE_NAME } from '@/constants/constants';
+import { parseSideNavWidth } from '@/lib/side-nav-width.utils';
+import { SIDE_NAV_WIDTH_COOKIE_NAME } from '@/constants/side-nav-resize.constants';
 // import { SIDE_NAV_STATE_COOKIE_NAME } from '@/constants/constants';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
@@ -13,10 +15,13 @@ import { NavSidebar } from '../side-nav/nav-list/NavSidebar';
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const sideNavState = await getCookieByName(SIDE_NAV_STATE_COOKIE_NAME);
   const isSideNavOpen = isTrue(sideNavState?.value ?? 'true');
+  // the width the nav was dragged to, so the first paint already has it
+  const sideNavWidthCookie = await getCookieByName(SIDE_NAV_WIDTH_COOKIE_NAME);
+  const sideNavWidth: number | undefined = sideNavWidthCookie ? parseSideNavWidth(sideNavWidthCookie.value) : undefined;
   //const isSideNavOpen = true;
 
   return (
-    <SidebarProvider defaultOpen={ isSideNavOpen }>
+    <SidebarProvider defaultOpen={ isSideNavOpen } defaultWidth={ sideNavWidth }>
       <NavSidebar />
       <SidebarInset className="min-w-0">
         <TopNavWrapper>

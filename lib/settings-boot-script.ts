@@ -7,6 +7,12 @@ import {
   SETTINGS_TABLE_VERTICAL_BORDERS_COOKIE_NAME,
   SETTINGS_TABLE_HORIZONTAL_BORDERS_COOKIE_NAME,
 } from '@/constants/constants';
+import {
+  SIDE_NAV_MAX_WIDTH_PX,
+  SIDE_NAV_MIN_WIDTH_PX,
+  SIDE_NAV_WIDTH_COOKIE_NAME,
+  SHELL_SIDE_NAV_WIDTH_CSS_VARIABLE,
+} from '@/constants/side-nav-resize.constants';
 
 import { getHtmlFontClassName, getFontStylesheetHref, getVibeStylesheetHref } from './vibes-css-map';
 
@@ -38,6 +44,10 @@ interface HeadBootConfig {
   vibeLinkId: string;
   fontLinkId: string;
   sideNavAttribute: string;
+  sideNavWidthCookie: string;
+  sideNavWidthVariable: string;
+  sideNavMinWidth: number;
+  sideNavMaxWidth: number;
   vibes: Record<string, FontBootEntry>;
   fonts: Record<string, FontBootEntry>;
 }
@@ -64,6 +74,10 @@ function buildHeadBootConfig(): HeadBootConfig {
     vibeLinkId: VIBE_STYLESHEET_LINK_ID,
     fontLinkId: FONT_STYLESHEET_LINK_ID,
     sideNavAttribute: SHELL_SIDE_NAV_DATA_ATTRIBUTE,
+    sideNavWidthCookie: SIDE_NAV_WIDTH_COOKIE_NAME,
+    sideNavWidthVariable: SHELL_SIDE_NAV_WIDTH_CSS_VARIABLE,
+    sideNavMinWidth: SIDE_NAV_MIN_WIDTH_PX,
+    sideNavMaxWidth: SIDE_NAV_MAX_WIDTH_PX,
     vibes,
     fonts,
   };
@@ -79,10 +93,11 @@ const READ_COOKIES_JS = `var c={};document.cookie.split('; ').forEach(function(p
  *   `VibeProvider` finds them by id and updates them when the setting changes.
  * - adds the font CSS variable classes to <html>
  * - marks <html> with the saved sidebar state so the shell skeleton matches the real sidebar
+ * - sets the saved sidebar width as a CSS variable on <html>, for the same reason
  */
 export function getHeadBootScript(): string {
   const config: HeadBootConfig = buildHeadBootConfig();
-  return `(function(){try{var M=${JSON.stringify(config)};${READ_COOKIES_JS}var d=document.documentElement;var v=Object.prototype.hasOwnProperty.call(M.vibes,c[M.vibeCookie])?c[M.vibeCookie]:M.defaultVibe;var f=Object.prototype.hasOwnProperty.call(M.fonts,c[M.fontCookie])?M.fonts[c[M.fontCookie]]:null;if(!document.getElementById(M.vibeLinkId)){document.write('<link id="'+M.vibeLinkId+'" rel="stylesheet" href="'+M.vibes[v].href+'">');}if(f&&!document.getElementById(M.fontLinkId)){document.write('<link id="'+M.fontLinkId+'" rel="stylesheet" href="'+f.href+'">');}(f?f.className:M.vibes[v].className).split(' ').forEach(function(k){if(k)d.classList.add(k);});d.setAttribute(M.sideNavAttribute,(c[M.sideNavCookie]===undefined||String(c[M.sideNavCookie]).toLowerCase()==='true')?'expanded':'collapsed');}catch(e){}})();`;
+  return `(function(){try{var M=${JSON.stringify(config)};${READ_COOKIES_JS}var d=document.documentElement;var v=Object.prototype.hasOwnProperty.call(M.vibes,c[M.vibeCookie])?c[M.vibeCookie]:M.defaultVibe;var f=Object.prototype.hasOwnProperty.call(M.fonts,c[M.fontCookie])?M.fonts[c[M.fontCookie]]:null;if(!document.getElementById(M.vibeLinkId)){document.write('<link id="'+M.vibeLinkId+'" rel="stylesheet" href="'+M.vibes[v].href+'">');}if(f&&!document.getElementById(M.fontLinkId)){document.write('<link id="'+M.fontLinkId+'" rel="stylesheet" href="'+f.href+'">');}(f?f.className:M.vibes[v].className).split(' ').forEach(function(k){if(k)d.classList.add(k);});d.setAttribute(M.sideNavAttribute,(c[M.sideNavCookie]===undefined||String(c[M.sideNavCookie]).toLowerCase()==='true')?'expanded':'collapsed');var w=parseInt(c[M.sideNavWidthCookie],10);if(w>=M.sideNavMinWidth&&w<=M.sideNavMaxWidth){d.style.setProperty(M.sideNavWidthVariable,w+'px');}}catch(e){}})();`;
 }
 
 /**

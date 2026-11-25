@@ -1,0 +1,104 @@
+import type { PetZooPet, PetZooPetDefinition } from './pet-zoo.models';
+
+/**
+ * Types of the running simulation (`PetZooEngine`). None of this is saved, it is rebuilt from the saved pets on load.
+ * Positions are px: `x` from the left edge of the world, `y` up from the ground of the theme.
+ */
+
+/** What a pet is doing right now. */
+export const PET_ZOO_BEHAVIOR = {
+  idle: 'idle',
+  lie: 'lie',
+  stand: 'stand',
+  walk: 'walk',
+  run: 'run',
+  /** Going up the left or right wall. */
+  climb: 'climb',
+  /** Holding on to a wall at the top of a climb. */
+  wallHang: 'wallHang',
+  /** Dropping down from a wall. */
+  fall: 'fall',
+  land: 'land',
+  /** The paw swipe when clicked. */
+  swipe: 'swipe',
+  chase: 'chase',
+  withBall: 'withBall',
+  /** Walking up to another pet to talk. */
+  approachFriend: 'approachFriend',
+  /** Standing still while another pet walks over to talk. */
+  waitForFriend: 'waitForFriend',
+  talk: 'talk',
+  /** Running back and forth after five quick clicks. */
+  zoomies: 'zoomies',
+} as const;
+
+export type PetZooBehavior = (typeof PET_ZOO_BEHAVIOR)[keyof typeof PET_ZOO_BEHAVIOR];
+
+export type PetZooWallSide = 'left' | 'right';
+
+/** 1 faces right (how the sprites are drawn), -1 faces left. */
+export type PetZooDirection = 1 | -1;
+
+export interface PetZooPendingBubble {
+  text: string;
+  delaySeconds: number;
+  durationSeconds: number;
+}
+
+export interface PetZooPetRuntime {
+  pet: PetZooPet;
+  definition: PetZooPetDefinition;
+  /** The pet's own walking speed, its kind's speed times a random factor. */
+  speed: number;
+  x: number;
+  y: number;
+  /** Vertical speed of a hop, a jump or a fall, up is positive. */
+  vy: number;
+  direction: PetZooDirection;
+  behavior: PetZooBehavior;
+  behaviorSecondsLeft: number;
+  wall: PetZooWallSide | null;
+  climbTargetY: number;
+  friendId: string | null;
+  bubbleText: string | null;
+  bubbleSecondsLeft: number;
+  pendingBubble: PetZooPendingBubble | null;
+  clickStreak: number;
+  lastClickAt: number;
+}
+
+export interface PetZooBallRuntime {
+  x: number;
+  /** Height of the ball's center above the ground. */
+  y: number;
+  vx: number;
+  vy: number;
+  heldByPetId: string | null;
+  secondsLeft: number;
+}
+
+export interface PetZooWorldBounds {
+  width: number;
+  height: number;
+  floor: number;
+}
+
+/** The DOM nodes of one pet, written to directly every frame so React does not re-render 60 times a second. */
+export interface PetZooPetElements {
+  root: HTMLElement;
+  body: HTMLElement;
+  image: HTMLImageElement;
+  bubble: HTMLElement;
+}
+
+/** What was last written to a pet's DOM nodes, so a frame only touches what changed. */
+export interface PetZooRenderedPet {
+  rootTransform: string;
+  bodyTransform: string;
+  imageSrc: string;
+  bubbleText: string | null;
+  /** Measured when the text changes, not every frame. */
+  bubbleWidth: number;
+  bubbleHeight: number;
+  bubbleTransform: string;
+}
