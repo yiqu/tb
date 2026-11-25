@@ -303,10 +303,9 @@ export class PetZooEngine {
     const maxClimbY: number = getPetZooMaxClimbY(this.bounds);
     this.pets.forEach((runtime: PetZooPetRuntime) => {
       runtime.x = runtime.wall === 'right' ? maxX : Math.min(maxX, Math.max(0, runtime.x));
-      if (runtime.y > maxClimbY) {
-        runtime.y = maxClimbY;
-        runtime.climbTargetY = Math.min(runtime.climbTargetY, maxClimbY);
-      }
+      runtime.y = Math.min(runtime.y, maxClimbY);
+      // a pet still climbing stops at the new top, even when it is below it right now
+      runtime.climbTargetY = Math.min(runtime.climbTargetY, maxClimbY);
     });
     if (this.ball) {
       this.ball.x = Math.min(this.bounds.width, Math.max(0, this.ball.x));

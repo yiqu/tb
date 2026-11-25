@@ -14,6 +14,8 @@ import {
 
 /** The element that holds `--sidebar-width`, see `SidebarProvider`. */
 const SIDEBAR_WRAPPER_SELECTOR = '[data-slot="sidebar-wrapper"]';
+/** The drawn nav, which holds the handle. */
+const SIDEBAR_CONTAINER_SELECTOR = '[data-slot="sidebar-container"]';
 
 interface DragState {
   wrapper: HTMLElement;
@@ -21,6 +23,15 @@ interface DragState {
   grabOffset: number;
   width: number;
   isCollapsed: boolean;
+}
+
+/**
+ * The nav's width as drawn. Before the first resize it is the CSS default (16rem), which follows the root font size,
+ * so it can differ from `SIDE_NAV_DEFAULT_WIDTH_PX`.
+ */
+function getDrawnSideNavWidth(handle: HTMLElement, fallback: number): number {
+  const container: Element | null = handle.closest(SIDEBAR_CONTAINER_SELECTOR);
+  return container ? container.getBoundingClientRect().width : fallback;
 }
 
 function writeSideNavWidthCookie(width: number): void {
@@ -102,10 +113,11 @@ export function useSideNavResize(): SideNavResize {
         event.preventDefault();
         event.currentTarget.setPointerCapture(event.pointerId);
         const isCollapsed: boolean = state === 'collapsed';
+        const startWidth: number = isCollapsed ? width : getDrawnSideNavWidth(event.currentTarget, width);
         dragRef.current = {
           wrapper,
-          grabOffset: isCollapsed ? 0 : width - event.clientX,
-          width,
+          grabOffset: isCollapsed ? 0 : startWidth - event.clientX,
+          width: clampSideNavWidth(startWidth),
           isCollapsed,
         };
         wrapper.dataset.resizing = 'true';
@@ -143,13 +155,13 @@ export function useSideNavResize(): SideNavResize {
         setOpen(true);
       },
       onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
-        if (event.key === 'ArrowRight') {
-          event.preventDefault();
-          commitWidth(width + SIDE_NAV_WIDTH_KEYBOARD_STEP_PX);
-        } else if (event.key === 'ArrowLeft') {
-          event.preventDefault();
-          commitWidth(width - SIDE_NAV_WIDTH_KEYBOARD_STEP_PX);
+        if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+          return;
         }
+        event.preventDefault();
+        const startWidth: number = state === 'collapsed' ? width : getDrawnSideNavWidth(event.currentTarget, width);
+        const step: number = event.key === 'ArrowRight' ? SIDE_NAV_WIDTH_KEYBOARD_STEP_PX : -SIDE_NAV_WIDTH_KEYBOARD_STEP_PX;
+        commitWidth(startWidth + step);
       },
     },
   };
