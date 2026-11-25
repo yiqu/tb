@@ -7,9 +7,10 @@ import { PET_ZOO_THEMES, PET_ZOO_THEME_IDS } from '../constants/pet-zoo-themes.c
 import type { PetZooUnlock, PetZooUnlocks, PetZooPetType, PetZooThemeId } from '../models/pet-zoo.models';
 
 /**
- * Locks of the pets and the themes. Each has a default in its master list (`unlocked` in `PET_ZOO_PETS` and
- * `PET_ZOO_THEMES`) and an entry in the saved `PetZooUnlocks`. It is unlocked when either one says so: a pet the
- * master list opens up is open for everyone, and one the person earned stays open for them.
+ * Locks of the pets and the themes. Each has its lock in its master list (`unlocked` in `PET_ZOO_PETS` and
+ * `PET_ZOO_THEMES`) and an entry in the saved `PetZooUnlocks`, which only says what the person earned. It is unlocked
+ * when either one says so: a pet the master list opens up is open for everyone, and one the person earned stays open
+ * for them. One the master list locks again is locked for everyone else, even if it was open when they last came.
  */
 
 export function getPetZooNow(): DateTime {
@@ -29,25 +30,25 @@ export function isPetZooUnlockValue(value: unknown): value is PetZooUnlock {
   return typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value) && DateTime.fromMillis(value).isValid);
 }
 
-/** The master lists' defaults, the start of the saved unlocks. */
-export function getDefaultPetZooUnlocks(): PetZooUnlocks {
+/** Nothing earned yet: one `false` entry per pet and theme of the master lists, the start of the saved unlocks. */
+export function getEmptyPetZooUnlocks(): PetZooUnlocks {
   const pets = {} as Record<PetZooPetType, PetZooUnlock>;
   PET_ZOO_PET_TYPES.forEach((type: PetZooPetType) => {
-    pets[type] = PET_ZOO_PETS[type].unlocked;
+    pets[type] = false;
   });
   const themes = {} as Record<PetZooThemeId, PetZooUnlock>;
   PET_ZOO_THEME_IDS.forEach((id: PetZooThemeId) => {
-    themes[id] = PET_ZOO_THEMES[id].unlocked;
+    themes[id] = false;
   });
   return { pets, themes };
 }
 
 /**
- * Rebuilds the unlocks read from local storage on the master lists: an entry whose pet or theme is no longer in its
- * list is dropped, a new one starts at its default, and a broken value is replaced by the default.
+ * Rebuilds the earned unlocks read from local storage on the master lists: an entry whose pet or theme is no longer
+ * in its list is dropped, a new one starts as not earned, and a broken value counts as not earned.
  */
 export function toValidPetZooUnlocks(saved: { pets: Record<string, unknown>; themes: Record<string, unknown> }): PetZooUnlocks {
-  const unlocks: PetZooUnlocks = getDefaultPetZooUnlocks();
+  const unlocks: PetZooUnlocks = getEmptyPetZooUnlocks();
   PET_ZOO_PET_TYPES.forEach((type: PetZooPetType) => {
     const value: unknown = saved.pets[type];
     if (isPetZooUnlockValue(value)) {

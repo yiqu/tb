@@ -20,7 +20,8 @@ export const PET_ZOO_HEIGHT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
 /** The local storage key of the pets and the theme (Zustand persist). */
 export const PET_ZOO_STORAGE_KEY = 'pet-animation-zoo-store';
-export const PET_ZOO_STORAGE_VERSION = 1;
+/** 2: the saved unlocks hold only what was earned. Version 1 saved copies of the master lists, which are dropped. */
+export const PET_ZOO_STORAGE_VERSION = 2;
 
 /** Pets beyond this would not fit in a sidebar, the Spawn button is disabled at the cap. */
 export const PET_ZOO_MAX_PETS = 10;

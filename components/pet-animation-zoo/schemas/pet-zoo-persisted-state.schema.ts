@@ -28,7 +28,7 @@ export const petZooPetSchema = z
 export const petZooPersistedStateSchema = z.object({
   pets: z.array(z.unknown()).catch([]),
   themeId: z.enum(PET_ZOO_THEME_IDS).catch(PET_ZOO_DEFAULT_THEME_ID),
-  // saved before there were unlocks: the defaults
+  // saved before there were unlocks: nothing earned
   unlocks: z
     .object({
       pets: z.record(z.string(), z.unknown()).catch({}),

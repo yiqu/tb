@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 import { createPetZooId } from '../utils/pet-zoo-random.utils';
-import { isPetZooThemeUnlocked, toValidPetZooUnlocks, getDefaultPetZooUnlocks } from '../utils/pet-zoo-unlock.utils';
+import { isPetZooThemeUnlocked, toValidPetZooUnlocks, getEmptyPetZooUnlocks } from '../utils/pet-zoo-unlock.utils';
 import { petZooLocalStorage } from '../utils/pet-zoo-storage.utils';
 import { PET_ZOO_PETS } from '../constants/pet-zoo-pets.constants';
 import { PET_ZOO_DEFAULT_THEME_ID } from '../constants/pet-zoo-themes.constants';
@@ -77,7 +77,7 @@ export const usePetZooStore = create<PetZooState>()(
       return {
         pets: PET_ZOO_DEFAULT_PETS,
         themeId: PET_ZOO_DEFAULT_THEME_ID,
-        unlocks: getDefaultPetZooUnlocks(),
+        unlocks: getEmptyPetZooUnlocks(),
 
         actions: {
           addPet: (newPet: PetZooNewPet) => {
@@ -127,13 +127,26 @@ export const usePetZooStore = create<PetZooState>()(
       partialize: (state: PetZooState): PetZooPersistedState => {
         return { pets: state.pets, themeId: state.themeId, unlocks: state.unlocks };
       },
+      // runs only when the saved version is not `PET_ZOO_STORAGE_VERSION`, before `merge`
+      migrate: (persistedState: unknown, version: number): PetZooPersistedState => {
+        const parsed = petZooPersistedStateSchema.safeParse(persistedState);
+        if (!parsed.success) {
+          return { pets: PET_ZOO_DEFAULT_PETS, themeId: PET_ZOO_DEFAULT_THEME_ID, unlocks: getEmptyPetZooUnlocks() };
+        }
+        return {
+          pets: toValidPets(parsed.data.pets),
+          themeId: parsed.data.themeId,
+          // before version 2 the saved unlocks were copies of the master lists, not earned: drop them, the master lists decide
+          unlocks: version < 2 ? getEmptyPetZooUnlocks() : toValidPetZooUnlocks(parsed.data.unlocks),
+        };
+      },
       merge: (persistedState: unknown, currentState: PetZooState): PetZooState => {
         const parsed = petZooPersistedStateSchema.safeParse(persistedState);
         if (!parsed.success) {
           return currentState;
         }
         const unlocks: PetZooUnlocks = toValidPetZooUnlocks(parsed.data.unlocks);
-        // a saved theme that is locked now (e.g. the master list locked it) falls back to the default
+        // a saved theme that is locked now (the master list locked it, and it was not earned) falls back to the default
         const themeId: PetZooThemeId = isPetZooThemeUnlocked(parsed.data.themeId, unlocks) ? parsed.data.themeId : PET_ZOO_DEFAULT_THEME_ID;
         return { ...currentState, pets: toValidPets(parsed.data.pets), themeId, unlocks };
       },

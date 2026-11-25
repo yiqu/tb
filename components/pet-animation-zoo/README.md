@@ -94,11 +94,13 @@ saved (`utils/pet-zoo-storage.utils.ts`). Positions and behaviors are not saved.
 ### Locks
 
 `PET_ZOO_PETS` and `PET_ZOO_THEMES` are the master lists, each entry has `unlocked`: `true`, `false` or a time in ms.
-The store saves an `unlocks` record next to the pets, one entry per kind of pet and per theme, seeded from the master
-lists; `unlockPet` and `unlockTheme` set an entry to `true`, for unlocks earned later. Something can be picked when
-its master list entry or its saved entry says so (`utils/pet-zoo-unlock.utils.ts`). On load the saved record is
-rebuilt on the master lists: an entry for a pet or theme no longer in them is dropped, so it never shows up again,
-and a new one starts from its master value. A saved theme that is locked falls back to the default theme.
+The store saves an `unlocks` record next to the pets, one entry per kind of pet and per theme, that holds only what
+the person earned: every entry starts `false`, and `unlockPet` and `unlockTheme` set one to `true`. Something can be
+picked when its master list entry or its saved entry says so (`utils/pet-zoo-unlock.utils.ts`), so the master list
+wins: lock an entry there (or move its date later) and it is locked again for everyone who did not earn it. On load
+the saved record is rebuilt on the master lists: an entry for a pet or theme no longer in them is dropped, so it never
+shows up again, and a new one starts as not earned. A saved theme that is locked falls back to the default theme.
+Storage version 1 saved copies of the master lists instead, its unlocks are dropped on load (`migrate` in the store).
 
 ## How it is built
 

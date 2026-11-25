@@ -49,8 +49,9 @@ export type PetZooUnlock = boolean | number;
 
 /**
  * The unlock state saved in the browser, one entry per kind of pet and per theme of the master lists
- * (`PET_ZOO_PETS`, `PET_ZOO_THEMES`). It starts as their `unlocked` values, and is where unlocks the person earns
- * go. Something is unlocked when its master list entry or this entry says so (see `pet-zoo-unlock.utils.ts`).
+ * (`PET_ZOO_PETS`, `PET_ZOO_THEMES`). It holds only what the person earned: every entry starts `false`, and an
+ * unlock they earn sets it. Something is unlocked when its master list entry or this entry says so (see
+ * `pet-zoo-unlock.utils.ts`), so locking an entry in a master list locks it again for everyone who did not earn it.
  */
 export interface PetZooUnlocks {
   pets: Record<PetZooPetType, PetZooUnlock>;
