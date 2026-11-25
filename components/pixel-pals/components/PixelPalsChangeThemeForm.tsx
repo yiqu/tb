@@ -42,7 +42,7 @@ export default function PixelPalsChangeThemeForm({ onDone }: PixelPalsChangeThem
       value: id,
       label: PIXEL_PALS_THEMES[id].label,
       icon: <PixelPalsThemeSwatch themeId={ id } colorMode={ colorMode } />,
-      trailing: isUnlocked ? null : <PixelPalsLockedLabel unlock={ PIXEL_PALS_THEMES[id].unlocked } />,
+      trailing: isUnlocked ? null : <PixelPalsLockedLabel />,
       disabled: !isUnlocked,
     };
   });

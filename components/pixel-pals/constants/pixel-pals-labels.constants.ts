@@ -27,8 +27,6 @@ export const PIXEL_PALS_LABELS = {
   petNameLabel: 'Name',
   petNamePlaceholder: 'Name your pet',
   locked: 'Locked',
-  /** `{date}` is replaced by the day it unlocks. */
-  unlocksOn: 'Unlocks {date}',
   petLockedError: 'This pet is locked',
   petTypeRequiredError: 'Choose a pet',
   petColorRequiredError: 'Choose a color',

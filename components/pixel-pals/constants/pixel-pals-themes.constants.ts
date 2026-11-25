@@ -1,7 +1,3 @@
-import { DateTime } from 'luxon';
-
-import { PIXEL_PALS_TIME_ZONE } from './pixel-pals.constants';
-
 import type { PixelPalsThemeDefinition } from '../models/pixel-pals.models';
 
 /**
@@ -12,8 +8,7 @@ import type { PixelPalsThemeDefinition } from '../models/pixel-pals.models';
  * `public/pixel-pals/CREDITS.md`. Images are `public/pixel-pals/backgrounds/<id>/<file>`, where
  * `{mode}` is `light` or `dark`.
  *
- * `unlocked` works as it does for the pets: it is the default of `unlockedBackgrounds` in the pixel-pets store, and a
- * time opens the theme from that day on.
+ * `unlocked` works as it does for the pets: it is the default of `unlockedBackgrounds` in the pixel-pets store.
  */
 export const PIXEL_PALS_THEME_IDS = [
   'none',
@@ -36,8 +31,6 @@ export type PixelPalsThemeId = (typeof PIXEL_PALS_THEME_IDS)[number];
 
 export const PIXEL_PALS_DEFAULT_THEME_ID: PixelPalsThemeId = 'library';
 
-/** Barn opens on Christmas day, to show a theme that unlocks on a date. */
-const CHRISTMAS_2026: number = DateTime.fromObject({ year: 2026, month: 12, day: 25 }, { zone: PIXEL_PALS_TIME_ZONE }).toMillis();
 
 const BACKGROUND_LAYER = { fileName: 'background-{mode}-nano.png', repeat: 'repeat-x' } as const;
 const FOREGROUND_LAYER = { fileName: 'foreground-{mode}-nano.png', repeat: 'repeat-x' } as const;
@@ -184,7 +177,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
   barn: {
     id: 'barn',
     label: 'Barn',
-    unlocked: CHRISTMAS_2026,
+    unlocked: false,
     floorPx: 16,
     // the sky at the top of each image
     fillColor: { light: '#62b6fd', dark: '#0c2147' },

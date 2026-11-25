@@ -41,14 +41,6 @@ export interface PixelPalsPetVoice {
   lines: readonly string[];
 }
 
-/**
- * The master list's lock of a kind of pet or a theme (`unlocked` in `PIXEL_PALS_PETS` and `PIXEL_PALS_THEMES`). It is
- * only the default of the person's own lock state (`unlockedPets` and `unlockedBackgrounds` in the pixel-pets store,
- * which decides what can be picked): `true` open, `false` locked, or a time in milliseconds since the epoch, locked
- * until then and open from that day on.
- */
-export type PixelPalsUnlock = boolean | number;
-
 /** Per kind of pet, whether the person can pick it: `true` open, `false` locked (shown with a lock). */
 export type PixelPetUnlockedPets = Record<PixelPetId, boolean>;
 
@@ -63,8 +55,11 @@ export interface PixelPetDefinition {
   /** The name a pet of this kind goes by when it has no nickname, and the one the Spawn dialog starts with. */
   defaultName: string;
   emoji: string;
-  /** The default of whether it can be picked, see `PixelPalsUnlock`. */
-  unlocked: PixelPalsUnlock;
+  /**
+   * The default of whether it can be picked, for someone with nothing saved yet. What can be picked is `unlockedPets`
+   * in the pixel-pets store, and a saved value there always wins.
+   */
+  unlocked: boolean;
   /** The folder of its sprites, `public/pixel-pals/pets/<spriteFolder>/`. Kinds can share one, like the pandas. */
   spriteFolder: string;
   /** Its size as a factor of `PIXEL_PALS_SPRITE_SIZE_PX`, 1 for most pets. */
@@ -108,7 +103,8 @@ export interface PixelPalsThemeIsland {
 export interface PixelPalsThemeDefinition {
   id: PixelPalsThemeId;
   label: string;
-  unlocked: PixelPalsUnlock;
+  /** The default of `unlockedBackgrounds` in the pixel-pets store, like a pet's `unlocked`. */
+  unlocked: boolean;
   /** Distance in px from the bottom of the world to the ground the pets walk on (the top of the stones on the lake). */
   floorPx: number;
   /**

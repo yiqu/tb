@@ -9,7 +9,7 @@ of the left nav, above the account button.
 ## Using it in another project
 
 1. Copy this folder and `public/pixel-pals/` (the art).
-2. Needs: React 19, Zustand, Zod, React Hook Form, `@hookform/resolvers`, Luxon (with `@types/luxon`), lucide-react and Tailwind 4, plus these
+2. Needs: React 19, Zustand, Zod, React Hook Form, `@hookform/resolvers`, lucide-react and Tailwind 4, plus these
    modules of the host app, imported through the `@/` path alias. Point the imports elsewhere if your app keeps them
    in other places:
    - `cn` from `@/lib/utils` (the shadcn helper, clsx + tailwind-merge)
@@ -74,7 +74,7 @@ Everything about a kind of pet is one object in `PIXEL_PALS_PETS` (`constants/pi
 | `petId`        | its key in `PIXEL_PALS_PETS`                                                                     |
 | `label`        | its name in the dialogs                                                                          |
 | `defaultName`  | the name it goes by without a nickname, and the one the Spawn dialog starts with                 |
-| `unlocked`     | the default of `unlockedPets`: `true`, `false`, or a Unix timestamp in ms it opens at (see Locks) |
+| `unlocked`     | the default of `unlockedPets`, `true` or `false` (see Locks)                                     |
 | `spriteFolder` | its folder in `public/pixel-pals/pets/`, kinds can share one (the three pandas)           |
 | `sizeScale`    | its size, 1 is `PIXEL_PALS_SPRITE_SIZE_PX` (Big panda 1.45, Little panda 0.7)                       |
 | `speed`, `canClimb`, `canFly`, `colors`, `animations` | how it moves and what sprites it has (a flyer needs `fly`) |
@@ -126,11 +126,11 @@ saved.
 with a lock and cannot be picked. Change one with `setPetUnlocked` or `setBackgroundUnlocked`, or all of them with
 `unlockAllPets`, `lockAllPets`, `unlockAllBackgrounds` and `lockAllBackgrounds`.
 
-The `unlocked` of each master list entry (`PIXEL_PALS_PETS`, `PIXEL_PALS_THEMES`) is only the default: what someone with
-nothing saved starts with, and what an entry added to a master list later starts with. A Unix timestamp in ms is an
-unlock scheduled for that moment: before it, the entry defaults to `false` (a saved `true` still counts) and its lock
-shows the date; from then on it loads as `true` for everyone, whatever was saved. On load both maps are rebuilt on the master lists, so an entry no
-longer in them is dropped (`utils/pixel-pals-unlock.utils.ts`).
+A saved value always wins. The `unlocked` of each master list entry (`PIXEL_PALS_PETS`, `PIXEL_PALS_THEMES`) is only
+the default: what someone with nothing saved starts with, and what an entry added to a master list later starts with.
+On load both maps are rebuilt on the master lists, so an entry no longer in them is dropped
+(`utils/pixel-pals-unlock.utils.ts`). To open something on a date, call `setPetUnlocked` or `setBackgroundUnlocked`
+then.
 
 Locks are only about picking. The actions do not check them, so code can still add a locked pet, and locking a kind or
 a background leaves the pets out and the background shown as they are.

@@ -43,6 +43,4 @@ export const PIXEL_PALS_BUBBLE_FONT = "8px 'PixelPalsSilkscreen'";
 export const PIXEL_PALS_FONT_FACE_CSS = `@font-face { font-family: 'PixelPalsSilkscreen'; src: url('${PIXEL_PALS_ASSET_BASE_URL}/fonts/Silkscreen-Regular.ttf') format('truetype'); font-display: swap; }`;
 
 export const PIXEL_PALS_BALL_RADIUS_PX = 3;
-/** Unlock dates of locked pets are read and shown in Eastern time. */
-export const PIXEL_PALS_TIME_ZONE = 'America/New_York';
 export const PIXEL_PALS_BALL_COLOR = '#2ed851';

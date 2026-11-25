@@ -47,7 +47,7 @@ function getPetIdOptions(unlockedPets: PixelPetUnlockedPets): PixelPalsSelectOpt
       value: petId,
       label: definition.label,
       icon: <PixelPalsPetIcon petId={ petId } color={ getPixelPalsDefaultColor(petId) } />,
-      trailing: isUnlocked ? null : <PixelPalsLockedLabel unlock={ definition.unlocked } />,
+      trailing: isUnlocked ? null : <PixelPalsLockedLabel />,
       disabled: !isUnlocked,
     };
   });
