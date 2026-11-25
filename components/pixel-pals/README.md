@@ -51,7 +51,8 @@ Dark mode follows the `dark` class on `<html>`. If the art and the font are serv
 - **Hover a pet** (or focus it): its name shows above it.
 - **Click a pet** (or focus it and press Enter or Space): a paw swipe and a bubble, one of its own lines or a shared
   one. Three quick clicks: a big jump. Five: zoomies. A pet on a wall lets go.
-- **Conversations**: every 9 to 22 seconds two free pets meet, one walks over, they swap lines in speech bubbles.
+- **Conversations**: every 25 to 50 seconds (`PIXEL_PALS_CONVERSATION_INTERVAL`) two free pets meet, one walks over,
+  they swap lines in speech bubbles.
 - **Climbing**: a pet that walks into the left or right wall sometimes climbs it, hangs on, then drops down.
 - **Themes** (backgrounds): `PIXEL_PALS_THEMES` is the master list. Locked ones are listed with a lock and cannot be picked.
 - **Stepping stones** (Autumn lake): the pets stand on three stones spread across the lake. At the end of a stone a
@@ -65,6 +66,24 @@ Dark mode follows the `dark` class on `<html>`. If the art and the font are serv
 
 Every pet draws its own speed factor and its own durations, so no two move in sync.
 
+## Tuning
+
+How often the pets talk, how fast they move, how long they do each thing, jumps, climbing, flying, the ball and the
+food are all numbers in `constants/pixel-pals-behavior.constants.ts`. The file is split into numbered sections
+(1. Talking, 2. Moving speed, ...) and each number says what it changes and which way. A few to start with:
+
+| To change                         | Constant                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------- |
+| how often pets chat on their own  | `PIXEL_PALS_CONVERSATION_INTERVAL` (seconds between chats, higher = less) |
+| how long a bubble stays up        | `PIXEL_PALS_CONVERSATION_LINE_SECONDS`, `PIXEL_PALS_BUBBLE_SECONDS`       |
+| every pet's speed at once         | `PIXEL_PALS_SPEED_MULTIPLIER` (1 = as set, 0.5 = half speed)              |
+| running, chasing, zoomies, flying | `PIXEL_PALS_*_SPEED_MULTIPLIER`                                           |
+| how long each activity lasts      | `PIXEL_PALS_BEHAVIOR_DURATION`                                            |
+| calmer or livelier pets           | `PIXEL_PALS_NEXT_BEHAVIOR_WEIGHTS`                                        |
+
+One kind's own speed and size are `speed` and `sizeScale` on its entry in `PIXEL_PALS_PETS`. What pets say is in
+`constants/pixel-pals-messages.constants.ts` and each pet's `voice`.
+
 ## The pets
 
 Everything about a kind of pet is one object in `PIXEL_PALS_PETS` (`constants/pixel-pals-pets.constants.ts`):
@@ -76,7 +95,7 @@ Everything about a kind of pet is one object in `PIXEL_PALS_PETS` (`constants/pi
 | `defaultName`  | the name it goes by without a nickname, and the one the Spawn dialog starts with                 |
 | `unlocked`     | the default of `unlockedPets`, `true` or `false` (see Locks)                                     |
 | `spriteFolder` | its folder in `public/pixel-pals/pets/`, kinds can share one (the three pandas)           |
-| `sizeScale`    | its size, 1 is `PIXEL_PALS_SPRITE_SIZE_PX` (Big panda 1.45, Little panda 0.7)                       |
+| `sizeScale`    | its size, 1 is `PIXEL_PALS_SPRITE_SIZE_PX` (Big panda 1.45, Little panda 0.7). The art made for this project fills its frame edge to edge, so it uses about 0.8 to 1 to look as big as the VS Code Pets art |
 | `speed`, `canClimb`, `canFly`, `colors`, `animations` | how it moves and what sprites it has (a flyer needs `fly`) |
 | `voice`        | its `sound`, its `greeting` and its own `lines`                                                  |
 
@@ -148,7 +167,7 @@ Pixel Pals is hidden or off screen (an `IntersectionObserver` in `usePixelPalsEn
 ```
 components/   PixelPals (entry), PixelPalsWorld, PixelPalsPetSprite, PixelPalsNameTag, PixelPalsIslandLayer, PixelPalsBall, PixelPalsFood,
               PixelPalsToolbar, the dialogs and forms
-constants/    sizes and storage keys, the pet catalog, the themes, the foods, timing and physics, messages, labels
+constants/    sizes and storage keys, the pet catalog, the themes, the foods, the tuning numbers (behavior), messages, labels
 engine/       PixelPalsEngine
 hooks/        engine lifecycle, store hydration, dark mode, height resize
 models/       saved types (pixel-pals.models) and runtime types (pixel-pals-runtime.models)

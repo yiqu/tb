@@ -9,12 +9,10 @@ import {
   PIXEL_PALS_BALL_WALL_DAMPING,
   PIXEL_PALS_BALL_BOUNCE_DAMPING,
   PIXEL_PALS_BALL_THROW_SPEED_RANGE,
+  PIXEL_PALS_BALL_MIN_BOUNCE_SPEED,
 } from '../constants/pixel-pals-behavior.constants';
 
 import type { PixelPalsBallRuntime, PixelPalsWorldBounds } from '../models/pixel-pals-runtime.models';
-
-/** Below this vertical speed a bounce stops and the ball rolls. */
-const MIN_BOUNCE_SPEED = 40;
 
 /** A ball dropped in near the top of Pixel Pals, flying sideways. */
 export function createPixelPalsBall(bounds: PixelPalsWorldBounds): PixelPalsBallRuntime {
@@ -103,7 +101,7 @@ export function stepPixelPalsBall(ball: PixelPalsBallRuntime, seconds: number, b
       return;
     }
     ball.y = radius;
-    ball.vy = Math.abs(ball.vy) > MIN_BOUNCE_SPEED ? Math.abs(ball.vy) * PIXEL_PALS_BALL_BOUNCE_DAMPING : 0;
+    ball.vy = Math.abs(ball.vy) > PIXEL_PALS_BALL_MIN_BOUNCE_SPEED ? Math.abs(ball.vy) * PIXEL_PALS_BALL_BOUNCE_DAMPING : 0;
   }
 
   if (ball.y <= radius && ball.vy === 0) {

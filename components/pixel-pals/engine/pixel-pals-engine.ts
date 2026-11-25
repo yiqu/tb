@@ -4,15 +4,18 @@ import { PIXEL_PALS_BEHAVIOR } from '../models/pixel-pals-runtime.models';
 import { PIXEL_PALS_BUBBLE_FONT, PIXEL_PALS_BALL_RADIUS_PX, PIXEL_PALS_MIN_WORLD_WIDTH_PX } from '../constants/pixel-pals.constants';
 import { PIXEL_PALS_MESSAGES } from '../constants/pixel-pals-messages.constants';
 import { createPixelPalsBall, stepPixelPalsBall } from '../utils/pixel-pals-ball.utils';
-import { PIXEL_PALS_FOODS, PIXEL_PALS_MAX_FOODS } from '../constants/pixel-pals-foods.constants';
+import { PIXEL_PALS_FOODS } from '../constants/pixel-pals-foods.constants';
 import { createPixelPalsFood, stepPixelPalsFood, keepPixelPalsFoodInside } from '../utils/pixel-pals-food.utils';
 import { randomItem, randomChance, randomBetween } from '../utils/pixel-pals-random.utils';
 import { isOverPixelPalsStone, getPixelPalsIslandSpans } from '../utils/pixel-pals-island.utils';
 import { getPixelPalsGreeting, pickPixelPalsConversation, pickPixelPalsMissedBallLine } from '../utils/pixel-pals-speech.utils';
 import { renderPixelPalsPet, renderPixelPalsBall, renderPixelPalsFoods, PIXEL_PALS_EMPTY_RENDERED_PET } from '../utils/pixel-pals-render.utils';
 import {
-  PIXEL_PALS_HOP_VELOCITY,
+  PIXEL_PALS_MAX_FOODS,
   PIXEL_PALS_MAX_FRAME_SECONDS,
+  PIXEL_PALS_SPAWN_HOP_VELOCITY,
+  PIXEL_PALS_MISSED_BALL_LINE_CHANCE,
+  PIXEL_PALS_WAIT_FOR_FRIEND_EXTRA_SECONDS,
   PIXEL_PALS_CONVERSATION_INTERVAL,
   PIXEL_PALS_APPROACH_FRIEND_MAX_SECONDS,
   PIXEL_PALS_CONVERSATION_LINE_SECONDS,
@@ -185,7 +188,7 @@ export class PixelPalsEngine {
       this.preloadSprites(runtime);
       // pets loaded with the page are already there, a pet spawned later hops in and says hi
       if (this.hasReceivedPets) {
-        runtime.vy = getPixelPalsJumpVelocity(PIXEL_PALS_HOP_VELOCITY * 1.4, this.bounds, runtime.size);
+        runtime.vy = getPixelPalsJumpVelocity(PIXEL_PALS_SPAWN_HOP_VELOCITY, this.bounds, runtime.size);
         showPixelPalsBubble(runtime, getPixelPalsGreeting(runtime));
         if (this.ball && this.ball.heldByPetId === null && canPixelPalsPetMove(runtime)) {
           setPixelPalsBehavior(runtime, PIXEL_PALS_BEHAVIOR.chase);
@@ -352,7 +355,7 @@ export class PixelPalsEngine {
       }
       setPixelPalsBehavior(other, PIXEL_PALS_BEHAVIOR.idle);
       const message: string | undefined = pickPixelPalsMissedBallLine(other);
-      if (message && randomChance(0.5)) {
+      if (message && randomChance(PIXEL_PALS_MISSED_BALL_LINE_CHANCE)) {
         showPixelPalsBubble(other, message);
       }
     });
@@ -388,7 +391,7 @@ export class PixelPalsEngine {
     setPixelPalsBehavior(initiator, PIXEL_PALS_BEHAVIOR.approachFriend, seconds);
     initiator.friendId = partner.pet.id;
     // the partner waits a little longer than the walk can take, then gives up
-    setPixelPalsBehavior(partner, PIXEL_PALS_BEHAVIOR.waitForFriend, seconds + 1);
+    setPixelPalsBehavior(partner, PIXEL_PALS_BEHAVIOR.waitForFriend, seconds + PIXEL_PALS_WAIT_FOR_FRIEND_EXTRA_SECONDS);
     partner.friendId = initiator.pet.id;
   }
 

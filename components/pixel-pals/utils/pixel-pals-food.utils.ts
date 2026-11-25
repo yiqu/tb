@@ -1,8 +1,8 @@
 import { randomItem, randomBetween } from './pixel-pals-random.utils';
 import { PIXEL_PALS_SPRITE_SIZE_PX } from '../constants/pixel-pals.constants';
-import { PIXEL_PALS_GRAVITY } from '../constants/pixel-pals-behavior.constants';
+import { PIXEL_PALS_GRAVITY, PIXEL_PALS_FOOD_LIFETIME_SECONDS } from '../constants/pixel-pals-behavior.constants';
 import { clampToPixelPalsIsland, findPixelPalsIslandIndex } from './pixel-pals-island.utils';
-import { PIXEL_PALS_FOOD_KINDS, PIXEL_PALS_FOOD_SIZE_PX, PIXEL_PALS_FOOD_LIFETIME_SECONDS } from '../constants/pixel-pals-foods.constants';
+import { PIXEL_PALS_FOOD_KINDS, PIXEL_PALS_FOOD_SIZE_PX } from '../constants/pixel-pals-foods.constants';
 
 import type { PixelPalsFoodKind } from '../constants/pixel-pals-foods.constants';
 import type { PixelPalsIslandSpan, PixelPalsFoodRuntime, PixelPalsWorldBounds } from '../models/pixel-pals-runtime.models';

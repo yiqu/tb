@@ -29,6 +29,14 @@ import {
   PIXEL_PALS_MIN_CLIMB_HEIGHT_IN_SPRITES,
   PIXEL_PALS_CONVERSATION_DISTANCE_IN_SPRITES,
   PIXEL_PALS_APPROACH_FRIEND_MARGIN_SECONDS,
+  PIXEL_PALS_SPEED_MULTIPLIER,
+  PIXEL_PALS_REST_AT_EDGE_CHANCE,
+  PIXEL_PALS_CATCH_REACH_IN_SPRITES,
+  PIXEL_PALS_CATCH_HEIGHT_IN_SPRITES,
+  PIXEL_PALS_FLY_CATCH_REACH_IN_SPRITES,
+  PIXEL_PALS_MIN_FLIGHT_HEIGHT_IN_SPRITES,
+  PIXEL_PALS_ZOOMIES_HOP_CHANCE_PER_SECOND,
+  PIXEL_PALS_CONVERSATION_REPLY_GAP_SECONDS,
 } from '../constants/pixel-pals-behavior.constants';
 
 import type { ResolvedPixelPet } from '../models/pixel-pals.models';
@@ -92,9 +100,6 @@ const FREE_BEHAVIORS: readonly PixelPalsBehavior[] = [
 
 /** Behaviors that steer a flight. In any other, a pet in the air flies down and lands first. */
 const FLIGHT_BEHAVIORS: readonly PixelPalsBehavior[] = [PIXEL_PALS_BEHAVIOR.fly, PIXEL_PALS_BEHAVIOR.chase, PIXEL_PALS_BEHAVIOR.forage];
-
-/** How close a flying pet's middle gets to a ball or a piece of food to catch it, in sprite sizes. */
-const FLY_CATCH_REACH_IN_SPRITES = 0.6;
 
 const ON_WALL_BEHAVIORS: readonly PixelPalsBehavior[] = [PIXEL_PALS_BEHAVIOR.climb, PIXEL_PALS_BEHAVIOR.wallHang, PIXEL_PALS_BEHAVIOR.fall];
 
@@ -184,7 +189,7 @@ export function createPixelPalsPetRuntime(pet: ResolvedPixelPet, bounds: PixelPa
   return {
     pet,
     definition,
-    speed: definition.speed * randomBetween(PIXEL_PALS_SPEED_FACTOR_RANGE),
+    speed: definition.speed * PIXEL_PALS_SPEED_MULTIPLIER * randomBetween(PIXEL_PALS_SPEED_FACTOR_RANGE),
     size,
     x,
     y: 0,
@@ -341,7 +346,7 @@ export function startPixelPalsConversation(initiator: PixelPalsPetRuntime, partn
   facePixelPalsTarget(partner, getPixelPalsCenterX(initiator));
   showPixelPalsBubble(initiator, lines[0], lineSeconds);
   // the answer comes once the first line is gone
-  partner.pendingBubble = { text: lines[1], delaySeconds: lineSeconds + 0.2, durationSeconds: lineSeconds };
+  partner.pendingBubble = { text: lines[1], delaySeconds: lineSeconds + PIXEL_PALS_CONVERSATION_REPLY_GAP_SECONDS, durationSeconds: lineSeconds };
 }
 
 function getFlySpeed(runtime: PixelPalsPetRuntime): number {
@@ -365,7 +370,7 @@ function clampFlightTarget(runtime: PixelPalsPetRuntime, point: PixelPalsPoint, 
 /** A random point in the air for a pet flying around. */
 function pickFlightTarget(runtime: PixelPalsPetRuntime, bounds: PixelPalsWorldBounds): PixelPalsPoint {
   const maxY: number = getPixelPalsMaxClimbY(bounds, runtime.size);
-  const minY: number = Math.min(maxY, runtime.size * 0.3);
+  const minY: number = Math.min(maxY, runtime.size * PIXEL_PALS_MIN_FLIGHT_HEIGHT_IN_SPRITES);
   return clampFlightTarget(runtime, { x: Math.random() * bounds.width, y: randomBetween([minY, maxY]) }, bounds);
 }
 
@@ -441,7 +446,7 @@ function flyToCatch(runtime: PixelPalsPetRuntime, point: PixelPalsPoint, seconds
   const middleY: number = runtime.y + runtime.size / 2;
   // a ball floating in the lake is lower than a flyer can go: skimming the water over it is close enough
   const reachY: number = Math.max(point.y, runtime.size / 2);
-  return Math.hypot(getPixelPalsCenterX(runtime) - point.x, middleY - reachY) <= runtime.size * FLY_CATCH_REACH_IN_SPRITES;
+  return Math.hypot(getPixelPalsCenterX(runtime) - point.x, middleY - reachY) <= runtime.size * PIXEL_PALS_FLY_CATCH_REACH_IN_SPRITES;
 }
 
 function stepFly(runtime: PixelPalsPetRuntime, seconds: number, context: PixelPalsSimulationContext): void {
@@ -584,7 +589,7 @@ function stepWalking(runtime: PixelPalsPetRuntime, seconds: number, context: Pix
     }
     // turn around, sometimes after a little break
     runtime.direction = stop.side === 'left' ? 1 : -1;
-    if (randomChance(0.4)) {
+    if (randomChance(PIXEL_PALS_REST_AT_EDGE_CHANCE)) {
       setPixelPalsBehavior(runtime, PIXEL_PALS_BEHAVIOR.idle);
     }
     return;
@@ -596,7 +601,7 @@ function stepWalking(runtime: PixelPalsPetRuntime, seconds: number, context: Pix
 
 function stepZoomies(runtime: PixelPalsPetRuntime, seconds: number, context: PixelPalsSimulationContext): void {
   applyGroundGravity(runtime, seconds);
-  maybeHop(runtime, seconds, context.bounds, PIXEL_PALS_HOP_CHANCE_PER_SECOND * 4);
+  maybeHop(runtime, seconds, context.bounds, PIXEL_PALS_ZOOMIES_HOP_CHANCE_PER_SECOND);
   const stop: PixelPalsGroundStop | null = moveAlongGround(runtime, runtime.speed * PIXEL_PALS_ZOOMIES_SPEED_MULTIPLIER, seconds, context.bounds);
   if (stop && (stop.isWall || !maybeSkipAtEdge(runtime, stop, PIXEL_PALS_ZOOMIES_SKIP_CHANCE, context.bounds))) {
     runtime.direction = stop.side === 'left' ? 1 : -1;
@@ -640,8 +645,8 @@ function stepChase(runtime: PixelPalsPetRuntime, seconds: number, context: Pixel
   applyGroundGravity(runtime, seconds);
   // line the middle of the pet up with the ball, or get as close as the stones allow
   moveTowardX(runtime, ball.x, runtime.speed * PIXEL_PALS_CHASE_SPEED_MULTIPLIER, seconds, context.bounds);
-  const reach: number = runtime.size * 0.45 + (hasPixelPalsIslands(context.bounds) ? PIXEL_PALS_ISLAND_CATCH_REACH_PX : 0);
-  const isBallLowEnough: boolean = ball.y <= runtime.size * 0.7;
+  const reach: number = runtime.size * PIXEL_PALS_CATCH_REACH_IN_SPRITES + (hasPixelPalsIslands(context.bounds) ? PIXEL_PALS_ISLAND_CATCH_REACH_PX : 0);
+  const isBallLowEnough: boolean = ball.y <= runtime.size * PIXEL_PALS_CATCH_HEIGHT_IN_SPRITES;
   const isBallUnderPet: boolean = Math.abs(getPixelPalsCenterX(runtime) - ball.x) <= reach;
   if (isBallLowEnough && isBallUnderPet && runtime.skip === null) {
     context.catchBall(runtime);
@@ -678,8 +683,8 @@ function stepForage(runtime: PixelPalsPetRuntime, seconds: number, context: Pixe
   }
   applyGroundGravity(runtime, seconds);
   moveTowardX(runtime, food.x, runtime.speed * PIXEL_PALS_CHASE_SPEED_MULTIPLIER, seconds, context.bounds);
-  const reach: number = runtime.size * 0.45 + (hasPixelPalsIslands(context.bounds) ? PIXEL_PALS_ISLAND_CATCH_REACH_PX : 0);
-  const isFoodLowEnough: boolean = food.y <= runtime.size * 0.7;
+  const reach: number = runtime.size * PIXEL_PALS_CATCH_REACH_IN_SPRITES + (hasPixelPalsIslands(context.bounds) ? PIXEL_PALS_ISLAND_CATCH_REACH_PX : 0);
+  const isFoodLowEnough: boolean = food.y <= runtime.size * PIXEL_PALS_CATCH_HEIGHT_IN_SPRITES;
   const isFoodUnderPet: boolean = Math.abs(getPixelPalsCenterX(runtime) - food.x) <= reach;
   if (isFoodLowEnough && isFoodUnderPet && runtime.skip === null) {
     context.eatFood(runtime, food);
@@ -697,7 +702,7 @@ function stepWaitForFriend(runtime: PixelPalsPetRuntime, context: PixelPalsSimul
 
 function stepClimb(runtime: PixelPalsPetRuntime, seconds: number, context: PixelPalsSimulationContext): void {
   runtime.x = runtime.wall === 'right' ? getPixelPalsMaxX(context.bounds, runtime.size) : 0;
-  runtime.y += PIXEL_PALS_CLIMB_SPEED * seconds;
+  runtime.y += PIXEL_PALS_CLIMB_SPEED * PIXEL_PALS_SPEED_MULTIPLIER * seconds;
   if (runtime.y >= runtime.climbTargetY) {
     runtime.y = runtime.climbTargetY;
     setPixelPalsBehavior(runtime, PIXEL_PALS_BEHAVIOR.wallHang);

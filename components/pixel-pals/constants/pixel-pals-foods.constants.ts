@@ -36,9 +36,5 @@ export const PIXEL_PALS_FOODS: Record<PixelPalsFoodKind, PixelPalsFoodDefinition
   },
 };
 
-/** The size a food is drawn at, in px. */
+/** The size a food is drawn at, in px. How many pieces can be out and how long they last: `pixel-pals-behavior.constants.ts`. */
 export const PIXEL_PALS_FOOD_SIZE_PX = 12;
-/** Food beyond this pushes out the oldest piece. */
-export const PIXEL_PALS_MAX_FOODS = 5;
-/** Food nobody eats is gone after this long. */
-export const PIXEL_PALS_FOOD_LIFETIME_SECONDS = 30;

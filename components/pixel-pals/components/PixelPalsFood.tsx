@@ -2,7 +2,8 @@
 
 import { useRef, useEffect } from 'react';
 
-import { PIXEL_PALS_MAX_FOODS, PIXEL_PALS_FOOD_SIZE_PX } from '../constants/pixel-pals-foods.constants';
+import { PIXEL_PALS_FOOD_SIZE_PX } from '../constants/pixel-pals-foods.constants';
+import { PIXEL_PALS_MAX_FOODS } from '../constants/pixel-pals-behavior.constants';
 
 import type { PixelPalsEngine } from '../engine/pixel-pals-engine';
 
