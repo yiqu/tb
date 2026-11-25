@@ -58,7 +58,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
   castle: {
     id: 'castle',
     label: 'Castle',
-    unlocked: false,
+    unlocked: true,
     floorPx: 45,
     fillColor: { light: '#a8c6e6', dark: '#151c2c' },
     backgroundLayers: [BACKGROUND_LAYER],
@@ -177,7 +177,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
   barn: {
     id: 'barn',
     label: 'Barn',
-    unlocked: false,
+    unlocked: true,
     floorPx: 16,
     // the sky at the top of each image
     fillColor: { light: '#62b6fd', dark: '#0c2147' },
