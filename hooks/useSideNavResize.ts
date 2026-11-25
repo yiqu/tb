@@ -1,11 +1,12 @@
 'use client';
 
-import { useRef, useState, useEffect, KeyboardEvent, PointerEvent } from 'react';
+import { useRef, useState, useEffect, KeyboardEvent, PointerEvent, useSyncExternalStore } from 'react';
 
 import { useSidebar } from '@/components/ui/sidebar';
 import { clampSideNavWidth } from '@/lib/side-nav-width.utils';
 import {
   SIDE_NAV_DEFAULT_WIDTH_PX,
+  SIDE_NAV_DEFAULT_WIDTH_REM,
   SIDE_NAV_WIDTH_COOKIE_NAME,
   SIDE_NAV_COLLAPSE_THRESHOLD_PX,
   SIDE_NAV_WIDTH_KEYBOARD_STEP_PX,
@@ -44,6 +45,20 @@ function getDrawnSideNavWidth(handle: HTMLElement, fallback: number): number {
   return container ? container.getBoundingClientRect().width : fallback;
 }
 
+/** The root font size does not change while the page is open, so there is nothing to listen to. */
+function subscribeToRootFontSize(): () => void {
+  return () => {};
+}
+
+/** The default width (16rem) in px at this page's root font size, which can differ from 16px. */
+function getDefaultSideNavWidth(): number {
+  return Math.round(SIDE_NAV_DEFAULT_WIDTH_REM * parseFloat(getComputedStyle(document.documentElement).fontSize));
+}
+
+function getServerDefaultSideNavWidth(): number {
+  return SIDE_NAV_DEFAULT_WIDTH_PX;
+}
+
 function writeSideNavWidthCookie(width: number): void {
   document.cookie = `${SIDE_NAV_WIDTH_COOKIE_NAME}=${width}; path=/; max-age=${SIDE_NAV_WIDTH_COOKIE_MAX_AGE_SECONDS}; samesite=lax`;
 }
@@ -75,7 +90,9 @@ export interface SideNavResize {
  */
 export function useSideNavResize(): SideNavResize {
   const { width: savedWidth, setWidth, state, setOpen, isMobile } = useSidebar();
-  const width: number = savedWidth ?? SIDE_NAV_DEFAULT_WIDTH_PX;
+  // the separator announces the width as drawn, also before a resize and after a reset to the CSS default
+  const defaultWidth: number = useSyncExternalStore(subscribeToRootFontSize, getDefaultSideNavWidth, getServerDefaultSideNavWidth);
+  const width: number = savedWidth ?? defaultWidth;
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const dragRef = useRef<DragState | null>(null);
 

@@ -4,7 +4,9 @@
 export const SIDE_NAV_WIDTH_COOKIE_NAME = 'sidebar_width';
 export const SIDE_NAV_WIDTH_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
-/** The width before it is resized, the same as shadcn's `16rem`. */
+/** The width before it is resized, shadcn's `16rem`. It follows the root font size. */
+export const SIDE_NAV_DEFAULT_WIDTH_REM = 16;
+/** `SIDE_NAV_DEFAULT_WIDTH_REM` at the usual 16px root font size, for where the real one is not known (the server). */
 export const SIDE_NAV_DEFAULT_WIDTH_PX = 256;
 export const SIDE_NAV_MIN_WIDTH_PX = 200;
 export const SIDE_NAV_MAX_WIDTH_PX = 560;
