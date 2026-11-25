@@ -78,7 +78,7 @@ food are all numbers in `constants/pixel-pals-behavior.constants.ts`. The file i
 | how long a bubble stays up        | `PIXEL_PALS_CONVERSATION_LINE_SECONDS`, `PIXEL_PALS_BUBBLE_SECONDS`       |
 | every pet's speed at once         | `PIXEL_PALS_SPEED_MULTIPLIER` (1 = as set, 0.5 = half speed)              |
 | running, chasing, zoomies, flying | `PIXEL_PALS_*_SPEED_MULTIPLIER`                                           |
-| how long each activity lasts      | `PIXEL_PALS_BEHAVIOR_DURATION`                                            |
+| how long each timed activity lasts (idle, walk, run, lie, fly, eat...); chasing, climbing and walking to a friend end on their own | `PIXEL_PALS_BEHAVIOR_DURATION` |
 | calmer or livelier pets           | `PIXEL_PALS_NEXT_BEHAVIOR_WEIGHTS`                                        |
 
 One kind's own speed and size are `speed` and `sizeScale` on its entry in `PIXEL_PALS_PETS`. What pets say is in
@@ -95,7 +95,7 @@ Everything about a kind of pet is one object in `PIXEL_PALS_PETS` (`constants/pi
 | `defaultName`  | the name it goes by without a nickname, and the one the Spawn dialog starts with                 |
 | `unlocked`     | the default of `unlockedPets`, `true` or `false` (see Locks)                                     |
 | `spriteFolder` | its folder in `public/pixel-pals/pets/`, kinds can share one (the three pandas)           |
-| `sizeScale`    | its size, 1 is `PIXEL_PALS_SPRITE_SIZE_PX` (Big panda 1.45, Little panda 0.7). The art made for this project fills its frame edge to edge, so it uses about 0.8 to 1 to look as big as the VS Code Pets art |
+| `sizeScale`    | its size, 1 is `PIXEL_PALS_SPRITE_SIZE_PX` (Big panda 1.45, Little panda 0.7). The art made for this project fills its frame edge to edge, so it uses about 0.8 to 1 to look as big as the VS Code Pets art, and the unicorn foal 0.7 |
 | `speed`, `canClimb`, `canFly`, `colors`, `animations` | how it moves and what sprites it has (a flyer needs `fly`) |
 | `voice`        | its `sound`, its `greeting` and its own `lines`                                                  |
 
