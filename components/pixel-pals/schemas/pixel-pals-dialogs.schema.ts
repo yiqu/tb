@@ -2,12 +2,12 @@ import { z } from 'zod';
 
 import { PIXEL_PALS_LABELS } from '../constants/pixel-pals-labels.constants';
 import { isPixelPalsColorOf } from '../utils/pixel-pals-pet.utils';
-import { PIXEL_PALS_PET_TYPES, PixelPalsPetType } from '../constants/pixel-pals-pets.constants';
+import { PIXEL_PALS_PET_IDS, PixelPetId } from '../constants/pixel-pals-pets.constants';
 import { PIXEL_PALS_THEME_IDS, PixelPalsThemeId } from '../constants/pixel-pals-themes.constants';
 import { PIXEL_PALS_PET_NAME_MAX_LENGTH } from '../constants/pixel-pals.constants';
 
 const spawnPetFieldsSchema = z.object({
-  type: z.enum(PIXEL_PALS_PET_TYPES, { message: PIXEL_PALS_LABELS.petTypeRequiredError }),
+  petId: z.enum(PIXEL_PALS_PET_IDS, { message: PIXEL_PALS_LABELS.petTypeRequiredError }),
   color: z.string().min(1, { message: PIXEL_PALS_LABELS.petColorRequiredError }),
   name: z
     .string()
@@ -20,19 +20,19 @@ const spawnPetFieldsSchema = z.object({
 
 /**
  * The Spawn pet dialog. A locked pet cannot be picked in the dropdown, and is turned down here too. Whether a kind
- * is unlocked depends on the saved unlocks, so the dialog builds the schema with its check.
+ * is unlocked is `unlockedPets` in the store, so the dialog builds the schema with its check.
  */
-export function createPixelPalsSpawnPetSchema(isTypeUnlocked: (_type: PixelPalsPetType) => boolean) {
+export function createPixelPalsSpawnPetSchema(isPetUnlocked: (_petId: PixelPetId) => boolean) {
   return spawnPetFieldsSchema
     .refine(
       (values) => {
-        return isTypeUnlocked(values.type);
+        return isPetUnlocked(values.petId);
       },
-      { message: PIXEL_PALS_LABELS.petLockedError, path: ['type'] },
+      { message: PIXEL_PALS_LABELS.petLockedError, path: ['petId'] },
     )
     .refine(
       (values) => {
-        return isPixelPalsColorOf(values.type, values.color);
+        return isPixelPalsColorOf(values.petId, values.color);
       },
       { message: PIXEL_PALS_LABELS.petColorRequiredError, path: ['color'] },
     );
@@ -40,9 +40,9 @@ export function createPixelPalsSpawnPetSchema(isTypeUnlocked: (_type: PixelPalsP
 
 export type PixelPalsSpawnPetFormValues = z.infer<typeof spawnPetFieldsSchema>;
 
-/** The Delete pet dialog. */
+/** The Delete pet dialog: the `id` of the pet to remove. */
 export const pixelPalsDeletePetSchema = z.object({
-  petId: z.string().min(1, { message: PIXEL_PALS_LABELS.deletePetRequiredError }),
+  id: z.string().min(1, { message: PIXEL_PALS_LABELS.deletePetRequiredError }),
 });
 
 export type PixelPalsDeletePetFormValues = z.infer<typeof pixelPalsDeletePetSchema>;
@@ -51,7 +51,7 @@ const changeThemeFieldsSchema = z.object({
   themeId: z.enum(PIXEL_PALS_THEME_IDS, { message: PIXEL_PALS_LABELS.themeRequiredError }),
 });
 
-/** The Change theme dialog. A locked theme is turned down, like a locked pet. */
+/** The Change background dialog. A locked background (`unlockedBackgrounds` in the store) is turned down, like a locked pet. */
 export function createPixelPalsChangeThemeSchema(isThemeUnlocked: (_themeId: PixelPalsThemeId) => boolean) {
   return changeThemeFieldsSchema.refine(
     (values) => {

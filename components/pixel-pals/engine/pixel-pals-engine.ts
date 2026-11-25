@@ -39,7 +39,7 @@ import {
   PixelPalsSimulationContext,
 } from '../utils/pixel-pals-behavior.utils';
 
-import type { PixelPalsPet, PixelPalsThemeIsland, PixelPalsThemeDefinition } from '../models/pixel-pals.models';
+import type { ResolvedPixelPet, PixelPalsThemeIsland, PixelPalsThemeDefinition } from '../models/pixel-pals.models';
 import type {
   PixelPalsBallRuntime,
   PixelPalsFoodRuntime,
@@ -161,10 +161,10 @@ export class PixelPalsEngine {
     this.keepPetsInside();
   }
 
-  /** Syncs the runtime pets with the saved pets: new ones join Pixel Pals, removed ones leave it. */
-  setPets(pets: readonly PixelPalsPet[]): void {
+  /** Syncs the runtime pets with the store's pets: new ones join Pixel Pals, removed ones leave it. */
+  setPets(pets: readonly ResolvedPixelPet[]): void {
     const nextIds = new Set<string>(
-      pets.map((pet: PixelPalsPet) => {
+      pets.map((pet: ResolvedPixelPet) => {
         return pet.id;
       }),
     );
@@ -175,7 +175,7 @@ export class PixelPalsEngine {
       }
     });
 
-    pets.forEach((pet: PixelPalsPet) => {
+    pets.forEach((pet: ResolvedPixelPet) => {
       const existing: PixelPalsPetRuntime | undefined = this.pets.get(pet.id);
       if (existing) {
         existing.pet = pet;

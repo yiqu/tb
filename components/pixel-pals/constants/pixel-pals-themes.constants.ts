@@ -12,7 +12,8 @@ import type { PixelPalsThemeDefinition } from '../models/pixel-pals.models';
  * `public/pixel-pals/CREDITS.md`. Images are `public/pixel-pals/backgrounds/<id>/<file>`, where
  * `{mode}` is `light` or `dark`.
  *
- * `unlocked` works as it does for the pets: `false` shows the theme with a lock, a time keeps it locked until then.
+ * `unlocked` works as it does for the pets: it is the default of `unlockedBackgrounds` in the pixel-pets store, and a
+ * time opens the theme from that day on.
  */
 export const PIXEL_PALS_THEME_IDS = [
   'none',

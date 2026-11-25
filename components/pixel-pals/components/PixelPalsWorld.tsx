@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 
 import PixelPalsBall from './PixelPalsBall';
 import PixelPalsFood from './PixelPalsFood';
@@ -9,10 +9,11 @@ import PixelPalsIslandLayer from './PixelPalsIslandLayer';
 import PixelPalsBackgroundLayer from './PixelPalsBackgroundLayer';
 import { getPixelPalsTheme } from '../utils/pixel-pals-theme.utils';
 import { usePixelPalsColorMode } from '../hooks/usePixelPalsColorMode';
-import { usePixelPalsPets, usePixelPalsThemeId } from '../store/pixel-pals.store';
+import { getResolvedPixelPets } from '../utils/pixel-pals-pet.utils';
+import { useGetUserPixelPets, useGetUserPixelPetBackground } from '../store/pixel-pets.store';
 
 import type { PixelPalsEngine } from '../engine/pixel-pals-engine';
-import type { PixelPalsPet, PixelPalsThemeDefinition } from '../models/pixel-pals.models';
+import type { PixelPet, ResolvedPixelPet, PixelPalsThemeDefinition } from '../models/pixel-pals.models';
 
 interface PixelPalsWorldProps {
   engine: PixelPalsEngine;
@@ -20,14 +21,18 @@ interface PixelPalsWorldProps {
 
 /**
  * The scene, back to front: the theme's fill color, its background art, its stepping stones if it has any, the food,
- * the pets and the ball, then the foreground art. Feeds the engine the saved pets, the theme's ground and the world size.
+ * the pets and the ball, then the foreground art. Feeds the engine the store's pets (filled in from the master list),
+ * the theme's ground and the world size.
  */
 export default function PixelPalsWorld({ engine }: PixelPalsWorldProps) {
   const worldRef = useRef<HTMLDivElement>(null);
-  const pets: PixelPalsPet[] = usePixelPalsPets();
-  const themeId = usePixelPalsThemeId();
+  const userPixelPets: PixelPet[] = useGetUserPixelPets();
+  const themeId = useGetUserPixelPetBackground();
   const colorMode = usePixelPalsColorMode();
   const theme: PixelPalsThemeDefinition = getPixelPalsTheme(themeId);
+  const pets: ResolvedPixelPet[] = useMemo(() => {
+    return getResolvedPixelPets(userPixelPets);
+  }, [userPixelPets]);
 
   // the size first, so pets that join get a random spot across the real width
   useEffect(() => {
@@ -64,7 +69,7 @@ export default function PixelPalsWorld({ engine }: PixelPalsWorldProps) {
         <PixelPalsIslandLayer themeId={ themeId } islands={ theme.islands } floorPx={ theme.floorPx } colorMode={ colorMode } />
       : null }
       <PixelPalsFood engine={ engine } />
-      { pets.map((pet: PixelPalsPet) => {
+      { pets.map((pet: ResolvedPixelPet) => {
         return <PixelPalsPetSprite key={ pet.id } pet={ pet } engine={ engine } />;
       }) }
       <PixelPalsBall engine={ engine } />

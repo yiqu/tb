@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-import { DateTime } from 'luxon';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -13,12 +11,11 @@ import PixelPalsThemeSwatch from './PixelPalsThemeSwatch';
 import { usePixelPalsColorMode } from '../hooks/usePixelPalsColorMode';
 import PixelPalsSelectField, { PixelPalsSelectOption } from './PixelPalsSelectField';
 import { PIXEL_PALS_LABELS } from '../constants/pixel-pals-labels.constants';
-import { getPixelPalsNow, isPixelPalsThemeUnlocked } from '../utils/pixel-pals-unlock.utils';
-import { usePixelPalsActions, usePixelPalsThemeId, usePixelPalsUnlocks } from '../store/pixel-pals.store';
+import { usePixelPetStoreActions, useGetUnlockedBackgrounds, useGetUserPixelPetBackground } from '../store/pixel-pets.store';
 import { PIXEL_PALS_THEMES, PIXEL_PALS_THEME_IDS, PixelPalsThemeId } from '../constants/pixel-pals-themes.constants';
 import { createPixelPalsChangeThemeSchema, PixelPalsChangeThemeFormValues } from '../schemas/pixel-pals-dialogs.schema';
 
-import type { PixelPalsUnlocks } from '../models/pixel-pals.models';
+import type { PixelPetUnlockedBackgrounds } from '../models/pixel-pals.models';
 
 interface PixelPalsChangeThemeFormProps {
   onDone: () => void;
@@ -26,14 +23,12 @@ interface PixelPalsChangeThemeFormProps {
 
 /** Choose a background from the master list. Locked ones are listed with a lock and cannot be picked. OK switches Pixel Pals to it. */
 export default function PixelPalsChangeThemeForm({ onDone }: PixelPalsChangeThemeFormProps) {
-  const themeId: PixelPalsThemeId = usePixelPalsThemeId();
+  const themeId: PixelPalsThemeId = useGetUserPixelPetBackground();
   const colorMode = usePixelPalsColorMode();
-  const { setTheme } = usePixelPalsActions();
-  const unlocks: PixelPalsUnlocks = usePixelPalsUnlocks();
-  // read once when the dialog opens, like the Spawn dialog
-  const [now] = useState<DateTime>(getPixelPalsNow);
+  const { setUserPixelPetBackground } = usePixelPetStoreActions();
+  const unlockedBackgrounds: PixelPetUnlockedBackgrounds = useGetUnlockedBackgrounds();
   const isThemeUnlocked = (id: PixelPalsThemeId): boolean => {
-    return isPixelPalsThemeUnlocked(id, unlocks, now);
+    return unlockedBackgrounds[id];
   };
 
   const { control, handleSubmit } = useForm<PixelPalsChangeThemeFormValues>({
@@ -47,13 +42,13 @@ export default function PixelPalsChangeThemeForm({ onDone }: PixelPalsChangeThem
       value: id,
       label: PIXEL_PALS_THEMES[id].label,
       icon: <PixelPalsThemeSwatch themeId={ id } colorMode={ colorMode } />,
-      trailing: isUnlocked ? null : <PixelPalsLockedLabel unlocks={ [PIXEL_PALS_THEMES[id].unlocked, unlocks.themes[id]] } />,
+      trailing: isUnlocked ? null : <PixelPalsLockedLabel unlock={ PIXEL_PALS_THEMES[id].unlocked } />,
       disabled: !isUnlocked,
     };
   });
 
   const handleOnSubmit: SubmitHandler<PixelPalsChangeThemeFormValues> = (values: PixelPalsChangeThemeFormValues) => {
-    setTheme(values.themeId);
+    setUserPixelPetBackground(values.themeId);
     onDone();
   };
 

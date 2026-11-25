@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -10,11 +11,11 @@ import PixelPalsPetIcon from './PixelPalsPetIcon';
 import PixelPalsDialogFooter from './PixelPalsDialogFooter';
 import PixelPalsSelectField, { PixelPalsSelectOption } from './PixelPalsSelectField';
 import { PIXEL_PALS_LABELS } from '../constants/pixel-pals-labels.constants';
-import { getPixelPalsPetDescription } from '../utils/pixel-pals-pet.utils';
-import { usePixelPalsPets, usePixelPalsActions } from '../store/pixel-pals.store';
+import { getResolvedPixelPets, getPixelPalsPetDescription } from '../utils/pixel-pals-pet.utils';
+import { useGetUserPixelPets, usePixelPetStoreActions } from '../store/pixel-pets.store';
 import { pixelPalsDeletePetSchema, PixelPalsDeletePetFormValues } from '../schemas/pixel-pals-dialogs.schema';
 
-import type { PixelPalsPet } from '../models/pixel-pals.models';
+import type { PixelPet, ResolvedPixelPet } from '../models/pixel-pals.models';
 
 interface PixelPalsDeletePetFormProps {
   onDone: () => void;
@@ -22,24 +23,27 @@ interface PixelPalsDeletePetFormProps {
 
 /** Choose one of the pets in Pixel Pals. OK removes it. */
 export default function PixelPalsDeletePetForm({ onDone }: PixelPalsDeletePetFormProps) {
-  const pets: PixelPalsPet[] = usePixelPalsPets();
-  const { removePet } = usePixelPalsActions();
+  const userPixelPets: PixelPet[] = useGetUserPixelPets();
+  const { removeUserPixelPet } = usePixelPetStoreActions();
+  const pets: ResolvedPixelPet[] = useMemo(() => {
+    return getResolvedPixelPets(userPixelPets);
+  }, [userPixelPets]);
 
   const { control, handleSubmit } = useForm<PixelPalsDeletePetFormValues>({
     resolver: zodResolver(pixelPalsDeletePetSchema),
-    defaultValues: { petId: '' },
+    defaultValues: { id: '' },
   });
 
-  const options: PixelPalsSelectOption[] = pets.map((pet: PixelPalsPet) => {
+  const options: PixelPalsSelectOption[] = pets.map((pet: ResolvedPixelPet) => {
     return {
       value: pet.id,
       label: getPixelPalsPetDescription(pet),
-      icon: <PixelPalsPetIcon type={ pet.type } color={ pet.color } />,
+      icon: <PixelPalsPetIcon petId={ pet.petId } color={ pet.color } />,
     };
   });
 
   const handleOnSubmit: SubmitHandler<PixelPalsDeletePetFormValues> = (values: PixelPalsDeletePetFormValues) => {
-    removePet(values.petId);
+    removeUserPixelPet(values.id);
     onDone();
   };
 
@@ -50,7 +54,7 @@ export default function PixelPalsDeletePetForm({ onDone }: PixelPalsDeletePetFor
           <Typography variant="nodata1">{ PIXEL_PALS_LABELS.noPetsToDelete }</Typography>
         : <PixelPalsSelectField
             control={ control }
-            name="petId"
+            name="id"
             label={ PIXEL_PALS_LABELS.deletePetLabel }
             placeholder={ PIXEL_PALS_LABELS.deletePetPlaceholder }
             options={ options }

@@ -1,7 +1,7 @@
-import type { PixelPalsPetType } from '../constants/pixel-pals-pets.constants';
+import type { PixelPetId } from '../constants/pixel-pals-pets.constants';
 import type { PixelPalsThemeId } from '../constants/pixel-pals-themes.constants';
 
-export type { PixelPalsPetType, PixelPalsThemeId };
+export type { PixelPetId, PixelPalsThemeId };
 
 /** The sprite animations a pet can have. Every file is `<color>_<animation>_8fps.gif`. */
 export const PIXEL_PALS_ANIMATION = {
@@ -42,29 +42,28 @@ export interface PixelPalsPetVoice {
 }
 
 /**
- * Whether a kind of pet, or a theme, can be picked. `true`: yes. `false`: locked, it shows in its dialog with a lock
- * but cannot be picked. A number: locked until that time (milliseconds since the epoch), for things earned later on.
+ * The master list's lock of a kind of pet or a theme (`unlocked` in `PIXEL_PALS_PETS` and `PIXEL_PALS_THEMES`). It is
+ * only the default of the person's own lock state (`unlockedPets` and `unlockedBackgrounds` in the pixel-pets store,
+ * which decides what can be picked): `true` open, `false` locked, or a time in milliseconds since the epoch, locked
+ * until then and open from that day on.
  */
 export type PixelPalsUnlock = boolean | number;
 
-/**
- * The unlock state saved in the browser, one entry per kind of pet and per theme of the master lists
- * (`PIXEL_PALS_PETS`, `PIXEL_PALS_THEMES`). It holds only what the person earned: every entry starts `false`, and an
- * unlock they earn sets it. Something is unlocked when its master list entry or this entry says so (see
- * `pixel-pals-unlock.utils.ts`), so locking an entry in a master list locks it again for everyone who did not earn it.
- */
-export interface PixelPalsUnlocks {
-  pets: Record<PixelPalsPetType, PixelPalsUnlock>;
-  themes: Record<PixelPalsThemeId, PixelPalsUnlock>;
-}
+/** Per kind of pet, whether the person can pick it: `true` open, `false` locked (shown with a lock). */
+export type PixelPetUnlockedPets = Record<PixelPetId, boolean>;
 
-/** Everything about one kind of pet. The catalog is `PIXEL_PALS_PETS`. */
-export interface PixelPalsPetDefinition {
-  type: PixelPalsPetType;
+/** Per background (theme), whether the person can pick it: `true` open, `false` locked (shown with a lock). */
+export type PixelPetUnlockedBackgrounds = Record<PixelPalsThemeId, boolean>;
+
+/** Everything about one kind of pet, with the defaults of every pet of that kind. The master list is `PIXEL_PALS_PETS`. */
+export interface PixelPetDefinition {
+  /** Its key in the master list `PIXEL_PALS_PETS`. */
+  petId: PixelPetId;
   label: string;
-  /** The name the Spawn dialog starts with. The person can type any other name, which is what is saved. */
+  /** The name a pet of this kind goes by when it has no nickname, and the one the Spawn dialog starts with. */
   defaultName: string;
   emoji: string;
+  /** The default of whether it can be picked, see `PixelPalsUnlock`. */
   unlocked: PixelPalsUnlock;
   /** The folder of its sprites, `public/pixel-pals/pets/<spriteFolder>/`. Kinds can share one, like the pandas. */
   spriteFolder: string;
@@ -76,6 +75,7 @@ export interface PixelPalsPetDefinition {
   canClimb: boolean;
   /** Whether it flies: it takes off now and then, and flies to a ball or to food instead of walking. Needs a `fly` sprite. */
   canFly: boolean;
+  /** The colors it comes in. The first one is its default color. */
   colors: readonly PixelPalsPetColorDefinition[];
   /** The animations that have a sprite file, the others fall back (see `getPixelPalsSpriteAnimation`). */
   animations: readonly PixelPalsAnimation[];
@@ -135,16 +135,30 @@ export interface PixelPalsFoodDefinition {
   line: string;
 }
 
-/** A pet the person added. This is what is saved to local storage. */
-export interface PixelPalsPet {
+/**
+ * A pet the person spawned, as saved to local storage: only what is theirs. Everything else comes from its master list
+ * entry, `PIXEL_PALS_PETS[petId]` (see `getResolvedPixelPet`).
+ */
+export interface PixelPet {
+  /** This pet's own id, so two pets of the same kind can be told apart (to delete one, and for the engine). */
   id: string;
-  type: PixelPalsPetType;
+  /** The kind of pet: its key in the master list `PIXEL_PALS_PETS`. */
+  petId: PixelPetId;
+  /** One of its kind's `colors`. */
   color: string;
-  name: string;
+  /** The name the person gave it. Without one it goes by its kind's `defaultName`. */
+  nickName?: string;
 }
 
-export interface PixelPalsNewPet {
-  type: PixelPalsPetType;
+/** What the Spawn dialog hands the store: a pet without its own id yet. */
+export type NewPixelPet = Omit<PixelPet, 'id'>;
+
+/**
+ * A spawned pet as Pixel Pals shows it: its master list entry, with the person's color and the name it goes by (its
+ * nickname, or else the kind's default name) on top.
+ */
+export interface ResolvedPixelPet extends PixelPetDefinition {
+  id: string;
   color: string;
   name: string;
 }

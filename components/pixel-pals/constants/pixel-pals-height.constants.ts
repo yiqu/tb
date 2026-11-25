@@ -2,7 +2,7 @@ import { PIXEL_PALS_PETS } from './pixel-pals-pets.constants';
 import { PIXEL_PALS_THEMES } from './pixel-pals-themes.constants';
 import { PIXEL_PALS_SPRITE_SIZE_PX } from './pixel-pals.constants';
 
-import type { PixelPalsPetDefinition, PixelPalsThemeDefinition } from '../models/pixel-pals.models';
+import type { PixelPetDefinition, PixelPalsThemeDefinition } from '../models/pixel-pals.models';
 
 /** Pixel Pals' 1px border, top and bottom. */
 const PIXEL_PALS_BORDER_PX = 2;
@@ -14,7 +14,7 @@ const TALLEST_FLOOR_PX: number = Math.max(
 );
 
 const BIGGEST_PET_PX: number = Math.max(
-  ...Object.values(PIXEL_PALS_PETS).map((pet: PixelPalsPetDefinition) => {
+  ...Object.values(PIXEL_PALS_PETS).map((pet: PixelPetDefinition) => {
     return Math.round(PIXEL_PALS_SPRITE_SIZE_PX * pet.sizeScale);
   }),
 );

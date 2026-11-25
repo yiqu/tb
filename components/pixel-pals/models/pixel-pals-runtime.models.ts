@@ -1,5 +1,5 @@
 import type { PixelPalsFoodKind } from '../constants/pixel-pals-foods.constants';
-import type { PixelPalsPet, PixelPalsPetDefinition } from './pixel-pals.models';
+import type { ResolvedPixelPet, PixelPetDefinition } from './pixel-pals.models';
 
 /**
  * Types of the running simulation (`PixelPalsEngine`). None of this is saved, it is rebuilt from the saved pets on load.
@@ -71,8 +71,8 @@ export interface PixelPalsPendingBubble {
 }
 
 export interface PixelPalsPetRuntime {
-  pet: PixelPalsPet;
-  definition: PixelPalsPetDefinition;
+  pet: ResolvedPixelPet;
+  definition: PixelPetDefinition;
   /** The pet's own walking speed, its kind's speed times a random factor. */
   speed: number;
   /** Width and height of its sprite box in px, `PIXEL_PALS_SPRITE_SIZE_PX` times its kind's size. */

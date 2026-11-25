@@ -10,7 +10,7 @@ import { usePixelPalsEngine } from '../hooks/usePixelPalsEngine';
 import PixelPalsHeightResizeHandle from './PixelPalsHeightResizeHandle';
 import { usePixelPalsHeightResize } from '../hooks/usePixelPalsHeightResize';
 import { PIXEL_PALS_LABELS } from '../constants/pixel-pals-labels.constants';
-import { usePixelPalsStoreHydration } from '../hooks/usePixelPalsStoreHydration';
+import { usePixelPetsStoreHydration } from '../hooks/usePixelPetsStoreHydration';
 import { PIXEL_PALS_FONT_FACE_CSS, PIXEL_PALS_DEFAULT_HEIGHT_PX } from '../constants/pixel-pals.constants';
 
 import '../styles/pixel-pals.css';
@@ -35,7 +35,7 @@ interface PixelPalsProps {
  */
 export default function PixelPals({ initialHeight = PIXEL_PALS_DEFAULT_HEIGHT_PX, className }: PixelPalsProps) {
   const { height, isResizing, handleProps } = usePixelPalsHeightResize(initialHeight);
-  const isHydrated: boolean = usePixelPalsStoreHydration();
+  const isHydrated: boolean = usePixelPetsStoreHydration();
   const pixelPalsRef = useRef<HTMLElement>(null);
   const engine = usePixelPalsEngine(pixelPalsRef);
 
@@ -51,7 +51,7 @@ export default function PixelPals({ initialHeight = PIXEL_PALS_DEFAULT_HEIGHT_PX
       <style href="pixel-pals-font" precedence="default">
         { PIXEL_PALS_FONT_FACE_CSS }
       </style>
-      { /* the saved pets and theme are only known after mount, the empty frame keeps the space meanwhile */ }
+      { /* the saved pets and background are only known after mount, the empty frame keeps the space meanwhile */ }
       { isHydrated ?
         <>
           <PixelPalsWorld engine={ engine } />

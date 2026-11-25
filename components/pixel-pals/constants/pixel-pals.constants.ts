@@ -21,13 +21,15 @@ export const PIXEL_PALS_HEIGHT_KEYBOARD_STEP_PX = 10;
 export const PIXEL_PALS_HEIGHT_COOKIE_NAME = 'pixel-pals-height';
 export const PIXEL_PALS_HEIGHT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
-/** The local storage key of the pets and the theme (Zustand persist). */
-export const PIXEL_PALS_STORAGE_KEY = 'pixel-pals-store';
-/** 2: the saved unlocks hold only what was earned. Version 1 saved copies of the master lists, which are dropped. */
-export const PIXEL_PALS_STORAGE_VERSION = 2;
+/** The local storage key of the pixel-pets store (Zustand persist): the pets, the background and the locks. */
+export const PIXEL_PALS_STORAGE_KEY = 'pixel-pets-store';
+export const PIXEL_PALS_STORAGE_VERSION = 1;
 
-/** Pets beyond this would not fit in a sidebar, the Spawn button is disabled at the cap. */
-export const PIXEL_PALS_MAX_PETS = 10;
+/** How many pets a person can have out at once (`userPixelPetCount`) until it is changed. The Spawn button is disabled at it. */
+export const PIXEL_PALS_DEFAULT_PET_COUNT = 10;
+/** The range `userPixelPetCount` is kept in. Far more pets than this would not fit in a sidebar. */
+export const PIXEL_PALS_MIN_PET_COUNT = 1;
+export const PIXEL_PALS_MAX_PET_COUNT = 30;
 export const PIXEL_PALS_PET_NAME_MAX_LENGTH = 20;
 
 /** Every sprite is drawn in a square of this size, like the "nano" size of VS Code Pets, times its kind's `sizeScale`. */

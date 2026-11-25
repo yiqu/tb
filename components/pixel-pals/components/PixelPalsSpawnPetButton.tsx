@@ -6,14 +6,14 @@ import { Plus } from 'lucide-react';
 import PixelPalsDialog from './PixelPalsDialog';
 import PixelPalsSpawnPetForm from './PixelPalsSpawnPetForm';
 import PixelPalsToolbarButton from './PixelPalsToolbarButton';
-import { usePixelPalsPetCount } from '../store/pixel-pals.store';
-import { PIXEL_PALS_MAX_PETS } from '../constants/pixel-pals.constants';
+import { useGetUserPixelPetCount, useGetSpawnedPixelPetCount } from '../store/pixel-pets.store';
 import { PIXEL_PALS_LABELS } from '../constants/pixel-pals-labels.constants';
 
-/** Opens the Spawn pet dialog. Disabled once Pixel Pals holds `PIXEL_PALS_MAX_PETS` pets. */
+/** Opens the Spawn pet dialog. Disabled once `userPixelPetCount` pets are out. */
 export default function PixelPalsSpawnPetButton() {
   const [open, setOpen] = useState<boolean>(false);
-  const petCount: number = usePixelPalsPetCount();
+  const spawnedPetCount: number = useGetSpawnedPixelPetCount();
+  const userPixelPetCount: number = useGetUserPixelPetCount();
 
   const handleOnClose = () => {
     setOpen(false);
@@ -29,7 +29,7 @@ export default function PixelPalsSpawnPetButton() {
         label={ PIXEL_PALS_LABELS.spawnPet }
         icon={ <Plus /> }
         onClick={ handleOnClick }
-        disabled={ petCount >= PIXEL_PALS_MAX_PETS }
+        disabled={ spawnedPetCount >= userPixelPetCount }
         disabledLabel={ PIXEL_PALS_LABELS.maxPetsReached }
       />
       <PixelPalsDialog

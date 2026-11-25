@@ -1,7 +1,7 @@
 import { PIXEL_PALS_BEHAVIOR } from '../models/pixel-pals-runtime.models';
 import { PIXEL_PALS_SPRITE_SIZE_PX } from '../constants/pixel-pals.constants';
 import { PIXEL_PALS_FOOD_SIZE_PX } from '../constants/pixel-pals-foods.constants';
-import { getPixelPalsPetDefinition } from './pixel-pals-pet.utils';
+import { getPixelPetDefinition } from './pixel-pals-pet.utils';
 import { PIXEL_PALS_MESSAGES } from '../constants/pixel-pals-messages.constants';
 import { randomItem, randomSign, randomChance, randomBetween, randomWeightedKey } from './pixel-pals-random.utils';
 import { hasPixelPalsIslands, clampToPixelPalsIsland, findPixelPalsIslandIndex } from './pixel-pals-island.utils';
@@ -31,7 +31,7 @@ import {
   PIXEL_PALS_APPROACH_FRIEND_MARGIN_SECONDS,
 } from '../constants/pixel-pals-behavior.constants';
 
-import type { PixelPalsPet } from '../models/pixel-pals.models';
+import type { ResolvedPixelPet } from '../models/pixel-pals.models';
 import type {
   PixelPalsFlight,
   PixelPalsBehavior,
@@ -177,8 +177,8 @@ export function getPixelPalsRandomGroundX(bounds: PixelPalsWorldBounds, size: nu
   return Math.min(maxX, Math.max(0, randomBetween([span.left, span.right]) - size / 2));
 }
 
-export function createPixelPalsPetRuntime(pet: PixelPalsPet, bounds: PixelPalsWorldBounds): PixelPalsPetRuntime {
-  const definition = getPixelPalsPetDefinition(pet.type);
+export function createPixelPalsPetRuntime(pet: ResolvedPixelPet, bounds: PixelPalsWorldBounds): PixelPalsPetRuntime {
+  const definition = getPixelPetDefinition(pet.petId);
   const size: number = getPixelPalsPetSize(definition.sizeScale);
   const x: number = getPixelPalsRandomGroundX(bounds, size);
   return {

@@ -6,13 +6,13 @@ import { Trash2 } from 'lucide-react';
 import PixelPalsDialog from './PixelPalsDialog';
 import PixelPalsDeletePetForm from './PixelPalsDeletePetForm';
 import PixelPalsToolbarButton from './PixelPalsToolbarButton';
-import { usePixelPalsPetCount } from '../store/pixel-pals.store';
+import { useGetSpawnedPixelPetCount } from '../store/pixel-pets.store';
 import { PIXEL_PALS_LABELS } from '../constants/pixel-pals-labels.constants';
 
 /** Opens the Delete pet dialog. Disabled while Pixel Pals is empty. */
 export default function PixelPalsDeletePetButton() {
   const [open, setOpen] = useState<boolean>(false);
-  const petCount: number = usePixelPalsPetCount();
+  const spawnedPetCount: number = useGetSpawnedPixelPetCount();
 
   const handleOnClose = () => {
     setOpen(false);
@@ -28,7 +28,7 @@ export default function PixelPalsDeletePetButton() {
         label={ PIXEL_PALS_LABELS.deletePet }
         icon={ <Trash2 /> }
         onClick={ handleOnClick }
-        disabled={ petCount === 0 }
+        disabled={ spawnedPetCount === 0 }
         disabledLabel={ PIXEL_PALS_LABELS.noPetsToDelete }
       />
       <PixelPalsDialog

@@ -7,13 +7,13 @@ import PixelPalsNameTag from './PixelPalsNameTag';
 import PixelPalsSpeechBubble from './PixelPalsSpeechBubble';
 import { getPixelPalsSpriteUrl } from '../utils/pixel-pals-sprite.utils';
 import { getPixelPalsPetSize } from '../utils/pixel-pals-behavior.utils';
-import { getPixelPalsPetDefinition, getPixelPalsPetDescription } from '../utils/pixel-pals-pet.utils';
+import { getPixelPetDefinition, getPixelPalsPetDescription } from '../utils/pixel-pals-pet.utils';
 
-import type { PixelPalsPet, PixelPalsPetDefinition } from '../models/pixel-pals.models';
+import type { ResolvedPixelPet, PixelPetDefinition } from '../models/pixel-pals.models';
 import type { PixelPalsEngine } from '../engine/pixel-pals-engine';
 
 interface PixelPalsPetSpriteProps {
-  pet: PixelPalsPet;
+  pet: ResolvedPixelPet;
   engine: PixelPalsEngine;
 }
 
@@ -28,7 +28,7 @@ export default function PixelPalsPetSprite({ pet, engine }: PixelPalsPetSpritePr
   const imageRef = useRef<HTMLImageElement>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
   const nameTagRef = useRef<HTMLDivElement>(null);
-  const definition: PixelPalsPetDefinition = getPixelPalsPetDefinition(pet.type);
+  const definition: PixelPetDefinition = getPixelPetDefinition(pet.petId);
   const size: number = getPixelPalsPetSize(definition.sizeScale);
 
   useEffect(() => {

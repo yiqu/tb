@@ -1,4 +1,4 @@
-import type { PixelPalsAnimation, PixelPalsPetDefinition, PixelPalsPetColorDefinition } from '../models/pixel-pals.models';
+import type { PixelPalsAnimation, PixelPetDefinition, PixelPalsPetColorDefinition } from '../models/pixel-pals.models';
 
 /**
  * Every kind of pet, and everything about each kind, in one object per pet: its name in the dialogs, the name a new
@@ -8,7 +8,7 @@ import type { PixelPalsAnimation, PixelPalsPetDefinition, PixelPalsPetColorDefin
  * color, see `public/pixel-pals/CREDITS.md`. Sprite files are
  * `public/pixel-pals/pets/<spriteFolder>/<color>_<animation>_8fps.gif`.
  */
-export const PIXEL_PALS_PET_TYPES = [
+export const PIXEL_PALS_PET_IDS = [
   'dog',
   'fox',
   'panda',
@@ -48,7 +48,7 @@ export const PIXEL_PALS_PET_TYPES = [
   'zappy',
 ] as const;
 
-export type PixelPalsPetType = (typeof PIXEL_PALS_PET_TYPES)[number];
+export type PixelPetId = (typeof PIXEL_PALS_PET_IDS)[number];
 
 /** Walking speeds in px per second. Each pet also gets a random factor, so two of the same kind never move in sync. */
 export const PIXEL_PALS_SPEED = {
@@ -122,9 +122,9 @@ const AURORA_COLORS = ['aurora_borealis', 'aurora_rose', 'aurora_frost'] as cons
 
 const UNICORN_COLORS = colors('white', 'pink', 'lavender', 'sky', 'mint', 'peach', 'lemon', 'silver', 'midnight', 'coral', ...AURORA_COLORS);
 
-export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> = {
+export const PIXEL_PALS_PETS: Record<PixelPetId, PixelPetDefinition> = {
   dog: {
-    type: 'dog',
+    petId: 'dog',
     label: 'Dog',
     defaultName: 'Biscuit',
     emoji: '🐶',
@@ -143,7 +143,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   fox: {
-    type: 'fox',
+    petId: 'fox',
     label: 'Fox',
     defaultName: 'Rusty',
     emoji: '🦊',
@@ -162,7 +162,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   panda: {
-    type: 'panda',
+    petId: 'panda',
     label: 'Panda',
     defaultName: 'Bao',
     emoji: '🐼',
@@ -181,7 +181,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   'big-panda': {
-    type: 'big-panda',
+    petId: 'big-panda',
     label: 'Big panda',
     defaultName: 'Dumpling',
     emoji: '🐼',
@@ -200,7 +200,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   'little-panda': {
-    type: 'little-panda',
+    petId: 'little-panda',
     label: 'Little panda',
     defaultName: 'Mochi',
     emoji: '🐼',
@@ -219,7 +219,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   deer: {
-    type: 'deer',
+    petId: 'deer',
     label: 'Deer',
     defaultName: 'Clover',
     emoji: '🦌',
@@ -238,7 +238,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   pteranodon: {
-    type: 'pteranodon',
+    petId: 'pteranodon',
     label: 'Pteranodon',
     defaultName: 'Skye',
     emoji: '🦖',
@@ -257,7 +257,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   pterodactyl: {
-    type: 'pterodactyl',
+    petId: 'pterodactyl',
     label: 'Pterodactyl',
     defaultName: 'Pip',
     emoji: '🦕',
@@ -276,7 +276,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   't-rex': {
-    type: 't-rex',
+    petId: 't-rex',
     label: 'T. rex',
     defaultName: 'Chomp',
     emoji: '🦖',
@@ -295,7 +295,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   triceratops: {
-    type: 'triceratops',
+    petId: 'triceratops',
     label: 'Triceratops',
     defaultName: 'Trixie',
     emoji: '🦕',
@@ -314,7 +314,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   stegosaurus: {
-    type: 'stegosaurus',
+    petId: 'stegosaurus',
     label: 'Stegosaurus',
     defaultName: 'Spike',
     emoji: '🦕',
@@ -333,7 +333,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   brachiosaurus: {
-    type: 'brachiosaurus',
+    petId: 'brachiosaurus',
     label: 'Brachiosaurus',
     defaultName: 'Stretch',
     emoji: '🦕',
@@ -352,7 +352,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   raptor: {
-    type: 'raptor',
+    petId: 'raptor',
     label: 'Velociraptor',
     defaultName: 'Dash',
     emoji: '🦖',
@@ -371,7 +371,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   raccoon: {
-    type: 'raccoon',
+    petId: 'raccoon',
     label: 'Raccoon',
     defaultName: 'Bandit',
     emoji: '🦝',
@@ -390,7 +390,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   turtle: {
-    type: 'turtle',
+    petId: 'turtle',
     label: 'Turtle',
     defaultName: 'Shelly',
     emoji: '🐢',
@@ -409,7 +409,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   chicken: {
-    type: 'chicken',
+    petId: 'chicken',
     label: 'Chicken',
     defaultName: 'Henny',
     emoji: '🐔',
@@ -428,7 +428,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   cockatiel: {
-    type: 'cockatiel',
+    petId: 'cockatiel',
     label: 'Cockatiel',
     defaultName: 'Kiwi',
     emoji: '🦜',
@@ -447,7 +447,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   rat: {
-    type: 'rat',
+    petId: 'rat',
     label: 'Rat',
     defaultName: 'Pip',
     emoji: '🐀',
@@ -466,7 +466,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   snail: {
-    type: 'snail',
+    petId: 'snail',
     label: 'Snail',
     defaultName: 'Pebble',
     emoji: '🐌',
@@ -485,7 +485,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   snake: {
-    type: 'snake',
+    petId: 'snake',
     label: 'Snake',
     defaultName: 'Noodle',
     emoji: '🐍',
@@ -504,7 +504,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   crab: {
-    type: 'crab',
+    petId: 'crab',
     label: 'Crab',
     defaultName: 'Ferris',
     emoji: '🦀',
@@ -523,7 +523,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   deno: {
-    type: 'deno',
+    petId: 'deno',
     label: 'Deno',
     defaultName: 'Dino',
     emoji: '🦕',
@@ -542,7 +542,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   'rubber-duck': {
-    type: 'rubber-duck',
+    petId: 'rubber-duck',
     label: 'Rubber duck',
     defaultName: 'Quackers',
     emoji: '🦆',
@@ -561,7 +561,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   monkey: {
-    type: 'monkey',
+    petId: 'monkey',
     label: 'Monkey',
     defaultName: 'Coco',
     emoji: '🐵',
@@ -580,7 +580,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   horse: {
-    type: 'horse',
+    petId: 'horse',
     label: 'Horse',
     defaultName: 'Maple',
     emoji: '🐴',
@@ -599,7 +599,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   unicorn: {
-    type: 'unicorn',
+    petId: 'unicorn',
     label: 'Unicorn',
     defaultName: 'Sparkle',
     emoji: '🦄',
@@ -618,7 +618,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   alicorn: {
-    type: 'alicorn',
+    petId: 'alicorn',
     label: 'Alicorn',
     defaultName: 'Halo',
     emoji: '🦄',
@@ -637,7 +637,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   'unicorn-foal': {
-    type: 'unicorn-foal',
+    petId: 'unicorn-foal',
     label: 'Unicorn foal',
     defaultName: 'Button',
     emoji: '🦄',
@@ -656,7 +656,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   'rainbow-unicorn': {
-    type: 'rainbow-unicorn',
+    petId: 'rainbow-unicorn',
     label: 'Rainbow unicorn',
     defaultName: 'Prism',
     emoji: '🦄',
@@ -675,7 +675,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   'starry-unicorn': {
-    type: 'starry-unicorn',
+    petId: 'starry-unicorn',
     label: 'Starry unicorn',
     defaultName: 'Nova',
     emoji: '🦄',
@@ -694,7 +694,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   skeleton: {
-    type: 'skeleton',
+    petId: 'skeleton',
     label: 'Skeleton',
     defaultName: 'Bones',
     emoji: '💀',
@@ -713,7 +713,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   clippy: {
-    type: 'clippy',
+    petId: 'clippy',
     label: 'Clippy',
     defaultName: 'Clippy',
     emoji: '📎',
@@ -732,7 +732,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   finley: {
-    type: 'finley',
+    petId: 'finley',
     label: 'Finley',
     defaultName: 'Finley',
     emoji: '🐠',
@@ -751,7 +751,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   mod: {
-    type: 'mod',
+    petId: 'mod',
     label: 'Mod',
     defaultName: 'Mod',
     emoji: '🤖',
@@ -770,7 +770,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   morph: {
-    type: 'morph',
+    petId: 'morph',
     label: 'Morph',
     defaultName: 'Morph',
     emoji: '🫧',
@@ -789,7 +789,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   rocky: {
-    type: 'rocky',
+    petId: 'rocky',
     label: 'Rocky',
     defaultName: 'Rocky',
     emoji: '🪨',
@@ -808,7 +808,7 @@ export const PIXEL_PALS_PETS: Record<PixelPalsPetType, PixelPalsPetDefinition> =
     },
   },
   zappy: {
-    type: 'zappy',
+    petId: 'zappy',
     label: 'Zappy',
     defaultName: 'Zappy',
     emoji: '⚡',
