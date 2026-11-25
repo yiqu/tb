@@ -22,11 +22,19 @@ export const petZooPetSchema = z
 
 /**
  * What local storage holds. It is checked when the store loads, so a value written by an older version,
- * or edited by hand, never breaks the zoo: bad pets are dropped, a bad theme falls back to the default.
+ * or edited by hand, never breaks the zoo: bad pets are dropped, a bad theme falls back to the default, and the
+ * unlocks are rebuilt on the master lists (`toValidPetZooUnlocks`).
  */
 export const petZooPersistedStateSchema = z.object({
   pets: z.array(z.unknown()).catch([]),
   themeId: z.enum(PET_ZOO_THEME_IDS).catch(PET_ZOO_DEFAULT_THEME_ID),
+  // saved before there were unlocks: the defaults
+  unlocks: z
+    .object({
+      pets: z.record(z.string(), z.unknown()).catch({}),
+      themes: z.record(z.string(), z.unknown()).catch({}),
+    })
+    .catch({ pets: {}, themes: {} }),
 });
 
 export type PetZooPersistedPet = z.infer<typeof petZooPetSchema>;

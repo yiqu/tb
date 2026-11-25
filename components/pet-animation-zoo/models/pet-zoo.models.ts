@@ -40,10 +40,20 @@ export interface PetZooPetVoice {
 }
 
 /**
- * Whether a kind of pet can be spawned. `true`: yes. `false`: locked, it shows in the Spawn dialog with a lock but
- * cannot be picked. A number: locked until that time (milliseconds since the epoch), for pets earned later on.
+ * Whether a kind of pet, or a theme, can be picked. `true`: yes. `false`: locked, it shows in its dialog with a lock
+ * but cannot be picked. A number: locked until that time (milliseconds since the epoch), for things earned later on.
  */
 export type PetZooUnlock = boolean | number;
+
+/**
+ * The unlock state saved in the browser, one entry per kind of pet and per theme of the master lists
+ * (`PET_ZOO_PETS`, `PET_ZOO_THEMES`). It starts as their `unlocked` values, and is where unlocks the person earns
+ * go. Something is unlocked when its master list entry or this entry says so (see `pet-zoo-unlock.utils.ts`).
+ */
+export interface PetZooUnlocks {
+  pets: Record<PetZooPetType, PetZooUnlock>;
+  themes: Record<PetZooThemeId, PetZooUnlock>;
+}
 
 /** Everything about one kind of pet. The catalog is `PET_ZOO_PETS`. */
 export interface PetZooPetDefinition {
@@ -93,6 +103,7 @@ export interface PetZooThemeIsland {
 export interface PetZooThemeDefinition {
   id: PetZooThemeId;
   label: string;
+  unlocked: PetZooUnlock;
   /** Distance in px from the bottom of the world to the ground the pets walk on (the top of the stones on the lake). */
   floorPx: number;
   /**

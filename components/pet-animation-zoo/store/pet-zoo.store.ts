@@ -2,23 +2,28 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 import { createPetZooId } from '../utils/pet-zoo-random.utils';
+import { isPetZooThemeUnlocked, toValidPetZooUnlocks, getDefaultPetZooUnlocks } from '../utils/pet-zoo-unlock.utils';
 import { petZooLocalStorage } from '../utils/pet-zoo-storage.utils';
 import { PET_ZOO_PETS } from '../constants/pet-zoo-pets.constants';
 import { PET_ZOO_DEFAULT_THEME_ID } from '../constants/pet-zoo-themes.constants';
 import { petZooPetSchema, petZooPersistedStateSchema } from '../schemas/pet-zoo-persisted-state.schema';
 import { PET_ZOO_MAX_PETS, PET_ZOO_STORAGE_KEY, PET_ZOO_STORAGE_VERSION } from '../constants/pet-zoo.constants';
 
-import type { PetZooPet, PetZooNewPet, PetZooThemeId } from '../models/pet-zoo.models';
+import type { PetZooPet, PetZooNewPet, PetZooThemeId, PetZooUnlocks, PetZooPetType } from '../models/pet-zoo.models';
 
 interface PetZooActions {
   /** Adds a pet, unless the zoo is full. Returns the new pet, or null when it was full. */
   addPet: (_newPet: PetZooNewPet) => PetZooPet | null;
   removePet: (_petId: string) => void;
   setTheme: (_themeId: PetZooThemeId) => void;
+  /** Opens a pet for this person, e.g. once they earned it. */
+  unlockPet: (_type: PetZooPetType) => void;
+  /** Opens a theme for this person. */
+  unlockTheme: (_themeId: PetZooThemeId) => void;
 }
 
 /**
- * The pets in the zoo and its background. Saved to local storage, so both are back after a refresh.
+ * The pets in the zoo, its background and what is unlocked. Saved to local storage, so they are back after a refresh.
  * Where each pet is and what it is doing is not saved, that lives in `PetZooEngine`.
  *
  * `skipHydration` is on: the server renders the defaults, and `usePetZooStoreHydration` loads the saved
@@ -28,11 +33,13 @@ interface PetZooActions {
 interface PetZooState {
   pets: PetZooPet[];
   themeId: PetZooThemeId;
+  /** Which pets and themes are open, see `PetZooUnlocks`. */
+  unlocks: PetZooUnlocks;
 
   actions: PetZooActions;
 }
 
-type PetZooPersistedState = Pick<PetZooState, 'pets' | 'themeId'>;
+type PetZooPersistedState = Pick<PetZooState, 'pets' | 'themeId' | 'unlocks'>;
 
 export const PET_ZOO_DEFAULT_PETS: PetZooPet[] = [
   { id: 'pet-zoo-default-dog', type: 'dog', color: 'brown', name: PET_ZOO_PETS.dog.defaultName },
@@ -70,6 +77,7 @@ export const usePetZooStore = create<PetZooState>()(
       return {
         pets: PET_ZOO_DEFAULT_PETS,
         themeId: PET_ZOO_DEFAULT_THEME_ID,
+        unlocks: getDefaultPetZooUnlocks(),
 
         actions: {
           addPet: (newPet: PetZooNewPet) => {
@@ -96,6 +104,16 @@ export const usePetZooStore = create<PetZooState>()(
               return { themeId };
             });
           },
+          unlockPet: (type: PetZooPetType) => {
+            set((state: PetZooState) => {
+              return { unlocks: { ...state.unlocks, pets: { ...state.unlocks.pets, [type]: true } } };
+            });
+          },
+          unlockTheme: (themeId: PetZooThemeId) => {
+            set((state: PetZooState) => {
+              return { unlocks: { ...state.unlocks, themes: { ...state.unlocks.themes, [themeId]: true } } };
+            });
+          },
         },
       };
     },
@@ -107,14 +125,17 @@ export const usePetZooStore = create<PetZooState>()(
       }),
       skipHydration: true,
       partialize: (state: PetZooState): PetZooPersistedState => {
-        return { pets: state.pets, themeId: state.themeId };
+        return { pets: state.pets, themeId: state.themeId, unlocks: state.unlocks };
       },
       merge: (persistedState: unknown, currentState: PetZooState): PetZooState => {
         const parsed = petZooPersistedStateSchema.safeParse(persistedState);
         if (!parsed.success) {
           return currentState;
         }
-        return { ...currentState, pets: toValidPets(parsed.data.pets), themeId: parsed.data.themeId };
+        const unlocks: PetZooUnlocks = toValidPetZooUnlocks(parsed.data.unlocks);
+        // a saved theme that is locked now (e.g. the master list locked it) falls back to the default
+        const themeId: PetZooThemeId = isPetZooThemeUnlocked(parsed.data.themeId, unlocks) ? parsed.data.themeId : PET_ZOO_DEFAULT_THEME_ID;
+        return { ...currentState, pets: toValidPets(parsed.data.pets), themeId, unlocks };
       },
     },
   ),
@@ -133,6 +154,11 @@ export const usePetZooPets = () => {
 export const usePetZooThemeId = () => {
   return usePetZooStore((state: PetZooState) => {
     return state.themeId;
+  });
+};
+export const usePetZooUnlocks = () => {
+  return usePetZooStore((state: PetZooState) => {
+    return state.unlocks;
   });
 };
 export const usePetZooPetCount = () => {

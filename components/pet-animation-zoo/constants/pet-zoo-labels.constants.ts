@@ -22,9 +22,9 @@ export const PET_ZOO_LABELS = {
   petColorPlaceholder: 'Choose a color',
   petNameLabel: 'Name',
   petNamePlaceholder: 'Name your pet',
-  petLocked: 'Locked',
+  locked: 'Locked',
   /** `{date}` is replaced by the day it unlocks. */
-  petUnlocksOn: 'Unlocks {date}',
+  unlocksOn: 'Unlocks {date}',
   petLockedError: 'This pet is locked',
 
   deletePetDialogTitle: 'Delete a pet',
@@ -37,4 +37,5 @@ export const PET_ZOO_LABELS = {
   changeThemeDialogDescription: 'Choose a background for the zoo.',
   themeLabel: 'Theme',
   themePlaceholder: 'Select a theme',
+  themeLockedError: 'This theme is locked',
 } as const;

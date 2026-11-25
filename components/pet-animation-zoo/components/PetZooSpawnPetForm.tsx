@@ -14,29 +14,30 @@ import PetZooLockedLabel from './PetZooLockedLabel';
 import PetZooDialogFooter from './PetZooDialogFooter';
 import PetZooSelectField, { PetZooSelectOption } from './PetZooSelectField';
 import { PET_ZOO_LABELS } from '../constants/pet-zoo-labels.constants';
-import { usePetZooPets, usePetZooActions } from '../store/pet-zoo.store';
-import { PET_ZOO_TIME_ZONE, PET_ZOO_PET_NAME_MAX_LENGTH } from '../constants/pet-zoo.constants';
+import { PET_ZOO_PET_NAME_MAX_LENGTH } from '../constants/pet-zoo.constants';
+import { getPetZooNow, isPetZooPetTypeUnlocked } from '../utils/pet-zoo-unlock.utils';
+import { usePetZooPets, usePetZooActions, usePetZooUnlocks } from '../store/pet-zoo.store';
 import { PET_ZOO_PETS, PET_ZOO_PET_TYPES, PetZooPetType } from '../constants/pet-zoo-pets.constants';
-import { petZooSpawnPetSchema, PetZooSpawnPetFormValues } from '../schemas/pet-zoo-dialogs.schema';
-import { isPetZooColorOf, isPetZooPetUnlocked, getPetZooDefaultColor, getPetZooSuggestedName } from '../utils/pet-zoo-pet.utils';
+import { isPetZooColorOf, getPetZooDefaultColor, getPetZooSuggestedName } from '../utils/pet-zoo-pet.utils';
+import { createPetZooSpawnPetSchema, PetZooSpawnPetFormValues } from '../schemas/pet-zoo-dialogs.schema';
 
-import type { PetZooPet, PetZooPetColorDefinition } from '../models/pet-zoo.models';
+import type { PetZooPet, PetZooUnlocks, PetZooPetColorDefinition } from '../models/pet-zoo.models';
 
 const DEFAULT_PET_TYPE: PetZooPetType = 'dog';
 
 /** The preview at the side of the dialog, at the pet's size: a big panda is bigger than a little one. */
 const PREVIEW_SIZE_PX = 52;
 
-/** Every kind of pet. Locked ones are listed with a lock and cannot be picked. */
-function getTypeOptions(now: DateTime): PetZooSelectOption[] {
+/** Every kind of pet in the master list. Locked ones are listed with a lock and cannot be picked. */
+function getTypeOptions(isTypeUnlocked: (_type: PetZooPetType) => boolean, unlocks: PetZooUnlocks): PetZooSelectOption[] {
   return PET_ZOO_PET_TYPES.map((type: PetZooPetType) => {
     const definition = PET_ZOO_PETS[type];
-    const isUnlocked: boolean = isPetZooPetUnlocked(definition, now);
+    const isUnlocked: boolean = isTypeUnlocked(type);
     return {
       value: type,
       label: definition.label,
       icon: <PetZooPetIcon type={ type } color={ getPetZooDefaultColor(type) } />,
-      trailing: isUnlocked ? null : <PetZooLockedLabel definition={ definition } />,
+      trailing: isUnlocked ? null : <PetZooLockedLabel unlocks={ [definition.unlocked, unlocks.pets[type]] } />,
       disabled: !isUnlocked,
     };
   });
@@ -63,15 +64,17 @@ interface PetZooSpawnPetFormProps {
 export default function PetZooSpawnPetForm({ onDone }: PetZooSpawnPetFormProps) {
   const pets: PetZooPet[] = usePetZooPets();
   const { addPet } = usePetZooActions();
+  const unlocks: PetZooUnlocks = usePetZooUnlocks();
   // read once when the dialog opens: the names in use, and the time that decides which dated pets are unlocked
   const [takenNames] = useState<string[]>(() => {
     return pets.map((pet: PetZooPet) => {
       return pet.name;
     });
   });
-  const [now] = useState<DateTime>(() => {
-    return DateTime.now().setZone(PET_ZOO_TIME_ZONE);
-  });
+  const [now] = useState<DateTime>(getPetZooNow);
+  const isTypeUnlocked = (type: PetZooPetType): boolean => {
+    return isPetZooPetTypeUnlocked(type, unlocks, now);
+  };
   const [initialName] = useState<string>(() => {
     return getPetZooSuggestedName(DEFAULT_PET_TYPE, takenNames);
   });
@@ -79,7 +82,7 @@ export default function PetZooSpawnPetForm({ onDone }: PetZooSpawnPetFormProps) 
   const isNameTypedRef = useRef<boolean>(false);
 
   const { control, handleSubmit, setValue, watch } = useForm<PetZooSpawnPetFormValues>({
-    resolver: zodResolver(petZooSpawnPetSchema),
+    resolver: zodResolver(createPetZooSpawnPetSchema(isTypeUnlocked)),
     defaultValues: { type: DEFAULT_PET_TYPE, color: getPetZooDefaultColor(DEFAULT_PET_TYPE), name: initialName },
   });
 
@@ -129,7 +132,7 @@ export default function PetZooSpawnPetForm({ onDone }: PetZooSpawnPetFormProps) 
               name="type"
               label={ PET_ZOO_LABELS.petTypeLabel }
               placeholder={ PET_ZOO_LABELS.petTypePlaceholder }
-              options={ getTypeOptions(now) }
+              options={ getTypeOptions(isTypeUnlocked, unlocks) }
             />
             <PetZooSelectField
               control={ control }

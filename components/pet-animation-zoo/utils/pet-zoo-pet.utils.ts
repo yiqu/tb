@@ -1,7 +1,5 @@
-import { DateTime } from 'luxon';
-
 import { PET_ZOO_PETS, PET_ZOO_PET_TYPES, PetZooPetType } from '../constants/pet-zoo-pets.constants';
-import { PET_ZOO_TIME_ZONE, PET_ZOO_PET_NAME_MAX_LENGTH } from '../constants/pet-zoo.constants';
+import { PET_ZOO_PET_NAME_MAX_LENGTH } from '../constants/pet-zoo.constants';
 
 import type { PetZooPet, PetZooPetDefinition, PetZooPetColorDefinition } from '../models/pet-zoo.models';
 
@@ -39,25 +37,6 @@ export function getPetZooPetDescription(pet: PetZooPet): string {
     return `${pet.name}, ${definition.label.toLowerCase()}`;
   }
   return `${pet.name}, ${getPetZooColorLabel(pet.type, pet.color).toLowerCase()} ${definition.label.toLowerCase()}`;
-}
-
-/**
- * Whether a kind of pet can be spawned now. `unlocked` is true or false, or the time it unlocks.
- * `now` is passed in by tests and by the dialog, which reads the clock once when it opens.
- */
-export function isPetZooPetUnlocked(definition: PetZooPetDefinition, now: DateTime = DateTime.now().setZone(PET_ZOO_TIME_ZONE)): boolean {
-  if (typeof definition.unlocked === 'boolean') {
-    return definition.unlocked;
-  }
-  return now.toMillis() >= definition.unlocked;
-}
-
-/** When a locked kind of pet unlocks, e.g. "Dec 25", or null when it has no date. Shown in Eastern time. */
-export function getPetZooUnlockDateLabel(definition: PetZooPetDefinition): string | null {
-  if (typeof definition.unlocked === 'boolean') {
-    return null;
-  }
-  return DateTime.fromMillis(definition.unlocked, { zone: PET_ZOO_TIME_ZONE }).toFormat('LLL d');
 }
 
 /**
