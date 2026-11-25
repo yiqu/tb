@@ -303,7 +303,11 @@ export class PetZooEngine {
     const maxClimbY: number = getPetZooMaxClimbY(this.bounds);
     this.pets.forEach((runtime: PetZooPetRuntime) => {
       runtime.x = runtime.wall === 'right' ? maxX : Math.min(maxX, Math.max(0, runtime.x));
-      runtime.y = Math.min(runtime.y, maxClimbY);
+      if (runtime.y > maxClimbY) {
+        runtime.y = maxClimbY;
+        // a pet in the air stops rising and falls from the new top
+        runtime.vy = Math.min(runtime.vy, 0);
+      }
       // a pet still climbing stops at the new top, even when it is below it right now
       runtime.climbTargetY = Math.min(runtime.climbTargetY, maxClimbY);
     });
@@ -326,7 +330,8 @@ export class PetZooEngine {
       .then(() => {
         this.rendered.forEach((rendered: PetZooRenderedPet, id: string) => {
           const elements: PetZooPetElements | undefined = this.elements.get(id);
-          if (!elements || rendered.bubbleText === null) {
+          // a hidden zoo (e.g. a collapsed nav) measures 0, keep the earlier size rather than cache that
+          if (!elements || rendered.bubbleText === null || elements.bubble.offsetWidth === 0) {
             return;
           }
           this.rendered.set(id, { ...rendered, bubbleWidth: elements.bubble.offsetWidth, bubbleHeight: elements.bubble.offsetHeight });
