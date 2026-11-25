@@ -74,7 +74,7 @@ Everything about a kind of pet is one object in `PIXEL_PALS_PETS` (`constants/pi
 | `petId`        | its key in `PIXEL_PALS_PETS`                                                                     |
 | `label`        | its name in the dialogs                                                                          |
 | `defaultName`  | the name it goes by without a nickname, and the one the Spawn dialog starts with                 |
-| `unlocked`     | the default of `unlockedPets`: `true`, `false`, or a time in ms from when it is open (see Locks)  |
+| `unlocked`     | the default of `unlockedPets`: `true`, `false`, or a Unix timestamp in ms it opens at (see Locks) |
 | `spriteFolder` | its folder in `public/pixel-pals/pets/`, kinds can share one (the three pandas)           |
 | `sizeScale`    | its size, 1 is `PIXEL_PALS_SPRITE_SIZE_PX` (Big panda 1.45, Little panda 0.7)                       |
 | `speed`, `canClimb`, `canFly`, `colors`, `animations` | how it moves and what sprites it has (a flyer needs `fly`) |
@@ -100,7 +100,7 @@ The pixel-pets store is what Pixel Pals shows; the dialogs only call its actions
 | ------------------------ | ------------------------------------------------------------------------------------------ |
 | `userPixelPetCount`      | how many pets can be out at once, `PIXEL_PALS_DEFAULT_PET_COUNT` (10), kept in 1 to 30      |
 | `userPixelPetBackground` | the id of the background (theme) shown                                                    |
-| `userPixelPets`          | the pets out, each `{ id, petId, color, nickName? }`: only what the person picked           |
+| `userPixelPets`          | the pets out, each `{ id, petId, color, nickName? }`; starts with one brown dog (`PIXEL_PALS_DEFAULT_PETS`) |
 | `unlockedBackgrounds`    | `{ [backgroundId]: boolean }`, whether each background can be picked                       |
 | `unlockedPets`           | `{ [petId]: boolean }`, whether each kind of pet can be picked                             |
 
@@ -127,9 +127,9 @@ with a lock and cannot be picked. Change one with `setPetUnlocked` or `setBackgr
 `unlockAllPets`, `lockAllPets`, `unlockAllBackgrounds` and `lockAllBackgrounds`.
 
 The `unlocked` of each master list entry (`PIXEL_PALS_PETS`, `PIXEL_PALS_THEMES`) is only the default: what someone with
-nothing saved starts with, and what an entry added to a master list later starts with. A time in ms is the exception,
-an unlock scheduled for that day: until then it is the default `false` and the lock shows the date, and from then on
-it loads as `true` for everyone, whatever was saved. On load both maps are rebuilt on the master lists, so an entry no
+nothing saved starts with, and what an entry added to a master list later starts with. A Unix timestamp in ms is an
+unlock scheduled for that moment: before it, the entry defaults to `false` (a saved `true` still counts) and its lock
+shows the date; from then on it loads as `true` for everyone, whatever was saved. On load both maps are rebuilt on the master lists, so an entry no
 longer in them is dropped (`utils/pixel-pals-unlock.utils.ts`).
 
 Locks are only about picking. The actions do not check them, so code can still add a locked pet, and locking a kind or
