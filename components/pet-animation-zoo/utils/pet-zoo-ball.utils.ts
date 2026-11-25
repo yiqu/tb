@@ -63,7 +63,8 @@ export function stepPetZooBall(ball: PetZooBallRuntime, seconds: number, bounds:
 
   const previousX: number = ball.x;
   const previousY: number = ball.y;
-  const isResting: boolean = ball.y <= radius && ball.vy === 0;
+  // resting needs ground under it: a ball that rolls off a stone falls into the water
+  const isResting: boolean = !isOverWater(ball, bounds) && ball.y <= radius && ball.vy === 0;
   if (!isResting) {
     ball.vy -= PET_ZOO_GRAVITY * seconds;
   }

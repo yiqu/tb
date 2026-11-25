@@ -23,6 +23,9 @@ interface DragState {
   grabOffset: number;
   width: number;
   isCollapsed: boolean;
+  /** The body's own inline cursor and user-select before the drag, put back when it ends. */
+  bodyCursor: string;
+  bodyUserSelect: string;
 }
 
 /**
@@ -80,8 +83,11 @@ export function useSideNavResize(): SideNavResize {
     dragRef.current = null;
     setIsResizing(false);
     delete drag.wrapper.dataset.resizing;
-    document.body.style.removeProperty('cursor');
-    document.body.style.removeProperty('user-select');
+    // the width written while dragging can differ from the one committed (see `onPointerDown`), and React only
+    // writes the variable when the committed width changes, so put the committed one on the wrapper here
+    drag.wrapper.style.setProperty('--sidebar-width', `${drag.width}px`);
+    document.body.style.cursor = drag.bodyCursor;
+    document.body.style.userSelect = drag.bodyUserSelect;
     commitWidth(drag.width);
   };
 
@@ -119,7 +125,14 @@ export function useSideNavResize(): SideNavResize {
           grabOffset: isCollapsed ? 0 : startWidth - event.clientX,
           width: clampSideNavWidth(startWidth),
           isCollapsed,
+          bodyCursor: document.body.style.cursor,
+          bodyUserSelect: document.body.style.userSelect,
         };
+        if (!isCollapsed) {
+          // `data-resizing` turns the width transition off. Hold the width where it is drawn now, so a drag that
+          // starts while the nav is still animating does not snap to the end width before the pointer moves.
+          wrapper.style.setProperty('--sidebar-width', `${startWidth}px`);
+        }
         wrapper.dataset.resizing = 'true';
         document.body.style.cursor = 'col-resize';
         document.body.style.userSelect = 'none';

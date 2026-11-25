@@ -8,7 +8,7 @@ of the left nav, above the account button.
 ## Using it in another project
 
 1. Copy this folder and `public/pet-animation-zoo/` (the art).
-2. Needs: React 19, Zustand, Zod, React Hook Form, `@hookform/resolvers`, Luxon, lucide-react and Tailwind 4, plus these
+2. Needs: React 19, Zustand, Zod, React Hook Form, `@hookform/resolvers`, Luxon (with `@types/luxon`), lucide-react and Tailwind 4, plus these
    modules of the host app, imported through the `@/` path alias. Point the imports elsewhere if your app keeps them
    in other places:
    - `cn` from `@/lib/utils` (the shadcn helper, clsx + tailwind-merge)

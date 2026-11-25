@@ -307,7 +307,7 @@ function canClimbIn(runtime: PetZooPetRuntime, bounds: PetZooWorldBounds): boole
     runtime.definition.canClimb &&
     // the stones are away from the walls
     !hasPetZooIslands(bounds) &&
-    getPetZooMaxClimbY(bounds, runtime.size) >= PET_ZOO_SPRITE_SIZE_PX * PET_ZOO_MIN_CLIMB_HEIGHT_IN_SPRITES
+    getPetZooMaxClimbY(bounds, runtime.size) >= runtime.size * PET_ZOO_MIN_CLIMB_HEIGHT_IN_SPRITES
   );
 }
 

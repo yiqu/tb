@@ -5,6 +5,8 @@ import { PET_ZOO_TIME_ZONE, PET_ZOO_PET_NAME_MAX_LENGTH } from '../constants/pet
 
 import type { PetZooPet, PetZooPetDefinition, PetZooPetColorDefinition } from '../models/pet-zoo.models';
 
+const MESSAGE_PLACEHOLDER_PATTERN = /\{name\}|\{sound\}/g;
+
 export function isPetZooPetType(value: unknown): value is PetZooPetType {
   return typeof value === 'string' && (PET_ZOO_PET_TYPES as readonly string[]).includes(value);
 }
@@ -77,7 +79,9 @@ export function getPetZooSuggestedName(type: PetZooPetType, takenNames: readonly
   return defaultName;
 }
 
-/** Fills `{name}` and `{sound}` in a message. */
+/** Fills `{name}` and `{sound}` in a message, in one pass, so a name like `{sound}` is shown as typed. */
 export function formatPetZooMessage(template: string, pet: Pick<PetZooPet, 'name'>, definition: PetZooPetDefinition): string {
-  return template.replaceAll('{name}', pet.name).replaceAll('{sound}', definition.voice.sound);
+  return template.replaceAll(MESSAGE_PLACEHOLDER_PATTERN, (placeholder: string) => {
+    return placeholder === '{name}' ? pet.name : definition.voice.sound;
+  });
 }

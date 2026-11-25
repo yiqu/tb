@@ -75,10 +75,10 @@ export default function PetZooSpawnPetForm({ onDone }: PetZooSpawnPetFormProps) 
   const [initialName] = useState<string>(() => {
     return getPetZooSuggestedName(DEFAULT_PET_TYPE, takenNames);
   });
-  // the name last filled in for the person, to tell it apart from a name they typed
-  const suggestedNameRef = useRef<string>(initialName);
+  // set once the person types in the name box: from then on the name is theirs. Emptying the box gives it back.
+  const isNameTypedRef = useRef<boolean>(false);
 
-  const { control, handleSubmit, setValue, getValues } = useForm<PetZooSpawnPetFormValues>({
+  const { control, handleSubmit, setValue, watch } = useForm<PetZooSpawnPetFormValues>({
     resolver: zodResolver(petZooSpawnPetSchema),
     defaultValues: { type: DEFAULT_PET_TYPE, color: getPetZooDefaultColor(DEFAULT_PET_TYPE), name: initialName },
   });
@@ -95,14 +95,24 @@ export default function PetZooSpawnPetForm({ onDone }: PetZooSpawnPetFormProps) 
     }
   }, [type, hasValidColor, setValue]);
 
+  // only typing counts: `setValue` below has no event type
+  useEffect(() => {
+    const subscription = watch((values, { name, type: eventType }) => {
+      if (name === 'name' && eventType === 'change') {
+        isNameTypedRef.current = (values.name ?? '') !== '';
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [watch]);
+
   // another kind of pet: its default name, unless the person typed a name of their own
   useEffect(() => {
-    const suggestedName: string = getPetZooSuggestedName(type, takenNames);
-    if (getValues('name') === suggestedNameRef.current) {
-      setValue('name', suggestedName);
+    if (!isNameTypedRef.current) {
+      setValue('name', getPetZooSuggestedName(type, takenNames));
     }
-    suggestedNameRef.current = suggestedName;
-  }, [type, takenNames, getValues, setValue]);
+  }, [type, takenNames, setValue]);
 
   const handleOnSubmit: SubmitHandler<PetZooSpawnPetFormValues> = (values: PetZooSpawnPetFormValues) => {
     addPet(values);

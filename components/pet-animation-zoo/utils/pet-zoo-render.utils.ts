@@ -120,10 +120,12 @@ export function renderPetZooPet(
     elements.bubble.style.display = next.bubbleText === null ? 'none' : 'block';
     // the name tag steps aside while the pet talks, see `.pet-zoo-pet` in `styles/pet-zoo.css`
     elements.root.toggleAttribute('data-talking', next.bubbleText !== null);
-    if (next.bubbleText !== null) {
-      next.bubbleWidth = elements.bubble.offsetWidth;
-      next.bubbleHeight = elements.bubble.offsetHeight;
-    }
+  }
+  // measured when the text changes, and again while the size is 0: a zoo that is hidden has no layout, and without an
+  // `IntersectionObserver` the engine keeps rendering it (see `usePetZooEngine`)
+  if (next.bubbleText !== null && (next.bubbleText !== previous.bubbleText || next.bubbleWidth === 0)) {
+    next.bubbleWidth = elements.bubble.offsetWidth;
+    next.bubbleHeight = elements.bubble.offsetHeight;
   }
   if (next.bubbleText !== null) {
     next.bubbleTransform = getAboveSpriteTransform(runtime, bounds, next.bubbleWidth, next.bubbleHeight);
