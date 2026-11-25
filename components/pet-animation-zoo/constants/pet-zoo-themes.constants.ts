@@ -14,7 +14,22 @@ import type { PetZooThemeDefinition } from '../models/pet-zoo.models';
  *
  * `unlocked` works as it does for the pets: `false` shows the theme with a lock, a time keeps it locked until then.
  */
-export const PET_ZOO_THEME_IDS = ['none', 'forest', 'castle', 'beach', 'winter', 'peak', 'autumn', 'lake', 'library', 'barn'] as const;
+export const PET_ZOO_THEME_IDS = [
+  'none',
+  'forest',
+  'castle',
+  'beach',
+  'winter',
+  'peak',
+  'autumn',
+  'lake',
+  'jungle',
+  'volcano',
+  'library',
+  'classroom',
+  'science',
+  'barn',
+] as const;
 
 export type PetZooThemeId = (typeof PET_ZOO_THEME_IDS)[number];
 
@@ -112,6 +127,27 @@ export const PET_ZOO_THEMES: Record<PetZooThemeId, PetZooThemeDefinition> = {
     // a ball floats a little below the water line, which is 9px below the top of the stones
     waterDepthPx: 11,
   },
+  jungle: {
+    id: 'jungle',
+    label: 'Jurassic jungle',
+    unlocked: true,
+    // the pets walk on the dirt path, under the ferns
+    floorPx: 8,
+    // the top band of each sky
+    fillColor: { light: '#8fd0e6', dark: '#0c1626' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
+  volcano: {
+    id: 'volcano',
+    label: 'Volcano valley',
+    unlocked: true,
+    floorPx: 8,
+    // the top band of each sky
+    fillColor: { light: '#f3b37a', dark: '#1a0d1c' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
   library: {
     id: 'library',
     label: 'Library',
@@ -121,6 +157,28 @@ export const PET_ZOO_THEMES: Record<PetZooThemeId, PetZooThemeDefinition> = {
     fillColor: { light: '#e6ceb5', dark: '#212129' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [FOREGROUND_LAYER],
+  },
+  classroom: {
+    id: 'classroom',
+    label: 'Classroom',
+    unlocked: true,
+    // the middle of the wooden floor, in front of the desks
+    floorPx: 12,
+    // the wall at the top of each image
+    fillColor: { light: '#f3e7c9', dark: '#2b2d3c' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
+  science: {
+    id: 'science',
+    label: 'Science class',
+    unlocked: true,
+    // the middle of the tiled floor, in front of the lab bench
+    floorPx: 12,
+    // the wall at the top of each image
+    fillColor: { light: '#dce8ee', dark: '#1d2532' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
   },
   barn: {
     id: 'barn',

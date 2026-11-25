@@ -2,7 +2,8 @@
 
 Little 8-bit pets living in a strip of the UI, inspired by [VS Code Pets](https://github.com/tonybaloney/vscode-pets)
 and using most of its art. The pets walk, run, hop, lie down, climb the side walls, drop back down, walk over to each
-other for a chat, and chase a ball. On the lake they hop between stepping stones. In this app it sits at the bottom
+other for a chat, chase a ball and eat what you feed them. Two flying dinosaurs fly around. On the lake they hop
+between stepping stones. In this app it sits at the bottom
 of the left nav, above the account button.
 
 ## Using it in another project
@@ -35,18 +36,24 @@ Dark mode follows the `dark` class on `<html>`. If the art is served from somewh
 
 ## What it does
 
-- **Toolbar** (top right, shown on hover or focus): Spawn pet, Throw ball, Delete pet, Change theme.
+- **Toolbar** (top right, shown on hover or focus): Spawn pet, Throw ball, Feed, Delete pet, Change theme.
   Spawn, Delete and Change theme open a dialog with dropdowns; nothing changes until OK.
 - **Spawn pet**: kind, color and name. The name starts as the kind's default name ("Biscuit 2" when taken) and
   follows the kind until you type your own. Locked kinds are listed with a lock and cannot be picked. The new pet
   hops in and greets you in its own voice. Capped at `PET_ZOO_MAX_PETS`.
 - **Throw ball**: a green ball drops in and bounces. Every pet on the ground runs after it, the first to reach it
   holds it for a few seconds, then it is gone. Pets on a wall join in once they are down.
+- **Feed**: a random food (`PET_ZOO_FOODS`: hamburger, bao, pizza, carrot, dumpling) drops in, on the lake onto a
+  stone. Every free pet goes for the nearest piece, the first one there eats it and says so. Up to
+  `PET_ZOO_MAX_FOODS` pieces at once (more pushes out the oldest), and a piece nobody eats is gone after a while.
+- **Flying** (Pteranodon, Pterodactyl, `canFly`): now and then they take off and fly around, and they fly straight at
+  a ball or food, catching it in the air. Before anything else they fly down and land, on the lake on a stone.
 - **Hover a pet** (or focus it): its name shows above it.
 - **Click a pet** (or focus it and press Enter or Space): a paw swipe and a bubble, one of its own lines or a shared
   one. Three quick clicks: a big jump. Five: zoomies. A pet on a wall lets go.
 - **Conversations**: every 9 to 22 seconds two free pets meet, one walks over, they swap lines in speech bubbles.
 - **Climbing**: a pet that walks into the left or right wall sometimes climbs it, hangs on, then drops down.
+- **Themes**: `PET_ZOO_THEMES` is the master list. Locked themes are listed with a lock and cannot be picked.
 - **Stepping stones** (Autumn lake): the pets stand on three stones spread across the lake. At the end of a stone a
   pet hops to the next one or turns around, and a pet going somewhere (to a friend, to the ball) hops across stone by
   stone. A ball that lands in the water floats and drifts to the nearest stone. Nobody climbs here.
@@ -66,7 +73,7 @@ Everything about a kind of pet is one object in `PET_ZOO_PETS` (`constants/pet-z
 | `unlocked`     | `true`, `false` (shown with a lock, cannot be spawned), or a time in ms when it unlocks          |
 | `spriteFolder` | its folder in `public/pet-animation-zoo/pets/`, kinds can share one (the three pandas)           |
 | `sizeScale`    | its size, 1 is `PET_ZOO_SPRITE_SIZE_PX` (Big panda 1.45, Little panda 0.7)                       |
-| `speed`, `canClimb`, `colors`, `animations` | how it moves and what sprites it has                                |
+| `speed`, `canClimb`, `canFly`, `colors`, `animations` | how it moves and what sprites it has (a flyer needs `fly`) |
 | `voice`        | its `sound`, its `greeting` and its own `lines`                                                  |
 
 Lines every pet can say are in `PET_ZOO_MESSAGES` (`constants/pet-zoo-messages.constants.ts`). In any line, `{name}`
@@ -76,7 +83,7 @@ is replaced by the pet's name and `{sound}` by its sound. A saved pet is `{ id, 
 
 | What                | Where                                   | Why                                                    |
 | ------------------- | --------------------------------------- | ------------------------------------------------------ |
-| Pets and the theme  | local storage, `PET_ZOO_STORAGE_KEY`     | Zustand `persist` in `store/pet-zoo.store.ts`          |
+| Pets, theme, unlocks | local storage, `PET_ZOO_STORAGE_KEY`    | Zustand `persist` in `store/pet-zoo.store.ts`          |
 | Height              | cookie, `PET_ZOO_HEIGHT_COOKIE_NAME`     | the server renders the right height, nothing shifts    |
 
 The store uses `skipHydration`: the server cannot see local storage, so `usePetZooStoreHydration` loads it after mount
@@ -84,25 +91,34 @@ and the world renders then. Saved data is checked with Zod on load; unknown pets
 falls back to the default, a repeated pet id keeps its first pet, and a value that is not JSON at all reads as nothing
 saved (`utils/pet-zoo-storage.utils.ts`). Positions and behaviors are not saved.
 
+### Locks
+
+`PET_ZOO_PETS` and `PET_ZOO_THEMES` are the master lists, each entry has `unlocked`: `true`, `false` or a time in ms.
+The store saves an `unlocks` record next to the pets, one entry per kind of pet and per theme, seeded from the master
+lists; `unlockPet` and `unlockTheme` set an entry to `true`, for unlocks earned later. Something can be picked when
+its master list entry or its saved entry says so (`utils/pet-zoo-unlock.utils.ts`). On load the saved record is
+rebuilt on the master lists: an entry for a pet or theme no longer in them is dropped, so it never shows up again,
+and a new one starts from its master value. A saved theme that is locked falls back to the default theme.
+
 ## How it is built
 
-`PetZooEngine` (in `engine/`) runs one `requestAnimationFrame` loop. Each frame it steps the ball and every pet,
+`PetZooEngine` (in `engine/`) runs one `requestAnimationFrame` loop. Each frame it steps the ball, the food and every pet,
 then writes transforms, sprite URLs and bubble text straight to DOM nodes that the pet components registered.
 React renders only when a pet is added or removed or the theme changes, never per frame. The loop pauses while
 the zoo is hidden or off screen (an `IntersectionObserver` in `usePetZooEngine`).
 
 ```
-components/   PetAnimationZoo (entry), PetZooWorld, PetZooPetSprite, PetZooNameTag, PetZooIslandLayer, PetZooBall,
+components/   PetAnimationZoo (entry), PetZooWorld, PetZooPetSprite, PetZooNameTag, PetZooIslandLayer, PetZooBall, PetZooFood,
               PetZooToolbar, the dialogs and forms
-constants/    sizes and storage keys, the pet catalog, the themes, timing and physics, messages, labels
+constants/    sizes and storage keys, the pet catalog, the themes, the foods, timing and physics, messages, labels
 engine/       PetZooEngine
 hooks/        engine lifecycle, store hydration, dark mode, height resize
 models/       saved types (pet-zoo.models) and runtime types (pet-zoo-runtime.models)
 schemas/      Zod schemas for the dialogs and for what is loaded from local storage
 store/        Zustand store with persist
 styles/       pixel font, speech bubble, crisp pixel art
-utils/        behavior (the state machine), ball physics, clicks, speech, stepping stones, rendering, sprites, themes,
-              height, storage
+utils/        behavior (the state machine, flight), ball and food physics, clicks, speech, stepping stones, rendering,
+              sprites, themes, unlocks, height, storage
 ```
 
 ### Adding a pet or a theme

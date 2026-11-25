@@ -16,8 +16,11 @@ own MIT license. Only the "nano" backgrounds and the 8 fps sprites are copied. C
 - Winter theme: [Kiana Mosser](https://www.instagram.com/kianamosser/). Forest theme: [edermunizz](https://edermunizz.itch.io/free-pixel-art-forest). Castle theme: based on [GuttyKreum](https://guttykreum.itch.io/gothic-castle-game-assets). Other themes: VS Code Pets contributors.
 - Speech bubble font: Silkscreen by Jason Kottke, SIL Open Font License 1.1.
 
-Made for this project, under the project's own license: the deer sprites (`pets/deer/`), the Snowy peak theme
-(`backgrounds/peak/`) and the Autumn lake theme with its stepping stones (`backgrounds/lake/`). The Big panda and
+Made for this project, under the project's own license: the deer sprites (`pets/deer/`), the pteranodon and
+pterodactyl sprites (`pets/pteranodon/`, `pets/pterodactyl/`), the food (`foods/`), the Snowy peak theme
+(`backgrounds/peak/`), the Autumn lake theme with its stepping stones (`backgrounds/lake/`), the Jurassic jungle and
+Volcano valley themes (`backgrounds/jungle/`, `backgrounds/volcano/`, generic prehistoric scenery, nothing from a film)
+and the Classroom and Science class themes (`backgrounds/classroom/`, `backgrounds/science/`). The Big panda and
 Little panda reuse the panda sprites at another size.
 
 Left out on purpose: the cat (its artist asked that it is not redistributed) and Totoro (a Studio Ghibli character).
