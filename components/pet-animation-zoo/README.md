@@ -12,7 +12,7 @@ other for a chat, and chase a ball. In this app it sits at the bottom of the lef
    in other places:
    - `cn` from `@/lib/utils` (the shadcn helper, clsx + tailwind-merge)
    - the shadcn `button`, `dialog`, `field`, `input`, `select` and `tooltip` components from `@/components/ui/`
-   - `RowStack` and `ColumnStack` from `@/shared/components/`
+   - `RowStack` from `@/shared/components/RowStack` and `ColumnStack` from `@/shared/components/ColumnStack`
    - `Typography` from `@/components/typography/Typography`
 3. Render it. It fills the width of its parent:
 
