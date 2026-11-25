@@ -14,9 +14,8 @@ import type {
 
 /**
  * Locks of the pets and the backgrounds. What the person can pick is `unlockedPets` and `unlockedBackgrounds` in the
- * pixel-pets store: one `true` or `false` per entry of the master lists. The master lists' `unlocked` is only the
- * default, for a person with nothing saved yet and for an entry added to a list later. A master list date is the one
- * exception: from that day on the entry is open, whatever was saved before, like an unlock scheduled for that day.
+ * pixel-pets store: one `true` or `false` per entry of the master lists. A saved value always wins. The master lists'
+ * `unlocked` is only the default, for a person with nothing saved yet and for an entry added to a list later.
  */
 
 export function getPixelPalsNow(): DateTime {
@@ -31,11 +30,8 @@ export function isPixelPalsUnlockReached(unlock: PixelPalsUnlock, now: DateTime)
   return now.toMillis() >= unlock;
 }
 
-/** One entry: its saved `true` or `false`, or else its master list default. Open once its master list date has come. */
+/** One entry: its saved `true` or `false`, or else its master list default. */
 function getUnlockedValue(saved: unknown, masterUnlock: PixelPalsUnlock, now: DateTime): boolean {
-  if (typeof masterUnlock === 'number' && isPixelPalsUnlockReached(masterUnlock, now)) {
-    return true;
-  }
   return typeof saved === 'boolean' ? saved : isPixelPalsUnlockReached(masterUnlock, now);
 }
 
