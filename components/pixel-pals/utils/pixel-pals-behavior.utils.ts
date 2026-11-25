@@ -167,10 +167,14 @@ export function keepPixelPalsPetOnGround(runtime: PixelPalsPetRuntime, bounds: P
   runtime.x = Math.min(range.maxX, Math.max(range.minX, runtime.x));
 }
 
-/** A random spot on the ground for a pet's left edge, or on a random stone. */
+/** A random spot on the ground for a pet's left edge, or on a random stone, with the whole pet inside Pixel Pals. */
 export function getPixelPalsRandomGroundX(bounds: PixelPalsWorldBounds, size: number): number {
+  const maxX: number = getPixelPalsMaxX(bounds, size);
   const span: PixelPalsIslandSpan | undefined = randomItem(bounds.islands);
-  return span ? randomBetween([span.left, span.right]) - size / 2 : Math.random() * getPixelPalsMaxX(bounds, size);
+  if (!span) {
+    return Math.random() * maxX;
+  }
+  return Math.min(maxX, Math.max(0, randomBetween([span.left, span.right]) - size / 2));
 }
 
 export function createPixelPalsPetRuntime(pet: PixelPalsPet, bounds: PixelPalsWorldBounds): PixelPalsPetRuntime {

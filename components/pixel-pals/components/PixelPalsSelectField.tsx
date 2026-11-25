@@ -3,7 +3,6 @@
 import { useId, ReactNode } from 'react';
 import { Path, Control, Controller, FieldValues } from 'react-hook-form';
 
-import RowStack from '@/shared/components/RowStack';
 import Typography from '@/components/typography/Typography';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Select, SelectItem, SelectValue, SelectContent, SelectTrigger } from '@/components/ui/select';
@@ -61,13 +60,14 @@ export default function PixelPalsSelectField<T extends FieldValues>({
                 { options.map((option: PixelPalsSelectOption) => {
                   return (
                     <SelectItem key={ option.value } value={ option.value } disabled={ option.disabled }>
-                      <RowStack className="items-center gap-2">
+                      { /* a span, not RowStack: Radix puts this inside its item text span and copies it into the trigger */ }
+                      <span className="flex flex-row items-center gap-2">
                         { option.icon }
                         <Typography as="span" variant="body1">
                           { option.label }
                         </Typography>
                         { option.trailing }
-                      </RowStack>
+                      </span>
                     </SelectItem>
                   );
                 }) }

@@ -31,7 +31,7 @@ const heightCookie = (await cookies()).get(PIXEL_PALS_HEIGHT_COOKIE_NAME);
 <PixelPals initialHeight={ parsePixelPalsHeight(heightCookie?.value) } />
 ```
 
-Dark mode follows the `dark` class on `<html>`. If the art is served from somewhere else, change
+Dark mode follows the `dark` class on `<html>`. If the art and the font are served from somewhere else, change
 `PIXEL_PALS_ASSET_BASE_URL`.
 
 ## What it does

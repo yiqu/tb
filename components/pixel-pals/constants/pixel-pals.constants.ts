@@ -34,6 +34,11 @@ export const PIXEL_PALS_PET_NAME_MAX_LENGTH = 20;
 export const PIXEL_PALS_SPRITE_SIZE_PX = 30;
 /** The speech bubble font, as in `.pixel-pals-bubble` in `styles/pixel-pals.css`. */
 export const PIXEL_PALS_BUBBLE_FONT = "8px 'PixelPalsSilkscreen'";
+/**
+ * The pixel font of the bubbles and name tags: Silkscreen by Jason Kottke, SIL Open Font License. `PixelPals` renders
+ * this instead of the CSS file holding it, so the font is loaded from `PIXEL_PALS_ASSET_BASE_URL` like the art.
+ */
+export const PIXEL_PALS_FONT_FACE_CSS = `@font-face { font-family: 'PixelPalsSilkscreen'; src: url('${PIXEL_PALS_ASSET_BASE_URL}/fonts/Silkscreen-Regular.ttf') format('truetype'); font-display: swap; }`;
 
 export const PIXEL_PALS_BALL_RADIUS_PX = 3;
 /** Unlock dates of locked pets are read and shown in Eastern time. */

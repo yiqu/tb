@@ -11,7 +11,7 @@ import PixelPalsHeightResizeHandle from './PixelPalsHeightResizeHandle';
 import { usePixelPalsHeightResize } from '../hooks/usePixelPalsHeightResize';
 import { PIXEL_PALS_LABELS } from '../constants/pixel-pals-labels.constants';
 import { usePixelPalsStoreHydration } from '../hooks/usePixelPalsStoreHydration';
-import { PIXEL_PALS_DEFAULT_HEIGHT_PX } from '../constants/pixel-pals.constants';
+import { PIXEL_PALS_FONT_FACE_CSS, PIXEL_PALS_DEFAULT_HEIGHT_PX } from '../constants/pixel-pals.constants';
 
 import '../styles/pixel-pals.css';
 
@@ -47,6 +47,10 @@ export default function PixelPals({ initialHeight = PIXEL_PALS_DEFAULT_HEIGHT_PX
       className={ cn('group/pixel-pals relative w-full shrink-0 overflow-hidden rounded-md border border-sidebar-border bg-muted/40', className) }
       style={ { height } }
     >
+      { /* React puts this in <head> once, however many Pixel Pals are on the page */ }
+      <style href="pixel-pals-font" precedence="default">
+        { PIXEL_PALS_FONT_FACE_CSS }
+      </style>
       { /* the saved pets and theme are only known after mount, the empty frame keeps the space meanwhile */ }
       { isHydrated ?
         <>

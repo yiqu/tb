@@ -1,9 +1,5 @@
-/* The pixel font of the speech bubbles. Silkscreen by Jason Kottke, SIL Open Font License. */
-@font-face {
-  font-family: 'PixelPalsSilkscreen';
-  src: url('/pixel-pals/fonts/Silkscreen-Regular.ttf') format('truetype');
-  font-display: swap;
-}
+/* The @font-face of 'PixelPalsSilkscreen' is `PIXEL_PALS_FONT_FACE_CSS`, rendered by `PixelPals`, so it follows
+   `PIXEL_PALS_ASSET_BASE_URL` like the rest of the art. */
 
 /* keeps the 8-bit art crisp when it is scaled */
 .pixel-pals-pixelated {

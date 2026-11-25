@@ -21,7 +21,12 @@ export function usePixelPalsEngine(pixelPalsRef: RefObject<HTMLElement | null>):
         engine.stop();
       };
     }
+    // a callback already queued when the effect cleans up still runs after `disconnect`, it must not restart the engine
+    let isActive = true;
     const observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+      if (!isActive) {
+        return;
+      }
       const latest: IntersectionObserverEntry | undefined = entries[entries.length - 1];
       if (latest?.isIntersecting) {
         engine.start();
@@ -31,6 +36,7 @@ export function usePixelPalsEngine(pixelPalsRef: RefObject<HTMLElement | null>):
     });
     observer.observe(element);
     return () => {
+      isActive = false;
       observer.disconnect();
       engine.stop();
     };
