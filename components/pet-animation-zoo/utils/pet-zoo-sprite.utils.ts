@@ -26,13 +26,13 @@ export function getPetZooSpriteAnimation(definition: PetZooPetDefinition, animat
   return fallback ?? PET_ZOO_ANIMATION.idle;
 }
 
-export function getPetZooSpriteUrl(pet: Pick<PetZooPet, 'type' | 'color'>, definition: PetZooPetDefinition, animation: PetZooAnimation): string {
+export function getPetZooSpriteUrl(pet: Pick<PetZooPet, 'color'>, definition: PetZooPetDefinition, animation: PetZooAnimation): string {
   const spriteAnimation: PetZooAnimation = getPetZooSpriteAnimation(definition, animation);
-  return `${PET_ZOO_ASSET_BASE_URL}/pets/${pet.type}/${pet.color}_${spriteAnimation}_8fps.gif`;
+  return `${PET_ZOO_ASSET_BASE_URL}/pets/${definition.spriteFolder}/${pet.color}_${spriteAnimation}_8fps.gif`;
 }
 
 /** Every sprite of one pet, to load them before they are needed so a new animation never flashes empty. */
-export function getPetZooAllSpriteUrls(pet: Pick<PetZooPet, 'type' | 'color'>, definition: PetZooPetDefinition): string[] {
+export function getPetZooAllSpriteUrls(pet: Pick<PetZooPet, 'color'>, definition: PetZooPetDefinition): string[] {
   return definition.animations.map((animation: PetZooAnimation) => {
     return getPetZooSpriteUrl(pet, definition, animation);
   });

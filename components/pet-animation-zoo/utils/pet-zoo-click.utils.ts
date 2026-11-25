@@ -1,20 +1,20 @@
-import { randomItem } from './pet-zoo-random.utils';
-import { formatPetZooMessage } from './pet-zoo-pet.utils';
+import { pickPetZooClickLine } from './pet-zoo-speech.utils';
 import { PET_ZOO_BEHAVIOR } from '../models/pet-zoo-runtime.models';
-import { startPetZooFall, setPetZooBehavior, showPetZooBubble, canPetZooPetMove, getPetZooJumpVelocity } from './pet-zoo-behavior.utils';
+import { PET_ZOO_MESSAGES } from '../constants/pet-zoo-messages.constants';
+import {
+  startPetZooFall,
+  setPetZooBehavior,
+  showPetZooBubble,
+  canPetZooPetMove,
+  isPetZooPetOnGround,
+  getPetZooJumpVelocity,
+} from './pet-zoo-behavior.utils';
 import {
   PET_ZOO_CLICKS_FOR_ZOOMIES,
   PET_ZOO_BIG_JUMP_VELOCITY,
   PET_ZOO_CLICKS_FOR_BIG_JUMP,
   PET_ZOO_CLICK_STREAK_SECONDS,
 } from '../constants/pet-zoo-behavior.constants';
-import {
-  PET_ZOO_FALL_MESSAGE,
-  PET_ZOO_CLICK_REACTIONS,
-  PET_ZOO_ZOOMIES_MESSAGE,
-  PET_ZOO_BIG_JUMP_MESSAGE,
-  PET_ZOO_HOLDING_BALL_MESSAGE,
-} from '../constants/pet-zoo-messages.constants';
 
 import type { PetZooBehavior, PetZooPetRuntime, PetZooWorldBounds } from '../models/pet-zoo-runtime.models';
 
@@ -29,7 +29,7 @@ const BUBBLE_ONLY_BEHAVIORS: readonly PetZooBehavior[] = [
 
 /**
  * A click on a pet. Quick clicks build a streak:
- * - most clicks: a paw swipe and a random bubble
+ * - most clicks: a paw swipe and a bubble, one of the pet's own lines or a shared one
  * - the 3rd quick click: a big jump with hearts
  * - the 5th quick click: zoomies, running back and forth for a few seconds
  * A pet on a wall lets go and falls.
@@ -40,14 +40,14 @@ export function reactToPetZooClick(runtime: PetZooPetRuntime, nowSeconds: number
 
   if (runtime.behavior === PET_ZOO_BEHAVIOR.climb || runtime.behavior === PET_ZOO_BEHAVIOR.wallHang) {
     startPetZooFall(runtime);
-    showPetZooBubble(runtime, PET_ZOO_FALL_MESSAGE);
+    showPetZooBubble(runtime, PET_ZOO_MESSAGES.fall);
     return;
   }
   if (runtime.behavior === PET_ZOO_BEHAVIOR.fall) {
     return;
   }
   if (runtime.behavior === PET_ZOO_BEHAVIOR.withBall) {
-    showPetZooBubble(runtime, PET_ZOO_HOLDING_BALL_MESSAGE);
+    showPetZooBubble(runtime, PET_ZOO_MESSAGES.holdingBall);
     return;
   }
 
@@ -55,18 +55,18 @@ export function reactToPetZooClick(runtime: PetZooPetRuntime, nowSeconds: number
     runtime.clickStreak = 0;
     runtime.friendId = null;
     setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.zoomies);
-    showPetZooBubble(runtime, PET_ZOO_ZOOMIES_MESSAGE);
+    showPetZooBubble(runtime, PET_ZOO_MESSAGES.zoomies);
     return;
   }
-  if (runtime.clickStreak === PET_ZOO_CLICKS_FOR_BIG_JUMP && runtime.y === 0) {
-    runtime.vy = getPetZooJumpVelocity(PET_ZOO_BIG_JUMP_VELOCITY, bounds);
-    showPetZooBubble(runtime, PET_ZOO_BIG_JUMP_MESSAGE);
+  if (runtime.clickStreak === PET_ZOO_CLICKS_FOR_BIG_JUMP && isPetZooPetOnGround(runtime)) {
+    runtime.vy = getPetZooJumpVelocity(PET_ZOO_BIG_JUMP_VELOCITY, bounds, runtime.size);
+    showPetZooBubble(runtime, PET_ZOO_MESSAGES.bigJump);
     return;
   }
 
-  const reaction: string | undefined = randomItem(PET_ZOO_CLICK_REACTIONS);
-  if (reaction) {
-    showPetZooBubble(runtime, formatPetZooMessage(reaction, runtime.pet.name));
+  const line: string | undefined = pickPetZooClickLine(runtime);
+  if (line) {
+    showPetZooBubble(runtime, line);
   }
   if (!BUBBLE_ONLY_BEHAVIORS.includes(runtime.behavior)) {
     setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.swipe);

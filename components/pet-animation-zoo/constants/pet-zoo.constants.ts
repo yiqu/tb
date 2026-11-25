@@ -26,10 +26,12 @@ export const PET_ZOO_STORAGE_VERSION = 1;
 export const PET_ZOO_MAX_PETS = 10;
 export const PET_ZOO_PET_NAME_MAX_LENGTH = 20;
 
-/** Every sprite is drawn in a square of this size, like the "nano" size of VS Code Pets. */
+/** Every sprite is drawn in a square of this size, like the "nano" size of VS Code Pets, times its kind's `sizeScale`. */
 export const PET_ZOO_SPRITE_SIZE_PX = 30;
 /** The speech bubble font, as in `.pet-zoo-bubble` in `styles/pet-zoo.css`. */
 export const PET_ZOO_BUBBLE_FONT = "8px 'PetZooSilkscreen'";
 
 export const PET_ZOO_BALL_RADIUS_PX = 3;
+/** Unlock dates of locked pets are read and shown in Eastern time. */
+export const PET_ZOO_TIME_ZONE = 'America/New_York';
 export const PET_ZOO_BALL_COLOR = '#2ed851';

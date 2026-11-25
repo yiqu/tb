@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 import { createPetZooId } from '../utils/pet-zoo-random.utils';
 import { petZooLocalStorage } from '../utils/pet-zoo-storage.utils';
+import { PET_ZOO_PETS } from '../constants/pet-zoo-pets.constants';
 import { PET_ZOO_DEFAULT_THEME_ID } from '../constants/pet-zoo-themes.constants';
 import { petZooPetSchema, petZooPersistedStateSchema } from '../schemas/pet-zoo-persisted-state.schema';
 import { PET_ZOO_MAX_PETS, PET_ZOO_STORAGE_KEY, PET_ZOO_STORAGE_VERSION } from '../constants/pet-zoo.constants';
@@ -33,7 +34,9 @@ interface PetZooState {
 
 type PetZooPersistedState = Pick<PetZooState, 'pets' | 'themeId'>;
 
-export const PET_ZOO_DEFAULT_PETS: PetZooPet[] = [{ id: 'pet-zoo-default-dog', type: 'dog', color: 'brown', name: 'Bella' }];
+export const PET_ZOO_DEFAULT_PETS: PetZooPet[] = [
+  { id: 'pet-zoo-default-dog', type: 'dog', color: 'brown', name: PET_ZOO_PETS.dog.defaultName },
+];
 
 /**
  * Keeps only the saved pets that still exist in the catalog, once per id, up to the cap. The engine and React

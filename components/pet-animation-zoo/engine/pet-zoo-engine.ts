@@ -1,10 +1,12 @@
 import { reactToPetZooClick } from '../utils/pet-zoo-click.utils';
 import { getPetZooAllSpriteUrls } from '../utils/pet-zoo-sprite.utils';
 import { PET_ZOO_BEHAVIOR } from '../models/pet-zoo-runtime.models';
-import { formatPetZooMessage } from '../utils/pet-zoo-pet.utils';
-import { PET_ZOO_BUBBLE_FONT, PET_ZOO_SPRITE_SIZE_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_BUBBLE_FONT, PET_ZOO_BALL_RADIUS_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_MESSAGES } from '../constants/pet-zoo-messages.constants';
 import { createPetZooBall, stepPetZooBall } from '../utils/pet-zoo-ball.utils';
 import { randomItem, randomChance, randomBetween } from '../utils/pet-zoo-random.utils';
+import { isOverPetZooStone, getPetZooIslandSpans } from '../utils/pet-zoo-island.utils';
+import { getPetZooGreeting, pickPetZooConversation, pickPetZooMissedBallLine } from '../utils/pet-zoo-speech.utils';
 import { renderPetZooPet, renderPetZooBall, PET_ZOO_EMPTY_RENDERED_PET } from '../utils/pet-zoo-render.utils';
 import {
   PET_ZOO_HOP_VELOCITY,
@@ -12,31 +14,27 @@ import {
   PET_ZOO_BEHAVIOR_DURATION,
   PET_ZOO_CONVERSATION_INTERVAL,
   PET_ZOO_CONVERSATION_LINE_SECONDS,
-  PET_ZOO_CONVERSATION_DISTANCE_IN_SPRITES,
 } from '../constants/pet-zoo-behavior.constants';
 import {
   stepPetZooPet,
-  getPetZooMaxX,
+  startPetZooFall,
   isPetZooPetFree,
   showPetZooBubble,
   setPetZooBehavior,
   canPetZooPetMove,
   isPetZooPetOnWall,
   getPetZooMaxClimbY,
+  arePetZooPetsClose,
+  isPetZooPetOnGround,
   getPetZooJumpVelocity,
   pickNextPetZooBehavior,
   createPetZooPetRuntime,
+  keepPetZooPetOnGround,
   startPetZooConversation,
   PetZooSimulationContext,
 } from '../utils/pet-zoo-behavior.utils';
-import {
-  PET_ZOO_SPAWN_MESSAGE,
-  PET_ZOO_CONVERSATIONS,
-  PET_ZOO_CAUGHT_BALL_MESSAGE,
-  PET_ZOO_MISSED_BALL_MESSAGES,
-} from '../constants/pet-zoo-messages.constants';
 
-import type { PetZooPet } from '../models/pet-zoo.models';
+import type { PetZooPet, PetZooThemeIsland, PetZooThemeDefinition } from '../models/pet-zoo.models';
 import type { PetZooBallRuntime, PetZooPetRuntime, PetZooWorldBounds, PetZooRenderedPet, PetZooPetElements } from '../models/pet-zoo-runtime.models';
 
 /**
@@ -54,7 +52,8 @@ export class PetZooEngine {
   private readonly preloadedSprites = new Set<string>();
   private ball: PetZooBallRuntime | null = null;
   private ballElement: HTMLElement | null = null;
-  private bounds: PetZooWorldBounds = { width: 0, height: 0, floor: 0 };
+  private bounds: PetZooWorldBounds = { width: 0, height: 0, floor: 0, islands: [], waterDepth: 0 };
+  private islandDefinitions: readonly PetZooThemeIsland[] | undefined = undefined;
   private frameId: number | null = null;
   private lastFrameAt: number | null = null;
   private clockSeconds = 0;
@@ -72,7 +71,7 @@ export class PetZooEngine {
       this.catchBall(runtime);
     },
     startConversation: (initiator: PetZooPetRuntime, partner: PetZooPetRuntime) => {
-      const lines: readonly [string, string] | undefined = randomItem(PET_ZOO_CONVERSATIONS);
+      const lines: readonly [string, string] | undefined = pickPetZooConversation(initiator, partner);
       if (lines) {
         startPetZooConversation(initiator, partner, lines, PET_ZOO_CONVERSATION_LINE_SECONDS);
       }
@@ -99,11 +98,17 @@ export class PetZooEngine {
   setWorldSize(width: number, height: number): void {
     this.bounds.width = width;
     this.bounds.height = height;
+    // the stepping stones are placed by a share of the width
+    this.bounds.islands = getPetZooIslandSpans(this.islandDefinitions, width);
     this.keepPetsInside();
   }
 
-  setFloor(floor: number): void {
-    this.bounds.floor = floor;
+  /** The theme's ground: how high it is, and on the lake, the stepping stones. */
+  setTheme(theme: PetZooThemeDefinition): void {
+    this.bounds.floor = theme.floorPx;
+    this.bounds.waterDepth = theme.waterDepthPx ?? 0;
+    this.islandDefinitions = theme.islands;
+    this.bounds.islands = getPetZooIslandSpans(theme.islands, this.bounds.width);
     this.keepPetsInside();
   }
 
@@ -131,8 +136,8 @@ export class PetZooEngine {
       this.preloadSprites(runtime);
       // pets loaded with the page are already there, a pet spawned later hops in and says hi
       if (this.hasReceivedPets) {
-        runtime.vy = getPetZooJumpVelocity(PET_ZOO_HOP_VELOCITY * 1.4, this.bounds);
-        showPetZooBubble(runtime, formatPetZooMessage(PET_ZOO_SPAWN_MESSAGE, pet.name));
+        runtime.vy = getPetZooJumpVelocity(PET_ZOO_HOP_VELOCITY * 1.4, this.bounds, runtime.size);
+        showPetZooBubble(runtime, getPetZooGreeting(runtime));
         if (this.ball && this.ball.heldByPetId === null && canPetZooPetMove(runtime)) {
           setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.chase);
         }
@@ -240,14 +245,14 @@ export class PetZooEngine {
     }
     this.ball.heldByPetId = runtime.pet.id;
     setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.withBall);
-    showPetZooBubble(runtime, PET_ZOO_CAUGHT_BALL_MESSAGE);
+    showPetZooBubble(runtime, PET_ZOO_MESSAGES.caughtBall);
 
     this.pets.forEach((other: PetZooPetRuntime) => {
       if (other === runtime || other.behavior !== PET_ZOO_BEHAVIOR.chase) {
         return;
       }
       setPetZooBehavior(other, PET_ZOO_BEHAVIOR.idle);
-      const message: string | undefined = randomItem(PET_ZOO_MISSED_BALL_MESSAGES);
+      const message: string | undefined = pickPetZooMissedBallLine(other);
       if (message && randomChance(0.5)) {
         showPetZooBubble(other, message);
       }
@@ -260,7 +265,7 @@ export class PetZooEngine {
       return;
     }
     const candidates: PetZooPetRuntime[] = Array.from(this.pets.values()).filter((runtime: PetZooPetRuntime) => {
-      return isPetZooPetFree(runtime) && runtime.y === 0;
+      return isPetZooPetFree(runtime) && isPetZooPetOnGround(runtime);
     });
     const initiator: PetZooPetRuntime | undefined = randomItem(candidates.filter(canPetZooPetMove));
     const partner: PetZooPetRuntime | undefined = randomItem(
@@ -272,7 +277,7 @@ export class PetZooEngine {
       return;
     }
 
-    if (Math.abs(partner.x - initiator.x) <= PET_ZOO_SPRITE_SIZE_PX * PET_ZOO_CONVERSATION_DISTANCE_IN_SPRITES) {
+    if (arePetZooPetsClose(initiator, partner)) {
       this.context.startConversation(initiator, partner);
       return;
     }
@@ -297,12 +302,25 @@ export class PetZooEngine {
     });
   }
 
-  /** After a resize or a theme change: pulls pets back inside, and off a wall that is now too short. */
+  /**
+   * After a resize or a theme change: pulls pets back inside and onto the ground they can stand on (a stepping stone
+   * on the lake), and off a wall that is now too short or that has no ground next to it.
+   */
   private keepPetsInside(): void {
-    const maxX: number = getPetZooMaxX(this.bounds);
-    const maxClimbY: number = getPetZooMaxClimbY(this.bounds);
+    const hasIslands: boolean = this.bounds.islands.length > 0;
     this.pets.forEach((runtime: PetZooPetRuntime) => {
-      runtime.x = runtime.wall === 'right' ? maxX : Math.min(maxX, Math.max(0, runtime.x));
+      // a hop between stones aims at where a stone was, it lands where it is instead
+      runtime.skip = null;
+      // the stones are away from the walls: a pet on a wall lets go
+      if (hasIslands && runtime.wall) {
+        startPetZooFall(runtime);
+      }
+      if (runtime.wall) {
+        runtime.x = runtime.wall === 'right' ? Math.max(0, this.bounds.width - runtime.size) : 0;
+      } else {
+        keepPetZooPetOnGround(runtime, this.bounds);
+      }
+      const maxClimbY: number = getPetZooMaxClimbY(this.bounds, runtime.size);
       if (runtime.y > maxClimbY) {
         runtime.y = maxClimbY;
         // a pet in the air stops rising and falls from the new top
@@ -313,12 +331,17 @@ export class PetZooEngine {
     });
     if (this.ball) {
       this.ball.x = Math.min(this.bounds.width, Math.max(0, this.ball.x));
+      // a stone moved under a ball floating in the water: it sits on the stone now
+      if (hasIslands && isOverPetZooStone(this.bounds, this.ball.x) && this.ball.y < PET_ZOO_BALL_RADIUS_PX) {
+        this.ball.y = PET_ZOO_BALL_RADIUS_PX;
+        this.ball.vy = 0;
+      }
     }
   }
 
   /**
-   * A bubble is measured once per text, to keep it inside the zoo. The pixel font may arrive after the first
-   * bubbles were measured in the fallback font, so measure the visible ones again once it is loaded.
+   * A bubble is measured once per text and a name tag once, to keep them inside the zoo. The pixel font may arrive
+   * after they were measured in the fallback font, so measure them again once it is loaded.
    */
   private watchBubbleFont(): void {
     if (this.isWatchingBubbleFont || typeof document === 'undefined' || !document.fonts) {
@@ -331,10 +354,15 @@ export class PetZooEngine {
         this.rendered.forEach((rendered: PetZooRenderedPet, id: string) => {
           const elements: PetZooPetElements | undefined = this.elements.get(id);
           // a hidden zoo (e.g. a collapsed nav) measures 0, keep the earlier size rather than cache that
-          if (!elements || rendered.bubbleText === null || elements.bubble.offsetWidth === 0) {
+          if (!elements || elements.nameTag.offsetWidth === 0) {
             return;
           }
-          this.rendered.set(id, { ...rendered, bubbleWidth: elements.bubble.offsetWidth, bubbleHeight: elements.bubble.offsetHeight });
+          const next: PetZooRenderedPet = { ...rendered, nameTagWidth: elements.nameTag.offsetWidth };
+          if (rendered.bubbleText !== null && elements.bubble.offsetWidth > 0) {
+            next.bubbleWidth = elements.bubble.offsetWidth;
+            next.bubbleHeight = elements.bubble.offsetHeight;
+          }
+          this.rendered.set(id, next);
         });
       })
       .catch(() => {

@@ -1,10 +1,11 @@
 import type { PetZooThemeDefinition } from '../models/pet-zoo.models';
 
 /**
- * The backgrounds. Art comes from VS Code Pets (MIT), see `public/pet-animation-zoo/CREDITS.md`.
- * Images are `public/pet-animation-zoo/backgrounds/<id>/<file>`, where `{mode}` is `light` or `dark`.
+ * The backgrounds. Most art comes from VS Code Pets (MIT), Snowy peak and Autumn lake were made for this project,
+ * see `public/pet-animation-zoo/CREDITS.md`. Images are `public/pet-animation-zoo/backgrounds/<id>/<file>`, where
+ * `{mode}` is `light` or `dark`.
  */
-export const PET_ZOO_THEME_IDS = ['none', 'forest', 'castle', 'beach', 'winter', 'autumn', 'library', 'barn'] as const;
+export const PET_ZOO_THEME_IDS = ['none', 'forest', 'castle', 'beach', 'winter', 'peak', 'autumn', 'lake', 'library', 'barn'] as const;
 
 export type PetZooThemeId = (typeof PET_ZOO_THEME_IDS)[number];
 
@@ -55,6 +56,16 @@ export const PET_ZOO_THEMES: Record<PetZooThemeId, PetZooThemeDefinition> = {
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [FOREGROUND_LAYER],
   },
+  peak: {
+    id: 'peak',
+    label: 'Snowy peak',
+    // the pets walk in the snow field, a little below its top edge
+    floorPx: 10,
+    // the top band of each sky
+    fillColor: { light: '#9cc6ec', dark: '#0e1430' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
   autumn: {
     id: 'autumn',
     label: 'Autumn',
@@ -62,6 +73,24 @@ export const PET_ZOO_THEMES: Record<PetZooThemeId, PetZooThemeDefinition> = {
     fillColor: { light: '#fbe5c6', dark: '#2a1f2c' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [FOREGROUND_LAYER],
+  },
+  lake: {
+    id: 'lake',
+    label: 'Autumn lake',
+    // the top of the stepping stones
+    floorPx: 14,
+    // the top band of each sky
+    fillColor: { light: '#8fc1e3', dark: '#1b1630' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+    // three stones spread across the lake, the pets hop from one to the next
+    islands: [
+      { fileName: 'rock-1-{mode}-nano.png', centerFraction: 1 / 6, imageWidthPx: 68, stoneWidthPx: 60, walkWidthPx: 40 },
+      { fileName: 'rock-2-{mode}-nano.png', centerFraction: 1 / 2, imageWidthPx: 60, stoneWidthPx: 52, walkWidthPx: 34 },
+      { fileName: 'rock-3-{mode}-nano.png', centerFraction: 5 / 6, imageWidthPx: 64, stoneWidthPx: 56, walkWidthPx: 38 },
+    ],
+    // a ball floats a little below the water line, which is 9px below the top of the stones
+    waterDepthPx: 11,
   },
   library: {
     id: 'library',

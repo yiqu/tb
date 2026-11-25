@@ -50,6 +50,16 @@ export const PET_ZOO_CLIMB_HEIGHT_FACTOR_RANGE: PetZooRange = [0.35, 0.9];
 /** No climbing when the free height above the ground is less than this many sprite sizes. */
 export const PET_ZOO_MIN_CLIMB_HEIGHT_IN_SPRITES = 1.5;
 
+/** On the lake: chance that a pet walking to the end of its stone hops to the next one instead of turning around. */
+export const PET_ZOO_SKIP_CHANCE = 0.6;
+export const PET_ZOO_ZOOMIES_SKIP_CHANCE = 0.85;
+/** The slowest take-off of a hop between stones, so even a short hop has an arc. */
+export const PET_ZOO_SKIP_MIN_VELOCITY = 110;
+/** How far onto the next stone a hop lands. */
+export const PET_ZOO_SKIP_LANDING_INSET_PX = 6;
+/** On the lake, a pet can reach this much further for a ball floating next to its stone. */
+export const PET_ZOO_ISLAND_CATCH_REACH_PX = 6;
+
 /** Seconds between two pets starting a conversation. */
 export const PET_ZOO_CONVERSATION_INTERVAL: PetZooRange = [9, 22];
 export const PET_ZOO_CONVERSATION_LINE_SECONDS = 2.4;
@@ -68,6 +78,8 @@ export const PET_ZOO_BALL_BOUNCE_DAMPING = 0.7;
 export const PET_ZOO_BALL_WALL_DAMPING = 0.9;
 /** How fast a ball rolling on the ground slows down, per second. */
 export const PET_ZOO_BALL_ROLL_FRICTION = 1.4;
+/** A ball floating in the water drifts to the nearest stone at this speed. */
+export const PET_ZOO_BALL_DRIFT_SPEED = 10;
 /** A ball nobody catches disappears after this long. */
 export const PET_ZOO_BALL_LIFETIME_SECONDS = 12;
 

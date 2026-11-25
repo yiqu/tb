@@ -39,6 +39,12 @@ export type PetZooWallSide = 'left' | 'right';
 /** 1 faces right (how the sprites are drawn), -1 faces left. */
 export type PetZooDirection = 1 | -1;
 
+/** A hop from one stepping stone to the next: the pet flies sideways and lands at `targetX`. */
+export interface PetZooSkip {
+  targetX: number;
+  vx: number;
+}
+
 export interface PetZooPendingBubble {
   text: string;
   delaySeconds: number;
@@ -50,6 +56,9 @@ export interface PetZooPetRuntime {
   definition: PetZooPetDefinition;
   /** The pet's own walking speed, its kind's speed times a random factor. */
   speed: number;
+  /** Width and height of its sprite box in px, `PET_ZOO_SPRITE_SIZE_PX` times its kind's size. */
+  size: number;
+  /** Left edge of its sprite box. */
   x: number;
   y: number;
   /** Vertical speed of a hop, a jump or a fall, up is positive. */
@@ -59,6 +68,8 @@ export interface PetZooPetRuntime {
   behaviorSecondsLeft: number;
   wall: PetZooWallSide | null;
   climbTargetY: number;
+  /** Set while it hops to another stepping stone. */
+  skip: PetZooSkip | null;
   friendId: string | null;
   bubbleText: string | null;
   bubbleSecondsLeft: number;
@@ -77,10 +88,24 @@ export interface PetZooBallRuntime {
   secondsLeft: number;
 }
 
+/** One stepping stone, in px from the left of the world. */
+export interface PetZooIslandSpan {
+  /** Where a pet's middle can stand. */
+  left: number;
+  right: number;
+  /** The sides of the stone. */
+  stoneLeft: number;
+  stoneRight: number;
+}
+
 export interface PetZooWorldBounds {
   width: number;
   height: number;
   floor: number;
+  /** The theme's stepping stones, left to right. Empty when the whole width is ground. */
+  islands: PetZooIslandSpan[];
+  /** How far below the floor a ball floats between the stones. */
+  waterDepth: number;
 }
 
 /** The DOM nodes of one pet, written to directly every frame so React does not re-render 60 times a second. */
@@ -89,6 +114,8 @@ export interface PetZooPetElements {
   body: HTMLElement;
   image: HTMLImageElement;
   bubble: HTMLElement;
+  /** The name shown on hover. */
+  nameTag: HTMLElement;
 }
 
 /** What was last written to a pet's DOM nodes, so a frame only touches what changed. */
@@ -101,4 +128,7 @@ export interface PetZooRenderedPet {
   bubbleWidth: number;
   bubbleHeight: number;
   bubbleTransform: string;
+  /** Measured when the name changes. */
+  nameTagWidth: number;
+  nameTagTransform: string;
 }

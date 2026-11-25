@@ -1,14 +1,16 @@
 import { PET_ZOO_ANIMATION } from '../models/pet-zoo.models';
 import { getPetZooSpriteUrl } from './pet-zoo-sprite.utils';
 import { PET_ZOO_BEHAVIOR } from '../models/pet-zoo-runtime.models';
-import { PET_ZOO_SPRITE_SIZE_PX, PET_ZOO_BALL_RADIUS_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_BALL_RADIUS_PX } from '../constants/pet-zoo.constants';
 
 import type { PetZooAnimation } from '../models/pet-zoo.models';
 import type { PetZooBallRuntime, PetZooPetRuntime, PetZooWorldBounds, PetZooRenderedPet, PetZooPetElements } from '../models/pet-zoo-runtime.models';
 
+/** The height of a name tag, as in `.pet-zoo-name-tag` in `styles/pet-zoo.css`. */
+const NAME_TAG_HEIGHT_PX = 12;
 /** Space kept between a speech bubble and the edges of the zoo. */
 const BUBBLE_EDGE_GAP_PX = 2;
-/** Space between the top of the sprite and its speech bubble. */
+/** Space between the top of the sprite and its speech bubble or name tag. */
 const BUBBLE_GAP_PX = 4;
 
 export const PET_ZOO_EMPTY_RENDERED_PET: PetZooRenderedPet = {
@@ -19,9 +21,15 @@ export const PET_ZOO_EMPTY_RENDERED_PET: PetZooRenderedPet = {
   bubbleWidth: 0,
   bubbleHeight: 0,
   bubbleTransform: '',
+  nameTagWidth: 0,
+  nameTagTransform: '',
 };
 
 export function getPetZooPetAnimation(runtime: PetZooPetRuntime): PetZooAnimation {
+  // a hop from one stone to the next
+  if (runtime.skip) {
+    return PET_ZOO_ANIMATION.run;
+  }
   switch (runtime.behavior) {
     case PET_ZOO_BEHAVIOR.walk:
     case PET_ZOO_BEHAVIOR.approachFriend:
@@ -61,17 +69,20 @@ export function getPetZooBodyTransform(runtime: PetZooPetRuntime): string {
   return runtime.direction === 1 ? 'scaleX(1)' : 'scaleX(-1)';
 }
 
-/** Keeps a bubble inside the zoo: shifts it sideways near the walls, and down when the pet is near the top. */
-function getBubbleTransform(runtime: PetZooPetRuntime, bounds: PetZooWorldBounds, bubbleWidth: number, bubbleHeight: number): string {
-  const petCenter: number = runtime.x + PET_ZOO_SPRITE_SIZE_PX / 2;
-  const half: number = bubbleWidth / 2;
+/**
+ * Keeps a bubble or a name tag inside the zoo: shifts it sideways near the walls, and down when the pet is near the
+ * top. Both sit centered above the sprite (`left: 50%`, `bottom: 100% + gap`).
+ */
+function getAboveSpriteTransform(runtime: PetZooPetRuntime, bounds: PetZooWorldBounds, width: number, height: number): string {
+  const petCenter: number = runtime.x + runtime.size / 2;
+  const half: number = width / 2;
   const minCenter: number = half + BUBBLE_EDGE_GAP_PX;
   const maxCenter: number = bounds.width - half - BUBBLE_EDGE_GAP_PX;
   const clampedCenter: number = minCenter > maxCenter ? bounds.width / 2 : Math.min(maxCenter, Math.max(minCenter, petCenter));
   const offsetX: number = Math.round(clampedCenter - petCenter);
 
-  const bubbleTop: number = bounds.floor + runtime.y + PET_ZOO_SPRITE_SIZE_PX + BUBBLE_GAP_PX + bubbleHeight;
-  const offsetY: number = Math.round(Math.max(0, bubbleTop - bounds.height + BUBBLE_EDGE_GAP_PX));
+  const top: number = bounds.floor + runtime.y + runtime.size + BUBBLE_GAP_PX + height;
+  const offsetY: number = Math.round(Math.max(0, top - bounds.height + BUBBLE_EDGE_GAP_PX));
   return `translate(calc(-50% + ${offsetX}px), ${offsetY}px)`;
 }
 
@@ -90,6 +101,9 @@ export function renderPetZooPet(
     bubbleWidth: previous.bubbleWidth,
     bubbleHeight: previous.bubbleHeight,
     bubbleTransform: previous.bubbleTransform,
+    // measured on the first frame that has a size, and again once the font loads (`PetZooEngine.watchBubbleFont`)
+    nameTagWidth: previous.nameTagWidth || elements.nameTag.offsetWidth,
+    nameTagTransform: previous.nameTagTransform,
   };
 
   if (next.rootTransform !== previous.rootTransform) {
@@ -104,16 +118,22 @@ export function renderPetZooPet(
   if (next.bubbleText !== previous.bubbleText) {
     elements.bubble.textContent = next.bubbleText ?? '';
     elements.bubble.style.display = next.bubbleText === null ? 'none' : 'block';
+    // the name tag steps aside while the pet talks, see `.pet-zoo-pet` in `styles/pet-zoo.css`
+    elements.root.toggleAttribute('data-talking', next.bubbleText !== null);
     if (next.bubbleText !== null) {
       next.bubbleWidth = elements.bubble.offsetWidth;
       next.bubbleHeight = elements.bubble.offsetHeight;
     }
   }
   if (next.bubbleText !== null) {
-    next.bubbleTransform = getBubbleTransform(runtime, bounds, next.bubbleWidth, next.bubbleHeight);
+    next.bubbleTransform = getAboveSpriteTransform(runtime, bounds, next.bubbleWidth, next.bubbleHeight);
     if (next.bubbleTransform !== previous.bubbleTransform) {
       elements.bubble.style.transform = next.bubbleTransform;
     }
+  }
+  next.nameTagTransform = getAboveSpriteTransform(runtime, bounds, next.nameTagWidth, NAME_TAG_HEIGHT_PX);
+  if (next.nameTagTransform !== previous.nameTagTransform) {
+    elements.nameTag.style.transform = next.nameTagTransform;
   }
   return next;
 }

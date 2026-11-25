@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
-import { isPetZooColorOf } from '../utils/pet-zoo-pet.utils';
-import { PET_ZOO_PET_TYPES } from '../constants/pet-zoo-pets.constants';
+import { PET_ZOO_LABELS } from '../constants/pet-zoo-labels.constants';
+import { isPetZooColorOf, isPetZooPetUnlocked } from '../utils/pet-zoo-pet.utils';
+import { PET_ZOO_PETS, PET_ZOO_PET_TYPES } from '../constants/pet-zoo-pets.constants';
 import { PET_ZOO_THEME_IDS } from '../constants/pet-zoo-themes.constants';
 import { PET_ZOO_PET_NAME_MAX_LENGTH } from '../constants/pet-zoo.constants';
 
-/** The Spawn pet dialog. */
+/** The Spawn pet dialog. A locked pet cannot be picked in the dropdown, and is turned down here too. */
 export const petZooSpawnPetSchema = z
   .object({
     type: z.enum(PET_ZOO_PET_TYPES, { message: 'Choose a pet' }),
@@ -16,6 +17,12 @@ export const petZooSpawnPetSchema = z
       .min(1, { message: 'Give your pet a name' })
       .max(PET_ZOO_PET_NAME_MAX_LENGTH, { message: `A name can be up to ${PET_ZOO_PET_NAME_MAX_LENGTH} characters` }),
   })
+  .refine(
+    (values) => {
+      return isPetZooPetUnlocked(PET_ZOO_PETS[values.type]);
+    },
+    { message: PET_ZOO_LABELS.petLockedError, path: ['type'] },
+  )
   .refine(
     (values) => {
       return isPetZooColorOf(values.type, values.color);

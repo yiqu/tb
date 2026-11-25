@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { DateTime } from 'luxon';
+import { useRef, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch, SubmitHandler } from 'react-hook-form';
 
@@ -9,26 +10,37 @@ import ColumnStack from '@/shared/components/ColumnStack';
 
 import PetZooPetIcon from './PetZooPetIcon';
 import PetZooTextField from './PetZooTextField';
+import PetZooLockedLabel from './PetZooLockedLabel';
 import PetZooDialogFooter from './PetZooDialogFooter';
 import PetZooSelectField, { PetZooSelectOption } from './PetZooSelectField';
 import { PET_ZOO_LABELS } from '../constants/pet-zoo-labels.constants';
-import { PET_ZOO_PET_NAME_MAX_LENGTH } from '../constants/pet-zoo.constants';
 import { usePetZooPets, usePetZooActions } from '../store/pet-zoo.store';
+import { PET_ZOO_TIME_ZONE, PET_ZOO_PET_NAME_MAX_LENGTH } from '../constants/pet-zoo.constants';
 import { PET_ZOO_PETS, PET_ZOO_PET_TYPES, PetZooPetType } from '../constants/pet-zoo-pets.constants';
 import { petZooSpawnPetSchema, PetZooSpawnPetFormValues } from '../schemas/pet-zoo-dialogs.schema';
-import { isPetZooColorOf, getRandomPetZooName, getPetZooDefaultColor } from '../utils/pet-zoo-pet.utils';
+import { isPetZooColorOf, isPetZooPetUnlocked, getPetZooDefaultColor, getPetZooSuggestedName } from '../utils/pet-zoo-pet.utils';
 
 import type { PetZooPet, PetZooPetColorDefinition } from '../models/pet-zoo.models';
 
 const DEFAULT_PET_TYPE: PetZooPetType = 'dog';
 
-const PET_TYPE_OPTIONS: PetZooSelectOption[] = PET_ZOO_PET_TYPES.map((type: PetZooPetType) => {
-  return {
-    value: type,
-    label: PET_ZOO_PETS[type].label,
-    icon: <PetZooPetIcon type={ type } color={ getPetZooDefaultColor(type) } />,
-  };
-});
+/** The preview at the side of the dialog, at the pet's size: a big panda is bigger than a little one. */
+const PREVIEW_SIZE_PX = 52;
+
+/** Every kind of pet. Locked ones are listed with a lock and cannot be picked. */
+function getTypeOptions(now: DateTime): PetZooSelectOption[] {
+  return PET_ZOO_PET_TYPES.map((type: PetZooPetType) => {
+    const definition = PET_ZOO_PETS[type];
+    const isUnlocked: boolean = isPetZooPetUnlocked(definition, now);
+    return {
+      value: type,
+      label: definition.label,
+      icon: <PetZooPetIcon type={ type } color={ getPetZooDefaultColor(type) } />,
+      trailing: isUnlocked ? null : <PetZooLockedLabel definition={ definition } />,
+      disabled: !isUnlocked,
+    };
+  });
+}
 
 function getColorOptions(type: PetZooPetType): PetZooSelectOption[] {
   return PET_ZOO_PETS[type].colors.map((color: PetZooPetColorDefinition) => {
@@ -44,27 +56,37 @@ interface PetZooSpawnPetFormProps {
   onDone: () => void;
 }
 
-/** Pick a pet, a color and a name. OK adds it to the zoo, where it hops in and says hi. */
+/**
+ * Pick a pet, a color and a name. The name starts as the kind's default name and follows the kind until the person
+ * types their own. OK adds it to the zoo, where it hops in and says hi.
+ */
 export default function PetZooSpawnPetForm({ onDone }: PetZooSpawnPetFormProps) {
   const pets: PetZooPet[] = usePetZooPets();
   const { addPet } = usePetZooActions();
-  // a name none of the current pets has, picked once when the dialog opens
-  const [defaultName] = useState<string>(() => {
-    return getRandomPetZooName(
-      pets.map((pet: PetZooPet) => {
-        return pet.name;
-      }),
-    );
+  // read once when the dialog opens: the names in use, and the time that decides which dated pets are unlocked
+  const [takenNames] = useState<string[]>(() => {
+    return pets.map((pet: PetZooPet) => {
+      return pet.name;
+    });
   });
+  const [now] = useState<DateTime>(() => {
+    return DateTime.now().setZone(PET_ZOO_TIME_ZONE);
+  });
+  const [initialName] = useState<string>(() => {
+    return getPetZooSuggestedName(DEFAULT_PET_TYPE, takenNames);
+  });
+  // the name last filled in for the person, to tell it apart from a name they typed
+  const suggestedNameRef = useRef<string>(initialName);
 
-  const { control, handleSubmit, setValue } = useForm<PetZooSpawnPetFormValues>({
+  const { control, handleSubmit, setValue, getValues } = useForm<PetZooSpawnPetFormValues>({
     resolver: zodResolver(petZooSpawnPetSchema),
-    defaultValues: { type: DEFAULT_PET_TYPE, color: getPetZooDefaultColor(DEFAULT_PET_TYPE), name: defaultName },
+    defaultValues: { type: DEFAULT_PET_TYPE, color: getPetZooDefaultColor(DEFAULT_PET_TYPE), name: initialName },
   });
 
   const type: PetZooPetType = useWatch({ control, name: 'type' });
   const color: string = useWatch({ control, name: 'color' });
   const hasValidColor: boolean = isPetZooColorOf(type, color);
+  const previewSize: number = Math.round(PREVIEW_SIZE_PX * PET_ZOO_PETS[type].sizeScale);
 
   // another kind of pet has other colors: start on its first one
   useEffect(() => {
@@ -72,6 +94,15 @@ export default function PetZooSpawnPetForm({ onDone }: PetZooSpawnPetFormProps) 
       setValue('color', getPetZooDefaultColor(type), { shouldValidate: true });
     }
   }, [type, hasValidColor, setValue]);
+
+  // another kind of pet: its default name, unless the person typed a name of their own
+  useEffect(() => {
+    const suggestedName: string = getPetZooSuggestedName(type, takenNames);
+    if (getValues('name') === suggestedNameRef.current) {
+      setValue('name', suggestedName);
+    }
+    suggestedNameRef.current = suggestedName;
+  }, [type, takenNames, getValues, setValue]);
 
   const handleOnSubmit: SubmitHandler<PetZooSpawnPetFormValues> = (values: PetZooSpawnPetFormValues) => {
     addPet(values);
@@ -88,7 +119,7 @@ export default function PetZooSpawnPetForm({ onDone }: PetZooSpawnPetFormProps) 
               name="type"
               label={ PET_ZOO_LABELS.petTypeLabel }
               placeholder={ PET_ZOO_LABELS.petTypePlaceholder }
-              options={ PET_TYPE_OPTIONS }
+              options={ getTypeOptions(now) }
             />
             <PetZooSelectField
               control={ control }
@@ -107,7 +138,12 @@ export default function PetZooSpawnPetForm({ onDone }: PetZooSpawnPetFormProps) 
             />
           </ColumnStack>
           <RowStack className="mt-6 size-24 shrink-0 items-end justify-center rounded-md border bg-muted/50 p-2">
-            <PetZooPetIcon type={ type } color={ hasValidColor ? color : getPetZooDefaultColor(type) } className="size-16" />
+            <PetZooPetIcon
+              type={ type }
+              color={ hasValidColor ? color : getPetZooDefaultColor(type) }
+              className="size-auto"
+              style={ { width: previewSize, height: previewSize } }
+            />
           </RowStack>
         </RowStack>
         <PetZooDialogFooter />

@@ -30,3 +30,36 @@
   pointer-events: none;
   transform: translateX(-50%);
 }
+
+/* the pet's name above it, on hover or keyboard focus, out of the way while it talks (`data-talking`) */
+.pet-zoo-name-tag {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  width: max-content;
+  max-width: 140px;
+  height: 12px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background-color: rgb(17 17 17 / 0.85);
+  color: #fff;
+  font-family: 'PetZooSilkscreen', ui-monospace, monospace;
+  font-size: 8px;
+  line-height: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%);
+  transition: opacity 120ms ease-out;
+}
+
+.pet-zoo-pet:hover .pet-zoo-name-tag,
+.pet-zoo-pet:focus-visible .pet-zoo-name-tag {
+  opacity: 1;
+}
+
+.pet-zoo-pet[data-talking] .pet-zoo-name-tag {
+  opacity: 0;
+}

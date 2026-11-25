@@ -1,13 +1,14 @@
 # Pet animation zoo
 
 Little 8-bit pets living in a strip of the UI, inspired by [VS Code Pets](https://github.com/tonybaloney/vscode-pets)
-and using its art. The pets walk, run, hop, lie down, climb the side walls, drop back down, walk over to each
-other for a chat, and chase a ball. In this app it sits at the bottom of the left nav, above the account button.
+and using most of its art. The pets walk, run, hop, lie down, climb the side walls, drop back down, walk over to each
+other for a chat, and chase a ball. On the lake they hop between stepping stones. In this app it sits at the bottom
+of the left nav, above the account button.
 
 ## Using it in another project
 
 1. Copy this folder and `public/pet-animation-zoo/` (the art).
-2. Needs: React 19, Zustand, Zod, React Hook Form, `@hookform/resolvers`, lucide-react and Tailwind 4, plus these
+2. Needs: React 19, Zustand, Zod, React Hook Form, `@hookform/resolvers`, Luxon, lucide-react and Tailwind 4, plus these
    modules of the host app, imported through the `@/` path alias. Point the imports elsewhere if your app keeps them
    in other places:
    - `cn` from `@/lib/utils` (the shadcn helper, clsx + tailwind-merge)
@@ -36,17 +37,40 @@ Dark mode follows the `dark` class on `<html>`. If the art is served from somewh
 
 - **Toolbar** (top right, shown on hover or focus): Spawn pet, Throw ball, Delete pet, Change theme.
   Spawn, Delete and Change theme open a dialog with dropdowns; nothing changes until OK.
-- **Spawn pet**: kind, color and name. The new pet hops in and says hi. Capped at `PET_ZOO_MAX_PETS`.
+- **Spawn pet**: kind, color and name. The name starts as the kind's default name ("Biscuit 2" when taken) and
+  follows the kind until you type your own. Locked kinds are listed with a lock and cannot be picked. The new pet
+  hops in and greets you in its own voice. Capped at `PET_ZOO_MAX_PETS`.
 - **Throw ball**: a green ball drops in and bounces. Every pet on the ground runs after it, the first to reach it
   holds it for a few seconds, then it is gone. Pets on a wall join in once they are down.
-- **Click a pet** (or focus it and press Enter or Space): a paw swipe and a bubble. Three quick clicks: a big jump.
-  Five: zoomies. A pet on a wall lets go.
+- **Hover a pet** (or focus it): its name shows above it.
+- **Click a pet** (or focus it and press Enter or Space): a paw swipe and a bubble, one of its own lines or a shared
+  one. Three quick clicks: a big jump. Five: zoomies. A pet on a wall lets go.
 - **Conversations**: every 9 to 22 seconds two free pets meet, one walks over, they swap lines in speech bubbles.
 - **Climbing**: a pet that walks into the left or right wall sometimes climbs it, hangs on, then drops down.
+- **Stepping stones** (Autumn lake): the pets stand on three stones spread across the lake. At the end of a stone a
+  pet hops to the next one or turns around, and a pet going somewhere (to a friend, to the ball) hops across stone by
+  stone. A ball that lands in the water floats and drifts to the nearest stone. Nobody climbs here.
 - **Resize**: drag the top edge (double-click resets, arrow keys nudge) between `PET_ZOO_MIN_HEIGHT_PX` and
   `PET_ZOO_MAX_HEIGHT_PX`. Above the art, the theme's `fillColor` blends it into the background.
 
 Every pet draws its own speed factor and its own durations, so no two move in sync.
+
+## The pets
+
+Everything about a kind of pet is one object in `PET_ZOO_PETS` (`constants/pet-zoo-pets.constants.ts`):
+
+| Field          | What it does                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------ |
+| `label`        | its name in the dialogs                                                                          |
+| `defaultName`  | the name the Spawn dialog starts with; what the person types is what is saved                    |
+| `unlocked`     | `true`, `false` (shown with a lock, cannot be spawned), or a time in ms when it unlocks          |
+| `spriteFolder` | its folder in `public/pet-animation-zoo/pets/`, kinds can share one (the three pandas)           |
+| `sizeScale`    | its size, 1 is `PET_ZOO_SPRITE_SIZE_PX` (Big panda 1.45, Little panda 0.7)                       |
+| `speed`, `canClimb`, `colors`, `animations` | how it moves and what sprites it has                                |
+| `voice`        | its `sound`, its `greeting` and its own `lines`                                                  |
+
+Lines every pet can say are in `PET_ZOO_MESSAGES` (`constants/pet-zoo-messages.constants.ts`). In any line, `{name}`
+is replaced by the pet's name and `{sound}` by its sound. A saved pet is `{ id, type, color, name }`.
 
 ## Saved state
 
@@ -68,7 +92,8 @@ React renders only when a pet is added or removed or the theme changes, never pe
 the zoo is hidden or off screen (an `IntersectionObserver` in `usePetZooEngine`).
 
 ```
-components/   PetAnimationZoo (entry), PetZooWorld, PetZooPetSprite, PetZooBall, PetZooToolbar, the dialogs and forms
+components/   PetAnimationZoo (entry), PetZooWorld, PetZooPetSprite, PetZooNameTag, PetZooIslandLayer, PetZooBall,
+              PetZooToolbar, the dialogs and forms
 constants/    sizes and storage keys, the pet catalog, the themes, timing and physics, messages, labels
 engine/       PetZooEngine
 hooks/        engine lifecycle, store hydration, dark mode, height resize
@@ -76,15 +101,18 @@ models/       saved types (pet-zoo.models) and runtime types (pet-zoo-runtime.mo
 schemas/      Zod schemas for the dialogs and for what is loaded from local storage
 store/        Zustand store with persist
 styles/       pixel font, speech bubble, crisp pixel art
-utils/        behavior (the state machine), ball physics, clicks, rendering, sprites, themes, height, storage
+utils/        behavior (the state machine), ball physics, clicks, speech, stepping stones, rendering, sprites, themes,
+              height, storage
 ```
 
 ### Adding a pet or a theme
 
-- Pet: put `<color>_<animation>_8fps.gif` files in `public/pet-animation-zoo/pets/<type>/`, add the type to
-  `PET_ZOO_PET_TYPES` and an entry to `PET_ZOO_PETS` listing its colors and the animations that have a file.
-  Missing animations fall back (see `utils/pet-zoo-sprite.utils.ts`).
+- Pet: put `<color>_<animation>_8fps.gif` files in `public/pet-animation-zoo/pets/<folder>/`, add the type to
+  `PET_ZOO_PET_TYPES` and an entry to `PET_ZOO_PETS` (see the table above). Missing animations fall back (see
+  `utils/pet-zoo-sprite.utils.ts`).
 - Theme: put the images in `public/pet-animation-zoo/backgrounds/<id>/`, add the id to `PET_ZOO_THEME_IDS` and an
-  entry to `PET_ZOO_THEMES` with its ground height (`floorPx`) and a light and dark `fillColor`.
+  entry to `PET_ZOO_THEMES` with its ground height (`floorPx`) and a light and dark `fillColor`. For ground made of
+  stepping stones, add `islands` (each placed by a share of the width, its image's top row is the ground) and
+  `waterDepthPx` for where a ball floats.
 
 Art credits and licenses: `public/pet-animation-zoo/CREDITS.md`.

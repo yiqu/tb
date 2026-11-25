@@ -11,8 +11,13 @@ export function getPetZooTheme(themeId: PetZooThemeId): PetZooThemeDefinition {
   return PET_ZOO_THEMES[themeId];
 }
 
+/** A theme image. `{mode}` in the file name is replaced by `light` or `dark`. */
+export function getPetZooThemeAssetUrl(themeId: PetZooThemeId, fileName: string, colorMode: PetZooColorMode): string {
+  return `${PET_ZOO_ASSET_BASE_URL}/backgrounds/${themeId}/${fileName.replace('{mode}', colorMode)}`;
+}
+
 export function getPetZooThemeLayerUrl(themeId: PetZooThemeId, layer: PetZooThemeLayer, colorMode: PetZooColorMode): string {
-  return `${PET_ZOO_ASSET_BASE_URL}/backgrounds/${themeId}/${layer.fileName.replace('{mode}', colorMode)}`;
+  return getPetZooThemeAssetUrl(themeId, layer.fileName, colorMode);
 }
 
 export interface PetZooLayerStyle {

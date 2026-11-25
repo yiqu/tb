@@ -4,6 +4,7 @@ import { useRef, useEffect } from 'react';
 
 import PetZooBall from './PetZooBall';
 import PetZooPetSprite from './PetZooPetSprite';
+import PetZooIslandLayer from './PetZooIslandLayer';
 import PetZooBackgroundLayer from './PetZooBackgroundLayer';
 import { getPetZooTheme } from '../utils/pet-zoo-theme.utils';
 import { usePetZooColorMode } from '../hooks/usePetZooColorMode';
@@ -17,8 +18,8 @@ interface PetZooWorldProps {
 }
 
 /**
- * The scene, back to front: the theme's fill color, its background art, the pets and the ball, then
- * the foreground art. Feeds the engine the saved pets, the theme's ground height and the world size.
+ * The scene, back to front: the theme's fill color, its background art, its stepping stones if it has any, the pets
+ * and the ball, then the foreground art. Feeds the engine the saved pets, the theme's ground and the world size.
  */
 export default function PetZooWorld({ engine }: PetZooWorldProps) {
   const worldRef = useRef<HTMLDivElement>(null);
@@ -48,8 +49,8 @@ export default function PetZooWorld({ engine }: PetZooWorldProps) {
   }, [engine]);
 
   useEffect(() => {
-    engine.setFloor(theme.floorPx);
-  }, [engine, theme.floorPx]);
+    engine.setTheme(theme);
+  }, [engine, theme]);
 
   useEffect(() => {
     engine.setPets(pets);
@@ -58,6 +59,9 @@ export default function PetZooWorld({ engine }: PetZooWorldProps) {
   return (
     <div ref={ worldRef } className="absolute inset-0 overflow-hidden select-none" style={ { backgroundColor: theme.fillColor[colorMode] } }>
       <PetZooBackgroundLayer themeId={ themeId } layers={ theme.backgroundLayers } colorMode={ colorMode } className="z-0" />
+      { theme.islands ?
+        <PetZooIslandLayer themeId={ themeId } islands={ theme.islands } floorPx={ theme.floorPx } colorMode={ colorMode } />
+      : null }
       { pets.map((pet: PetZooPet) => {
         return <PetZooPetSprite key={ pet.id } pet={ pet } engine={ engine } />;
       }) }

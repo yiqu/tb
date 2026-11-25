@@ -3,12 +3,13 @@
 import { useRef, useEffect, KeyboardEvent } from 'react';
 
 import { PET_ZOO_ANIMATION } from '../models/pet-zoo.models';
+import PetZooNameTag from './PetZooNameTag';
 import PetZooSpeechBubble from './PetZooSpeechBubble';
 import { getPetZooSpriteUrl } from '../utils/pet-zoo-sprite.utils';
-import { PET_ZOO_SPRITE_SIZE_PX } from '../constants/pet-zoo.constants';
+import { getPetZooPetSize } from '../utils/pet-zoo-behavior.utils';
 import { getPetZooPetDefinition, getPetZooPetDescription } from '../utils/pet-zoo-pet.utils';
 
-import type { PetZooPet } from '../models/pet-zoo.models';
+import type { PetZooPet, PetZooPetDefinition } from '../models/pet-zoo.models';
 import type { PetZooEngine } from '../engine/pet-zoo-engine';
 
 interface PetZooPetSpriteProps {
@@ -17,18 +18,21 @@ interface PetZooPetSpriteProps {
 }
 
 /**
- * One pet: its speech bubble and its sprite. The engine moves it and swaps its sprite every frame through
- * the registered DOM nodes, so the inline styles below are only the starting point (off screen until the
- * first frame places it). Clicking it, or Enter or Space while it has focus, makes it react.
+ * One pet: its speech bubble, its name tag (shown on hover or keyboard focus) and its sprite. The engine moves it
+ * and swaps its sprite every frame through the registered DOM nodes, so the inline styles below are only the starting
+ * point (off screen until the first frame places it). Clicking it, or Enter or Space while it has focus, makes it react.
  */
 export default function PetZooPetSprite({ pet, engine }: PetZooPetSpriteProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
+  const nameTagRef = useRef<HTMLDivElement>(null);
+  const definition: PetZooPetDefinition = getPetZooPetDefinition(pet.type);
+  const size: number = getPetZooPetSize(definition.sizeScale);
 
   useEffect(() => {
-    if (!rootRef.current || !bodyRef.current || !imageRef.current || !bubbleRef.current) {
+    if (!rootRef.current || !bodyRef.current || !imageRef.current || !bubbleRef.current || !nameTagRef.current) {
       return;
     }
     return engine.attachPetElements(pet.id, {
@@ -36,6 +40,7 @@ export default function PetZooPetSprite({ pet, engine }: PetZooPetSpriteProps) {
       body: bodyRef.current,
       image: imageRef.current,
       bubble: bubbleRef.current,
+      nameTag: nameTagRef.current,
     });
   }, [engine, pet.id]);
 
@@ -57,21 +62,21 @@ export default function PetZooPetSprite({ pet, engine }: PetZooPetSpriteProps) {
       tabIndex={ 0 }
       aria-label={ getPetZooPetDescription(pet) }
       className="
-        absolute bottom-0 left-0 z-10 cursor-pointer rounded-sm outline-none will-change-transform
+        pet-zoo-pet absolute bottom-0 left-0 z-10 cursor-pointer rounded-sm outline-none will-change-transform
         focus-visible:ring-2 focus-visible:ring-ring
       "
-      style={ { width: PET_ZOO_SPRITE_SIZE_PX, height: PET_ZOO_SPRITE_SIZE_PX, transform: 'translate3d(-9999px, 0, 0)' } }
-      title={ getPetZooPetDescription(pet) }
+      style={ { width: size, height: size, transform: 'translate3d(-9999px, 0, 0)' } }
       onClick={ handleOnClick }
       onKeyDown={ handleOnKeyDown }
       data-pet-id={ pet.id }
     >
       <PetZooSpeechBubble ref={ bubbleRef } />
+      <PetZooNameTag ref={ nameTagRef } name={ pet.name } />
       <div ref={ bodyRef } className="size-full">
         { /* eslint-disable-next-line @next/next/no-img-element -- animated GIF sprites, swapped by the engine every state change */ }
         <img
           ref={ imageRef }
-          src={ getPetZooSpriteUrl(pet, getPetZooPetDefinition(pet.type), PET_ZOO_ANIMATION.idle) }
+          src={ getPetZooSpriteUrl(pet, definition, PET_ZOO_ANIMATION.idle) }
           alt={ pet.name }
           draggable={ false }
           className="pet-zoo-pixelated size-full object-contain object-bottom select-none"

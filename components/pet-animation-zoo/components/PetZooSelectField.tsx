@@ -13,6 +13,10 @@ export interface PetZooSelectOption {
   label: string;
   /** Shown before the label, e.g. the pet's sprite. */
   icon?: ReactNode;
+  /** Shown after the label, e.g. a lock on a locked pet. */
+  trailing?: ReactNode;
+  /** Shown but cannot be picked. */
+  disabled?: boolean;
 }
 
 interface PetZooSelectFieldProps<T extends FieldValues> {
@@ -56,12 +60,13 @@ export default function PetZooSelectField<T extends FieldValues>({
               <SelectContent>
                 { options.map((option: PetZooSelectOption) => {
                   return (
-                    <SelectItem key={ option.value } value={ option.value }>
+                    <SelectItem key={ option.value } value={ option.value } disabled={ option.disabled }>
                       <RowStack className="items-center gap-2">
                         { option.icon }
                         <Typography as="span" variant="body1">
                           { option.label }
                         </Typography>
+                        { option.trailing }
                       </RowStack>
                     </SelectItem>
                   );

@@ -1,64 +1,32 @@
-/** What the pets say in their speech bubbles, and the names a new pet is offered. */
-
-/** Two pets meet: the first says the first line, the other answers with the second. */
-export const PET_ZOO_CONVERSATIONS: readonly (readonly [string, string])[] = [
-  ['Hi there!', 'Hey friend!'],
-  ['Nice day!', 'Sure is ☀️'],
-  ['Wanna play?', 'Yes!! 🎾'],
-  ['❤️', '❤️'],
-  ['Snack?', 'Always 🍪'],
-  ['Zzz...', 'Shh 🤫'],
-  ['Did you see that?', 'See what? 👀'],
-  ['Race you!', "You're on! 🏁"],
-  ['I like your hat', "I'm not wearing one 🤔"],
-  ['Bills are due 🧾', 'Not my problem 😌'],
-  ['Got reimbursed?', 'Cha-ching 💰'],
-  ['👋', '👋'],
-];
-
-/** A single click on a pet. `{name}` is replaced by the pet's name. */
-export const PET_ZOO_CLICK_REACTIONS: readonly string[] = ['👋', '❤️', 'Hi!', '😊', '✨', "I'm {name}!", 'Hehe', '🐾'];
-
-export const PET_ZOO_BIG_JUMP_MESSAGE = '❤️❤️❤️';
-export const PET_ZOO_ZOOMIES_MESSAGE = '⚡ Zoomies!';
-export const PET_ZOO_ZOOMIES_DONE_MESSAGE = '😮‍💨';
-export const PET_ZOO_FALL_MESSAGE = 'Whoa!';
-export const PET_ZOO_CAUGHT_BALL_MESSAGE = '🎾 Got it!';
-export const PET_ZOO_HOLDING_BALL_MESSAGE = 'Mine! 🎾';
-export const PET_ZOO_MISSED_BALL_MESSAGES: readonly string[] = ['Aww', '😢', 'No fair!', 'Next time!'];
-export const PET_ZOO_SPAWN_MESSAGE = "Hi, I'm {name}!";
-
-export const PET_ZOO_PET_NAMES: readonly string[] = [
-  'Bella',
-  'Charlie',
-  'Max',
-  'Coco',
-  'Buddy',
-  'Ruby',
-  'Oscar',
-  'Milo',
-  'Daisy',
-  'Ollie',
-  'Rosie',
-  'Luna',
-  'Teddy',
-  'Cooper',
-  'Bear',
-  'Hugo',
-  'Pepper',
-  'Leo',
-  'Mochi',
-  'Nala',
-  'Ziggy',
-  'Pickles',
-  'Biscuit',
-  'Noodle',
-  'Waffles',
-  'Peanut',
-  'Pumpkin',
-  'Sprout',
-  'Tofu',
-  'Nugget',
-  'Pixel',
-  'Bean',
-];
+/**
+ * What every pet can say in its speech bubbles. Each kind also has its own voice (its sound, its greeting and its own
+ * lines) in `PET_ZOO_PETS`. In every line, `{name}` is replaced by the pet's name and `{sound}` by its sound.
+ */
+export const PET_ZOO_MESSAGES = {
+  /** Two pets meet: the first says the first line, the other answers with the second. */
+  conversations: [
+    ['Hi there!', 'Hey friend!'],
+    ['Nice day!', 'Sure is ☀️'],
+    ['Wanna play?', 'Yes!! 🎾'],
+    ['❤️', '❤️'],
+    ['Snack?', 'Always 🍪'],
+    ['Zzz...', 'Shh 🤫'],
+    ['Did you see that?', 'See what? 👀'],
+    ['Race you!', "You're on! 🏁"],
+    ['I like your hat', "I'm not wearing one 🤔"],
+    ['Bills are due 🧾', 'Not my problem 😌'],
+    ['Got reimbursed?', 'Cha-ching 💰'],
+    ['👋', '👋'],
+  ] as readonly (readonly [string, string])[],
+  /** How a pet answers when another one opens a chat with one of its own lines. */
+  chatReplies: ['{sound}!', '{sound} {sound}!', '{sound}? 🤔', 'Haha 😄', 'Same!', 'Tell me more 👀'] as readonly string[],
+  /** A single click on a pet, mixed with the pet's own lines. */
+  clickReactions: ['👋', '❤️', 'Hi!', '😊', '✨', "I'm {name}!", '{sound}!', '🐾'] as readonly string[],
+  bigJump: '❤️❤️❤️',
+  zoomies: '⚡ Zoomies!',
+  zoomiesDone: '😮‍💨',
+  fall: 'Whoa!',
+  caughtBall: '🎾 Got it!',
+  holdingBall: 'Mine! 🎾',
+  missedBall: ['Aww', '😢', 'No fair!', 'Next time!'] as readonly string[],
+} as const;

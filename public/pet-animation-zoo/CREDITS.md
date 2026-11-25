@@ -1,6 +1,6 @@
 # Pet animation zoo art credits
 
-All art in this folder comes from [VS Code Pets](https://github.com/tonybaloney/vscode-pets) by Anthony Shaw. The
+Most art in this folder comes from [VS Code Pets](https://github.com/tonybaloney/vscode-pets) by Anthony Shaw. The
 VS Code Pets project is released under the MIT License (`LICENSE-vscode-pets.txt`), but some of its art carries its
 own license, noted below, which applies to those files instead: the dog sprites are CC BY-ND 4.0, and Finley has its
 own MIT license. Only the "nano" backgrounds and the 8 fps sprites are copied. Credits as given by VS Code Pets:
@@ -15,5 +15,9 @@ own MIT license. Only the "nano" backgrounds and the 8 fps sprites are copied. C
 - Other pets: VS Code Pets contributors.
 - Winter theme: [Kiana Mosser](https://www.instagram.com/kianamosser/). Forest theme: [edermunizz](https://edermunizz.itch.io/free-pixel-art-forest). Castle theme: based on [GuttyKreum](https://guttykreum.itch.io/gothic-castle-game-assets). Other themes: VS Code Pets contributors.
 - Speech bubble font: Silkscreen by Jason Kottke, SIL Open Font License 1.1.
+
+Made for this project, under the project's own license: the deer sprites (`pets/deer/`), the Snowy peak theme
+(`backgrounds/peak/`) and the Autumn lake theme with its stepping stones (`backgrounds/lake/`). The Big panda and
+Little panda reuse the panda sprites at another size.
 
 Left out on purpose: the cat (its artist asked that it is not redistributed) and Totoro (a Studio Ghibli character).
