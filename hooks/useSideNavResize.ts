@@ -25,6 +25,11 @@ interface DragState {
   grabOffset: number;
   width: number;
   isCollapsed: boolean;
+  /** Where the pointer went down. A click that never moves from there changes nothing. */
+  startClientX: number;
+  hasMoved: boolean;
+  /** The wrapper's `--sidebar-width` before the drag, put back after a click that did not move. */
+  wrapperWidth: string;
   /** The body's own inline cursor and user-select before the drag, put back when it ends. */
   bodyCursor: string;
   bodyUserSelect: string;
@@ -41,6 +46,10 @@ function getDrawnSideNavWidth(handle: HTMLElement, fallback: number): number {
 
 function writeSideNavWidthCookie(width: number): void {
   document.cookie = `${SIDE_NAV_WIDTH_COOKIE_NAME}=${width}; path=/; max-age=${SIDE_NAV_WIDTH_COOKIE_MAX_AGE_SECONDS}; samesite=lax`;
+}
+
+function deleteSideNavWidthCookie(): void {
+  document.cookie = `${SIDE_NAV_WIDTH_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
 }
 
 export interface SideNavResize {
@@ -85,11 +94,16 @@ export function useSideNavResize(): SideNavResize {
     dragRef.current = null;
     setIsResizing(false);
     delete drag.wrapper.dataset.resizing;
+    document.body.style.cursor = drag.bodyCursor;
+    document.body.style.userSelect = drag.bodyUserSelect;
+    // a click that never moved keeps the width the nav had, or was opening to, and saves nothing
+    if (!drag.hasMoved) {
+      drag.wrapper.style.setProperty('--sidebar-width', drag.wrapperWidth);
+      return;
+    }
     // the width written while dragging can differ from the one committed (see `onPointerDown`), and React only
     // writes the variable when the committed width changes, so put the committed one on the wrapper here
     drag.wrapper.style.setProperty('--sidebar-width', `${drag.width}px`);
-    document.body.style.cursor = drag.bodyCursor;
-    document.body.style.userSelect = drag.bodyUserSelect;
     commitWidth(drag.width);
   };
 
@@ -132,6 +146,9 @@ export function useSideNavResize(): SideNavResize {
           grabOffset: isCollapsed ? 0 : startWidth - event.clientX,
           width: clampSideNavWidth(startWidth),
           isCollapsed,
+          startClientX: event.clientX,
+          hasMoved: false,
+          wrapperWidth: wrapper.style.getPropertyValue('--sidebar-width'),
           bodyCursor: document.body.style.cursor,
           bodyUserSelect: document.body.style.userSelect,
         };
@@ -150,6 +167,10 @@ export function useSideNavResize(): SideNavResize {
         if (!drag || event.pointerId !== drag.pointerId) {
           return;
         }
+        if (!drag.hasMoved && event.clientX === drag.startClientX) {
+          return;
+        }
+        drag.hasMoved = true;
         // the nav starts at the left edge of the window, so its width is where the pointer is
         const pointerWidth: number = event.clientX + drag.grabOffset;
         if (pointerWidth < SIDE_NAV_COLLAPSE_THRESHOLD_PX) {
@@ -171,7 +192,9 @@ export function useSideNavResize(): SideNavResize {
       onPointerUp: endDrag,
       onPointerCancel: endDrag,
       onDoubleClick: () => {
-        commitWidth(SIDE_NAV_DEFAULT_WIDTH_PX);
+        // back to the default width, the CSS one that follows the root font size, and nothing saved
+        setWidth(null);
+        deleteSideNavWidthCookie();
         setOpen(true);
       },
       onKeyDown: (event: KeyboardEvent<HTMLElement>) => {

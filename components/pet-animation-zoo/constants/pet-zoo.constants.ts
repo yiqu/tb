@@ -5,6 +5,11 @@
 
 export const PET_ZOO_ASSET_BASE_URL = '/pet-animation-zoo';
 
+/**
+ * Narrower than this, the zoo is hidden (the nav collapsed to icons) or squeezed while the nav opens or closes. The
+ * world keeps its last real size then, so the pets keep their places instead of piling up at the left wall.
+ */
+export const PET_ZOO_MIN_WORLD_WIDTH_PX = 120;
 /** The height before the person resizes it. */
 export const PET_ZOO_DEFAULT_HEIGHT_PX = 150;
 /** The cap for dragging the zoo taller. Above the art, the theme's fill color takes over. */

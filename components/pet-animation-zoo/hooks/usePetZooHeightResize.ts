@@ -7,6 +7,8 @@ import { writePetZooHeightCookie } from '../utils/pet-zoo-height-cookie.utils';
 import { PET_ZOO_DEFAULT_HEIGHT_PX, PET_ZOO_HEIGHT_KEYBOARD_STEP_PX } from '../constants/pet-zoo.constants';
 
 interface DragStart {
+  /** The pointer that started the drag. Only it moves and ends the drag, another finger or a pen is ignored. */
+  pointerId: number;
   pointerY: number;
   height: number;
 }
@@ -48,7 +50,7 @@ export function usePetZooHeightResize(initialHeight: number): PetZooHeightResize
   };
 
   const endDrag = (event: PointerEvent<HTMLElement>) => {
-    if (!dragStartRef.current) {
+    if (dragStartRef.current?.pointerId !== event.pointerId) {
       return;
     }
     dragStartRef.current = null;
@@ -64,17 +66,18 @@ export function usePetZooHeightResize(initialHeight: number): PetZooHeightResize
     isResizing,
     handleProps: {
       onPointerDown: (event: PointerEvent<HTMLElement>) => {
-        if (event.button !== 0) {
+        // a second pointer (another finger, or a pen beside the mouse) must not restart a drag that is running
+        if (dragStartRef.current || event.button !== 0) {
           return;
         }
         event.preventDefault();
         event.currentTarget.setPointerCapture(event.pointerId);
-        dragStartRef.current = { pointerY: event.clientY, height: latestHeightRef.current };
+        dragStartRef.current = { pointerId: event.pointerId, pointerY: event.clientY, height: latestHeightRef.current };
         setIsResizing(true);
       },
       onPointerMove: (event: PointerEvent<HTMLElement>) => {
         const dragStart: DragStart | null = dragStartRef.current;
-        if (!dragStart) {
+        if (!dragStart || event.pointerId !== dragStart.pointerId) {
           return;
         }
         // the handle is on the top edge: dragging up makes the zoo taller

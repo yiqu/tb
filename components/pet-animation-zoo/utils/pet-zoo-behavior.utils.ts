@@ -167,12 +167,16 @@ export function keepPetZooPetOnGround(runtime: PetZooPetRuntime, bounds: PetZooW
   runtime.x = Math.min(range.maxX, Math.max(range.minX, runtime.x));
 }
 
+/** A random spot on the ground for a pet's left edge, or on a random stone. */
+export function getPetZooRandomGroundX(bounds: PetZooWorldBounds, size: number): number {
+  const span: PetZooIslandSpan | undefined = randomItem(bounds.islands);
+  return span ? randomBetween([span.left, span.right]) - size / 2 : Math.random() * getPetZooMaxX(bounds, size);
+}
+
 export function createPetZooPetRuntime(pet: PetZooPet, bounds: PetZooWorldBounds): PetZooPetRuntime {
   const definition = getPetZooPetDefinition(pet.type);
   const size: number = getPetZooPetSize(definition.sizeScale);
-  // a random spot on the ground, or on a random stone
-  const span: PetZooIslandSpan | undefined = randomItem(bounds.islands);
-  const x: number = span ? randomBetween([span.left, span.right]) - size / 2 : Math.random() * getPetZooMaxX(bounds, size);
+  const x: number = getPetZooRandomGroundX(bounds, size);
   return {
     pet,
     definition,

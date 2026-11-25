@@ -31,7 +31,8 @@ type SidebarContextProps = {
   toggleSidebar: () => void;
   /** The expanded width in px set by dragging the edge, or null for the default `SIDEBAR_WIDTH`. */
   width: number | null;
-  setWidth: (width: number) => void;
+  /** null goes back to the default `SIDEBAR_WIDTH`. */
+  setWidth: (width: number | null) => void;
 };
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);

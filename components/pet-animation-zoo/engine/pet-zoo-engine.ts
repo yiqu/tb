@@ -1,7 +1,7 @@
 import { reactToPetZooClick } from '../utils/pet-zoo-click.utils';
 import { getPetZooAllSpriteUrls } from '../utils/pet-zoo-sprite.utils';
 import { PET_ZOO_BEHAVIOR } from '../models/pet-zoo-runtime.models';
-import { PET_ZOO_BUBBLE_FONT, PET_ZOO_BALL_RADIUS_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_BUBBLE_FONT, PET_ZOO_BALL_RADIUS_PX, PET_ZOO_MIN_WORLD_WIDTH_PX } from '../constants/pet-zoo.constants';
 import { PET_ZOO_MESSAGES } from '../constants/pet-zoo-messages.constants';
 import { createPetZooBall, stepPetZooBall } from '../utils/pet-zoo-ball.utils';
 import { PET_ZOO_FOODS, PET_ZOO_MAX_FOODS } from '../constants/pet-zoo-foods.constants';
@@ -32,6 +32,7 @@ import {
   getPetZooJumpVelocity,
   pickNextPetZooBehavior,
   createPetZooPetRuntime,
+  getPetZooRandomGroundX,
   keepPetZooPetOnGround,
   keepPetZooFlightInside,
   startPetZooConversation,
@@ -115,11 +116,40 @@ export class PetZooEngine {
   }
 
   setWorldSize(width: number, height: number): void {
+    // hidden, or squeezed while the nav opens or closes: keep the last real size, so everything keeps its place
+    if (width < PET_ZOO_MIN_WORLD_WIDTH_PX || height <= 0) {
+      return;
+    }
+    const previousWidth: number = this.bounds.width;
     this.bounds.width = width;
     this.bounds.height = height;
     // the stepping stones are placed by a share of the width
     this.bounds.islands = getPetZooIslandSpans(this.islandDefinitions, width);
+    if (previousWidth === 0) {
+      // the first real size: pets that joined while the zoo was hidden all stood at the left wall, spread them out
+      this.pets.forEach((runtime: PetZooPetRuntime) => {
+        runtime.x = getPetZooRandomGroundX(this.bounds, runtime.size);
+      });
+    } else if (width !== previousWidth) {
+      this.stretchWorld(width / previousWidth);
+    }
     this.keepPetsInside();
+  }
+
+  /** The zoo got wider or narrower: everything keeps its place across the width, as the stepping stones do. */
+  private stretchWorld(ratio: number): void {
+    this.pets.forEach((runtime: PetZooPetRuntime) => {
+      runtime.x = (runtime.x + runtime.size / 2) * ratio - runtime.size / 2;
+      if (runtime.flight) {
+        runtime.flight.targetX *= ratio;
+      }
+    });
+    this.foods.forEach((food: PetZooFoodRuntime) => {
+      food.x *= ratio;
+    });
+    if (this.ball) {
+      this.ball.x *= ratio;
+    }
   }
 
   /** The theme's ground: how high it is, and on the lake, the stepping stones. */

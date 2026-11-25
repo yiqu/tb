@@ -59,6 +59,9 @@ Dark mode follows the `dark` class on `<html>`. If the art is served from somewh
   stone. A ball that lands in the water floats and drifts to the nearest stone. Nobody climbs here.
 - **Resize**: drag the top edge (double-click resets, arrow keys nudge) between `PET_ZOO_MIN_HEIGHT_PX` (room for the
   biggest pet on the tallest ground, worked out from the master lists) and `PET_ZOO_MAX_HEIGHT_PX`. Above the art, the theme's `fillColor` blends it into the background.
+- **Nav width**: when the nav gets wider or narrower, everything keeps its place across the width, as the stones do.
+  Narrower than `PET_ZOO_MIN_WORLD_WIDTH_PX` (the nav collapsed to icons, or mid-animation) the world keeps its last
+  real size. Pets that joined while it was hidden spread out the first time it shows.
 
 Every pet draws its own speed factor and its own durations, so no two move in sync.
 

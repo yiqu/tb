@@ -1,5 +1,7 @@
 import { Ref } from 'react';
 
+import Typography from '@/components/typography/Typography';
+
 interface PetZooNameTagProps {
   ref: Ref<HTMLDivElement>;
   name: string;
@@ -12,7 +14,10 @@ interface PetZooNameTagProps {
 export default function PetZooNameTag({ ref, name }: PetZooNameTagProps) {
   return (
     <div ref={ ref } className="pet-zoo-name-tag" aria-hidden="true">
-      { name }
+      { /* the tag's pixel font and size come from its class */ }
+      <Typography as="span" variant="span0" className="font-[inherit] text-[length:inherit] leading-[inherit]">
+        { name }
+      </Typography>
     </div>
   );
 }

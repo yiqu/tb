@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
+import Typography from '@/components/typography/Typography';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PetZooToolbarButtonProps {
@@ -46,7 +47,11 @@ export default function PetZooToolbarButton({ label, icon, onClick, disabled = f
           { icon }
         </Button>
       </TooltipTrigger>
-      <TooltipContent side="top">{ disabled && disabledLabel ? disabledLabel : label }</TooltipContent>
+      <TooltipContent side="top">
+        <Typography as="span" variant="span0">
+          { disabled && disabledLabel ? disabledLabel : label }
+        </Typography>
+      </TooltipContent>
     </Tooltip>
   );
 }

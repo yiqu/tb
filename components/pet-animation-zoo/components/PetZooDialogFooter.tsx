@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import Typography from '@/components/typography/Typography';
 import { DialogClose, DialogFooter } from '@/components/ui/dialog';
 
 import { PET_ZOO_LABELS } from '../constants/pet-zoo-labels.constants';
@@ -14,11 +15,15 @@ export default function PetZooDialogFooter({ isSubmitDisabled = false }: PetZooD
     <DialogFooter>
       <DialogClose asChild>
         <Button type="button" variant="outline">
-          { PET_ZOO_LABELS.cancel }
+          <Typography as="span" variant="span1">
+            { PET_ZOO_LABELS.cancel }
+          </Typography>
         </Button>
       </DialogClose>
       <Button type="submit" disabled={ isSubmitDisabled }>
-        { PET_ZOO_LABELS.ok }
+        <Typography as="span" variant="span1">
+          { PET_ZOO_LABELS.ok }
+        </Typography>
       </Button>
     </DialogFooter>
   );
