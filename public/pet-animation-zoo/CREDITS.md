@@ -17,7 +17,11 @@ own MIT license. Only the "nano" backgrounds and the 8 fps sprites are copied. C
 - Speech bubble font: Silkscreen by Jason Kottke, SIL Open Font License 1.1.
 
 Made for this project, under the project's own license: the deer sprites (`pets/deer/`), the pteranodon and
-pterodactyl sprites (`pets/pteranodon/`, `pets/pterodactyl/`), the food (`foods/`), the Snowy peak theme
+pterodactyl sprites (`pets/pteranodon/`, `pets/pterodactyl/`), the T. rex, triceratops, stegosaurus, brachiosaurus and
+velociraptor sprites (`pets/t-rex/`, `pets/triceratops/`, `pets/stegosaurus/`, `pets/brachiosaurus/`, `pets/raptor/`),
+the unicorn sprites (`pets/unicorn/`, `pets/alicorn/`, `pets/unicorn-foal/`, `pets/rainbow-unicorn/`,
+`pets/starry-unicorn/`), the aurora colors (`aurora_*` files: recolors of the pets' own sprites, so the panda and Deno
+ones are derived from VS Code Pets art and keep its license), the food (`foods/`), the Snowy peak theme
 (`backgrounds/peak/`), the Autumn lake theme with its stepping stones (`backgrounds/lake/`), the Jurassic jungle and
 Volcano valley themes (`backgrounds/jungle/`, `backgrounds/volcano/`, generic prehistoric scenery, nothing from a film)
 and the Classroom and Science class themes (`backgrounds/classroom/`, `backgrounds/science/`). The Big panda and

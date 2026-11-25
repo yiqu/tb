@@ -2,7 +2,7 @@
 
 Little 8-bit pets living in a strip of the UI, inspired by [VS Code Pets](https://github.com/tonybaloney/vscode-pets)
 and using most of its art. The pets walk, run, hop, lie down, climb the side walls, drop back down, walk over to each
-other for a chat, chase a ball and eat what you feed them. Two flying dinosaurs fly around. On the lake they hop
+other for a chat, chase a ball and eat what you feed them. The flying dinosaurs and the alicorn fly around. On the lake they hop
 between stepping stones. In this app it sits at the bottom
 of the left nav, above the account button.
 
@@ -46,7 +46,7 @@ Dark mode follows the `dark` class on `<html>`. If the art is served from somewh
 - **Feed**: a random food (`PET_ZOO_FOODS`: hamburger, bao, pizza, carrot, dumpling) drops in, on the lake onto a
   stone. Every free pet goes for the nearest piece, the first one there eats it and says so. Up to
   `PET_ZOO_MAX_FOODS` pieces at once (more pushes out the oldest), and a piece nobody eats is gone after a while.
-- **Flying** (Pteranodon, Pterodactyl, `canFly`): now and then they take off and fly around, and they fly straight at
+- **Flying** (Pteranodon, Pterodactyl, Alicorn, `canFly`): now and then they take off and fly around, and they fly straight at
   a ball or food, catching it in the air. Before anything else they fly down and land, on the lake on a stone.
 - **Hover a pet** (or focus it): its name shows above it.
 - **Click a pet** (or focus it and press Enter or Space): a paw swipe and a bubble, one of its own lines or a shared
@@ -75,6 +75,10 @@ Everything about a kind of pet is one object in `PET_ZOO_PETS` (`constants/pet-z
 | `sizeScale`    | its size, 1 is `PET_ZOO_SPRITE_SIZE_PX` (Big panda 1.45, Little panda 0.7)                       |
 | `speed`, `canClimb`, `canFly`, `colors`, `animations` | how it moves and what sprites it has (a flyer needs `fly`) |
 | `voice`        | its `sound`, its `greeting` and its own `lines`                                                  |
+
+The pandas, the dinosaurs and the unicorns also come in three aurora colors (`aurora_borealis`, `aurora_rose`,
+`aurora_frost`, `AURORA_COLORS`): a vibrant gradient that drifts over the pet as it moves. They are recolors of one of
+the kind's own colors, so they have every animation the kind has.
 
 Lines every pet can say are in `PET_ZOO_MESSAGES` (`constants/pet-zoo-messages.constants.ts`). In any line, `{name}`
 is replaced by the pet's name and `{sound}` by its sound. A saved pet is `{ id, type, color, name }`.
