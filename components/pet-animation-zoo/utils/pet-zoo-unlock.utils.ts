@@ -10,7 +10,8 @@ import type { PetZooUnlock, PetZooUnlocks, PetZooPetType, PetZooThemeId } from '
  * Locks of the pets and the themes. Each has its lock in its master list (`unlocked` in `PET_ZOO_PETS` and
  * `PET_ZOO_THEMES`) and an entry in the saved `PetZooUnlocks`, which only says what the person earned. It is unlocked
  * when either one says so: a pet the master list opens up is open for everyone, and one the person earned stays open
- * for them. One the master list locks again is locked for everyone else, even if it was open when they last came.
+ * for them. A pet that the master list locks again is locked for everyone who did not earn it, even if it was open
+ * when they last came.
  */
 
 export function getPetZooNow(): DateTime {
