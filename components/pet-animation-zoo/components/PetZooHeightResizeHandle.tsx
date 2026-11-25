@@ -1,7 +1,8 @@
 'use client';
 
 import { PET_ZOO_LABELS } from '../constants/pet-zoo-labels.constants';
-import { PET_ZOO_MAX_HEIGHT_PX, PET_ZOO_MIN_HEIGHT_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_MAX_HEIGHT_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_MIN_HEIGHT_PX } from '../constants/pet-zoo-height.constants';
 
 import type { PetZooHeightResize } from '../hooks/usePetZooHeightResize';
 

@@ -1,4 +1,5 @@
-import { PET_ZOO_MAX_HEIGHT_PX, PET_ZOO_MIN_HEIGHT_PX, PET_ZOO_DEFAULT_HEIGHT_PX } from '../constants/pet-zoo.constants';
+import { PET_ZOO_MIN_HEIGHT_PX } from '../constants/pet-zoo-height.constants';
+import { PET_ZOO_MAX_HEIGHT_PX, PET_ZOO_DEFAULT_HEIGHT_PX } from '../constants/pet-zoo.constants';
 
 /** Keeps a height between the min and the max. Safe to use on the server. */
 export function clampPetZooHeight(height: number): number {

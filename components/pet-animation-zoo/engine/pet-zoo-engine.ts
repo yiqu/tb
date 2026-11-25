@@ -13,8 +13,8 @@ import { renderPetZooPet, renderPetZooBall, renderPetZooFoods, PET_ZOO_EMPTY_REN
 import {
   PET_ZOO_HOP_VELOCITY,
   PET_ZOO_MAX_FRAME_SECONDS,
-  PET_ZOO_BEHAVIOR_DURATION,
   PET_ZOO_CONVERSATION_INTERVAL,
+  PET_ZOO_APPROACH_FRIEND_MAX_SECONDS,
   PET_ZOO_CONVERSATION_LINE_SECONDS,
 } from '../constants/pet-zoo-behavior.constants';
 import {
@@ -28,6 +28,7 @@ import {
   getPetZooMaxClimbY,
   arePetZooPetsClose,
   isPetZooPetOnGround,
+  getPetZooApproachSeconds,
   getPetZooJumpVelocity,
   pickNextPetZooBehavior,
   createPetZooPetRuntime,
@@ -336,12 +337,16 @@ export class PetZooEngine {
       return isPetZooPetFree(runtime) && isPetZooPetOnGround(runtime);
     });
     const initiator: PetZooPetRuntime | undefined = randomItem(candidates.filter(canPetZooPetMove));
+    if (!initiator) {
+      return;
+    }
+    // a friend it can walk to in time: a slow pet picks one nearby
     const partner: PetZooPetRuntime | undefined = randomItem(
       candidates.filter((runtime: PetZooPetRuntime) => {
-        return runtime !== initiator;
+        return runtime !== initiator && getPetZooApproachSeconds(initiator, runtime) <= PET_ZOO_APPROACH_FRIEND_MAX_SECONDS;
       }),
     );
-    if (!initiator || !partner) {
+    if (!partner) {
       return;
     }
 
@@ -349,10 +354,11 @@ export class PetZooEngine {
       this.context.startConversation(initiator, partner);
       return;
     }
-    setPetZooBehavior(initiator, PET_ZOO_BEHAVIOR.approachFriend);
+    const seconds: number = getPetZooApproachSeconds(initiator, partner);
+    setPetZooBehavior(initiator, PET_ZOO_BEHAVIOR.approachFriend, seconds);
     initiator.friendId = partner.pet.id;
     // the partner waits a little longer than the walk can take, then gives up
-    setPetZooBehavior(partner, PET_ZOO_BEHAVIOR.waitForFriend, PET_ZOO_BEHAVIOR_DURATION.approachFriend[1] + 1);
+    setPetZooBehavior(partner, PET_ZOO_BEHAVIOR.waitForFriend, seconds + 1);
     partner.friendId = initiator.pet.id;
   }
 

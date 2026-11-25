@@ -28,6 +28,7 @@ import {
   PET_ZOO_MIN_FLY_HEIGHT_IN_SPRITES,
   PET_ZOO_MIN_CLIMB_HEIGHT_IN_SPRITES,
   PET_ZOO_CONVERSATION_DISTANCE_IN_SPRITES,
+  PET_ZOO_APPROACH_FRIEND_MARGIN_SECONDS,
 } from '../constants/pet-zoo-behavior.constants';
 
 import type { PetZooPet } from '../models/pet-zoo.models';
@@ -124,6 +125,12 @@ export function getPetZooJumpVelocity(velocity: number, bounds: PetZooWorldBound
 export function arePetZooPetsClose(a: PetZooPetRuntime, b: PetZooPetRuntime): boolean {
   const reach: number = ((a.size + b.size) / 2) * PET_ZOO_CONVERSATION_DISTANCE_IN_SPRITES;
   return Math.abs(getPetZooCenterX(a) - getPetZooCenterX(b)) <= reach;
+}
+
+/** How long a pet gets to walk over to a friend: the walk at its own speed, plus a margin. */
+export function getPetZooApproachSeconds(runtime: PetZooPetRuntime, friend: PetZooPetRuntime): number {
+  const distance: number = Math.abs(getPetZooCenterX(friend) - getPetZooCenterX(runtime));
+  return distance / runtime.speed + PET_ZOO_APPROACH_FRIEND_MARGIN_SECONDS;
 }
 
 export function isPetZooPetFree(runtime: PetZooPetRuntime): boolean {
@@ -424,7 +431,9 @@ function flyToCatch(runtime: PetZooPetRuntime, point: PetZooPoint, seconds: numb
   const flight: PetZooFlight = setFlightTarget(runtime, { x: point.x, y: point.y - runtime.size / 2 }, bounds);
   moveAlongFlight(runtime, flight, getFlySpeed(runtime) * PET_ZOO_CHASE_SPEED_MULTIPLIER, seconds);
   const middleY: number = runtime.y + runtime.size / 2;
-  return Math.hypot(getPetZooCenterX(runtime) - point.x, middleY - point.y) <= runtime.size * FLY_CATCH_REACH_IN_SPRITES;
+  // a ball floating in the lake is lower than a flyer can go: skimming the water over it is close enough
+  const reachY: number = Math.max(point.y, runtime.size / 2);
+  return Math.hypot(getPetZooCenterX(runtime) - point.x, middleY - reachY) <= runtime.size * FLY_CATCH_REACH_IN_SPRITES;
 }
 
 function stepFly(runtime: PetZooPetRuntime, seconds: number, context: PetZooSimulationContext): void {

@@ -179,10 +179,17 @@ export function useSideNavResize(): SideNavResize {
           return;
         }
         event.preventDefault();
+        // collapsed: the right arrow opens it at its last width, the left arrow has nothing to shrink
+        if (state === 'collapsed') {
+          if (event.key === 'ArrowRight') {
+            setOpen(true);
+          }
+          return;
+        }
         // Once a width is saved it is the target of the width transition, so step from it: the drawn width lags
         // behind while the transition runs and quick presses would lose steps. Before that, the drawn width is the
         // CSS default, which follows the root font size.
-        const startWidth: number = state === 'collapsed' || savedWidth !== null ? width : getDrawnSideNavWidth(event.currentTarget, width);
+        const startWidth: number = savedWidth !== null ? width : getDrawnSideNavWidth(event.currentTarget, width);
         const step: number = event.key === 'ArrowRight' ? SIDE_NAV_WIDTH_KEYBOARD_STEP_PX : -SIDE_NAV_WIDTH_KEYBOARD_STEP_PX;
         commitWidth(startWidth + step);
       },

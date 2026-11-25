@@ -57,8 +57,8 @@ Dark mode follows the `dark` class on `<html>`. If the art is served from somewh
 - **Stepping stones** (Autumn lake): the pets stand on three stones spread across the lake. At the end of a stone a
   pet hops to the next one or turns around, and a pet going somewhere (to a friend, to the ball) hops across stone by
   stone. A ball that lands in the water floats and drifts to the nearest stone. Nobody climbs here.
-- **Resize**: drag the top edge (double-click resets, arrow keys nudge) between `PET_ZOO_MIN_HEIGHT_PX` and
-  `PET_ZOO_MAX_HEIGHT_PX`. Above the art, the theme's `fillColor` blends it into the background.
+- **Resize**: drag the top edge (double-click resets, arrow keys nudge) between `PET_ZOO_MIN_HEIGHT_PX` (room for the
+  biggest pet on the tallest ground, worked out from the master lists) and `PET_ZOO_MAX_HEIGHT_PX`. Above the art, the theme's `fillColor` blends it into the background.
 
 Every pet draws its own speed factor and its own durations, so no two move in sync.
 
@@ -111,7 +111,8 @@ Storage version 1 saved copies of the master lists instead, its unlocks are drop
 `PetZooEngine` (in `engine/`) runs one `requestAnimationFrame` loop. Each frame it steps the ball, the food and every pet,
 then writes transforms, sprite URLs and bubble text straight to DOM nodes that the pet and food components registered
 (`PetZooPetSprite` registers a pet's nodes, `PetZooFood` the image slots that `renderPetZooFoods` fills).
-React renders only when a pet is added or removed or the theme changes, never per frame. The loop pauses while
+React renders only when a pet is added or removed, the theme changes or the app switches between light and dark,
+never per frame. The loop pauses while
 the zoo is hidden or off screen (an `IntersectionObserver` in `usePetZooEngine`).
 
 ```

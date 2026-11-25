@@ -5,8 +5,6 @@
 
 export const PET_ZOO_ASSET_BASE_URL = '/pet-animation-zoo';
 
-/** The smallest height the zoo can be dragged to. */
-export const PET_ZOO_MIN_HEIGHT_PX = 80;
 /** The height before the person resizes it. */
 export const PET_ZOO_DEFAULT_HEIGHT_PX = 150;
 /** The cap for dragging the zoo taller. Above the art, the theme's fill color takes over. */

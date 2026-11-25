@@ -7,13 +7,15 @@ import { PET_ZOO_THEME_IDS, PetZooThemeId } from '../constants/pet-zoo-themes.co
 import { PET_ZOO_PET_NAME_MAX_LENGTH } from '../constants/pet-zoo.constants';
 
 const spawnPetFieldsSchema = z.object({
-    type: z.enum(PET_ZOO_PET_TYPES, { message: 'Choose a pet' }),
-    color: z.string().min(1, { message: 'Choose a color' }),
-    name: z
-      .string()
-      .trim()
-      .min(1, { message: 'Give your pet a name' })
-      .max(PET_ZOO_PET_NAME_MAX_LENGTH, { message: `A name can be up to ${PET_ZOO_PET_NAME_MAX_LENGTH} characters` }),
+  type: z.enum(PET_ZOO_PET_TYPES, { message: PET_ZOO_LABELS.petTypeRequiredError }),
+  color: z.string().min(1, { message: PET_ZOO_LABELS.petColorRequiredError }),
+  name: z
+    .string()
+    .trim()
+    .min(1, { message: PET_ZOO_LABELS.petNameRequiredError })
+    .max(PET_ZOO_PET_NAME_MAX_LENGTH, {
+      message: PET_ZOO_LABELS.petNameTooLongError.replace('{max}', String(PET_ZOO_PET_NAME_MAX_LENGTH)),
+    }),
 });
 
 /**
@@ -32,7 +34,7 @@ export function createPetZooSpawnPetSchema(isTypeUnlocked: (_type: PetZooPetType
       (values) => {
         return isPetZooColorOf(values.type, values.color);
       },
-      { message: 'Choose a color', path: ['color'] },
+      { message: PET_ZOO_LABELS.petColorRequiredError, path: ['color'] },
     );
 }
 
@@ -40,13 +42,13 @@ export type PetZooSpawnPetFormValues = z.infer<typeof spawnPetFieldsSchema>;
 
 /** The Delete pet dialog. */
 export const petZooDeletePetSchema = z.object({
-  petId: z.string().min(1, { message: 'Choose a pet' }),
+  petId: z.string().min(1, { message: PET_ZOO_LABELS.deletePetRequiredError }),
 });
 
 export type PetZooDeletePetFormValues = z.infer<typeof petZooDeletePetSchema>;
 
 const changeThemeFieldsSchema = z.object({
-  themeId: z.enum(PET_ZOO_THEME_IDS, { message: 'Choose a theme' }),
+  themeId: z.enum(PET_ZOO_THEME_IDS, { message: PET_ZOO_LABELS.themeRequiredError }),
 });
 
 /** The Change theme dialog. A locked theme is turned down, like a locked pet. */

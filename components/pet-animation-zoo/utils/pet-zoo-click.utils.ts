@@ -16,7 +16,7 @@ import {
   PET_ZOO_CLICK_STREAK_SECONDS,
 } from '../constants/pet-zoo-behavior.constants';
 
-import type { PetZooBehavior, PetZooPetRuntime, PetZooWorldBounds } from '../models/pet-zoo-runtime.models';
+import type { PetZooBehavior, PetZooPetRuntime, PetZooWorldBounds, PetZooPendingBubble } from '../models/pet-zoo-runtime.models';
 
 /** Behaviors that a click only adds a bubble to, so a conversation or a chase is not broken off. */
 const BUBBLE_ONLY_BEHAVIORS: readonly PetZooBehavior[] = [
@@ -69,7 +69,10 @@ export function reactToPetZooClick(runtime: PetZooPetRuntime, nowSeconds: number
 
   const line: string | undefined = pickPetZooClickLine(runtime);
   if (line) {
+    // a pet in a conversation still says its reply after this bubble
+    const pendingReply: PetZooPendingBubble | null = runtime.behavior === PET_ZOO_BEHAVIOR.talk ? runtime.pendingBubble : null;
     showPetZooBubble(runtime, line);
+    runtime.pendingBubble = pendingReply;
   }
   if (!BUBBLE_ONLY_BEHAVIORS.includes(runtime.behavior)) {
     setPetZooBehavior(runtime, PET_ZOO_BEHAVIOR.swipe);

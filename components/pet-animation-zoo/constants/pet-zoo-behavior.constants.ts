@@ -16,7 +16,6 @@ export const PET_ZOO_BEHAVIOR_DURATION = {
   swipe: [0.7, 0.7],
   withBall: [3, 4],
   zoomies: [3, 3],
-  approachFriend: [8, 8],
   talk: [5.2, 5.2],
   fly: [3, 7],
   eat: [1.6, 1.6],
@@ -74,6 +73,12 @@ export const PET_ZOO_CONVERSATION_INTERVAL: PetZooRange = [9, 22];
 export const PET_ZOO_CONVERSATION_LINE_SECONDS = 2.4;
 /** Pets talk once they are this close, in sprite sizes. */
 export const PET_ZOO_CONVERSATION_DISTANCE_IN_SPRITES = 1.1;
+/**
+ * A pet walks over to a friend it can reach within this many seconds, so a slow pet picks one nearby. The walk gets
+ * the time it needs plus `PET_ZOO_APPROACH_FRIEND_MARGIN_SECONDS`, for hops between stones.
+ */
+export const PET_ZOO_APPROACH_FRIEND_MAX_SECONDS = 25;
+export const PET_ZOO_APPROACH_FRIEND_MARGIN_SECONDS = 3;
 
 export const PET_ZOO_BUBBLE_SECONDS = 2.2;
 
