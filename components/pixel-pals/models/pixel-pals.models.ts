@@ -44,8 +44,14 @@ export interface PixelPalsPetVoice {
 /** Per kind of pet, whether the person can pick it: `true` open, `false` locked (shown with a lock). */
 export type PixelPetUnlockedPets = Record<PixelPetId, boolean>;
 
+/** What the store saves: only the kinds of pet a lock action changed. The others follow the master list. */
+export type PixelPetSavedUnlockedPets = Partial<PixelPetUnlockedPets>;
+
 /** Per background (theme), whether the person can pick it: `true` open, `false` locked (shown with a lock). */
 export type PixelPetUnlockedBackgrounds = Record<PixelPalsThemeId, boolean>;
+
+/** What the store saves: only the backgrounds a lock action changed. The others follow the master list. */
+export type PixelPetSavedUnlockedBackgrounds = Partial<PixelPetUnlockedBackgrounds>;
 
 /** Everything about one kind of pet, with the defaults of every pet of that kind. The master list is `PIXEL_PALS_PETS`. */
 export interface PixelPetDefinition {
@@ -56,8 +62,8 @@ export interface PixelPetDefinition {
   defaultName: string;
   emoji: string;
   /**
-   * The default of whether it can be picked, for someone with nothing saved yet. What can be picked is `unlockedPets`
-   * in the pixel-pets store, and a saved value there always wins.
+   * Whether it can be picked, unless a lock action changed it: `unlockedPets` in the pixel-pets store saves only the
+   * kinds an action changed, and those win.
    */
   unlocked: boolean;
   /** The folder of its sprites, `public/pixel-pals/pets/<spriteFolder>/`. Kinds can share one, like the pandas. */
@@ -103,7 +109,7 @@ export interface PixelPalsThemeIsland {
 export interface PixelPalsThemeDefinition {
   id: PixelPalsThemeId;
   label: string;
-  /** The default of `unlockedBackgrounds` in the pixel-pets store, like a pet's `unlocked`. */
+  /** Whether it can be picked, unless a lock action changed it (`unlockedBackgrounds` in the pixel-pets store), like a pet's `unlocked`. */
   unlocked: boolean;
   /** Distance in px from the bottom of the world to the ground the pets walk on (the top of the stones on the lake). */
   floorPx: number;

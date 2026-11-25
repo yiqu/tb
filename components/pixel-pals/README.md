@@ -101,15 +101,15 @@ The pixel-pets store is what Pixel Pals shows; the dialogs only call its actions
 | `userPixelPetCount`      | how many pets can be out at once, `PIXEL_PALS_DEFAULT_PET_COUNT` (10), kept in 1 to 30      |
 | `userPixelPetBackground` | the id of the background (theme) shown                                                    |
 | `userPixelPets`          | the pets out, each `{ id, petId, color, nickName? }`; starts with one brown dog (`PIXEL_PALS_DEFAULT_PETS`) |
-| `unlockedBackgrounds`    | `{ [backgroundId]: boolean }`, whether each background can be picked                       |
-| `unlockedPets`           | `{ [petId]: boolean }`, whether each kind of pet can be picked                             |
+| `unlockedBackgrounds`    | `{ [backgroundId]: boolean }`, only the backgrounds a lock action changed                  |
+| `unlockedPets`           | `{ [petId]: boolean }`, only the kinds of pet a lock action changed                        |
 
 A saved pet is filled in from its master list entry to be shown (`getResolvedPixelPet`): everything comes from
 `PIXEL_PALS_PETS[petId]`, with the person's `color` and its `nickName` (or else the kind's `defaultName`) on top. The
 Spawn dialog saves a `nickName` only when the name is not the default one.
 
 Getter hooks: `useGetUserPixelPetCount`, `useGetUserPixelPetBackground`, `useGetUserPixelPets`,
-`useGetUnlockedBackgrounds`, `useGetUnlockedPets`, `useGetSpawnedPixelPetCount`. Actions (`usePixelPetStoreActions`):
+`useGetUnlockedBackgrounds`, `useGetUnlockedPets` (every entry, see Locks), `useGetSpawnedPixelPetCount`. Actions (`usePixelPetStoreActions`):
 `setUserPixelPetCount`, `setUserPixelPetBackground`, `setUserPixelPets`, `addUserPixelPet`, `removeUserPixelPet`,
 `setPetUnlocked`, `unlockAllPets`, `lockAllPets`, `setBackgroundUnlocked`, `unlockAllBackgrounds`,
 `lockAllBackgrounds`. Lowering `userPixelPetCount` below the pets out removes none, it only stops new ones.
@@ -122,15 +122,16 @@ saved.
 
 ### Locks
 
-`unlockedPets` and `unlockedBackgrounds` decide what the Spawn and Change theme dropdowns offer: `false` is listed
-with a lock and cannot be picked. Change one with `setPetUnlocked` or `setBackgroundUnlocked`, or all of them with
-`unlockAllPets`, `lockAllPets`, `unlockAllBackgrounds` and `lockAllBackgrounds`.
+The `unlocked` of each master list entry (`PIXEL_PALS_PETS`, `PIXEL_PALS_THEMES`) decides whether it can be picked,
+unless a lock action changed it: `setPetUnlocked`, `setBackgroundUnlocked`, `unlockAllPets`, `lockAllPets`,
+`unlockAllBackgrounds` or `lockAllBackgrounds`. The store's `unlockedPets` and `unlockedBackgrounds` save only the
+entries an action changed, and those win. So a change to a master list reaches everyone, except for the entries an
+action set for them. `useGetUnlockedPets` and `useGetUnlockedBackgrounds` give the result for every entry, which is
+what the Spawn and Change theme dropdowns read: `false` is listed with a lock and cannot be picked.
 
-A saved value always wins. The `unlocked` of each master list entry (`PIXEL_PALS_PETS`, `PIXEL_PALS_THEMES`) is only
-the default: what someone with nothing saved starts with, and what an entry added to a master list later starts with.
-On load both maps are rebuilt on the master lists, so an entry no longer in them is dropped
-(`utils/pixel-pals-unlock.utils.ts`). To open something on a date, call `setPetUnlocked` or `setBackgroundUnlocked`
-then.
+On load a saved entry is kept only if its id is still in the master list and its value is a boolean
+(`utils/pixel-pals-unlock.utils.ts`). Storage version 1 saved every entry, so its locks are dropped on load (`migrate`
+in the store). To open something on a date, call `setPetUnlocked` or `setBackgroundUnlocked` then.
 
 Locks are only about picking. The actions do not check them, so code can still add a locked pet, and locking a kind or
 a background leaves the pets out and the background shown as they are.

@@ -23,7 +23,7 @@ export const PIXEL_PALS_HEIGHT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
 /** The local storage key of the pixel-pets store (Zustand persist): the pets, the background and the locks. */
 export const PIXEL_PALS_STORAGE_KEY = 'pixel-pets-store';
-export const PIXEL_PALS_STORAGE_VERSION = 1;
+export const PIXEL_PALS_STORAGE_VERSION = 2;
 
 /** How many pets a person can have out at once (`userPixelPetCount`) until it is changed. The Spawn button is disabled at it. */
 export const PIXEL_PALS_DEFAULT_PET_COUNT = 10;

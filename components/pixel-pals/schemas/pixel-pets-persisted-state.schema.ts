@@ -31,7 +31,7 @@ export const pixelPetCountSchema = z.number().int().min(PIXEL_PALS_MIN_PET_COUNT
 /**
  * What local storage holds. It is checked when the store loads, so a value edited by hand, or written by an older
  * version, never breaks Pixel Pals: a bad value falls back to its default, bad pets are dropped one by one, and the
- * unlock maps are rebuilt on the master lists (`toValidUnlockedPets`, `toValidUnlockedBackgrounds`).
+ * saved locks keep only real ids with a boolean (`toValidSavedUnlockedPets`, `toValidSavedUnlockedBackgrounds`).
  */
 export const pixelPetsPersistedStateSchema = z.object({
   userPixelPetCount: pixelPetCountSchema.catch(PIXEL_PALS_DEFAULT_PET_COUNT),

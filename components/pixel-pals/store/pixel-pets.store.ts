@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
@@ -6,10 +7,12 @@ import { pixelPalsLocalStorage } from '../utils/pixel-pals-storage.utils';
 import { PIXEL_PALS_DEFAULT_THEME_ID } from '../constants/pixel-pals-themes.constants';
 import { pixelPetSchema, pixelPetsPersistedStateSchema } from '../schemas/pixel-pets-persisted-state.schema';
 import {
-  toValidUnlockedPets,
+  getUnlockedPets,
   getAllUnlockedPets,
-  toValidUnlockedBackgrounds,
+  getUnlockedBackgrounds,
+  toValidSavedUnlockedPets,
   getAllUnlockedBackgrounds,
+  toValidSavedUnlockedBackgrounds,
 } from '../utils/pixel-pals-unlock.utils';
 import {
   PIXEL_PALS_STORAGE_KEY,
@@ -25,7 +28,9 @@ import type {
   NewPixelPet,
   PixelPalsThemeId,
   PixelPetUnlockedPets,
+  PixelPetSavedUnlockedPets,
   PixelPetUnlockedBackgrounds,
+  PixelPetSavedUnlockedBackgrounds,
 } from '../models/pixel-pals.models';
 
 interface PixelPetsActions {
@@ -52,6 +57,10 @@ interface PixelPetsActions {
  * storage, so it is back after a refresh. Where each pet is and what it is doing is not saved, that lives in
  * `PixelPalsEngine`.
  *
+ * Locks: the master lists' `unlocked` decides, except for the entries a lock action changed. `unlockedPets` and
+ * `unlockedBackgrounds` hold only those, so a later change to a master list still reaches every entry no action
+ * touched. `useGetUnlockedPets` and `useGetUnlockedBackgrounds` give the result for every entry.
+ *
  * Locks only decide what the Spawn and Change background dialogs offer. The actions do not check them, so code can
  * still give a locked pet, and locking a background or a kind of pet leaves the ones already in use as they are.
  *
@@ -65,10 +74,10 @@ interface PixelPetsState {
   userPixelPetBackground: PixelPalsThemeId;
   /** The pets out, as the person made them. `getResolvedPixelPets` fills in the rest from the master list. */
   userPixelPets: PixelPet[];
-  /** Per background id, whether it can be picked. */
-  unlockedBackgrounds: PixelPetUnlockedBackgrounds;
-  /** Per kind of pet (`petId`), whether it can be picked. */
-  unlockedPets: PixelPetUnlockedPets;
+  /** Per background id, whether it can be picked: only the backgrounds a lock action changed. */
+  unlockedBackgrounds: PixelPetSavedUnlockedBackgrounds;
+  /** Per kind of pet (`petId`), whether it can be picked: only the kinds a lock action changed. */
+  unlockedPets: PixelPetSavedUnlockedPets;
 
   actions: PixelPetsActions;
 }
@@ -110,8 +119,8 @@ export const usePixelPetsStore = create<PixelPetsState>()(
         userPixelPetCount: PIXEL_PALS_DEFAULT_PET_COUNT,
         userPixelPetBackground: PIXEL_PALS_DEFAULT_THEME_ID,
         userPixelPets: PIXEL_PALS_DEFAULT_PETS,
-        unlockedBackgrounds: toValidUnlockedBackgrounds(),
-        unlockedPets: toValidUnlockedPets(),
+        unlockedBackgrounds: {},
+        unlockedPets: {},
 
         actions: {
           setUserPixelPetCount: (count: number) => {
@@ -203,6 +212,15 @@ export const usePixelPetsStore = create<PixelPetsState>()(
           unlockedPets: state.unlockedPets,
         };
       },
+      // version 1 saved every lock, not only the ones an action changed: drop them, so the master lists decide again.
+      // `merge` checks the rest.
+      migrate: (persistedState: unknown, version: number): PixelPetsPersistedState => {
+        const state = (typeof persistedState === 'object' && persistedState !== null ? persistedState : {}) as PixelPetsPersistedState;
+        if (version < 2) {
+          return { ...state, unlockedPets: {}, unlockedBackgrounds: {} };
+        }
+        return state;
+      },
       // the saved value is checked: a hand edited or older one falls back to the defaults, value by value
       merge: (persistedState: unknown, currentState: PixelPetsState): PixelPetsState => {
         const parsed = pixelPetsPersistedStateSchema.safeParse(persistedState);
@@ -214,8 +232,8 @@ export const usePixelPetsStore = create<PixelPetsState>()(
           userPixelPetCount: parsed.data.userPixelPetCount,
           userPixelPetBackground: parsed.data.userPixelPetBackground,
           userPixelPets: toValidPets(parsed.data.userPixelPets),
-          unlockedBackgrounds: toValidUnlockedBackgrounds(parsed.data.unlockedBackgrounds),
-          unlockedPets: toValidUnlockedPets(parsed.data.unlockedPets),
+          unlockedBackgrounds: toValidSavedUnlockedBackgrounds(parsed.data.unlockedBackgrounds),
+          unlockedPets: toValidSavedUnlockedPets(parsed.data.unlockedPets),
         };
       },
     },
@@ -242,15 +260,23 @@ export const useGetUserPixelPets = () => {
     return state.userPixelPets;
   });
 };
-export const useGetUnlockedBackgrounds = () => {
-  return usePixelPetsStore((state: PixelPetsState) => {
+/** Whether every background can be picked: what a lock action set, else the master list. */
+export const useGetUnlockedBackgrounds = (): PixelPetUnlockedBackgrounds => {
+  const savedUnlockedBackgrounds: PixelPetSavedUnlockedBackgrounds = usePixelPetsStore((state: PixelPetsState) => {
     return state.unlockedBackgrounds;
   });
+  return useMemo(() => {
+    return getUnlockedBackgrounds(savedUnlockedBackgrounds);
+  }, [savedUnlockedBackgrounds]);
 };
-export const useGetUnlockedPets = () => {
-  return usePixelPetsStore((state: PixelPetsState) => {
+/** Whether every kind of pet can be picked: what a lock action set, else the master list. */
+export const useGetUnlockedPets = (): PixelPetUnlockedPets => {
+  const savedUnlockedPets: PixelPetSavedUnlockedPets = usePixelPetsStore((state: PixelPetsState) => {
     return state.unlockedPets;
   });
+  return useMemo(() => {
+    return getUnlockedPets(savedUnlockedPets);
+  }, [savedUnlockedPets]);
 };
 /** How many pets are out now, as opposed to `useGetUserPixelPetCount`, how many can be. */
 export const useGetSpawnedPixelPetCount = () => {
