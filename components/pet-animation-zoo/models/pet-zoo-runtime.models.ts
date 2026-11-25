@@ -157,11 +157,14 @@ export interface PetZooRenderedPet {
   bodyTransform: string;
   imageSrc: string;
   bubbleText: string | null;
-  /** Measured when the text changes, not every frame. */
+  /**
+   * Measured when the text changes, and again each frame while it is 0 (a hidden zoo has no layout), not every frame
+   * otherwise. Measured again once the pixel font loads, see `PetZooEngine.watchBubbleFont`.
+   */
   bubbleWidth: number;
   bubbleHeight: number;
   bubbleTransform: string;
-  /** Measured when the name changes. */
+  /** Measured on the first frame, and again each frame while it is 0 (a hidden zoo has no layout). */
   nameTagWidth: number;
   nameTagTransform: string;
 }

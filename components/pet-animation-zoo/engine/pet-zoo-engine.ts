@@ -414,8 +414,9 @@ export class PetZooEngine {
   }
 
   /**
-   * A bubble is measured once per text and a name tag once, to keep them inside the zoo. The pixel font may arrive
-   * after they were measured in the fallback font, so measure them again once it is loaded.
+   * A bubble is measured once per text and a name tag once, to keep them inside the zoo. A size of 0 (the zoo was
+   * hidden) is not kept: `renderPetZooPet` measures again on the next frames until it is set. The pixel font may
+   * arrive after they were measured in the fallback font, so measure them again once it is loaded.
    */
   private watchBubbleFont(): void {
     if (this.isWatchingBubbleFont || typeof document === 'undefined' || !document.fonts) {

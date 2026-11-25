@@ -113,7 +113,8 @@ export function useSideNavResize(): SideNavResize {
     handleProps: {
       onPointerDown: (event: PointerEvent<HTMLElement>) => {
         const wrapper: HTMLElement | null = event.currentTarget.closest(SIDEBAR_WRAPPER_SELECTOR);
-        if (event.button !== 0 || !wrapper) {
+        // a second pointer (another finger, or a pen beside the mouse) must not restart a drag that is running
+        if (dragRef.current || event.button !== 0 || !wrapper) {
           return;
         }
         event.preventDefault();
