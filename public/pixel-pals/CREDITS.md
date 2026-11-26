@@ -23,8 +23,11 @@ the unicorn sprites (`pets/unicorn/`, `pets/alicorn/`, `pets/unicorn-foal/`, `pe
 `pets/starry-unicorn/`), the aurora colors (`aurora_*` files: recolors of the pets' own sprites, so the panda and Deno
 ones are derived from VS Code Pets art and keep its license), the food (`foods/`), the Snowy peak theme
 (`backgrounds/peak/`), the Autumn lake theme with its stepping stones (`backgrounds/lake/`), the Jurassic jungle and
-Volcano valley themes (`backgrounds/jungle/`, `backgrounds/volcano/`, generic prehistoric scenery, nothing from a film)
-and the Classroom and Science class themes (`backgrounds/classroom/`, `backgrounds/science/`). The Big panda and
-Little panda reuse the panda sprites at another size.
+Volcano valley themes (`backgrounds/jungle/`, `backgrounds/volcano/`, generic prehistoric scenery, nothing from a film),
+the Classroom and Science class themes (`backgrounds/classroom/`, `backgrounds/science/`), and the Sunset farmhouse,
+Sunset ranch, Overgrown city, Misty cove, Karst peaks, Portal gate and Castle gate themes (`backgrounds/farmhouse/`,
+`backgrounds/ranch/`, `backgrounds/city/`, `backgrounds/cove/`, `backgrounds/karst/`, `backgrounds/portal/`,
+`backgrounds/gate/`: original pixel art painted from mood pictures, generic shapes, no logos, emblems or characters
+from any game). The Big panda and Little panda reuse the panda sprites at another size.
 
 Left out on purpose: the cat (its artist asked that it is not redistributed) and Totoro (a Studio Ghibli character).

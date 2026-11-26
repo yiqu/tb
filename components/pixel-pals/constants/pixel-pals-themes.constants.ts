@@ -25,6 +25,13 @@ export const PIXEL_PALS_THEME_IDS = [
   'classroom',
   'science',
   'barn',
+  'farmhouse',
+  'ranch',
+  'city',
+  'cove',
+  'karst',
+  'portal',
+  'gate',
 ] as const;
 
 export type PixelPalsThemeId = (typeof PIXEL_PALS_THEME_IDS)[number];
@@ -190,5 +197,76 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
       { fileName: 'foreground-{mode}-nano.png', repeat: 'no-repeat' },
       { fileName: 'pasture-foreground-{mode}-nano.png', repeat: 'repeat-x' },
     ],
+  },
+  farmhouse: {
+    id: 'farmhouse',
+    label: 'Sunset farmhouse',
+    unlocked: true,
+    // the pets walk through the front of the wheat field
+    floorPx: 12,
+    // the top band of each sky
+    fillColor: { light: '#b5a09d', dark: '#121630' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
+  ranch: {
+    id: 'ranch',
+    label: 'Sunset ranch',
+    unlocked: true,
+    // the middle of the dirt road
+    floorPx: 14,
+    fillColor: { light: '#e6c084', dark: '#14152e' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
+  city: {
+    id: 'city',
+    label: 'Overgrown city',
+    unlocked: true,
+    // the pets walk in the grass in front of the ruins
+    floorPx: 12,
+    fillColor: { light: '#a7b1b9', dark: '#0d121b' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
+  cove: {
+    id: 'cove',
+    label: 'Misty cove',
+    unlocked: true,
+    // the dry sand in front of the boat
+    floorPx: 12,
+    fillColor: { light: '#8e8f9c', dark: '#111525' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
+  karst: {
+    id: 'karst',
+    label: 'Karst peaks',
+    unlocked: true,
+    // the stone path
+    floorPx: 10,
+    fillColor: { light: '#6aa3d8', dark: '#0d1526' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
+  portal: {
+    id: 'portal',
+    label: 'Portal gate',
+    unlocked: true,
+    // the stone causeway in front of the gate
+    floorPx: 10,
+    fillColor: { light: '#24121a', dark: '#0b060c' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
+  },
+  gate: {
+    id: 'gate',
+    label: 'Castle gate',
+    unlocked: true,
+    // the cobblestone road
+    floorPx: 12,
+    fillColor: { light: '#3d7c8c', dark: '#0a1424' },
+    backgroundLayers: [BACKGROUND_LAYER],
+    foregroundLayers: [],
   },
 };
