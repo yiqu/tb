@@ -59,7 +59,8 @@ Pass `className` to change its border or background (this app passes `border-sid
 - **Weather**: a background with `particles` gets a slider under the dropdown in Change theme, from Off to 100%:
   snow (Winter, Snowy peak), falling leaves (Autumn, Autumn lake), gray debris (Portal gate), rain (Overgrown city,
   Karst peaks) or fog (Misty cove, Castle gate). The slider sets how many particles there are, never their size: a
-  flake, leaf or speck is 1 to 2 px and a raindrop a 1 px streak, so the art always shows through. Every background
+  flake, leaf or speck is 1 to 2 px and a raindrop a 1 px wide streak, so the art always shows through. Fog is the
+  exception: each wisp is 22 to 44 px wide and 3 to 6 px tall, kept faint (30% opacity, 20% in dark). Every background
   starts at its `defaultLevel` (0, off); OK saves the level only when it was moved.
 - **Stepping stones** (Autumn lake): the pets stand on three stones spread across the lake. At the end of a stone a
   pet hops to the next one or turns around, and a pet going somewhere (to a friend, to the ball) hops across stone by
@@ -172,8 +173,8 @@ weather and every pet, then writes transforms, sprite URLs and bubble text strai
 components registered (`PixelPalsPetSprite` registers a pet's nodes, `PixelPalsFood` the image slots that
 `renderPixelPalsFoods` fills), and draws the weather on the canvas of `PixelPalsParticleLayer` (1 canvas px per CSS px,
 in front of the foreground, ignoring clicks).
-React renders only when a pet is added or removed, the theme changes or the app switches between light and dark,
-never per frame. The loop pauses while
+React renders only when a pet is added or removed, the theme or its weather level changes or the app switches between
+light and dark, never per frame. The loop pauses while
 Pixel Pals is hidden or off screen (an `IntersectionObserver` in `usePixelPalsEngine`).
 
 ```
@@ -200,7 +201,8 @@ utils/        behavior (the state machine, flight), ball and food physics, weath
 - Theme: put the images in `public/pixel-pals/backgrounds/<id>/`, add the id to `PIXEL_PALS_THEME_IDS` and an
   entry to `PIXEL_PALS_THEMES` with its ground height (`floorPx`) and a light and dark `fillColor`. For ground made of
   stepping stones, add `islands` (each placed by a share of the width, its image's top row is the ground) and
-  `waterDepthPx` for where a ball floats. For weather, add `particles: { effect, defaultLevel }` (an effect from
-  `PIXEL_PALS_PARTICLE_EFFECTS`, a level from 0 to 100); the slider shows up for it in Change theme.
+  `waterDepthPx` for where a ball floats. For weather, add `particles: { effect, defaultLevel }` (an effect id from
+  `PIXEL_PALS_PARTICLE_EFFECT_IDS`, a level from 0 to 100); the slider shows up for it in Change theme. A new effect
+  needs its id there, its look in `PIXEL_PALS_PARTICLE_EFFECTS` and its motion in `PIXEL_PALS_PARTICLE_TUNING`.
 
 Art credits and licenses: `public/pixel-pals/CREDITS.md`.

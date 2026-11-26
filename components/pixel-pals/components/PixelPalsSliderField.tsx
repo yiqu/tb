@@ -21,7 +21,14 @@ interface PixelPalsSliderFieldProps<T extends FieldValues> {
   formatValue: (_value: number) => string;
 }
 
-/** A labelled slider bound to React Hook Form, with its value next to the label and the Zod error under it. Built on the shadcn `field` and `slider`. */
+/**
+ * A labelled slider bound to React Hook Form, with its value next to the label and the Zod error under it. Built on the
+ * shadcn `field` and `slider`.
+ *
+ * The shadcn slider puts its props on its root, but the part a screen reader and the keyboard reach is the thumb
+ * (`role="slider"`), so the thumb is found once it is mounted: it gets the label's id, and React Hook Form focuses it
+ * when the value is invalid.
+ */
 export default function PixelPalsSliderField<T extends FieldValues>({
   control,
   name,
@@ -39,8 +46,13 @@ export default function PixelPalsSliderField<T extends FieldValues>({
       control={ control }
       render={ ({ field, fieldState }) => {
         const value: number = typeof field.value === 'number' ? field.value : min;
+        const attachThumb = (root: HTMLSpanElement | null): void => {
+          const thumb: HTMLElement | null = root?.querySelector<HTMLElement>('[role="slider"]') ?? null;
+          thumb?.setAttribute('aria-labelledby', labelId);
+          field.ref(thumb);
+        };
         return (
-          <Field data-invalid={ fieldState.invalid } aria-labelledby={ labelId }>
+          <Field data-invalid={ fieldState.invalid }>
             <RowStack className="items-center justify-between">
               <PixelPalsFieldLabel id={ labelId } label={ label } />
               <Typography variant="body1" className="text-muted-foreground tabular-nums">
@@ -48,7 +60,7 @@ export default function PixelPalsSliderField<T extends FieldValues>({
               </Typography>
             </RowStack>
             <Slider
-              ref={ field.ref }
+              ref={ attachThumb }
               name={ field.name }
               value={ [value] }
               min={ min }

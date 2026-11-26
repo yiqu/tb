@@ -153,13 +153,15 @@ function respawnAtTop(particle: PixelPalsParticleRuntime, bounds: PixelPalsWorld
   particle.x = Math.random() * bounds.width;
 }
 
-/** What leaves one side comes back on the other, so the weather never thins out on one side. */
+/**
+ * What leaves one side comes back on the other, so the weather never thins out on one side. After Pixel Pals got much
+ * narrower a particle can be several widths out, so it is brought back in one go, not one width per frame.
+ */
 function wrapSideways(particle: PixelPalsParticleRuntime, width: number): void {
   const margin: number = particle.size + particle.sway + 2;
-  if (particle.x < -margin) {
-    particle.x += width + margin * 2;
-  } else if (particle.x > width + margin) {
-    particle.x -= width + margin * 2;
+  const span: number = width + margin * 2;
+  if (particle.x < -margin || particle.x > width + margin) {
+    particle.x = ((((particle.x + margin) % span) + span) % span) - margin;
   }
 }
 
