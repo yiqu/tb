@@ -47,4 +47,7 @@ export const PIXEL_PALS_LABELS = {
   themePlaceholder: 'Select a theme',
   themeLockedError: 'This theme is locked',
   themeRequiredError: 'Choose a theme',
+  particleLevelOff: 'Off',
+  particleLevelValue: '{level}%',
+  particleLevelError: 'Choose an amount from 0 to 100',
 } as const;

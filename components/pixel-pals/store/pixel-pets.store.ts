@@ -14,6 +14,7 @@ import {
   getAllUnlockedBackgrounds,
   toValidSavedUnlockedBackgrounds,
 } from '../utils/pixel-pals-unlock.utils';
+import { getParticleLevels, hasPixelPalsParticles, toValidParticleLevel, toValidSavedParticleLevels } from '../utils/pixel-pals-particle-level.utils';
 import {
   PIXEL_PALS_STORAGE_KEY,
   PIXEL_PALS_MAX_PET_COUNT,
@@ -28,7 +29,9 @@ import type {
   NewPixelPet,
   PixelPalsThemeId,
   PixelPetUnlockedPets,
+  PixelPetParticleLevels,
   PixelPetSavedUnlockedPets,
+  PixelPetSavedParticleLevels,
   PixelPetUnlockedBackgrounds,
   PixelPetSavedUnlockedBackgrounds,
 } from '../models/pixel-pals.models';
@@ -37,6 +40,8 @@ interface PixelPetsActions {
   /** How many pets can be out at once. Rounded and kept in 1 to 30. Lowering it never removes pets already out. */
   setUserPixelPetCount: (_count: number) => void;
   setUserPixelPetBackground: (_backgroundId: PixelPalsThemeId) => void;
+  /** How much weather this background has, rounded and kept in 0 to 100. A background with no `particles` is left as it is. */
+  setUserPixelPetParticleLevel: (_backgroundId: PixelPalsThemeId, _level: number) => void;
   /** Replaces every pet. A pet with an unknown kind or color, or an id already used, is left out. */
   setUserPixelPets: (_pets: PixelPet[]) => void;
   /** Adds a pet with a new id. Returns it, or null when `userPixelPetCount` pets are already out or the pet is not valid. */
@@ -64,6 +69,9 @@ interface PixelPetsActions {
  * Locks only decide what the Spawn and Change background dialogs offer. The actions do not check them, so code can
  * still give a locked pet, and locking a background or a kind of pet leaves the ones already in use as they are.
  *
+ * Weather works the same way: the master list's `particles.defaultLevel` decides, except for the backgrounds whose
+ * slider the person moved. `userPixelPetParticleLevels` holds only those, and `useGetParticleLevels` gives every level.
+ *
  * `skipHydration` is on: the server renders the defaults, and `usePixelPetsStoreHydration` loads the saved state after
  * mount. Reading local storage while rendering would make the first client render differ from the server's.
  */
@@ -78,6 +86,8 @@ interface PixelPetsState {
   unlockedBackgrounds: PixelPetSavedUnlockedBackgrounds;
   /** Per kind of pet (`petId`), whether it can be picked: only the kinds a lock action changed. */
   unlockedPets: PixelPetSavedUnlockedPets;
+  /** Per background id, how much weather (0 to 100): only the backgrounds the person set a level for. */
+  userPixelPetParticleLevels: PixelPetSavedParticleLevels;
 
   actions: PixelPetsActions;
 }
@@ -121,6 +131,7 @@ export const usePixelPetsStore = create<PixelPetsState>()(
         userPixelPets: PIXEL_PALS_DEFAULT_PETS,
         unlockedBackgrounds: {},
         unlockedPets: {},
+        userPixelPetParticleLevels: {},
 
         actions: {
           setUserPixelPetCount: (count: number) => {
@@ -131,6 +142,14 @@ export const usePixelPetsStore = create<PixelPetsState>()(
           setUserPixelPetBackground: (backgroundId: PixelPalsThemeId) => {
             set(() => {
               return { userPixelPetBackground: backgroundId };
+            });
+          },
+          setUserPixelPetParticleLevel: (backgroundId: PixelPalsThemeId, level: number) => {
+            if (!hasPixelPalsParticles(backgroundId)) {
+              return;
+            }
+            set((state: PixelPetsState) => {
+              return { userPixelPetParticleLevels: { ...state.userPixelPetParticleLevels, [backgroundId]: toValidParticleLevel(level) } };
             });
           },
           setUserPixelPets: (pets: PixelPet[]) => {
@@ -210,6 +229,7 @@ export const usePixelPetsStore = create<PixelPetsState>()(
           userPixelPets: state.userPixelPets,
           unlockedBackgrounds: state.unlockedBackgrounds,
           unlockedPets: state.unlockedPets,
+          userPixelPetParticleLevels: state.userPixelPetParticleLevels,
         };
       },
       // version 1 saved every lock, not only the ones an action changed: drop them, so the master lists decide again.
@@ -234,6 +254,7 @@ export const usePixelPetsStore = create<PixelPetsState>()(
           userPixelPets: toValidPets(parsed.data.userPixelPets),
           unlockedBackgrounds: toValidSavedUnlockedBackgrounds(parsed.data.unlockedBackgrounds),
           unlockedPets: toValidSavedUnlockedPets(parsed.data.unlockedPets),
+          userPixelPetParticleLevels: toValidSavedParticleLevels(parsed.data.userPixelPetParticleLevels),
         };
       },
     },
@@ -277,6 +298,15 @@ export const useGetUnlockedPets = (): PixelPetUnlockedPets => {
   return useMemo(() => {
     return getUnlockedPets(savedUnlockedPets);
   }, [savedUnlockedPets]);
+};
+/** How much weather every background has: the level the person set, else the master list's. */
+export const useGetParticleLevels = (): PixelPetParticleLevels => {
+  const savedParticleLevels: PixelPetSavedParticleLevels = usePixelPetsStore((state: PixelPetsState) => {
+    return state.userPixelPetParticleLevels;
+  });
+  return useMemo(() => {
+    return getParticleLevels(savedParticleLevels);
+  }, [savedParticleLevels]);
 };
 /** How many pets are out now, as opposed to `useGetUserPixelPetCount`, how many can be. */
 export const useGetSpawnedPixelPetCount = () => {

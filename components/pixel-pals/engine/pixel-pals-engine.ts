@@ -6,6 +6,7 @@ import { PIXEL_PALS_MESSAGES } from '../constants/pixel-pals-messages.constants'
 import { createPixelPalsBall, stepPixelPalsBall } from '../utils/pixel-pals-ball.utils';
 import { PIXEL_PALS_FOODS } from '../constants/pixel-pals-foods.constants';
 import { createPixelPalsFood, stepPixelPalsFood, keepPixelPalsFoodInside } from '../utils/pixel-pals-food.utils';
+import { drawPixelPalsParticles, stepPixelPalsParticles, setPixelPalsParticleField, createPixelPalsParticleField } from '../utils/pixel-pals-particles.utils';
 import { randomItem, randomChance, randomBetween } from '../utils/pixel-pals-random.utils';
 import { isOverPixelPalsStone, getPixelPalsIslandSpans } from '../utils/pixel-pals-island.utils';
 import { getPixelPalsGreeting, pickPixelPalsConversation, pickPixelPalsMissedBallLine } from '../utils/pixel-pals-speech.utils';
@@ -42,9 +43,16 @@ import {
   PixelPalsSimulationContext,
 } from '../utils/pixel-pals-behavior.utils';
 
-import type { ResolvedPixelPet, PixelPalsThemeIsland, PixelPalsThemeDefinition } from '../models/pixel-pals.models';
+import type {
+  ResolvedPixelPet,
+  PixelPalsColorMode,
+  PixelPalsThemeIsland,
+  PixelPalsThemeDefinition,
+  PixelPalsParticleEffectId,
+} from '../models/pixel-pals.models';
 import type {
   PixelPalsBallRuntime,
+  PixelPalsParticleField,
   PixelPalsFoodRuntime,
   PixelPalsPetRuntime,
   PixelPalsWorldBounds,
@@ -53,8 +61,8 @@ import type {
 } from '../models/pixel-pals-runtime.models';
 
 /**
- * Runs Pixel Pals: one `requestAnimationFrame` loop moves every pet, the ball and the food, then writes the result
- * straight to the DOM nodes the React components registered. React only renders when a pet is added
+ * Runs Pixel Pals: one `requestAnimationFrame` loop moves every pet, the ball, the food and the weather, then writes
+ * the result straight to the DOM nodes the React components registered (the weather is drawn on one canvas). React only renders when a pet is added
  * or removed, never per frame.
  *
  * The engine holds no saved state. `setPets` is fed the pets from the store and builds a runtime pet
@@ -71,6 +79,10 @@ export class PixelPalsEngine {
   private readonly foods: PixelPalsFoodRuntime[] = [];
   private foodElements: readonly HTMLImageElement[] = [];
   private nextFoodId = 1;
+  private readonly particleField: PixelPalsParticleField = createPixelPalsParticleField();
+  private particleContext: CanvasRenderingContext2D | null = null;
+  /** Whether the canvas has particles on it, so with none left it is cleared once and then left alone. */
+  private hasDrawnParticles = false;
   private bounds: PixelPalsWorldBounds = { width: 0, height: 0, floor: 0, islands: [], waterDepth: 0 };
   private islandDefinitions: readonly PixelPalsThemeIsland[] | undefined = undefined;
   private frameId: number | null = null;
@@ -221,6 +233,17 @@ export class PixelPalsEngine {
     this.foodElements = elements;
   }
 
+  /** The canvas the weather is drawn on. The engine sizes it to the world, 1 canvas px per CSS px. */
+  attachParticleCanvas(canvas: HTMLCanvasElement | null): void {
+    this.particleContext = canvas?.getContext('2d') ?? null;
+    this.hasDrawnParticles = true;
+  }
+
+  /** The background's weather (null for none), how much of it (0 to 100, the count only) and the colors to use. */
+  setParticles(effect: PixelPalsParticleEffectId | null, level: number, colorMode: PixelPalsColorMode): void {
+    setPixelPalsParticleField(this.particleField, effect, level, colorMode);
+  }
+
   /**
    * Drops a random piece of food in. Every pet that is free (not playing, talking or eating) goes for the nearest
    * piece; the others join once they are done. Past `PIXEL_PALS_MAX_FOODS` the oldest piece goes.
@@ -287,6 +310,8 @@ export class PixelPalsEngine {
       this.tryStartConversation();
     }
 
+    stepPixelPalsParticles(this.particleField, seconds, this.bounds);
+
     this.foods.forEach((food: PixelPalsFoodRuntime) => {
       stepPixelPalsFood(food, seconds);
     });
@@ -321,6 +346,30 @@ export class PixelPalsEngine {
       renderPixelPalsBall(this.ball, this.ballElement, this.bounds);
     }
     renderPixelPalsFoods(this.foods, this.foodElements, this.bounds);
+    this.renderParticles();
+  }
+
+  private renderParticles(): void {
+    const context: CanvasRenderingContext2D | null = this.particleContext;
+    if (!context) {
+      return;
+    }
+    const width: number = Math.round(this.bounds.width);
+    const height: number = Math.round(this.bounds.height);
+    if (context.canvas.width !== width || context.canvas.height !== height) {
+      // resizing a canvas clears it
+      context.canvas.width = width;
+      context.canvas.height = height;
+    }
+    if (this.particleField.particles.length === 0) {
+      if (this.hasDrawnParticles) {
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        this.hasDrawnParticles = false;
+      }
+      return;
+    }
+    drawPixelPalsParticles(context, this.particleField, this.bounds);
+    this.hasDrawnParticles = true;
   }
 
   /** Removes the food that matches, in place (see `foods`). */

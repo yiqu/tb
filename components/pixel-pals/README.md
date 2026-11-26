@@ -13,7 +13,7 @@ of the left nav, above the account button.
    modules of the host app, imported through the `@/` path alias. Point the imports elsewhere if your app keeps them
    in other places:
    - `cn` from `@/lib/utils` (the shadcn helper, clsx + tailwind-merge)
-   - the shadcn `button`, `dialog`, `field`, `input`, `select` and `tooltip` components from `@/components/ui/`
+   - the shadcn `button`, `dialog`, `field`, `input`, `select`, `slider` and `tooltip` components from `@/components/ui/`
    - `RowStack` from `@/shared/components/RowStack` and `ColumnStack` from `@/shared/components/ColumnStack`
    - `Typography` from `@/components/typography/Typography`
 3. Render it. It fills the width of its parent:
@@ -56,6 +56,11 @@ Pass `className` to change its border or background (this app passes `border-sid
   they swap lines in speech bubbles.
 - **Climbing**: a pet that walks into the left or right wall sometimes climbs it, hangs on, then drops down.
 - **Themes** (backgrounds): `PIXEL_PALS_THEMES` is the master list. Locked ones are listed with a lock and cannot be picked.
+- **Weather**: a background with `particles` gets a slider under the dropdown in Change theme, from Off to 100%:
+  snow (Winter, Snowy peak), falling leaves (Autumn, Autumn lake), gray debris (Portal gate), rain (Overgrown city,
+  Karst peaks) or fog (Misty cove, Castle gate). The slider sets how many particles there are, never their size: a
+  flake, leaf or speck is 1 to 2 px and a raindrop a 1 px streak, so the art always shows through. Every background
+  starts at its `defaultLevel` (0, off); OK saves the level only when it was moved.
 - **Stepping stones** (Autumn lake): the pets stand on three stones spread across the lake. At the end of a stone a
   pet hops to the next one or turns around, and a pet going somewhere (to a friend, to the ball) hops across stone by
   stone. A ball that lands in the water floats and drifts to the nearest stone. Nobody climbs here.
@@ -81,6 +86,7 @@ food are all numbers in `constants/pixel-pals-behavior.constants.ts`. The file i
 | running, chasing, zoomies, flying | `PIXEL_PALS_*_SPEED_MULTIPLIER`                                           |
 | how long each timed activity lasts (idle, walk, run, lie, fly, eat...); chasing, climbing and walking to a friend end on their own | `PIXEL_PALS_BEHAVIOR_DURATION` |
 | calmer or livelier pets           | `PIXEL_PALS_NEXT_BEHAVIOR_WEIGHTS`                                        |
+| weather: how many at 100%, size, speed, drift | `PIXEL_PALS_PARTICLE_TUNING` (section 12); colors and opacity in `PIXEL_PALS_PARTICLE_EFFECTS` |
 
 One kind's own speed and size are `speed` and `sizeScale` on its entry in `PIXEL_PALS_PETS`. What pets say is in
 `constants/pixel-pals-messages.constants.ts` and each pet's `voice`.
@@ -111,7 +117,7 @@ is replaced by the pet's name and `{sound}` by its sound.
 
 | What                                   | Where                                   | Why                                                 |
 | -------------------------------------- | --------------------------------------- | --------------------------------------------------- |
-| Pets, background, pet count, locks     | local storage, `PIXEL_PALS_STORAGE_KEY` | Zustand `persist` in `store/pixel-pets.store.ts`    |
+| Pets, background, pet count, locks, weather | local storage, `PIXEL_PALS_STORAGE_KEY` | Zustand `persist` in `store/pixel-pets.store.ts`    |
 | Height                                 | cookie, `PIXEL_PALS_HEIGHT_COOKIE_NAME` | the server renders the right height, nothing shifts |
 
 The pixel-pets store is what Pixel Pals shows; the dialogs only call its actions. What it saves:
@@ -123,20 +129,23 @@ The pixel-pets store is what Pixel Pals shows; the dialogs only call its actions
 | `userPixelPets`          | the pets out, each `{ id, petId, color, nickName? }`; starts with one brown dog (`PIXEL_PALS_DEFAULT_PETS`) |
 | `unlockedBackgrounds`    | `{ [backgroundId]: boolean }`, only the backgrounds a lock action changed                  |
 | `unlockedPets`           | `{ [petId]: boolean }`, only the kinds of pet a lock action changed                        |
+| `userPixelPetParticleLevels` | `{ [backgroundId]: 0 to 100 }`, only the backgrounds whose weather slider was moved; the others use `particles.defaultLevel` |
 
 A saved pet is filled in from its master list entry to be shown (`getResolvedPixelPet`): everything comes from
 `PIXEL_PALS_PETS[petId]`, with the person's `color` and its `nickName` (or else the kind's `defaultName`) on top. The
 Spawn dialog saves a `nickName` only when the name is not the default one.
 
 Getter hooks: `useGetUserPixelPetCount`, `useGetUserPixelPetBackground`, `useGetUserPixelPets`,
-`useGetUnlockedBackgrounds`, `useGetUnlockedPets` (every entry, see Locks), `useGetSpawnedPixelPetCount`. Actions (`usePixelPetStoreActions`):
-`setUserPixelPetCount`, `setUserPixelPetBackground`, `setUserPixelPets`, `addUserPixelPet`, `removeUserPixelPet`,
+`useGetUnlockedBackgrounds`, `useGetUnlockedPets` (every entry, see Locks), `useGetParticleLevels` (every background's
+weather level), `useGetSpawnedPixelPetCount`. Actions (`usePixelPetStoreActions`):
+`setUserPixelPetCount`, `setUserPixelPetBackground`, `setUserPixelPetParticleLevel`, `setUserPixelPets`, `addUserPixelPet`, `removeUserPixelPet`,
 `setPetUnlocked`, `unlockAllPets`, `lockAllPets`, `setBackgroundUnlocked`, `unlockAllBackgrounds`,
 `lockAllBackgrounds`. Lowering `userPixelPetCount` below the pets out removes none, it only stops new ones.
 
 The store uses `skipHydration`: the server cannot see local storage, so `usePixelPetsStoreHydration` loads it after mount
 and the world renders then. Saved data is checked with Zod on load, value by value: a bad pet (unknown kind or color)
-is dropped, a repeated pet id keeps its first pet, a bad count or background falls back to its default, and a value
+is dropped, a repeated pet id keeps its first pet, a bad count or background falls back to its default, a weather
+level is kept only for a background with `particles` and only as a whole number in 0 to 100, and a value
 that is not JSON at all reads as nothing saved (`utils/pixel-pals-storage.utils.ts`). Positions and behaviors are not
 saved.
 
@@ -158,9 +167,11 @@ a background leaves the pets out and the background shown as they are.
 
 ## How it is built
 
-`PixelPalsEngine` (in `engine/`) runs one `requestAnimationFrame` loop. Each frame it steps the ball, the food and every pet,
-then writes transforms, sprite URLs and bubble text straight to DOM nodes that the pet and food components registered
-(`PixelPalsPetSprite` registers a pet's nodes, `PixelPalsFood` the image slots that `renderPixelPalsFoods` fills).
+`PixelPalsEngine` (in `engine/`) runs one `requestAnimationFrame` loop. Each frame it steps the ball, the food, the
+weather and every pet, then writes transforms, sprite URLs and bubble text straight to DOM nodes that the pet and food
+components registered (`PixelPalsPetSprite` registers a pet's nodes, `PixelPalsFood` the image slots that
+`renderPixelPalsFoods` fills), and draws the weather on the canvas of `PixelPalsParticleLayer` (1 canvas px per CSS px,
+in front of the foreground, ignoring clicks).
 React renders only when a pet is added or removed, the theme changes or the app switches between light and dark,
 never per frame. The loop pauses while
 Pixel Pals is hidden or off screen (an `IntersectionObserver` in `usePixelPalsEngine`).
@@ -168,16 +179,17 @@ Pixel Pals is hidden or off screen (an `IntersectionObserver` in `usePixelPalsEn
 ```
 components/   one display component per file: PixelPals (entry), PixelPalsWorld, PixelPalsPetSprite, PixelPalsNameTag,
               PixelPalsSpeechBubble, PixelPalsIslandLayer and PixelPalsIsland, PixelPalsBall, PixelPalsFood and PixelPalsFoodSlot,
-              PixelPalsToolbar and its buttons, the dialogs, their forms and fields
-constants/    sizes and storage keys, the pet catalog, the themes, the foods, the tuning numbers (behavior), messages, labels
+              PixelPalsParticleLayer, PixelPalsToolbar and its buttons, the dialogs, their forms and fields (select, text, slider)
+constants/    sizes and storage keys, the pet catalog, the themes, the foods, the weather effects, the tuning numbers (behavior),
+              messages, labels
 engine/       PixelPalsEngine
 hooks/        engine lifecycle, store hydration, dark mode, height resize
 models/       saved types (pixel-pals.models) and runtime types (pixel-pals-runtime.models)
 schemas/      Zod schemas for the dialogs and for what is loaded from local storage
 store/        the pixel-pets Zustand store with persist, its getter hooks and actions
 styles/       pixel font, speech bubble, crisp pixel art
-utils/        behavior (the state machine, flight), ball and food physics, clicks, speech, stepping stones, rendering,
-              sprites, themes, unlocks, height, storage
+utils/        behavior (the state machine, flight), ball and food physics, weather particles and levels, clicks, speech,
+              stepping stones, rendering, sprites, themes, unlocks, height, storage
 ```
 
 ### Adding a pet or a theme
@@ -188,6 +200,7 @@ utils/        behavior (the state machine, flight), ball and food physics, click
 - Theme: put the images in `public/pixel-pals/backgrounds/<id>/`, add the id to `PIXEL_PALS_THEME_IDS` and an
   entry to `PIXEL_PALS_THEMES` with its ground height (`floorPx`) and a light and dark `fillColor`. For ground made of
   stepping stones, add `islands` (each placed by a share of the width, its image's top row is the ground) and
-  `waterDepthPx` for where a ball floats.
+  `waterDepthPx` for where a ball floats. For weather, add `particles: { effect, defaultLevel }` (an effect from
+  `PIXEL_PALS_PARTICLE_EFFECTS`, a level from 0 to 100); the slider shows up for it in Change theme.
 
 Art credits and licenses: `public/pixel-pals/CREDITS.md`.

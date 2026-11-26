@@ -5,6 +5,7 @@ import { isPixelPalsColorOf } from '../utils/pixel-pals-pet.utils';
 import { PIXEL_PALS_PET_IDS, PixelPetId } from '../constants/pixel-pals-pets.constants';
 import { PIXEL_PALS_THEME_IDS, PixelPalsThemeId } from '../constants/pixel-pals-themes.constants';
 import { PIXEL_PALS_PET_NAME_MAX_LENGTH } from '../constants/pixel-pals.constants';
+import { PIXEL_PALS_PARTICLE_LEVEL_MAX, PIXEL_PALS_PARTICLE_LEVEL_MIN } from '../constants/pixel-pals-particles.constants';
 
 const spawnPetFieldsSchema = z.object({
   petId: z.enum(PIXEL_PALS_PET_IDS, { message: PIXEL_PALS_LABELS.petTypeRequiredError }),
@@ -49,9 +50,18 @@ export type PixelPalsDeletePetFormValues = z.infer<typeof pixelPalsDeletePetSche
 
 const changeThemeFieldsSchema = z.object({
   themeId: z.enum(PIXEL_PALS_THEME_IDS, { message: PIXEL_PALS_LABELS.themeRequiredError }),
+  /** How much weather the picked background gets, 0 to 100. Only shown, and only saved, for a background with `particles`. */
+  particleLevel: z
+    .number({ message: PIXEL_PALS_LABELS.particleLevelError })
+    .int({ message: PIXEL_PALS_LABELS.particleLevelError })
+    .min(PIXEL_PALS_PARTICLE_LEVEL_MIN, { message: PIXEL_PALS_LABELS.particleLevelError })
+    .max(PIXEL_PALS_PARTICLE_LEVEL_MAX, { message: PIXEL_PALS_LABELS.particleLevelError }),
 });
 
-/** The Change background dialog. A locked background (`unlockedBackgrounds` in the store) is turned down, like a locked pet. */
+/**
+ * The Change background dialog. A locked background (`unlockedBackgrounds` in the store) is turned down, like a locked
+ * pet. `particleLevel` is the weather slider's value.
+ */
 export function createPixelPalsChangeThemeSchema(isThemeUnlocked: (_themeId: PixelPalsThemeId) => boolean) {
   return changeThemeFieldsSchema.refine(
     (values) => {

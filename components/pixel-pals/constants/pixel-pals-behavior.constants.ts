@@ -16,6 +16,7 @@
  *   9. Ball, and catching things
  *  10. Food
  *  11. Frame loop
+ *  12. Weather particles (snow, leaves, debris, rain, fog)
  *
  * Tuned somewhere else:
  *   - each kind's own walking speed (`speed`) and size (`sizeScale`): its entry in `pixel-pals-pets.constants.ts`
@@ -233,3 +234,46 @@ export const PIXEL_PALS_FOOD_LIFETIME_SECONDS = 30;
 
 /** The longest step the simulation takes at once, so pets do not jump ahead after the tab was in the background. */
 export const PIXEL_PALS_MAX_FRAME_SECONDS = 0.1;
+
+/* ================================================================================================================== */
+/* 12. WEATHER PARTICLES                                                                                              */
+/* ================================================================================================================== */
+
+/**
+ * The weather a theme can have (its `particles` in the theme master list). The slider in the Change theme dialog sets
+ * how many particles there are, never how big they are: at 100 there are `maxPer10kPx` of them for every 10,000 px² of
+ * Pixel Pals (the default size, 240 × 150, is 3.6 of those), at 50 half that, at 0 none.
+ *
+ * - `size`: in px. A pixel or two, so they match the art. Fog wisps are `size` wide and `thickness` tall.
+ * - `fallSpeed`: px per second downward (negative goes up). `drift`: px per second sideways (negative goes left).
+ * - `sway`: how far each one swings from side to side, in px, and `swaySeconds`: how long one swing takes.
+ */
+export interface PixelPalsParticleTuning {
+  maxPer10kPx: number;
+  size: PixelPalsRange;
+  fallSpeed: PixelPalsRange;
+  drift: PixelPalsRange;
+  sway: PixelPalsRange;
+  swaySeconds: PixelPalsRange;
+  /** Rain only: how long each streak is, in px. */
+  streakLength?: PixelPalsRange;
+  /** Fog only: how tall each wisp is, in px. */
+  thickness?: PixelPalsRange;
+}
+
+export const PIXEL_PALS_PARTICLE_TUNING = {
+  // 1 px flakes, a few 2 px ones, drifting down slowly
+  snow: { maxPer10kPx: 40, size: [1, 2], fallSpeed: [10, 24], drift: [-2, 4], sway: [1.5, 4], swaySeconds: [1.6, 3.2] },
+  // 2 px leaves that tumble and swing wide on the way down
+  leaves: { maxPer10kPx: 9, size: [2, 2], fallSpeed: [12, 22], drift: [-4, 6], sway: [6, 12], swaySeconds: [1.8, 3.4] },
+  // 1 px specks blowing away from the portal, to the left
+  debris: { maxPer10kPx: 24, size: [1, 2], fallSpeed: [6, 16], drift: [-16, -6], sway: [1, 3], swaySeconds: [0.8, 1.8] },
+  // 1 px wide streaks, fast, slanting a little
+  rain: { maxPer10kPx: 30, size: [1, 1], fallSpeed: [190, 260], drift: [-28, -18], sway: [0, 0], swaySeconds: [1, 1], streakLength: [3, 5] },
+  // thin wisps drifting slowly sideways, mostly in the lower half
+  fog: { maxPer10kPx: 6, size: [22, 44], fallSpeed: [0, 0], drift: [3, 8], sway: [0.5, 1.5], swaySeconds: [5, 9], thickness: [3, 6] },
+} as const satisfies Record<string, PixelPalsParticleTuning>;
+
+/** How long the little splash shows where a raindrop hits the ground. */
+export const PIXEL_PALS_RAIN_SPLASH_SECONDS = 0.12;
+

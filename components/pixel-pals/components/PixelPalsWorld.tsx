@@ -5,15 +5,16 @@ import { useRef, useMemo, useEffect } from 'react';
 import PixelPalsBall from './PixelPalsBall';
 import PixelPalsFood from './PixelPalsFood';
 import PixelPalsPetSprite from './PixelPalsPetSprite';
+import PixelPalsParticleLayer from './PixelPalsParticleLayer';
 import PixelPalsIslandLayer from './PixelPalsIslandLayer';
 import PixelPalsBackgroundLayer from './PixelPalsBackgroundLayer';
 import { getPixelPalsTheme } from '../utils/pixel-pals-theme.utils';
 import { usePixelPalsColorMode } from '../hooks/usePixelPalsColorMode';
 import { getResolvedPixelPets } from '../utils/pixel-pals-pet.utils';
-import { useGetUserPixelPets, useGetUserPixelPetBackground } from '../store/pixel-pets.store';
+import { useGetUserPixelPets, useGetParticleLevels, useGetUserPixelPetBackground } from '../store/pixel-pets.store';
 
 import type { PixelPalsEngine } from '../engine/pixel-pals-engine';
-import type { PixelPet, ResolvedPixelPet, PixelPalsThemeDefinition } from '../models/pixel-pals.models';
+import type { PixelPet, ResolvedPixelPet, PixelPetParticleLevels, PixelPalsThemeDefinition } from '../models/pixel-pals.models';
 
 interface PixelPalsWorldProps {
   engine: PixelPalsEngine;
@@ -21,14 +22,15 @@ interface PixelPalsWorldProps {
 
 /**
  * The scene, back to front: the theme's fill color, its background art, its stepping stones if it has any, the food,
- * the pets and the ball, then the foreground art. Feeds the engine the store's pets (filled in from the master list),
- * the theme's ground and the world size.
+ * the pets and the ball, the foreground art, then the weather. Feeds the engine the store's pets (filled in from the
+ * master list), the theme's ground and weather, and the world size.
  */
 export default function PixelPalsWorld({ engine }: PixelPalsWorldProps) {
   const worldRef = useRef<HTMLDivElement>(null);
   const userPixelPets: PixelPet[] = useGetUserPixelPets();
   const themeId = useGetUserPixelPetBackground();
   const colorMode = usePixelPalsColorMode();
+  const particleLevels: PixelPetParticleLevels = useGetParticleLevels();
   const theme: PixelPalsThemeDefinition = getPixelPalsTheme(themeId);
   const pets: ResolvedPixelPet[] = useMemo(() => {
     return getResolvedPixelPets(userPixelPets);
@@ -62,6 +64,12 @@ export default function PixelPalsWorld({ engine }: PixelPalsWorldProps) {
     engine.setPets(pets);
   }, [engine, pets]);
 
+  const particleEffect = theme.particles?.effect ?? null;
+  const particleLevel: number = particleLevels[themeId];
+  useEffect(() => {
+    engine.setParticles(particleEffect, particleLevel, colorMode);
+  }, [engine, particleEffect, particleLevel, colorMode]);
+
   return (
     <div ref={ worldRef } className="absolute inset-0 overflow-hidden select-none" style={ { backgroundColor: theme.fillColor[colorMode] } }>
       <PixelPalsBackgroundLayer themeId={ themeId } layers={ theme.backgroundLayers } colorMode={ colorMode } className="z-0" />
@@ -74,6 +82,7 @@ export default function PixelPalsWorld({ engine }: PixelPalsWorldProps) {
       }) }
       <PixelPalsBall engine={ engine } />
       <PixelPalsBackgroundLayer themeId={ themeId } layers={ theme.foregroundLayers } colorMode={ colorMode } className="z-20" />
+      <PixelPalsParticleLayer engine={ engine } />
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import type { PixelPetId } from '../constants/pixel-pals-pets.constants';
 import type { PixelPalsThemeId } from '../constants/pixel-pals-themes.constants';
+import type { PixelPalsParticleEffectId } from '../constants/pixel-pals-particles.constants';
 
-export type { PixelPetId, PixelPalsThemeId };
+export type { PixelPetId, PixelPalsThemeId, PixelPalsParticleEffectId };
 
 /** The sprite animations a pet can have. Every file is `<color>_<animation>_8fps.gif`. */
 export const PIXEL_PALS_ANIMATION = {
@@ -52,6 +53,19 @@ export type PixelPetUnlockedBackgrounds = Record<PixelPalsThemeId, boolean>;
 
 /** What the store saves: only the backgrounds a lock action changed. The others follow the master list. */
 export type PixelPetSavedUnlockedBackgrounds = Partial<PixelPetUnlockedBackgrounds>;
+
+/** Per background (theme), how much of its weather to show, 0 (off) to 100. A theme with no weather is 0. */
+export type PixelPetParticleLevels = Record<PixelPalsThemeId, number>;
+
+/** What the store saves: only the backgrounds whose slider the person moved. The others follow the master list. */
+export type PixelPetSavedParticleLevels = Partial<PixelPetParticleLevels>;
+
+/** A theme's weather: which effect, and how much of it before the person moves the slider. */
+export interface PixelPalsThemeParticles {
+  effect: PixelPalsParticleEffectId;
+  /** 0 (off) to 100, the slider's starting point. The store's `userPixelPetParticleLevels` wins once the slider moves. */
+  defaultLevel: number;
+}
 
 /** Everything about one kind of pet, with the defaults of every pet of that kind. The master list is `PIXEL_PALS_PETS`. */
 export interface PixelPetDefinition {
@@ -126,6 +140,8 @@ export interface PixelPalsThemeDefinition {
   islands?: readonly PixelPalsThemeIsland[];
   /** With islands: how far below the floor a ball floats on the water, in px. */
   waterDepthPx?: number;
+  /** Weather in front of the scene (snow, leaves, rain...). Without it the Change theme dialog shows no slider. */
+  particles?: PixelPalsThemeParticles;
 }
 
 /** One kind of food the Feed button drops. The catalog is `PIXEL_PALS_FOODS`. */

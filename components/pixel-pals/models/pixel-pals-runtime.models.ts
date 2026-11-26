@@ -1,5 +1,5 @@
 import type { PixelPalsFoodKind } from '../constants/pixel-pals-foods.constants';
-import type { ResolvedPixelPet, PixelPetDefinition } from './pixel-pals.models';
+import type { ResolvedPixelPet, PixelPetDefinition, PixelPalsColorMode, PixelPalsParticleEffectId } from './pixel-pals.models';
 
 /**
  * Types of the running simulation (`PixelPalsEngine`). None of this is saved, it is rebuilt from the saved pets on load.
@@ -119,6 +119,39 @@ export interface PixelPalsFoodRuntime {
   y: number;
   vy: number;
   secondsLeft: number;
+}
+
+/** One weather particle: a snowflake, a leaf, a speck of debris, a raindrop or a wisp of fog. */
+export interface PixelPalsParticleRuntime {
+  /** Px from the left; with sway, the middle it swings around. */
+  x: number;
+  /** Px from the top of the world. */
+  y: number;
+  /** Px per second, right and down. */
+  vx: number;
+  vy: number;
+  /** In px: a flake's or a speck's side, a wisp's width. */
+  size: number;
+  /** A raindrop's streak length, or a wisp's height. */
+  length: number;
+  sway: number;
+  swaySeconds: number;
+  /** Where in its swing it starts, in radians, so they don't swing together. */
+  phase: number;
+  color: string;
+  /** Snow, leaves and debris: how far into the ground strip it falls before it melts away, 0 (back) to 1 (front). */
+  landingDepth: number;
+  /** Rain only: seconds left of the splash where it hit the ground, and where. */
+  splashSecondsLeft: number;
+  splashX: number;
+}
+
+/** The weather being drawn: which effect, how much (0 to 100), and the particles in the air. */
+export interface PixelPalsParticleField {
+  effect: PixelPalsParticleEffectId | null;
+  level: number;
+  colorMode: PixelPalsColorMode;
+  particles: PixelPalsParticleRuntime[];
 }
 
 /** One stepping stone, in px from the left of the world. */

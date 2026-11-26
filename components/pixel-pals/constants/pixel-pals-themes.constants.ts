@@ -9,6 +9,8 @@ import type { PixelPalsThemeDefinition } from '../models/pixel-pals.models';
  * `{mode}` is `light` or `dark`.
  *
  * `unlocked` works as it does for the pets: it is the default of `unlockedBackgrounds` in the pixel-pets store.
+ * `particles` is the theme's weather (snow, falling leaves, gray debris, rain or fog) and where its slider starts;
+ * once the person moves the slider, `userPixelPetParticleLevels` in the store wins.
  */
 export const PIXEL_PALS_THEME_IDS = [
   'none',
@@ -88,6 +90,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
     fillColor: { light: '#d3e4f6', dark: '#2b2552' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [FOREGROUND_LAYER],
+    particles: { effect: 'snow', defaultLevel: 0 },
   },
   peak: {
     id: 'peak',
@@ -99,6 +102,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
     fillColor: { light: '#9cc6ec', dark: '#0e1430' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [],
+    particles: { effect: 'snow', defaultLevel: 0 },
   },
   autumn: {
     id: 'autumn',
@@ -108,6 +112,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
     fillColor: { light: '#fbe5c6', dark: '#2a1f2c' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [FOREGROUND_LAYER],
+    particles: { effect: 'leaves', defaultLevel: 0 },
   },
   lake: {
     id: 'lake',
@@ -127,6 +132,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
     ],
     // a ball floats a little below the water line, which is 9px below the top of the stones
     waterDepthPx: 11,
+    particles: { effect: 'leaves', defaultLevel: 0 },
   },
   jungle: {
     id: 'jungle',
@@ -228,6 +234,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
     fillColor: { light: '#a7b1b9', dark: '#0d121b' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [],
+    particles: { effect: 'rain', defaultLevel: 0 },
   },
   cove: {
     id: 'cove',
@@ -238,6 +245,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
     fillColor: { light: '#8e8f9c', dark: '#111525' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [],
+    particles: { effect: 'fog', defaultLevel: 0 },
   },
   karst: {
     id: 'karst',
@@ -248,6 +256,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
     fillColor: { light: '#6aa3d8', dark: '#0d1526' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [],
+    particles: { effect: 'rain', defaultLevel: 0 },
   },
   portal: {
     id: 'portal',
@@ -258,6 +267,7 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
     fillColor: { light: '#24121a', dark: '#0b060c' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [],
+    particles: { effect: 'debris', defaultLevel: 0 },
   },
   gate: {
     id: 'gate',
@@ -268,5 +278,6 @@ export const PIXEL_PALS_THEMES: Record<PixelPalsThemeId, PixelPalsThemeDefinitio
     fillColor: { light: '#3d7c8c', dark: '#0a1424' },
     backgroundLayers: [BACKGROUND_LAYER],
     foregroundLayers: [],
+    particles: { effect: 'fog', defaultLevel: 0 },
   },
 };
