@@ -8,7 +8,9 @@ import RowStack from '@/shared/components/RowStack';
 import ColumnStack from '@/shared/components/ColumnStack';
 
 import PixelPalsPetIcon from './PixelPalsPetIcon';
+import PixelPalsFormError from './PixelPalsFormError';
 import PixelPalsTextField from './PixelPalsTextField';
+import PixelPalsPetPreview from './PixelPalsPetPreview';
 import PixelPalsLockedLabel from './PixelPalsLockedLabel';
 import PixelPalsDialogFooter from './PixelPalsDialogFooter';
 import PixelPalsSelectField, { PixelPalsSelectOption } from './PixelPalsSelectField';
@@ -23,9 +25,6 @@ import type { PixelPet, NewPixelPet, PixelPetUnlockedPets, PixelPalsPetColorDefi
 
 /** The kind the dialog starts on, when it is unlocked. Otherwise the first unlocked kind in the master list. */
 const DEFAULT_PET_ID: PixelPetId = 'dog';
-
-/** The preview at the side of the dialog, at the pet's size: a big panda is bigger than a little one. */
-const PREVIEW_SIZE_PX = 52;
 
 function getInitialPetId(unlockedPets: PixelPetUnlockedPets): PixelPetId {
   if (unlockedPets[DEFAULT_PET_ID]) {
@@ -94,7 +93,7 @@ export default function PixelPalsSpawnPetForm({ onDone }: PixelPalsSpawnPetFormP
   // set once the person types in the name box: from then on the name is theirs. Emptying the box gives it back.
   const isNameTypedRef = useRef<boolean>(false);
 
-  const { control, handleSubmit, setValue, watch } = useForm<PixelPalsSpawnPetFormValues>({
+  const { control, handleSubmit, setValue, setError, clearErrors, watch, formState } = useForm<PixelPalsSpawnPetFormValues>({
     resolver: zodResolver(createPixelPalsSpawnPetSchema(isPetUnlocked)),
     defaultValues: { petId: initialPetId, color: getPixelPalsDefaultColor(initialPetId), name: initialName },
   });
@@ -102,7 +101,6 @@ export default function PixelPalsSpawnPetForm({ onDone }: PixelPalsSpawnPetFormP
   const petId: PixelPetId = useWatch({ control, name: 'petId' });
   const color: string = useWatch({ control, name: 'color' });
   const hasValidColor: boolean = isPixelPalsColorOf(petId, color);
-  const previewSize: number = Math.round(PREVIEW_SIZE_PX * PIXEL_PALS_PETS[petId].sizeScale);
 
   // another kind of pet has other colors: start on its first one
   useEffect(() => {
@@ -123,19 +121,25 @@ export default function PixelPalsSpawnPetForm({ onDone }: PixelPalsSpawnPetFormP
     };
   }, [watch]);
 
-  // another kind of pet: its default name, unless the person typed a name of their own
+  // another kind of pet: its default name, unless the person typed a name of their own. The suggestion is always a
+  // valid name, so a "name is required" error left from an empty box goes away with it.
   useEffect(() => {
     if (!isNameTypedRef.current) {
       setValue('name', getPixelPalsSuggestedName(petId, takenNames));
+      clearErrors('name');
     }
-  }, [petId, takenNames, setValue]);
+  }, [petId, takenNames, setValue, clearErrors]);
 
   const handleOnSubmit: SubmitHandler<PixelPalsSpawnPetFormValues> = (values: PixelPalsSpawnPetFormValues) => {
     const newPet: NewPixelPet = { petId: values.petId, color: values.color };
     if (values.name !== PIXEL_PALS_PETS[values.petId].defaultName) {
       newPet.nickName = values.name;
     }
-    addUserPixelPet(newPet);
+    // the store turns the pet down when Pixel Pals filled up while the dialog was open
+    if (addUserPixelPet(newPet) === null) {
+      setError('root', { message: PIXEL_PALS_LABELS.maxPetsReached });
+      return;
+    }
     onDone();
   };
 
@@ -167,15 +171,11 @@ export default function PixelPalsSpawnPetForm({ onDone }: PixelPalsSpawnPetFormP
               maxLength={ PIXEL_PALS_PET_NAME_MAX_LENGTH }
             />
           </ColumnStack>
-          <RowStack className="mt-6 size-24 shrink-0 items-end justify-center rounded-md border bg-muted/50 p-2">
-            <PixelPalsPetIcon
-              petId={ petId }
-              color={ hasValidColor ? color : getPixelPalsDefaultColor(petId) }
-              className="size-auto"
-              style={ { width: previewSize, height: previewSize } }
-            />
-          </RowStack>
+          <PixelPalsPetPreview petId={ petId } color={ hasValidColor ? color : getPixelPalsDefaultColor(petId) } />
         </RowStack>
+        { formState.errors.root?.message ?
+          <PixelPalsFormError message={ formState.errors.root.message } />
+        : null }
         <PixelPalsDialogFooter />
       </ColumnStack>
     </form>

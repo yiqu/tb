@@ -1,4 +1,4 @@
-import { getPixelPalsThemeAssetUrl } from '../utils/pixel-pals-theme.utils';
+import PixelPalsIsland from './PixelPalsIsland';
 
 import type { PixelPalsThemeId } from '../constants/pixel-pals-themes.constants';
 import type { PixelPalsColorMode, PixelPalsThemeIsland } from '../models/pixel-pals.models';
@@ -18,17 +18,7 @@ export default function PixelPalsIslandLayer({ themeId, islands, floorPx, colorM
   return (
     <div className="pointer-events-none absolute inset-0 z-5" aria-hidden="true">
       { islands.map((island: PixelPalsThemeIsland) => {
-        return (
-          // eslint-disable-next-line @next/next/no-img-element -- pixel art at its own size
-          <img
-            key={ island.fileName }
-            src={ getPixelPalsThemeAssetUrl(themeId, island.fileName, colorMode) }
-            alt=""
-            draggable={ false }
-            className="pixel-pals-pixelated absolute max-w-none -translate-x-1/2 select-none"
-            style={ { left: `${island.centerFraction * 100}%`, top: `calc(100% - ${floorPx}px)`, width: island.imageWidthPx } }
-          />
-        );
+        return <PixelPalsIsland key={ island.fileName } themeId={ themeId } island={ island } floorPx={ floorPx } colorMode={ colorMode } />;
       }) }
     </div>
   );

@@ -27,23 +27,24 @@ export default function PixelPalsChangeThemeForm({ onDone }: PixelPalsChangeThem
   const colorMode = usePixelPalsColorMode();
   const { setUserPixelPetBackground } = usePixelPetStoreActions();
   const unlockedBackgrounds: PixelPetUnlockedBackgrounds = useGetUnlockedBackgrounds();
-  const isThemeUnlocked = (id: PixelPalsThemeId): boolean => {
-    return unlockedBackgrounds[id];
+  // the theme in use can always be kept, even after it was locked: OK on it just closes the dialog
+  const canPickTheme = (id: PixelPalsThemeId): boolean => {
+    return id === themeId || unlockedBackgrounds[id];
   };
 
   const { control, handleSubmit } = useForm<PixelPalsChangeThemeFormValues>({
-    resolver: zodResolver(createPixelPalsChangeThemeSchema(isThemeUnlocked)),
+    resolver: zodResolver(createPixelPalsChangeThemeSchema(canPickTheme)),
     defaultValues: { themeId },
   });
 
   const options: PixelPalsSelectOption[] = PIXEL_PALS_THEME_IDS.map((id: PixelPalsThemeId) => {
-    const isUnlocked: boolean = isThemeUnlocked(id);
+    const isUnlocked: boolean = unlockedBackgrounds[id];
     return {
       value: id,
       label: PIXEL_PALS_THEMES[id].label,
       icon: <PixelPalsThemeSwatch themeId={ id } colorMode={ colorMode } />,
       trailing: isUnlocked ? null : <PixelPalsLockedLabel />,
-      disabled: !isUnlocked,
+      disabled: !canPickTheme(id),
     };
   });
 

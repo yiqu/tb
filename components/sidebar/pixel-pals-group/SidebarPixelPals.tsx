@@ -12,7 +12,7 @@ export default async function SidebarPixelPals() {
 
   return (
     <div className="group-data-[collapsible=icon]:hidden">
-      <PixelPals initialHeight={ parsePixelPalsHeight(heightCookie?.value) } />
+      <PixelPals initialHeight={ parsePixelPalsHeight(heightCookie?.value) } className="border-sidebar-border" />
     </div>
   );
 }

@@ -3,9 +3,11 @@
 import { useId, ReactNode } from 'react';
 import { Path, Control, Controller, FieldValues } from 'react-hook-form';
 
-import Typography from '@/components/typography/Typography';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError } from '@/components/ui/field';
 import { Select, SelectItem, SelectValue, SelectContent, SelectTrigger } from '@/components/ui/select';
+
+import PixelPalsFieldLabel from './PixelPalsFieldLabel';
+import PixelPalsSelectOptionLabel from './PixelPalsSelectOptionLabel';
 
 export interface PixelPalsSelectOption {
   value: string;
@@ -45,7 +47,7 @@ export default function PixelPalsSelectField<T extends FieldValues>({
       render={ ({ field, fieldState }) => {
         return (
           <Field data-invalid={ fieldState.invalid }>
-            <FieldLabel htmlFor={ triggerId }>{ label }</FieldLabel>
+            <PixelPalsFieldLabel htmlFor={ triggerId } label={ label } />
             <Select name={ field.name } value={ field.value ?? '' } onValueChange={ field.onChange } disabled={ disabled }>
               <SelectTrigger
                 ref={ field.ref }
@@ -60,14 +62,7 @@ export default function PixelPalsSelectField<T extends FieldValues>({
                 { options.map((option: PixelPalsSelectOption) => {
                   return (
                     <SelectItem key={ option.value } value={ option.value } disabled={ option.disabled }>
-                      { /* a span, not RowStack: Radix puts this inside its item text span and copies it into the trigger */ }
-                      <span className="flex flex-row items-center gap-2">
-                        { option.icon }
-                        <Typography as="span" variant="body1">
-                          { option.label }
-                        </Typography>
-                        { option.trailing }
-                      </span>
+                      <PixelPalsSelectOptionLabel label={ option.label } icon={ option.icon } trailing={ option.trailing } />
                     </SelectItem>
                   );
                 }) }

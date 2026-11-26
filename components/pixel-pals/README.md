@@ -31,7 +31,8 @@ const heightCookie = (await cookies()).get(PIXEL_PALS_HEIGHT_COOKIE_NAME);
 <PixelPals initialHeight={ parsePixelPalsHeight(heightCookie?.value) } />
 ```
 
-Dark mode follows the `dark` class on `<html>`. If the art and the font are served from somewhere else, change
+Pass `className` to change its border or background (this app passes `border-sidebar-border`). Dark mode follows the
+`dark` class on `<html>`. If the art and the font are served from somewhere else, change
 `PIXEL_PALS_ASSET_BASE_URL`.
 
 ## What it does
@@ -165,8 +166,9 @@ never per frame. The loop pauses while
 Pixel Pals is hidden or off screen (an `IntersectionObserver` in `usePixelPalsEngine`).
 
 ```
-components/   PixelPals (entry), PixelPalsWorld, PixelPalsPetSprite, PixelPalsNameTag, PixelPalsIslandLayer, PixelPalsBall, PixelPalsFood,
-              PixelPalsToolbar, the dialogs and forms
+components/   one display component per file: PixelPals (entry), PixelPalsWorld, PixelPalsPetSprite, PixelPalsNameTag,
+              PixelPalsSpeechBubble, PixelPalsIslandLayer and PixelPalsIsland, PixelPalsBall, PixelPalsFood and PixelPalsFoodSlot,
+              PixelPalsToolbar and its buttons, the dialogs, their forms and fields
 constants/    sizes and storage keys, the pet catalog, the themes, the foods, the tuning numbers (behavior), messages, labels
 engine/       PixelPalsEngine
 hooks/        engine lifecycle, store hydration, dark mode, height resize

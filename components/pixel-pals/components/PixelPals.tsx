@@ -44,7 +44,7 @@ export default function PixelPals({ initialHeight = PIXEL_PALS_DEFAULT_HEIGHT_PX
       ref={ pixelPalsRef }
       aria-label={ PIXEL_PALS_LABELS.pixelPalsAriaLabel }
       data-slot="pixel-pals"
-      className={ cn('group/pixel-pals relative w-full shrink-0 overflow-hidden rounded-md border border-sidebar-border bg-muted/40', className) }
+      className={ cn('group/pixel-pals relative w-full shrink-0 overflow-hidden rounded-md border border-border bg-muted/40', className) }
       style={ { height } }
     >
       { /* React puts this in <head> once, however many Pixel Pals are on the page */ }

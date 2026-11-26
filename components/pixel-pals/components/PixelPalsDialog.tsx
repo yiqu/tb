@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 
+import Typography from '@/components/typography/Typography';
 import { Dialog, DialogTitle, DialogHeader, DialogContent, DialogDescription } from '@/components/ui/dialog';
 
 interface PixelPalsDialogProps {
@@ -19,8 +20,16 @@ export default function PixelPalsDialog({ open, onOpenChange, title, description
     <Dialog open={ open } onOpenChange={ onOpenChange }>
       <DialogContent showCloseButton className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{ title }</DialogTitle>
-          <DialogDescription>{ description }</DialogDescription>
+          <DialogTitle>
+            <Typography as="span" variant="h5" className="leading-none">
+              { title }
+            </Typography>
+          </DialogTitle>
+          <DialogDescription>
+            <Typography as="span" variant="body1">
+              { description }
+            </Typography>
+          </DialogDescription>
         </DialogHeader>
         { children }
       </DialogContent>

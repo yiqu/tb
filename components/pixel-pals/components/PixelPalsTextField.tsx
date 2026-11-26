@@ -4,7 +4,9 @@ import { useId } from 'react';
 import { Path, Control, Controller, FieldValues } from 'react-hook-form';
 
 import { Input } from '@/components/ui/input';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError } from '@/components/ui/field';
+
+import PixelPalsFieldLabel from './PixelPalsFieldLabel';
 
 interface PixelPalsTextFieldProps<T extends FieldValues> {
   control: Control<T>;
@@ -25,7 +27,7 @@ export default function PixelPalsTextField<T extends FieldValues>({ control, nam
       render={ ({ field, fieldState }) => {
         return (
           <Field data-invalid={ fieldState.invalid }>
-            <FieldLabel htmlFor={ inputId }>{ label }</FieldLabel>
+            <PixelPalsFieldLabel htmlFor={ inputId } label={ label } />
             <Input
               { ...field }
               id={ inputId }
