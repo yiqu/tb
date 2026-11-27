@@ -12,6 +12,8 @@ import { YearlyBillsMonth } from '@/models/bills/yearly-bills.model';
 import { BillDueWithSubscriptionAndSortData } from '@/models/bills/bills.model';
 
 import YearlyBillsMonthStat from './YearlyBillsMonthStat';
+import MonthYearlyBillMonthStatusIcon from './MonthYearlyBillMonthStatusIcon';
+import { getYearlyBillsMonthStatus } from './yearly-bills-month-status.utils';
 import BillsTableParentContent from '../../bills/_components/BillsTableParentContent';
 
 const usdFormatter = getUSDFormatter();
@@ -21,9 +23,10 @@ interface YearlyBillsMonthSectionProps {
   month: YearlyBillsMonth;
   sortData: SortDataModel | null;
   isCurrentMonth: boolean;
+  isFutureMonth: boolean;
 }
 
-export default function YearlyBillsMonthSection({ year, month, sortData, isCurrentMonth }: YearlyBillsMonthSectionProps) {
+export default function YearlyBillsMonthSection({ year, month, sortData, isCurrentMonth, isFutureMonth }: YearlyBillsMonthSectionProps) {
   // shape the month's bills the way the shared bills table expects, with no pagination
   const billDues: BillDueWithSubscriptionAndSortData = {
     billDues: month.billDues,
@@ -50,6 +53,7 @@ export default function YearlyBillsMonthSection({ year, month, sortData, isCurre
               </Typography>
               <Typography variant="caption1">{ isCurrentMonth ? `${year} · Current month` : year }</Typography>
             </ColumnStack>
+            <MonthYearlyBillMonthStatusIcon status={ getYearlyBillsMonthStatus(month, isFutureMonth) } />
           </RowStack>
           <RowStack className="flex-wrap items-stretch gap-3">
             <YearlyBillsMonthStat label="Total due" value={ usdFormatter.format(month.totalDue) } />
