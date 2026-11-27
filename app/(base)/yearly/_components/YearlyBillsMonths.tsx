@@ -29,6 +29,7 @@ export default async function YearlyBillsMonths({ searchParamsPromise }: YearlyB
           month={ month }
           sortData={ sortData }
           isCurrentMonth={ yearlyBills.year === currentYear && month.month === currentMonth }
+          isFutureMonth={ yearlyBills.year > currentYear || (yearlyBills.year === currentYear && month.month > currentMonth) }
         />
       )) }
     </ColumnStack>
