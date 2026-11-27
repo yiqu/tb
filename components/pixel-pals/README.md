@@ -97,7 +97,8 @@ One kind's own speed and size are `speed` and `sizeScale` on its entry in `PIXEL
 
 Everything about a kind of pet is one object in `PIXEL_PALS_PETS` (`constants/pixel-pals-pets.constants.ts`). The
 order of `PIXEL_PALS_PET_IDS` in the same file is the order of the Spawn dialog's Pet dropdown (the dinosaurs first),
-and `PIXEL_PALS_DEFAULT_PET_ID` is the default pet: the one Pixel Pals starts with and the Spawn dialog starts on.
+and `PIXEL_PALS_DEFAULT_PET_ID` is the default pet: the one Pixel Pals starts with. The Spawn dialog starts on it when
+it is unlocked, otherwise on the first unlocked kind in that order.
 
 | Field          | What it does                                                                                     |
 | -------------- | ------------------------------------------------------------------------------------------------ |
