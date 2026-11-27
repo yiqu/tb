@@ -293,4 +293,10 @@ export const PIXEL_PALS_PARTICLE_TUNING = {
 
 /** How long the little splash shows where a raindrop hits the ground. */
 export const PIXEL_PALS_RAIN_SPLASH_SECONDS = 0.12;
+/** For an effect whose `size` has two values (snow and debris now), the share drawn at the smaller one (0.75 = 3 in 4). */
+export const PIXEL_PALS_PARTICLE_SMALL_SHARE = 0.75;
+/** Fog stays low: its wisps sit between this share of the height from the top (0.35 = a bit over a third down) and the ground. */
+export const PIXEL_PALS_FOG_TOP_SHARE = 0.35;
+/** A particle going back to the top starts up to this many px above it, so they don't all come in on the same row. */
+export const PIXEL_PALS_PARTICLE_SPAWN_SPREAD_PX = 12;
 

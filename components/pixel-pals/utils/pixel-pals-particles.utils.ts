@@ -1,6 +1,12 @@
 import { randomItem, randomBetween } from './pixel-pals-random.utils';
 import { PIXEL_PALS_PARTICLE_EFFECTS } from '../constants/pixel-pals-particles.constants';
-import { PIXEL_PALS_PARTICLE_TUNING, PIXEL_PALS_RAIN_SPLASH_SECONDS } from '../constants/pixel-pals-behavior.constants';
+import {
+  PIXEL_PALS_FOG_TOP_SHARE,
+  PIXEL_PALS_PARTICLE_TUNING,
+  PIXEL_PALS_RAIN_SPLASH_SECONDS,
+  PIXEL_PALS_PARTICLE_SMALL_SHARE,
+  PIXEL_PALS_PARTICLE_SPAWN_SPREAD_PX,
+} from '../constants/pixel-pals-behavior.constants';
 
 import type { PixelPalsColorMode, PixelPalsParticleEffectId } from '../models/pixel-pals.models';
 import type { PixelPalsWorldBounds, PixelPalsParticleField, PixelPalsParticleRuntime } from '../models/pixel-pals-runtime.models';
@@ -10,13 +16,6 @@ import type { PixelPalsWorldBounds, PixelPalsParticleField, PixelPalsParticleRun
  * particle is a pixel or two (a fog wisp is a thin smear), so the background always shows through. The level, 0 to 100,
  * only sets how many there are. Unlike pets, `y` here is px from the top of the world.
  */
-
-/** Of the 1 or 2 px particles, how many are the small size. */
-const SMALL_PARTICLE_SHARE = 0.75;
-/** Fog stays in the lower part of the scene: its wisps sit between this share of the height and the ground. */
-const FOG_TOP_SHARE = 0.35;
-/** New particles from the top start up to this many px above it, so they don't all come in at once. */
-const SPAWN_SPREAD_PX = 12;
 
 export function createPixelPalsParticleField(): PixelPalsParticleField {
   return { effect: null, level: 0, colorMode: 'light', particles: [] };
@@ -140,7 +139,7 @@ function createParticle(effect: PixelPalsParticleEffectId, colorMode: PixelPalsC
     splashX: 0,
   };
   if (effect === 'fog') {
-    const top: number = bounds.height * FOG_TOP_SHARE;
+    const top: number = bounds.height * PIXEL_PALS_FOG_TOP_SHARE;
     particle.y = top + Math.random() * Math.max(0, bounds.height - bounds.floor - top);
   } else {
     particle.y = Math.random() * (bounds.height - bounds.floor);
@@ -149,7 +148,7 @@ function createParticle(effect: PixelPalsParticleEffectId, colorMode: PixelPalsC
 }
 
 function respawnAtTop(particle: PixelPalsParticleRuntime, bounds: PixelPalsWorldBounds): void {
-  particle.y = -particle.size - particle.length - Math.random() * SPAWN_SPREAD_PX;
+  particle.y = -particle.size - particle.length - Math.random() * PIXEL_PALS_PARTICLE_SPAWN_SPREAD_PX;
   particle.x = Math.random() * bounds.width;
 }
 
@@ -166,7 +165,7 @@ function wrapSideways(particle: PixelPalsParticleRuntime, width: number): void {
 }
 
 function smallOrLarge(range: readonly [number, number]): number {
-  return Math.random() < SMALL_PARTICLE_SHARE ? range[0] : range[1];
+  return Math.random() < PIXEL_PALS_PARTICLE_SMALL_SHARE ? range[0] : range[1];
 }
 
 function pickColor(effect: PixelPalsParticleEffectId, colorMode: PixelPalsColorMode): string {

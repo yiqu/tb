@@ -77,18 +77,8 @@ Every pet draws its own speed factor and its own durations, so no two move in sy
 
 How often the pets talk, how fast they move, how long they do each thing, jumps, climbing, flying, the ball and the
 food are all numbers in `constants/pixel-pals-behavior.constants.ts`. The file is split into numbered sections
-(1. Talking, 2. Moving speed, ...) and each number says what it changes and which way. A few to start with:
-
-| To change                         | Constant                                                                  |
-| --------------------------------- | ------------------------------------------------------------------------- |
-| how often pets chat on their own  | `PIXEL_PALS_CONVERSATION_INTERVAL` (seconds between chats, higher = less) |
-| how long a bubble stays up        | `PIXEL_PALS_CONVERSATION_LINE_SECONDS`, `PIXEL_PALS_BUBBLE_SECONDS`       |
-| every pet's speed at once         | `PIXEL_PALS_SPEED_MULTIPLIER` (1 = as set, 0.5 = half speed)              |
-| running, chasing, zoomies, flying | `PIXEL_PALS_*_SPEED_MULTIPLIER`                                           |
-| how long each timed activity lasts (idle, walk, run, lie, fly, eat...); chasing, climbing and walking to a friend end on their own | `PIXEL_PALS_BEHAVIOR_DURATION` |
-| calmer or livelier pets           | `PIXEL_PALS_NEXT_BEHAVIOR_WEIGHTS`                                        |
-| weather: how many at 100%, size, speed, drift | `PIXEL_PALS_PARTICLE_TUNING` (section 12); colors and opacity in `PIXEL_PALS_PARTICLE_EFFECTS` |
-| how fast the rain falls (px per second) and its slant (px left for every px down, 0 = straight) | `PIXEL_PALS_RAIN_FALL_SPEED`, `PIXEL_PALS_RAIN_SLANT` (section 12) |
+(1. Talking, 2. Moving speed, ...) and each number says what it changes and which way. Every constant you can change,
+what it changes and its value now is in the [constants reference](#constants-reference) at the bottom.
 
 One kind's own speed and size are `speed` and `sizeScale` on its entry in `PIXEL_PALS_PETS`. What pets say is in
 `constants/pixel-pals-messages.constants.ts` and each pet's `voice`.
@@ -210,3 +200,198 @@ utils/        behavior (the state machine, flight), ball and food physics, weath
   needs its id there, its look in `PIXEL_PALS_PARTICLE_EFFECTS` and its motion in `PIXEL_PALS_PARTICLE_TUNING`.
 
 Art credits and licenses: `public/pixel-pals/CREDITS.md`.
+
+## Constants reference
+
+Every constant in `constants/` that you can change, what it changes, and its value now. Units: distances in px, times
+in seconds, speeds in px per second, chances from 0 (never) to 1 (always). A range `[min, max]` means a value is picked
+at random in it each time, so the pets never move in sync. "Sprite sizes" means pet widths (1 = one
+`PIXEL_PALS_SPRITE_SIZE_PX` sprite). Rows marked _worked out_ follow from other constants, so change those instead.
+
+### Behavior: `pixel-pals-behavior.constants.ts`
+
+**1. Talking**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_CONVERSATION_INTERVAL` | seconds between two pets starting a chat on their own; higher = they chat less | `[25, 50]` |
+| `PIXEL_PALS_CONVERSATION_LINE_SECONDS` | how long each of the two chat lines stays on screen | `2.4` |
+| `PIXEL_PALS_CONVERSATION_REPLY_GAP_SECONDS` | the pause between the first line going away and the answer | `0.2` |
+| `PIXEL_PALS_CONVERSATION_SECONDS` | how long the two stand together to talk; _worked out_ from the two above | `5.2` |
+| `PIXEL_PALS_CONVERSATION_DISTANCE_IN_SPRITES` | how close two pets stand to talk, middle to middle | `1.1` |
+| `PIXEL_PALS_APPROACH_FRIEND_MAX_SECONDS` | a pet only walks over to a friend it can reach in this time, so slow pets pick one nearby | `25` |
+| `PIXEL_PALS_APPROACH_FRIEND_MARGIN_SECONDS` | extra time that walk may take, for the stone hops on the lake | `3` |
+| `PIXEL_PALS_WAIT_FOR_FRIEND_EXTRA_SECONDS` | how much longer than the walk the friend waits before it gives up | `1` |
+| `PIXEL_PALS_BUBBLE_SECONDS` | how long every other bubble stays up: clicks, greetings, "Yum!", ball lines | `2.2` |
+| `PIXEL_PALS_OWN_LINE_CHANCE` | chance a pet says one of its own `voice.lines` instead of a shared line; 1 = always its own | `0.5` |
+| `PIXEL_PALS_MISSED_BALL_LINE_CHANCE` | chance each pet that lost the race to the ball says something; 0 = they stay quiet | `0.5` |
+
+**2. Moving speed**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_SPEED_MULTIPLIER` | every pet's speed at once (walk, run, chase, zoomies, fly, climb); 0.5 = half speed, 2 = twice | `1` |
+| `PIXEL_PALS_SPEED_FACTOR_RANGE` | each pet's speed is its kind's `speed` times a random factor in this range | `[0.75, 1.25]` |
+| `PIXEL_PALS_RUN_SPEED_MULTIPLIER` | running speed = walking speed times this | `1.6` |
+| `PIXEL_PALS_CHASE_SPEED_MULTIPLIER` | going for the ball or food = walking speed times this | `1.9` |
+| `PIXEL_PALS_ZOOMIES_SPEED_MULTIPLIER` | zoomies (five quick clicks) = walking speed times this | `2.4` |
+| `PIXEL_PALS_FLY_SPEED_MULTIPLIER` | flying = walking speed times this | `2.5` |
+| `PIXEL_PALS_CLIMB_SPEED` | how fast every pet climbs a wall, px per second | `14` |
+
+**3. What a pet does next, and for how long**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_BEHAVIOR_DURATION` | seconds each activity lasts before the pet picks the next one | idle `[1.5, 4]`, lie `[3, 7]`, stand `[2, 4]`, walk `[2, 5]`, run `[1.2, 3]`, wallHang `[1, 3]`, fly `[3, 7]`, withBall `[3, 4]`, eat `1.6`, swipe `0.7`, land `0.25`, zoomies `3`, talk follows the talking settings |
+| `PIXEL_PALS_NEXT_BEHAVIOR_WEIGHTS` | how likely each activity is next. Weights, not percents: only their size next to each other counts. More idle and lie = calmer pets, more run = livelier | walk `0.38`, run `0.16`, idle `0.26`, lie `0.1`, stand `0.1`, fly `0.3` |
+| `PIXEL_PALS_REST_AT_EDGE_CHANCE` | chance a pet takes a short rest after turning around at a wall or the end of a stone | `0.4` |
+
+**4. Hops, jumps and gravity**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_GRAVITY` | how fast pets, the ball and food fall, px per second²; higher = quicker, lower jumps | `700` |
+| `PIXEL_PALS_HOP_CHANCE_PER_SECOND` | chance per second that a walking or running pet does a little hop; 0 = no hops | `0.18` |
+| `PIXEL_PALS_ZOOMIES_HOP_CHANCE_PER_SECOND` | the same during zoomies | `0.72` |
+| `PIXEL_PALS_HOP_VELOCITY` | how high the little hops go (take-off speed) | `120` |
+| `PIXEL_PALS_SPAWN_HOP_VELOCITY` | how high a new pet hops as it says hi | `168` |
+| `PIXEL_PALS_BIG_JUMP_VELOCITY` | how high the jump on the third quick click goes | `240` |
+
+**5. Climbing walls**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_CLIMB_CHANCE` | chance a pet that walks into the left or right wall climbs it; 0 = no climbing | `0.4` |
+| `PIXEL_PALS_CLIMB_HEIGHT_FACTOR_RANGE` | how far up a climb goes, as a share of the free height above the ground (0.5 = halfway) | `[0.35, 0.9]` |
+| `PIXEL_PALS_MIN_CLIMB_HEIGHT_IN_SPRITES` | no climbing when the free height is less than this many sprite sizes | `1.5` |
+
+**6. Flying**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_MIN_FLY_HEIGHT_IN_SPRITES` | no flying around when the free height is less than this many sprite sizes | `1` |
+| `PIXEL_PALS_MIN_FLIGHT_HEIGHT_IN_SPRITES` | the lowest a flying pet aims, in sprite sizes above the ground | `0.3` |
+| `PIXEL_PALS_FLY_CATCH_REACH_IN_SPRITES` | how close a flyer's middle gets to the ball or food to catch it | `0.6` |
+
+**7. Stepping stones (Autumn lake)**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_SKIP_CHANCE` | chance a pet at the end of its stone hops to the next one instead of turning around | `0.6` |
+| `PIXEL_PALS_ZOOMIES_SKIP_CHANCE` | the same during zoomies | `0.85` |
+| `PIXEL_PALS_SKIP_MIN_VELOCITY` | the slowest take-off of a hop between stones, so even a short hop has an arc | `110` |
+| `PIXEL_PALS_SKIP_LANDING_INSET_PX` | how far onto the next stone a hop lands, from its edge | `6` |
+| `PIXEL_PALS_ISLAND_CATCH_REACH_PX` | extra reach for a ball or food floating next to a pet's stone | `6` |
+
+**8. Clicking a pet**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_CLICK_STREAK_SECONDS` | clicks on the same pet closer together than this count as one streak | `1.2` |
+| `PIXEL_PALS_CLICKS_FOR_BIG_JUMP` | the click in a streak that makes the big jump | `3` |
+| `PIXEL_PALS_CLICKS_FOR_ZOOMIES` | the click in a streak that starts zoomies | `5` |
+
+**9. Ball, and catching things**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_BALL_THROW_SPEED_RANGE` | how fast the ball flies sideways when thrown | `[60, 150]` |
+| `PIXEL_PALS_BALL_BOUNCE_DAMPING` | share of its speed the ball keeps on each bounce; 1 = bounces forever, 0 = no bounce | `0.7` |
+| `PIXEL_PALS_BALL_WALL_DAMPING` | share of its speed the ball keeps when it hits a wall | `0.9` |
+| `PIXEL_PALS_BALL_MIN_BOUNCE_SPEED` | the ball stops bouncing once it lands slower than this | `40` |
+| `PIXEL_PALS_BALL_ROLL_FRICTION` | how fast a rolling ball slows down, per second | `1.4` |
+| `PIXEL_PALS_BALL_DRIFT_SPEED` | how fast a ball in the water drifts to the nearest stone | `10` |
+| `PIXEL_PALS_BALL_LIFETIME_SECONDS` | a ball nobody catches is gone after this | `12` |
+| `PIXEL_PALS_CATCH_REACH_IN_SPRITES` | how close a pet on the ground gets to the ball or food to catch it, sideways from its middle | `0.45` |
+| `PIXEL_PALS_CATCH_HEIGHT_IN_SPRITES` | how low the ball or food must be for a pet on the ground to catch it | `0.7` |
+
+**10. Food**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_MAX_FOODS` | pieces of food out at once; one more pushes out the oldest | `5` |
+| `PIXEL_PALS_FOOD_LIFETIME_SECONDS` | food nobody eats is gone after this | `30` |
+
+**11. Frame loop**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_MAX_FRAME_SECONDS` | the longest step the simulation takes at once, so pets don't jump ahead after the tab was in the background | `0.1` |
+
+**12. Weather particles**
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_PARTICLE_TUNING` | per effect: `maxPer10kPx` (how many at 100% for every 10,000 px²; the default 240 × 150 is 3.6 of those), `size` (px), `fallSpeed` (px per second down), `drift` (px per second sideways, negative = left), `sway` (px side to side) and `swaySeconds` (one swing); rain also has `streakLength`, fog `thickness` | snow `40` (about 144 flakes at 100%), 1 to 2 px, falls `[10, 24]`; leaves `9` (about 32), 2 px, falls `[12, 22]`; debris `24` (about 86), 1 to 2 px, drifts left `[6, 16]`; rain `30` (108), 1 px, streaks `[3, 5]` px long; fog `6` (about 22), wisps `[22, 44]` px wide and `[3, 6]` tall |
+| `PIXEL_PALS_RAIN_FALL_SPEED` | how fast rain falls, px per second; a drop takes about 1.3 s to reach the ground at the default height | `[80, 110]` |
+| `PIXEL_PALS_RAIN_SLANT` | how much rain slants: px left for every px down; 0 = straight down | `0.1` |
+| `PIXEL_PALS_RAIN_SPLASH_SECONDS` | how long the little splash shows where a drop lands | `0.12` |
+| `PIXEL_PALS_PARTICLE_SMALL_SHARE` | share of snow and debris drawn at the smaller of their two sizes | `0.75` |
+| `PIXEL_PALS_FOG_TOP_SHARE` | fog stays low: its wisps sit between this share of the height from the top and the ground | `0.35` |
+| `PIXEL_PALS_PARTICLE_SPAWN_SPREAD_PX` | a particle going back to the top starts up to this far above it, so they don't arrive in one row | `12` |
+
+### Weather look and slider: `pixel-pals-particles.constants.ts`
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_PARTICLE_EFFECT_IDS` | the weather effects there are; a theme's `particles.effect` is one of them | `snow`, `leaves`, `debris`, `rain`, `fog` |
+| `PIXEL_PALS_PARTICLE_EFFECTS` | per effect: the slider's `label`, the `colors` (light and dark, one picked at random per particle) and the `opacity` (0 to 1, light and dark) | e.g. rain `'Rain'`, opacity `0.6` light, `0.55` dark; fog opacity `0.3` light, `0.2` dark |
+| `PIXEL_PALS_PARTICLE_LEVEL_MIN`, `PIXEL_PALS_PARTICLE_LEVEL_MAX` | the ends of the weather slider; a saved level outside them is dropped on load | `0`, `100` |
+| `PIXEL_PALS_PARTICLE_LEVEL_STEP` | how much one step of the slider moves | `5` |
+
+### Sizes, storage and assets: `pixel-pals.constants.ts` and `pixel-pals-height.constants.ts`
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_ASSET_BASE_URL` | where the art and the font are served from | `'/pixel-pals'` |
+| `PIXEL_PALS_DEFAULT_HEIGHT_PX` | the height before the person resizes it, and after a double-click on the handle | `150` |
+| `PIXEL_PALS_MAX_HEIGHT_PX` | the tallest it can be dragged; above the art the theme's `fillColor` takes over | `420` |
+| `PIXEL_PALS_MIN_HEIGHT_PX` | the shortest it can be dragged: the biggest pet on the tallest ground, plus the border; _worked out_ from the pets and themes | `91` |
+| `PIXEL_PALS_HEIGHT_KEYBOARD_STEP_PX` | how much one arrow key press on the resize handle changes the height | `10` |
+| `PIXEL_PALS_MIN_WORLD_WIDTH_PX` | narrower than this (nav collapsed or mid-animation) the world keeps its last size | `120` |
+| `PIXEL_PALS_HEIGHT_COOKIE_NAME` | the cookie that keeps the height | `'pixel-pals-height'` |
+| `PIXEL_PALS_HEIGHT_COOKIE_MAX_AGE_SECONDS` | how long that cookie is kept | one year |
+| `PIXEL_PALS_STORAGE_KEY` | the local storage key of the pixel-pets store; a new key starts everyone fresh | `'pixel-pets-store'` |
+| `PIXEL_PALS_STORAGE_VERSION` | raise it, with a `migrate` step in the store, when the saved shape changes | `2` |
+| `PIXEL_PALS_DEFAULT_PET_COUNT` | how many pets can be out at once until the person changes it | `10` |
+| `PIXEL_PALS_MIN_PET_COUNT`, `PIXEL_PALS_MAX_PET_COUNT` | the range that count is kept in | `1`, `30` |
+| `PIXEL_PALS_PET_NAME_MAX_LENGTH` | the longest name the Spawn dialog takes | `20` |
+| `PIXEL_PALS_SPRITE_SIZE_PX` | the base sprite square; each pet is this times its kind's `sizeScale` | `30` |
+| `PIXEL_PALS_BUBBLE_FONT` | the font the bubbles are measured in; keep it the same as `.pixel-pals-bubble` in `styles/pixel-pals.css` | `"8px 'PixelPalsSilkscreen'"` |
+| `PIXEL_PALS_FONT_FACE_CSS` | the `@font-face` of the pixel font; _worked out_ from `PIXEL_PALS_ASSET_BASE_URL` | Silkscreen |
+| `PIXEL_PALS_BALL_RADIUS_PX` | the ball's size | `3` |
+| `PIXEL_PALS_BALL_COLOR` | the ball's color | `'#2ed851'` |
+
+### Pets: `pixel-pals-pets.constants.ts`
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_PET_IDS` | every kind of pet, in the order of the Spawn dialog's Pet dropdown | 37 kinds, the 8 dinosaurs first |
+| `PIXEL_PALS_DEFAULT_PET_ID` | the pet a new person starts with (`PIXEL_PALS_DEFAULT_PETS` in the store) and the one Spawn starts on | `'brachiosaurus'` |
+| `PIXEL_PALS_SPEED` | the named walking speeds a kind's `speed` picks from, px per second | still `0`, verySlow `9`, slow `16`, normal `24`, fast `32`, veryFast `40` |
+| `PIXEL_PALS_COLOR_LABELS` | how each color name from the file names shows in the Color dropdown | e.g. `sky: 'Sky blue'` |
+| `AURORA_COLORS` (not exported) | the gradient colors the pandas, dinosaurs and unicorns get on top of their own | `aurora_borealis`, `aurora_rose`, `aurora_frost` |
+| `PIXEL_PALS_PETS` | everything about each kind (see [The pets](#the-pets)): `label`, `defaultName`, `unlocked`, `sizeScale`, `speed`, `canClimb`, `canFly`, `colors`, `voice` | e.g. dog: `'Biscuit'`, `sizeScale: 1`, `speed: normal`, colors brown, black, white, red, akita |
+
+### Backgrounds: `pixel-pals-themes.constants.ts`
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_THEME_IDS` | every background, in the order of the Change theme dropdown | 21, `'none'` first |
+| `PIXEL_PALS_DEFAULT_THEME_ID` | the background a new person starts with | `'library'` |
+| `PIXEL_PALS_THEMES` | each background: `label`, `unlocked`, `floorPx` (ground height), `fillColor` (light, dark), its image layers, `islands` and `waterDepthPx` (the lake), and `particles` (its weather effect and where the slider starts) | e.g. winter: `particles: { effect: 'snow', defaultLevel: 0 }` |
+
+### Food: `pixel-pals-foods.constants.ts`
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_FOOD_KINDS` | what the Feed button can drop, one picked at random | `hamburger`, `bao`, `pizza`, `carrot`, `dumpling` |
+| `PIXEL_PALS_FOODS` | each food's `label`, its image `fileName` and the `line` the pet that eats it says | e.g. pizza: `'Pizza time! 🍕'` |
+| `PIXEL_PALS_FOOD_SIZE_PX` | the size food is drawn at | `12` |
+
+### Text: `pixel-pals-messages.constants.ts` and `pixel-pals-labels.constants.ts`
+
+| Constant | What it changes | Value now |
+| --- | --- | --- |
+| `PIXEL_PALS_MESSAGES` | what every pet can say: `conversations` (pairs of lines), `chatReplies`, `clickReactions`, and the one-off lines (`bigJump`, `zoomies`, `fall`, `caughtBall`, `missedBall`...). `{name}` and `{sound}` are filled in | e.g. `['Wanna play?', 'Yes!! 🎾']` |
+| `PIXEL_PALS_LABELS` | the text of the toolbar, the dialogs and their errors | e.g. `spawnPet: 'Spawn pet'` |
