@@ -76,7 +76,7 @@
     "ogl": "^1.0.11",
     "postprocessing": "^6.39.6",
     "pretty-bytes": "~7.1.0",
-    "radix-ui": "^1.6.2",
+    "radix-ui": "^1.8.1",
     "react": "19.3.1",
     "react-currency-input-field": "^4.0.14",
     "react-day-picker": "^9.13.2",

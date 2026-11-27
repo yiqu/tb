@@ -29,6 +29,10 @@ type SidebarContextProps = {
   setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
   toggleSidebar: () => void;
+  /** The expanded width in px set by dragging the edge, or null for the default `SIDEBAR_WIDTH`. */
+  width: number | null;
+  /** null goes back to the default `SIDEBAR_WIDTH`. */
+  setWidth: (width: number | null) => void;
 };
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null);
@@ -44,6 +48,7 @@ function useSidebar() {
 
 function SidebarProvider({
   defaultOpen = true,
+  defaultWidth,
   open: openProp,
   onOpenChange: setOpenProp,
   className,
@@ -52,11 +57,14 @@ function SidebarProvider({
   ...props
 }: React.ComponentProps<'div'> & {
   defaultOpen?: boolean;
+  /** The expanded width in px, e.g. from a cookie. Leave it out for `SIDEBAR_WIDTH`. */
+  defaultWidth?: number;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
+  const [width, setWidth] = React.useState<number | null>(defaultWidth ?? null);
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
@@ -108,8 +116,10 @@ function SidebarProvider({
       openMobile,
       setOpenMobile,
       toggleSidebar,
+      width,
+      setWidth,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, width],
   );
 
   return (
@@ -119,7 +129,7 @@ function SidebarProvider({
           data-slot="sidebar-wrapper"
           style={
             {
-              '--sidebar-width': SIDEBAR_WIDTH,
+              '--sidebar-width': width === null ? SIDEBAR_WIDTH : `${width}px`,
               '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
               ...style,
             } as React.CSSProperties
@@ -208,6 +218,8 @@ function Sidebar({
         data-slot="sidebar-gap"
         className={ cn(
           'relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear',
+          // no easing while the edge is being dragged, the width follows the pointer
+          'group-data-[resizing=true]/sidebar-wrapper:transition-none',
           'group-data-[collapsible=offcanvas]:w-0',
           'group-data-[side=right]:rotate-180',
           variant === 'floating' || variant === 'inset' ?
@@ -220,6 +232,7 @@ function Sidebar({
         className={ cn(
           `
             fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear
+            group-data-[resizing=true]/sidebar-wrapper:transition-none
             md:flex
           `,
           side === 'left' ?

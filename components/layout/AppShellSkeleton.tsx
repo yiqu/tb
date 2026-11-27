@@ -4,14 +4,14 @@ import { Skeleton } from '@/components/ui/skeleton';
  * The fallback for the (base) root layout while the cookie-dependent app chrome (sidebar,
  * top nav, settings providers) streams in on a page load. It is part of the static shell,
  * so a direct visit or a refresh paints this immediately instead of a blank page.
- * The sidebar width follows `data-shell-sidenav` on <html>, set from the sidebar cookie by the boot script.
+ * The sidebar width follows `data-shell-sidenav` and `--shell-sidenav-width` on <html>, set from the sidebar cookies by the boot script.
  */
 export default function AppShellSkeleton() {
   return (
     <div className="flex min-h-svh w-full" role="status" aria-busy="true" aria-label="Loading">
       <aside
         className={ `
-          hidden w-64 shrink-0 flex-col gap-y-3 border-r border-sidebar-border bg-sidebar p-2
+          hidden w-[var(--shell-sidenav-width,16rem)] shrink-0 flex-col gap-y-3 border-r border-sidebar-border bg-sidebar p-2
           in-data-[shell-sidenav=collapsed]:w-12
           md:flex
         ` }

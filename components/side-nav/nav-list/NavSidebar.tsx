@@ -9,6 +9,8 @@ import PreloadFunctionForApplication from '@/shared/preload/PreloadFunctionForAp
 import { QuickAccessGroup } from '@/components/sidebar/quick-access-group/QuickAccessGroup';
 import SubscriptionsGroup from '@/components/sidebar/subscriptions-group/SubscriptionsGroup';
 import { OutstandingBillsGroup } from '@/components/sidebar/outstanding-group/OutstandingBillsGroup';
+import SideNavResizeHandle from '@/components/side-nav/resize/SideNavResizeHandle';
+import SidebarPixelPals from '@/components/sidebar/pixel-pals-group/SidebarPixelPals';
 import {
   Sidebar,
   SidebarMenu,
@@ -43,8 +45,10 @@ export function NavSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Suspense>
       </SidebarContent>
       <SidebarFooter>
+        <SidebarPixelPals />
         <NavFooter />
       </SidebarFooter>
+      <SideNavResizeHandle />
     </Sidebar>
   );
 }
