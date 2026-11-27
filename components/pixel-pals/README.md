@@ -88,6 +88,7 @@ food are all numbers in `constants/pixel-pals-behavior.constants.ts`. The file i
 | how long each timed activity lasts (idle, walk, run, lie, fly, eat...); chasing, climbing and walking to a friend end on their own | `PIXEL_PALS_BEHAVIOR_DURATION` |
 | calmer or livelier pets           | `PIXEL_PALS_NEXT_BEHAVIOR_WEIGHTS`                                        |
 | weather: how many at 100%, size, speed, drift | `PIXEL_PALS_PARTICLE_TUNING` (section 12); colors and opacity in `PIXEL_PALS_PARTICLE_EFFECTS` |
+| how fast the rain falls (px per second) and its angle | `PIXEL_PALS_RAIN_FALL_SPEED`, `PIXEL_PALS_RAIN_SLANT` (section 12) |
 
 One kind's own speed and size are `speed` and `sizeScale` on its entry in `PIXEL_PALS_PETS`. What pets say is in
 `constants/pixel-pals-messages.constants.ts` and each pet's `voice`.

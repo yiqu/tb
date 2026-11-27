@@ -261,6 +261,15 @@ export interface PixelPalsParticleTuning {
   thickness?: PixelPalsRange;
 }
 
+/**
+ * How fast rain falls on every theme with rain (Overgrown city, Karst peaks), in px per second. Each drop gets its own
+ * speed in this range. Higher = faster. At the default, a drop takes about 1.3 seconds to fall to the ground of the
+ * default 150 px tall Pixel Pals (it was 190 to 260, about 0.5 seconds, which looked too fast).
+ */
+export const PIXEL_PALS_RAIN_FALL_SPEED: PixelPalsRange = [80, 110];
+/** How much the rain slants: px to the left for every px it falls (0 = straight down). The angle stays the same when the speed changes. */
+export const PIXEL_PALS_RAIN_SLANT = 0.1;
+
 export const PIXEL_PALS_PARTICLE_TUNING = {
   // 1 px flakes, a few 2 px ones, drifting down slowly
   snow: { maxPer10kPx: 40, size: [1, 2], fallSpeed: [10, 24], drift: [-2, 4], sway: [1.5, 4], swaySeconds: [1.6, 3.2] },
@@ -268,8 +277,16 @@ export const PIXEL_PALS_PARTICLE_TUNING = {
   leaves: { maxPer10kPx: 9, size: [2, 2], fallSpeed: [12, 22], drift: [-4, 6], sway: [6, 12], swaySeconds: [1.8, 3.4] },
   // 1 px specks blowing away from the portal, to the left
   debris: { maxPer10kPx: 24, size: [1, 2], fallSpeed: [6, 16], drift: [-16, -6], sway: [1, 3], swaySeconds: [0.8, 1.8] },
-  // 1 px wide streaks, fast, slanting a little
-  rain: { maxPer10kPx: 30, size: [1, 1], fallSpeed: [190, 260], drift: [-28, -18], sway: [0, 0], swaySeconds: [1, 1], streakLength: [3, 5] },
+  // 1 px wide streaks, slanting a little; the speed is PIXEL_PALS_RAIN_FALL_SPEED above
+  rain: {
+    maxPer10kPx: 30,
+    size: [1, 1],
+    fallSpeed: PIXEL_PALS_RAIN_FALL_SPEED,
+    drift: [-PIXEL_PALS_RAIN_FALL_SPEED[1] * PIXEL_PALS_RAIN_SLANT, -PIXEL_PALS_RAIN_FALL_SPEED[0] * PIXEL_PALS_RAIN_SLANT],
+    sway: [0, 0],
+    swaySeconds: [1, 1],
+    streakLength: [3, 5],
+  },
   // thin wisps drifting slowly sideways, mostly in the lower half
   fog: { maxPer10kPx: 6, size: [22, 44], fallSpeed: [0, 0], drift: [3, 8], sway: [0.5, 1.5], swaySeconds: [5, 9], thickness: [3, 6] },
 } as const satisfies Record<string, PixelPalsParticleTuning>;
