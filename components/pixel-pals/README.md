@@ -359,7 +359,7 @@ at random in it each time, so the pets never move in sync. "Sprite sizes" means 
 | `PIXEL_PALS_SPRITE_SIZE_PX` | the base sprite square; each pet is this times its kind's `sizeScale` | `30` |
 | `PIXEL_PALS_BUBBLE_FONT` | the font the bubbles are measured in; keep it the same as `.pixel-pals-bubble` in `styles/pixel-pals.css` | `"8px 'PixelPalsSilkscreen'"` |
 | `PIXEL_PALS_FONT_FACE_CSS` | the `@font-face` of the pixel font; _worked out_ from `PIXEL_PALS_ASSET_BASE_URL` | Silkscreen |
-| `PIXEL_PALS_BALL_RADIUS_PX` | the ball's size | `3` |
+| `PIXEL_PALS_BALL_RADIUS_PX` | the ball's radius; it is drawn twice this wide (6 px now) | `3` |
 | `PIXEL_PALS_BALL_COLOR` | the ball's color | `'#2ed851'` |
 
 ### Pets: `pixel-pals-pets.constants.ts`
