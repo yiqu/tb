@@ -3,6 +3,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 import { createPixelPalsId } from '../utils/pixel-pals-random.utils';
+import { getPixelPalsDefaultColor } from '../utils/pixel-pals-pet.utils';
+import { PIXEL_PALS_DEFAULT_PET_ID } from '../constants/pixel-pals-pets.constants';
 import { pixelPalsLocalStorage } from '../utils/pixel-pals-storage.utils';
 import { PIXEL_PALS_DEFAULT_THEME_ID } from '../constants/pixel-pals-themes.constants';
 import { pixelPetSchema, pixelPetsPersistedStateSchema } from '../schemas/pixel-pets-persisted-state.schema';
@@ -94,7 +96,10 @@ interface PixelPetsState {
 
 type PixelPetsPersistedState = Omit<PixelPetsState, 'actions'>;
 
-export const PIXEL_PALS_DEFAULT_PETS: PixelPet[] = [{ id: 'pixel-pals-default-dog', petId: 'dog', color: 'brown' }];
+/** What a new person starts with: one default pet (`PIXEL_PALS_DEFAULT_PET_ID`) in its first color. */
+export const PIXEL_PALS_DEFAULT_PETS: PixelPet[] = [
+  { id: 'pixel-pals-default-pet', petId: PIXEL_PALS_DEFAULT_PET_ID, color: getPixelPalsDefaultColor(PIXEL_PALS_DEFAULT_PET_ID) },
+];
 
 function toValidPetCount(count: number): number {
   if (!Number.isFinite(count)) {

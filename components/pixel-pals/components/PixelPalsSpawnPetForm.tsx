@@ -17,24 +17,22 @@ import PixelPalsSelectField, { PixelPalsSelectOption } from './PixelPalsSelectFi
 import { PIXEL_PALS_LABELS } from '../constants/pixel-pals-labels.constants';
 import { PIXEL_PALS_PET_NAME_MAX_LENGTH } from '../constants/pixel-pals.constants';
 import { useGetUnlockedPets, useGetUserPixelPets, usePixelPetStoreActions } from '../store/pixel-pets.store';
-import { PIXEL_PALS_PETS, PIXEL_PALS_PET_IDS, PixelPetId } from '../constants/pixel-pals-pets.constants';
+import { PIXEL_PALS_PETS, PIXEL_PALS_PET_IDS, PIXEL_PALS_DEFAULT_PET_ID, PixelPetId } from '../constants/pixel-pals-pets.constants';
 import { isPixelPalsColorOf, getResolvedPixelPet, getPixelPalsDefaultColor, getPixelPalsSuggestedName } from '../utils/pixel-pals-pet.utils';
 import { createPixelPalsSpawnPetSchema, PixelPalsSpawnPetFormValues } from '../schemas/pixel-pals-dialogs.schema';
 
 import type { PixelPet, NewPixelPet, PixelPetUnlockedPets, PixelPalsPetColorDefinition } from '../models/pixel-pals.models';
 
-/** The kind the dialog starts on, when it is unlocked. Otherwise the first unlocked kind in the master list. */
-const DEFAULT_PET_ID: PixelPetId = 'dog';
-
+/** The kind the dialog starts on: the default pet when it is unlocked, otherwise the first unlocked kind in the master list. */
 function getInitialPetId(unlockedPets: PixelPetUnlockedPets): PixelPetId {
-  if (unlockedPets[DEFAULT_PET_ID]) {
-    return DEFAULT_PET_ID;
+  if (unlockedPets[PIXEL_PALS_DEFAULT_PET_ID]) {
+    return PIXEL_PALS_DEFAULT_PET_ID;
   }
   const firstUnlocked: PixelPetId | undefined = PIXEL_PALS_PET_IDS.find((petId: PixelPetId) => {
     return unlockedPets[petId];
   });
   // every kind locked: the dialog turns the pick down with "This pet is locked"
-  return firstUnlocked ?? DEFAULT_PET_ID;
+  return firstUnlocked ?? PIXEL_PALS_DEFAULT_PET_ID;
 }
 
 /** Every kind of pet in the master list. The ones locked in `unlockedPets` are listed with a lock and cannot be picked. */

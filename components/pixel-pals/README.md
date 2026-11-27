@@ -95,7 +95,9 @@ One kind's own speed and size are `speed` and `sizeScale` on its entry in `PIXEL
 
 ## The pets
 
-Everything about a kind of pet is one object in `PIXEL_PALS_PETS` (`constants/pixel-pals-pets.constants.ts`):
+Everything about a kind of pet is one object in `PIXEL_PALS_PETS` (`constants/pixel-pals-pets.constants.ts`). The
+order of `PIXEL_PALS_PET_IDS` in the same file is the order of the Spawn dialog's Pet dropdown (the dinosaurs first),
+and `PIXEL_PALS_DEFAULT_PET_ID` is the default pet: the one Pixel Pals starts with and the Spawn dialog starts on.
 
 | Field          | What it does                                                                                     |
 | -------------- | ------------------------------------------------------------------------------------------------ |
@@ -128,7 +130,7 @@ The pixel-pets store is what Pixel Pals shows; the dialogs only call its actions
 | ------------------------ | ------------------------------------------------------------------------------------------ |
 | `userPixelPetCount`      | how many pets can be out at once, `PIXEL_PALS_DEFAULT_PET_COUNT` (10), kept in 1 to 30      |
 | `userPixelPetBackground` | the id of the background (theme) shown                                                    |
-| `userPixelPets`          | the pets out, each `{ id, petId, color, nickName? }`; starts with one brown dog (`PIXEL_PALS_DEFAULT_PETS`) |
+| `userPixelPets`          | the pets out, each `{ id, petId, color, nickName? }`; starts with one default pet, `PIXEL_PALS_DEFAULT_PET_ID` (Brachiosaurus) in its first color (`PIXEL_PALS_DEFAULT_PETS`) |
 | `unlockedBackgrounds`    | `{ [backgroundId]: boolean }`, only the backgrounds a lock action changed                  |
 | `unlockedPets`           | `{ [petId]: boolean }`, only the kinds of pet a lock action changed                        |
 | `userPixelPetParticleLevels` | `{ [backgroundId]: 0 to 100 }`, only the backgrounds whose weather slider was moved; the others use `particles.defaultLevel` |

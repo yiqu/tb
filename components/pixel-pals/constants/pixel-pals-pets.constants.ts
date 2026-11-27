@@ -8,20 +8,27 @@ import type { PixelPalsAnimation, PixelPetDefinition, PixelPalsPetColorDefinitio
  * color, see `public/pixel-pals/CREDITS.md`. Sprite files are
  * `public/pixel-pals/pets/<spriteFolder>/<color>_<animation>_8fps.gif`.
  */
+/**
+ * Every kind of pet, in the order the Pet dropdown of the Spawn dialog lists them: the dinosaurs first, then the rest.
+ * Moving an id here moves it in the dropdown.
+ */
 export const PIXEL_PALS_PET_IDS = [
+  // dinosaurs
+  'brachiosaurus',
+  't-rex',
+  'triceratops',
+  'stegosaurus',
+  'raptor',
+  'pteranodon',
+  'pterodactyl',
+  'deno',
+  // everyone else
   'dog',
   'fox',
   'panda',
   'big-panda',
   'little-panda',
   'deer',
-  'pteranodon',
-  'pterodactyl',
-  't-rex',
-  'triceratops',
-  'stegosaurus',
-  'brachiosaurus',
-  'raptor',
   'raccoon',
   'turtle',
   'chicken',
@@ -30,7 +37,6 @@ export const PIXEL_PALS_PET_IDS = [
   'snail',
   'snake',
   'crab',
-  'deno',
   'rubber-duck',
   'monkey',
   'horse',
@@ -49,6 +55,13 @@ export const PIXEL_PALS_PET_IDS = [
 ] as const;
 
 export type PixelPetId = (typeof PIXEL_PALS_PET_IDS)[number];
+
+/**
+ * The default pet. Pixel Pals starts with one of these, in its first color (`PIXEL_PALS_DEFAULT_PETS` in the store),
+ * and the Spawn dialog starts on it (on the first unlocked kind when it is locked). A person with pets already saved
+ * keeps theirs.
+ */
+export const PIXEL_PALS_DEFAULT_PET_ID: PixelPetId = 'brachiosaurus';
 
 /** Walking speeds in px per second. Each pet also gets a random factor, so two of the same kind never move in sync. */
 export const PIXEL_PALS_SPEED = {
